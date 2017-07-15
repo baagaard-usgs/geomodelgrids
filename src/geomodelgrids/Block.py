@@ -38,12 +38,12 @@ class Block(object):
 
         Coordinates in this method for a generic block are in the local block coordinate system.
         """
-        x1 = numpy.linspace(0.0, self.res_horiz*self.num_x, self.num_x)
-        y1 = numpy.linspace(0.0, self.res_horiz*self.num_y, self.num_y)
-        z1 = numpy.linspace(0.0, self.res_vert*self.num_z, self.num_z)
-        x,y,z = numpy.meshgrid(x1, y1, z1, sparse=True)
+        x1 = numpy.linspace(0.0, self.res_horiz*(self.num_x-1), self.num_x)
+        y1 = numpy.linspace(0.0, self.res_horiz*(self.num_y-1), self.num_y)
+        z1 = numpy.linspace(0.0, self.res_vert*(self.num_z-1), self.num_z)
+        x,y,z = numpy.meshgrid(x1, y1, z1)
         xyz = numpy.vstack((x.ravel(), y.ravel(), z.ravel(),)).transpose()
-        return
+        return xyz
 
     
 # End of file
