@@ -46,4 +46,16 @@ class Block(object):
         return xyz
 
     
+    def groundsurf(self):
+        """Create array of points for the ground surface.
+
+        Coordinates in this method for a generic block are in the local block coordinate system.
+        """
+        x1 = numpy.linspace(0.0, self.res_horiz*(self.num_x-1), self.num_x)
+        y1 = numpy.linspace(0.0, self.res_horiz*(self.num_y-1), self.num_y)
+        x,y = numpy.meshgrid(x1, y1)
+        xy = numpy.vstack((x.ravel(), y.ravel(),)).transpose()
+        return xy
+
+    
 # End of file

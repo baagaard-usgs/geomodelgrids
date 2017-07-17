@@ -37,6 +37,8 @@ class ModelBlock(Block):
 
     def points(self):
         """Create array of points spanning the block.
+    
+        :return: 3D array of points for the block.
         """
         xyzG = Block.points(self)
         xyzP = numpy.zeros(xyzG.shape)
@@ -46,7 +48,18 @@ class ModelBlock(Block):
         xyzP[:,2] = self.z_top - xyzG[:,2]
         return xyzP
         
-        
+    def groundsurf(self):
+        """Create array of points on the ground surface spanning the block.
+    
+        :return: 2D array of points on the ground surface.
+        """
+        xyG = Block.groundsurf(self)
+        xyP = numpy.zeros(xyG.shape)
+        azRad = Model.Y_AZIMUTH*math.pi/180.0
+        xyP[:,0] = Model.X_ORIGIN + xyG[:,0]*math.cos(azRad) + xyG[:,1]*math.sin(azRad)
+        xyP[:,1] = Model.Y_ORIGIN - xyG[:,0]*math.sin(azRad) + xyG[:,1]*math.cos(azRad)
+        return xyP
+                
 
 class Model(object):
     """Graymer et al. 3-D seismic velocity model for a portion of the San
