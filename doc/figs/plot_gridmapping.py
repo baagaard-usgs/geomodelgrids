@@ -31,7 +31,9 @@ def physical_grid(ax):
             x2[:,iz] = gridX
             z2[:,iz] = z_bot + (gridTopo-z_bot)/(z_top-z_bot)*(z-z_bot)
         
-        ax.plot(x2, z2, 'o', lw=0, color=grid['color'], ms=4)
+        ax.plot(x2, z2, 'o', color=grid['color'], ms=4, zorder=3)
+        ax.plot(x2, z2, '-', lw=0.5, color='fg', zorder=2)
+        ax.plot(x2.T, z2.T, '-', lw=0.5, color='fg', zorder=1)
         ax.set_xlim(xmin-100, xmax+100)
         ax.set_ylim(z_bot, numpy.max(topo))
         ax.set_aspect('equal', 'datalim')
@@ -47,7 +49,9 @@ def topological_grid(ax):
         gridZ = numpy.arange(z0, z1-grid['res_vert'], -grid['res_vert'])
         x2,z2 = numpy.meshgrid(gridX, gridZ)
         
-        ax.plot(x2, z2, 'o', lw=0, color=grid['color'], ms=4)
+        ax.plot(x2, z2, 'o', lw=0, color=grid['color'], ms=4, zorder=3)
+        ax.plot(x2, z2, '-', lw=0.5, color='fg', zorder=2)
+        ax.plot(x2.T, z2.T, '-', lw=0.5, color='fg', zorder=1)
         ax.set_xlim(xmin-100, xmax+100)
         ax.set_ylim(z_bot, numpy.max(topo))
         ax.set_aspect('equal', 'datalim')
