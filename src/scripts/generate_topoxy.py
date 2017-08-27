@@ -7,7 +7,7 @@
 # ======================================================================
 #
 
-from geomodelgrids.Models import Models
+from geomodelgrids.Model import Model
 
 import numpy
 import datetime
@@ -15,22 +15,20 @@ import os
 
 class App(object):
 
-    def __init__(self, models_dir):
-        self.models_dir = models_dir
+    def __init__(self):
         self.model = None
         return
 
 
-    def initialize(self, model_name):
-        models = Models(self.models_dir)
-        models.initialize()
-        self.model = models.get(model_name)
+    def initialize(self, model_config):
+        self.model = Model()
+        self.model.initialize(model_config)
         return
 
 
     def write_surfxy(self, fileroot):
         if fileroot is None:
-            fileroot = self.model.KEY
+            fileroot = self.model.key
         block = self.model.blocks[0]
         header = (
             "Generated with %(script)s by %(user)s on %(date)s.\n"
@@ -44,14 +42,14 @@ class App(object):
             % {"script": __file__,
                "user": os.environ["USER"],
                "date": datetime.datetime.now(),
-               "model": self.model.KEY,
+               "model": self.model.key,
                "res_horiz": block.res_horiz,
                "num_x": block.num_x,
                "num_y": block.num_y,
             },)
             
         filename = "%s-topoxy.txt" % (fileroot,)
-        numpy.savetxt(filename, block.groundsurf(), fmt="%16.8e", header=header[0])
+        numpy.savetxt(filename, block.groundsurf_xy(), fmt="%16.8e", header=header[0])
         return
 
 # ======================================================================
@@ -63,16 +61,15 @@ if __name__ == "__main__":
     import argparse
     import logging
     parser = argparse.ArgumentParser(description=DESCRIPTION)
-    parser.add_argument("--models-dir", action="store", dest="models_dir", required=True)
     parser.add_argument("--fileroot", action="store", dest="fileroot")
-    parser.add_argument("--model", action="store", dest="model", required=True)
+    parser.add_argument("--model", action="store", dest="model_config", required=True)
     parser.add_argument("--log", action="store", dest="logFilename", default="generate_topoxy.log")
     args = parser.parse_args()
 
     logging.basicConfig(level=logging.DEBUG, filename=args.logFilename)
 
-    app = App(args.models_dir)
-    app.initialize(args.model)
+    app = App()
+    app.initialize(args.model_config)
     app.write_surfxy(args.fileroot)
 
 
