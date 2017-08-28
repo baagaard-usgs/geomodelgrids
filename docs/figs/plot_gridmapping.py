@@ -69,4 +69,5 @@ physical_grid(ax)
 ax = figure.axes(1, 2, 1, 2)
 topological_grid(ax)
 
-pyplot.show()
+figure.figure.savefig("gridmapping.png")
+#pyplot.show()
