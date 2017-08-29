@@ -108,4 +108,3 @@ Block 2:  1,608,603
 Block 3:  1,082,316
 Total:   29,968,626
 
-# Jachens San Francisco Bay Model

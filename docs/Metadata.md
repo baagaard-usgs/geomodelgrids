@@ -1,5 +1,11 @@
+# Model
+* description Description of model.
+* key 
+
 # Domain
-* num_blocks Number of grid blocks
+* num_blocks Number of grid blocks.
+* dim_x Length of model in km in x-direction.
+* dim_y width of model in km in y-direction.
 
 # Coordinate system
 * projection Proj.4 name for geographic projection.
@@ -7,6 +13,10 @@
 * x_origin X coordinate of origin of local grid in projected coordinates.
 * y_origin Y coordinate of origin of local grid in projected coordinates.
 * y_azimuth Azimuth of y-axis in degrees.
+
+# Data
+* values Names of values in model.
+* units Units of values in model.
 
 # Topography
 * res_horiz Horizontal resolution
