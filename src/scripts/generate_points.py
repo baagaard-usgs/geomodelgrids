@@ -10,6 +10,7 @@
 import math
 import logging
 import numpy
+import os
     
 class Block(object):
     """Uniform resolution gridded block within a model.
@@ -140,6 +141,8 @@ class Model(object):
             
             self.blocks.append(Block(block_name, res_horiz, res_vert, z_top, z_bot, self.domain_x, self.domain_y, self.domain_z))
 
+        if not os.path.isdir(data_dir):
+            os.makedirs(data_dir)
         self.data_dir = data_dir
         return
 
@@ -166,7 +169,7 @@ class Model(object):
                "num_y": block.num_y,
             },)
             
-        filename = "%s/%s-topoxy.txt.gz" % (self.data_dir, self.key,)
+        filename = "%s/%s-topo-xy.txt.gz" % (self.data_dir, self.key,)
         points = block.groundsurf_xy(self.y_azimuth, self.origin_x, self.origin_y)
         numpy.savetxt(filename, points, fmt="%16.8e", header=header[0])
         return
@@ -205,7 +208,7 @@ class Model(object):
 
             points = block.points(self.y_azimuth, self.origin_x, self.origin_y, self.topography)
                 
-            filename = "%s/%s-%s.txt.gz" % (self.data_dir, self.key, block.name,)
+            filename = "%s/%s-%s-xyz.txt.gz" % (self.data_dir, self.key, block.name,)
             numpy.savetxt(filename, points, fmt="%16.8e", header=header[0])
         return
 
@@ -217,7 +220,7 @@ class Model(object):
             topo_units = self.config["domain"]["topography_units"]
             if topo_units in ["m", "meter", "meters"]:
                 pass
-            if topo_units in ["ft", "feet"]:
+            elif topo_units in ["ft", "feet"]:
                 self.topography *= 0.3048
             else:
                 raise ValueError("Unknown units '%s' for topograhy." % topo_units)
