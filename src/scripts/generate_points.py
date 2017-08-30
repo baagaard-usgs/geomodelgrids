@@ -52,10 +52,12 @@ class Block(object):
 
         domain_top = 0.0
         domain_bot = -self.domain_z
-        if not topography is None:
+        if topography is not None:
             topoG = self._getBlockTopography(topography)
             for i in xrange(self.num_z):
-                z[:,:,i] = topoG - domain_bot - (topoG-domain_bot)/(domain_top-domain_bot)*(self.z_top - z[:,:,i] - domain_bot)
+                z[:,:,i] = domain_bot + (topoG-domain_bot)/(domain_top-domain_bot)*(self.z_top - z[:,:,i] - domain_bot)
+        else:
+            z = self.z_top - z
         
         xyzG = numpy.vstack((x.ravel(), y.ravel(), z.ravel(),)).transpose()
         xyzP = numpy.zeros(xyzG.shape)
@@ -157,7 +159,7 @@ class Model(object):
             "XY grid for topography\n"
             "\n"
             "Model: %(model)s\n"
-            "res_horiz: %(res_horiz).1f\n"
+            "res_horiz: %(res_horiz).1f m\n"
             "num_x: %(num_x)d\n"
             "num_y: %(num_y)d\n"
             % {"script": __file__,
@@ -187,9 +189,9 @@ class Model(object):
                 "\n"
                 "Model: %(model)s\n"
                 "Block: %(block)s\n"
-                "res_horiz: %(res_horiz).1f\n"
-                "res_vert: %(res_vert).1f\n"
-                "z_top: %(z_top).1f\n"
+                "res_horiz: %(res_horiz).1f m\n"
+                "res_vert: %(res_vert).1f m\n"
+                "z_top: %(z_top).1f m\n"
                 "num_x: %(num_x)d\n"
                 "num_y: %(num_y)d\n"
                 "num_z: %(num_z)d\n"
@@ -207,7 +209,16 @@ class Model(object):
                 },)
 
             points = block.points(self.y_azimuth, self.origin_x, self.origin_y, self.topography)
-                
+            if "topography_units" in self.config["domain"]:
+                topo_units = self.config["domain"]["topography_units"]
+                if topo_units in ["m", "meter", "meters"]:
+                    pass
+                elif topo_units in ["ft", "feet"]:
+                    points[:,2] /= 0.3048
+                else:
+                    raise ValueError("Unknown units '%s' for topograhy." % topo_units)
+
+            
             filename = "%s/%s-%s-xyz.txt.gz" % (self.data_dir, self.key, block.name,)
             numpy.savetxt(filename, points, fmt="%16.8e", header=header[0])
         return
