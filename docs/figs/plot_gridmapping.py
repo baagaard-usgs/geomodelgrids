@@ -23,7 +23,7 @@ def physical_grid(ax):
 
         z0 = grid['z_top']
         z1 = grid['z_top'] - grid['res_vert']*(grid['num_z']-1)
-        gridZ = numpy.arange(z0, z1-grid['res_vert'], -grid['res_vert'])
+        gridZ = numpy.arange(z0, z1-0.5*grid['res_vert'], -grid['res_vert'])
 
         x2 = numpy.zeros((gridX.shape[-1], gridZ.shape[-1],))
         z2 = numpy.zeros(x2.shape)
