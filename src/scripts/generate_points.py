@@ -91,13 +91,14 @@ class Block(object):
         """Get topography grid for block.
         """
         npts = topography.shape[0]
-        nptsBlock = self.num_x * self.num_y
-        skip  = int((npts / nptsBlock)**0.5)
+        n = self.num_x - 1
+        m = self.num_y - 1
+        skip  = int((-(n+m)+((n+m)**2-4*n*m*(1-npts))**0.5)/(2*n*m))
+        
+        if (n*skip+1)*(m*skip+1) != npts:
+            raise ValueError("Nonintegral number of points for block relative to topography. Topography has %d points. Block has %d x %d points." % (npts, self.num_x, self.num_y,))
 
-        if nptsBlock*skip**2 != npts:
-            raise ValueError()
-
-        topoG = topography.reshape((self.num_y*skip, self.num_x*skip,))
+        topoG = topography.reshape((m*skip+1, n*skip+1,))
         topoG = topoG[::skip,::skip]
         return topoG
     
@@ -182,6 +183,11 @@ class Model(object):
         import datetime
 
         self._loadTopography()
+        if "external_z_units" in self.config["domain"]:
+            z_units = self.config["domain"]["external_z_units"]
+        else:
+            z_units = "m"
+
         
         for block in self.blocks:
             header = (
@@ -195,6 +201,7 @@ class Model(object):
                 "num_x: %(num_x)d\n"
                 "num_y: %(num_y)d\n"
                 "num_z: %(num_z)d\n"
+                "z_units: %(z_units)s\n"
                 % {"script": __file__,
                    "user": os.environ["USER"],
                    "date": datetime.datetime.now(),
@@ -206,19 +213,17 @@ class Model(object):
                    "num_x": block.num_x,
                    "num_y": block.num_y,
                    "num_z": block.num_z,
+                   "z_units": z_units,
                 },)
 
             points = block.points(self.y_azimuth, self.origin_x, self.origin_y, self.topography)
-            if "topography_units" in self.config["domain"]:
-                topo_units = self.config["domain"]["topography_units"]
-                if topo_units in ["m", "meter", "meters"]:
-                    pass
-                elif topo_units in ["ft", "feet"]:
-                    points[:,2] /= 0.3048
-                else:
-                    raise ValueError("Unknown units '%s' for topograhy." % topo_units)
-
-            
+            if z_units in ["m", "meter", "meters"]:
+                pass
+            elif z_units in ["ft", "feet"]:
+                points[:,2] /= 0.3048
+            else:
+                raise ValueError("Unknown units '%s' for external z coordinate." % z_units)
+                
             filename = "%s/%s-%s-xyz.txt.gz" % (self.data_dir, self.key, block.name,)
             numpy.savetxt(filename, points, fmt="%16.8e", header=header[0])
         return
@@ -228,13 +233,14 @@ class Model(object):
             filename = "%s/%s" % (self.data_dir, self.config["domain"]["topography"])
             self.topography = numpy.loadtxt(filename)[:,2]
 
-            topo_units = self.config["domain"]["topography_units"]
-            if topo_units in ["m", "meter", "meters"]:
-                pass
-            elif topo_units in ["ft", "feet"]:
-                self.topography *= 0.3048
-            else:
-                raise ValueError("Unknown units '%s' for topograhy." % topo_units)
+            if "external_z_units" in self.config["domain"]:
+                z_units = self.config["domain"]["external_z_units"]
+                if z_units in ["m", "meter", "meters"]:
+                    pass
+                elif z_units in ["ft", "feet"]:
+                    self.topography *= 0.3048
+                else:
+                    raise ValueError("Unknown units '%s' for external z coordinate." % z_units)
         else:
             self.topography = None
         return
