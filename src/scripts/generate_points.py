@@ -225,7 +225,7 @@ class Model(object):
                 raise ValueError("Unknown units '%s' for external z coordinate." % z_units)
                 
             filename = "%s/%s-%s-xyz.txt.gz" % (self.data_dir, self.key, block.name,)
-            numpy.savetxt(filename, points, fmt="%16.8e", header=header[0])
+            numpy.savetxt(filename, points, fmt="%20.12e, %20.12e, %14.6e", header=header[0])
         return
 
     def _loadTopography(self):
