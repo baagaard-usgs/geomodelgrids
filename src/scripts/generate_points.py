@@ -16,7 +16,7 @@ class Block(object):
     """Uniform resolution gridded block within a model.
     """
 
-    def __init__(self, name, res_horiz, res_vert, z_top, z_bot, domain_x, domain_y, domain_z):
+    def __init__(self, name, res_horiz, res_vert, z_top, z_bot, z_top_offset, domain_x, domain_y, domain_z):
         """Constructor.
 
         :param name: Name of block.
@@ -24,12 +24,14 @@ class Block(object):
         :param res_vert: Vertical resolution of block in meters.
         :param z_top: Elevation of top of of block in meters.
         :param z_bot: Elevation of bottom of block in meters.
+        :param z_top_offset: Amount to offset top elevation of block in meters.
         """
         self.name = name
         self.res_horiz = res_horiz
         self.res_vert = res_vert
         self.z_top = z_top
         self.z_bot = z_bot
+        self.z_top_offset = z_top_offset
         self.domain_z = domain_z
         
         self.num_x = 1 + int(domain_x / self.res_horiz)
@@ -56,6 +58,9 @@ class Block(object):
             topoG = self._getBlockTopography(topography)
             for i in xrange(self.num_z):
                 z[:,:,i] = domain_bot + (topoG-domain_bot)/(domain_top-domain_bot)*(self.z_top - z[:,:,i] - domain_bot)
+
+            # Move top points down
+            z[:,:,0] += self.z_top_offset
         else:
             z = self.z_top - z
         
@@ -140,9 +145,10 @@ class Model(object):
             res_horiz = parser.getfloat(block_name, "res_horiz")
             res_vert = parser.getfloat(block_name, "res_vert")
             z_top = parser.getfloat(block_name, "z_top")
+            z_top_offset = parser.getfloat(block_name, "z_top_offset")
             z_bot = parser.getfloat(block_name, "z_bot")
             
-            self.blocks.append(Block(block_name, res_horiz, res_vert, z_top, z_bot, self.domain_x, self.domain_y, self.domain_z))
+            self.blocks.append(Block(block_name, res_horiz, res_vert, z_top, z_bot, z_top_offset, self.domain_x, self.domain_y, self.domain_z))
 
         if not os.path.isdir(data_dir):
             os.makedirs(data_dir)
@@ -198,6 +204,7 @@ class Model(object):
                 "res_horiz: %(res_horiz).1f m\n"
                 "res_vert: %(res_vert).1f m\n"
                 "z_top: %(z_top).1f m\n"
+                "z_top_offset: %(z_top_offset).1f m\n"
                 "num_x: %(num_x)d\n"
                 "num_y: %(num_y)d\n"
                 "num_z: %(num_z)d\n"
@@ -210,6 +217,7 @@ class Model(object):
                    "res_horiz": block.res_horiz,
                    "res_vert": block.res_vert,
                    "z_top": block.z_top,
+                   "z_top_offset": block.z_top_offset,
                    "num_x": block.num_x,
                    "num_y": block.num_y,
                    "num_z": block.num_z,
@@ -217,6 +225,8 @@ class Model(object):
                 },)
 
             points = block.points(self.y_azimuth, self.origin_x, self.origin_y, self.topography)
+
+            # Convert to output units
             if z_units in ["m", "meter", "meters"]:
                 pass
             elif z_units in ["ft", "feet"]:
@@ -233,6 +243,7 @@ class Model(object):
             filename = "%s/%s" % (self.data_dir, self.config["domain"]["topography"])
             self.topography = numpy.loadtxt(filename)[:,2]
 
+            # Convert to meters
             if "external_z_units" in self.config["domain"]:
                 z_units = self.config["domain"]["external_z_units"]
                 if z_units in ["m", "meter", "meters"]:
@@ -241,6 +252,7 @@ class Model(object):
                     self.topography *= 0.3048
                 else:
                     raise ValueError("Unknown units '%s' for external z coordinate." % z_units)
+
         else:
             self.topography = None
         return
