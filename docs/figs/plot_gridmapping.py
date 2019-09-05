@@ -6,9 +6,9 @@ import matplotlib.pyplot as pyplot
 z_top = 0.0
 z_bot = -2000.0
 grids = (
-    {'z_top': 0.0, 'num_z': 11, 'res_horiz': 100.0, 'res_vert': 25.0, 'color': 'ltred'},
-    {'z_top': -250.0, 'num_z': 11, 'res_horiz': 200.0, 'res_vert': 50.0, 'color': 'ltblue'},
-    {'z_top': -750.0, 'num_z': 11, 'res_horiz': 500.0, 'res_vert': 125.0, 'color': 'orange'},
+    {'z_top': 0.0, 'num_z': 11, 'res_horiz': 100.0, 'res_vert': 25.0, 'color': 'c_ltred'},
+    {'z_top': -250.0, 'num_z': 11, 'res_horiz': 200.0, 'res_vert': 50.0, 'color': 'c_ltblue'},
+    {'z_top': -750.0, 'num_z': 11, 'res_horiz': 500.0, 'res_vert': 125.0, 'color': 'c_orange'},
     )
 
 topo = numpy.array([0.0, 50.0, 100.0, 150.0, 180.0, 200.0, 190.0, 120.0, 90.0, 50.0, 30.0, 20.0, 10.0, 0.0, 0.0, 0.0, 20.0, 50.0, 70.0, 30.0, 20.0])
@@ -32,8 +32,8 @@ def physical_grid(ax):
             z2[:,iz] = z_bot + (gridTopo-z_bot)/(z_top-z_bot)*(z-z_bot)
         
         ax.plot(x2, z2, 'o', color=grid['color'], ms=4, zorder=3)
-        ax.plot(x2, z2, '-', lw=0.5, color='fg', zorder=2)
-        ax.plot(x2.T, z2.T, '-', lw=0.5, color='fg', zorder=1)
+        ax.plot(x2, z2, '-', lw=0.5, color='c_fg', zorder=2)
+        ax.plot(x2.T, z2.T, '-', lw=0.5, color='c_fg', zorder=1)
         ax.set_xlim(xmin-100, xmax+100)
         ax.set_ylim(z_bot, numpy.max(topo))
         ax.set_aspect('equal', 'datalim')
@@ -50,8 +50,8 @@ def topological_grid(ax):
         x2,z2 = numpy.meshgrid(gridX, gridZ)
         
         ax.plot(x2, z2, 'o', lw=0, color=grid['color'], ms=4, zorder=3)
-        ax.plot(x2, z2, '-', lw=0.5, color='fg', zorder=2)
-        ax.plot(x2.T, z2.T, '-', lw=0.5, color='fg', zorder=1)
+        ax.plot(x2, z2, '-', lw=0.5, color='c_fg', zorder=2)
+        ax.plot(x2.T, z2.T, '-', lw=0.5, color='c_fg', zorder=1)
         ax.set_xlim(xmin-100, xmax+100)
         ax.set_ylim(z_bot, numpy.max(topo))
         ax.set_aspect('equal', 'datalim')
@@ -69,5 +69,5 @@ physical_grid(ax)
 ax = figure.axes(1, 2, 1, 2)
 topological_grid(ax)
 
-figure.figure.savefig("gridmapping.png")
+figure.figure.savefig("gridmapping.pdf")
 #pyplot.show()

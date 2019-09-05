@@ -1,0 +1,120 @@
+\documentclass[tikz, border=2pt]{standalone}
+\usepackage[none]{hyphenat}
+\usepackage{helvet}
+\renewcommand{\familydefault}{phv}
+
+\begin{document}
+\pagestyle{empty}
+
+\input{palettes/palette_general}
+\input{palettes/palette_usgs}
+
+\usetikzlibrary{positioning,arrows,shapes,calc,shadows.blur}
+
+\tikzstyle{diagram} = [node distance=2.5em]
+
+\newenvironment{attributes}{%
+  \hspace*{-2.0em}\begin{minipage}{1.7in}\renewcommand{\labelitemi}{}\begin{itemize}\setlength{\itemsep}{-2pt}\setlength{\labelwidth}{0pt}\setlength{\labelsep}{0pt}\setlength{\itemindent}{0pt}}{%
+\end{itemize}\end{minipage}}
+
+\tikzstyle{default} = [rectangle,
+  %minimum text width=10em,
+  minimum height=2.0em,
+  text centered,
+  line width=0pt,
+  blur shadow={shadow blur steps=4},
+]
+
+\tikzstyle{root} = [
+default,
+font={\bfseries},
+  top color=ltred!50!white,
+  bottom color=ltred,
+  anchor=west]
+
+\tikzstyle{attributes} = [
+  default,
+  rounded corners=0.5em,
+  top color=ltorange!50!white,
+  bottom color=ltorange,
+  anchor=west]
+
+\tikzstyle{dataset} = [
+  default,
+  top color=ltblue!50!white,
+  bottom color=ltblue,
+  anchor=west]
+  
+\tikzstyle{subset-right} = [
+  xshift=2em]
+
+\tikzstyle{legend} = [
+  anchor=center]
+
+\tikzstyle{arrowto} = [line width=2pt, draw=black]
+\tikzstyle{connector} = [line width=1pt, draw=black]
+
+\begin{tikzpicture}[diagram]
+
+  \node (model) [root] {Root (Model)};
+
+  % Model attributes
+  \node (model-attrs) [below=of model.center, attributes, subset-right, yshift=-4.0em] {%
+    \begin{attributes}
+    \item description (string)
+    \item domain\_dim (int)
+    \item num\_grids (int)
+    \item coordsys (string)
+    \item data\_names (string)
+    \item data\_units (string)
+    \end{attributes}
+  };
+  \draw[arrowto] (model.south) |- (model-attrs.west);
+
+  % Topography
+  \node (topography) [below=of model-attrs.west, dataset, yshift=-4em] {topography [$N_x \times N_y$]};
+  \node (topography-attrs) [right=of topography.east, attributes] {%
+    \begin{attributes}
+    \item resolution (float)
+    \end{attributes}
+  };
+  \draw[arrowto] (model.south) |- (topography.west);
+  \draw[connector] (topography.east) -- (topography-attrs.west);
+
+  % Grid 0
+  \node (grid-0) [below=of topography.west, dataset, yshift=-2.0em] {grid-0 [$N_x \times N_y \times N_{z0} \times N_v$]};
+  \node (grid-0-attrs) [right=of grid-0.east, attributes] {%
+    \begin{attributes}
+    \item horiz\_resolution (float)
+    \item vert\_resolution (float)
+    \item top\_elevation (float)
+    \end{attributes}
+  };
+  \draw[arrowto] (model.south) |- (grid-0.west);
+  \draw[connector] (grid-0.east) -- (grid-0-attrs.west);
+
+  \node [below=of grid-0.west, yshift=0.5em] {\vdots};
+  
+
+  % Grid n
+  \node (grid-n) [below=of grid-0.west, dataset, yshift=-4.0em] {grid-n [$N_x \times N_y \times N_{zn} \times N_v$]};
+  \node (grid-n-attrs) [right=of grid-n.east, attributes] {%
+    \begin{attributes}
+    \item horiz\_resolution (float)
+    \item vert\_resolution (float)
+    \item top\_elevation (float)
+    \end{attributes}
+  };
+  \draw[arrowto] (model.south) |- (grid-n.west);
+  \draw[connector] (grid-n.east) -- (grid-n-attrs.west);
+
+
+  % Legend
+  \matrix [draw,below left, row sep=0.8em] at (current bounding box.north east) {
+    \node [dataset, legend] {Dataset (float array)}; \\
+    \node [attributes, legend] {Attributes}; \\
+  };
+  
+\end{tikzpicture}
+
+\end{document}
