@@ -1,0 +1,269 @@
+#!/usr/bin/env python
+"""Create a 3-D rasterized georeferenced model composed of uniform grids.
+"""
+
+import os
+import logging
+import argparse
+import configparser
+import math
+
+import h5py
+import numpy
+
+def string_to_list(list_string):
+    """Convert list as string into a list of objects.
+
+    Args:
+        list_string (str):
+            List as string, e.g., "[a, b, c]"
+
+    Returns:
+        List of objects, e.g., ["a", "b", "c"]
+    """
+    values = [value.strip() for value in list_string[1:-1].split(",")]
+    return values
+
+
+class Block(object):
+    """Block of regular logically gridded points.
+    """
+
+    def __init__(self, name, config):
+        """Constructor.
+
+        Args:
+            name (str)
+                Name of block.
+            config (dict)
+                Block parameters as dictionary.
+                Keys:
+                    res_horiz: horizontal resolution (m)
+                    res_vert: vertical resolution (m)
+                    z_top: Elevation of top of block (m)
+                    z_bot: Elevation of bottom of block (m)
+                    z_top_offset: Vertical offset of top set of points below top of block (m)
+        """
+        self.name = name
+        self.res_horiz = config["res_horiz"]
+        self.res_vert = config["res_vert"]
+        self.z_top = config["z_top"]
+        self.z_bot = config["z_bot"]
+        self.z_top_offset = config["z_top_offset"]
+        return
+
+    def get_dims(self, domain):
+        """Get number of points in block along each dimension.
+
+        Args:
+            domain (Model)
+                Model domain.
+        
+        Returns:
+            Array of points in block (Nx*Ny*Nz, 3)
+        """
+        num_x = 1 + int(domain.dim_x / self.res_horiz)
+        num_y = 1 + int(domain.dim_y / self.res_horiz)
+        num_z = 1 + int((self.z_top-self.z_bot) / self.res_vert)
+        return (num_x, num_y, num_z)
+    
+    def generate_points(self, domain):
+        """Generate grid of points in block.
+
+        Args:
+            domain (Model)
+                Model domain.
+
+        Returns:
+            3D array (Nx*Ny*Nz,3) of point locations in block.
+        """
+        (num_x, num_y, num_z) = self.get_dims(domain)
+        logger = logging.getLogger(__name__)
+        logger.info("Block '{}' contains {} points ({} x {} x {}).".format(
+            name, num_x*num_y*num_z, num_x, num_y, num_z,))
+
+        x1 = numpy.linspace(0.0, self.res_horiz*(num_x-1), self.num_x)
+        y1 = numpy.linspace(0.0, self.res_horiz*(num_y-1), self.num_y)
+        z1 = numpy.linspace(0.0, self.res_vert*(num_z-1), self.num_z)
+        x,y,z = numpy.meshgrid(x1, y1, z1)
+
+        domain_top = 0.0
+        domain_bot = -domain.dim_z
+        if domain.topography is not None:
+            topoG = domain.topography
+            z[:,:,:] = domain_bot + (topoG-domain_bot)/(domain_top-domain_bot)*(self.z_top - z[:,:,:] - domain_bot)
+
+            # Move top points down
+            z[:,:,0] += self.z_top_offset
+        else:
+            z = self.z_top - z
+        
+        xyzG = numpy.vstack((x.ravel(), y.ravel(), z.ravel(),)).transpose()
+        xyzP = numpy.zeros(xyzG.shape)
+        azRad = y_azimuth * math.pi / 180.0
+        xyzP[:,0] = origin_x + xyzG[:,0]*math.cos(azRad) + xyzG[:,1]*math.sin(azRad)
+        xyzP[:,1] = origin_y - xyzG[:,0]*math.sin(azRad) + xyzG[:,1]*math.cos(azRad)
+        xyzP[:,2] = xyzG[:,2]
+        return xyzP
+
+
+class Model(object):
+    """
+    """
+    
+    def __init__(self):
+        """Constructor.
+        """
+        self.topography = None
+        self.blocks = []
+        return
+
+    def initialize(self, config):
+        """Setup model, creating blocks.
+
+        Args:
+            config (dict)
+                Model configuration.
+        """
+        self.description = config["geomodelgrids"]["description"]
+        self.version = config["geomodelgrids"]["version"]
+        self.projection_wkt = config["coordsys"]["projection"]
+        self.origin_x = config["coordsys"]["origin_x"]
+        self.origin_y = config["coordsys"]["origin_y"]
+        self.y_azimuth = config["coordsys"]["y_azimuth"]
+        self.data_values = config["data"]["values"]
+        self.data_units = config["data"]["units"]
+        self.dim_x = config["domain"]["dim_x"]
+        self.dim_y = config["domain"]["dim_y"]
+        self.dim_z = config["domain"]["dim_z"]
+        
+        self.config = config
+
+        for name in string_to_list(config["domain"]["blocks"]):
+            block = Block(name, config["name"])
+            self.blocks.append(block)
+        return
+    
+    def import_topography(self):
+        if "topography" in self.config["domain"]:
+            filename = os.path.join(self.data_dir, self.config["domain"]["topography"])
+            self.topography = numpy.loadtxt(filename)[:,2]
+
+        # Convert to meters
+        if "topography_units" in config["domain"]:
+            z_units = config["domain"]["topography_units"]
+            if z_units in ["m", "meter", "meters"]:
+                pass
+            elif z_units in ["ft", "feet"]:
+                self.topography *= 0.3048
+            else:
+                raise ValueError("Unknown units '%s' for topography z coordinate." % z_units)
+        return
+
+    def import_blocks(self, values):
+        return
+
+    @abstractmethod
+    def query_values(self, points):
+        pass
+    
+
+class EarthVisionModel(Model):
+
+    def query_values(self, points):
+        return
+
+
+class App(object):
+    """Application for generating a rasterized model.
+    """
+
+    def __init__(self):
+        """Constructor."""
+        self.config = None
+        return
+
+    def main(self, **kwargs):
+        """Main entry point.
+        """
+        args = argparse.Namespace(**kwargs) if kwargs else self._parse_command_line()
+        logLevel = logging.DEBUG if args.debug else logging.INFO
+        logging.basicConfig(level=logLevel, filename="generate.log")
+        if args.show_progress:
+            self.show_progress = True
+        config = self.initialize(args.config)
+        model = Model(config)
+
+        if args.import_topography:
+            model.import_topography(config)
+
+        for block in model.blocks:
+            if args.generate_blocks:
+                points = block.generate_points()
+
+            if args.query_values:
+                values = model.query_values(points)
+
+            if args.import_blocks:
+                model.import_blocks(values)
+        return
+
+    def initialize(self, config_filenames):
+        """Set parameters from config file and DEFAULTS.
+
+        :type config_filename: str
+        :param config_filename: Name of configuration (INI) file with parameters.
+        """
+        config = configparser.ConfigParser()
+        for filename in config_filenames.split(","):
+            if not os.path.isfile(filename):
+                raise IOError("Could not find configuration file '{}'.".format(filename))
+            if self.show_progress:
+                print("Fetching parameters from {}...".format(filename))
+            config.read(filename)
+
+        self.config = {s: dict(config.items(s)) for s in config.sections()}
+        return
+    
+    def show_parameters(self):
+        """Write parameters to stdout.
+        """
+        config = configparser.ConfigParser()
+        config.read_dict(self.config)
+        config.write(sys.stdout)
+        return
+
+    def _parse_command_line(self):
+        """Parse command line arguments.
+        """
+        DESCRIPTION = (
+            "Application for generating HDF5 file containing blocks of a grid-based model."
+            )
+        
+        parser = argparse.ArgumentParser(description=DESCRIPTION)
+        parser.add_argument("--config", action="store", dest="config", required=True)
+        parser.add_argument("--show-parameters", action="store_true", dest="show_parameters")
+        parser.add_argument("--import-topography", action="store_true", dest="import_topography")
+        parser.add_argument("--generate-blocks", action="store_true", dest="generate_blocks")
+        parser.add_argument("--query-properties", action="store_true", dest="query_properties")
+        parser.add_argument("--import-blocks", action="store_true", dest="import_blocks")
+
+        parser.add_argument("--all", action="store_true", dest="all")
+        parser.add_argument("--quiet", action="store_false", dest="show_progress", default=True)
+        parser.add_argument("--log", action="store", dest="log_filename", default="rasterize.log")
+        parser.add_argument("--debug", action="store_true", dest="debug")
+        args = parser.parse_args()
+
+        if args.debug:
+            logging.basicConfig(level=logging.DEBUG, filename=args.log_filename)
+        else:
+            logging.basicConfig(level=logging.INFO, filename=args.log_filename)
+        return args
+
+
+# ------------------------------------------------------------------------------
+if __name__ == "__main__":
+    App.main()
+
+
+# End of file
