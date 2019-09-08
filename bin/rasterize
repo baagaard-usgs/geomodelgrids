@@ -106,6 +106,100 @@ class Block(object):
         xyzP[:,2] = xyzG[:,2]
         return xyzP
 
+class Topography(object):
+    """Surface topography.
+    """
+
+    def __init__(self, config):
+        self.filename = None
+        self.elevation_units = None
+        self.elevation = None
+
+        if "topography" in config.sections():
+            self.filename = config["filename"]
+            self.elevation_units = config["elevation_units"]
+        return
+
+    def load(self):
+        if self.filename:
+            self.elevation = numpy.loadtxt(filename)[:,2]
+
+            # Convert to meters
+            if self.elevation_units in ["m", "meter", "meters"]:
+                pass
+            elif self.elevation_units in ["ft", "feet"]:
+                self.elevation *= 0.3048
+            else:
+                raise ValueError("Unknown units '{}' for topography elevation.".format(
+                    self.elevation_units))
+        return
+
+    def verify(self, domain):
+        return
+
+class HDF5Storage(object):
+    """HDF5 file for storing gridded model.
+    """
+
+    def __init__(self, filename):
+        """Constructor.
+
+        Args:
+            filename (str):
+                Name for HDF5 file
+        """
+        self.h5 = h5py.File(filename, "w")
+        return
+
+    def write_domain_attributes(self, domain):
+        """Write domain attributes to HDF5 file.
+
+        Args:
+            domain (Model):
+                Model domain.
+        """
+        DOMAIN_ATTRS = (
+            "description",
+            "version",
+            "projection",
+            "origin_x",
+            "origin_y",
+            "y_azimuth",
+            "data_values",
+            "data_units",
+            "dim_x",
+            "dim_y",
+            "dim_z",
+            )
+        attrs = self.h5.attrs
+        for attr in DOMAIN_ATTRS:
+            attrs[attr] = getattr(domain, attr)
+        return
+
+    def write_topography(self, topography):
+        TOPOGRAPHY_ATTRS = (
+            "ressolution_horiz",
+            "resolution_vert",
+            )
+        
+        topo_dataset = self.h5.create_dataset("topography", data=topography.elevation)
+        attrs = topo_dataset.attrs
+        for attr in DOMAIN_ATTRS:
+            attrs[attr] = getattr(topography, attr)
+        return
+
+    def write_block(self, block):
+        BLOCK_ATTRS = (
+            "ressolution_horiz",
+            "resolution_vert",
+            "z_top",
+            )
+            
+        block_dataset = self.h5.create_dataset(block.name, data=block.data)
+        attrs = block_dataset.attrs
+        for attr in BLOCK_ATTRS:
+            attrs[attr] = getattr(block, attr)
+        return
 
 class Model(object):
     """
@@ -144,23 +238,7 @@ class Model(object):
             self.blocks.append(block)
         return
     
-    def import_topography(self):
-        if "topography" in self.config["domain"]:
-            filename = os.path.join(self.data_dir, self.config["domain"]["topography"])
-            self.topography = numpy.loadtxt(filename)[:,2]
-
-        # Convert to meters
-        if "topography_units" in config["domain"]:
-            z_units = config["domain"]["topography_units"]
-            if z_units in ["m", "meter", "meters"]:
-                pass
-            elif z_units in ["ft", "feet"]:
-                self.topography *= 0.3048
-            else:
-                raise ValueError("Unknown units '%s' for topography z coordinate." % z_units)
-        return
-
-    def import_blocks(self, values):
+    def load_blocks(self, values):
         return
 
     @abstractmethod
