@@ -123,7 +123,8 @@ class Topography(object):
     def load(self):
         if self.filename:
             self.elevation = numpy.loadtxt(filename)[:,2]
-
+            # :TODO: Verify order of points and locations.
+            
             # Convert to meters
             if self.elevation_units in ["m", "meter", "meters"]:
                 pass
