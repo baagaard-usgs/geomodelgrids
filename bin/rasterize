@@ -27,6 +27,19 @@ def string_to_list(list_string):
     return values
 
 
+def length_units_to_scale(name):
+    value = 1.0
+    if name in ["m", "meter", "meters"]:
+        value = 1.0
+    elif name in ["km", "kilometer", "kilometers"]:
+        value = 1000.0
+    elif name in ["ft", "feet"]:
+        value = 0.3048
+    else:
+        raise ValueError("Unknown units '{}' for topography elevation.".format(elevation_units))
+    return value
+    
+
 class Block(object):
     """Block of regular logically gridded points.
     """
@@ -128,50 +141,17 @@ class Topography(object):
         self.resolution_vert = float(config["resolution_horiz"]) if self.enabled else None
         return
 
-    def read(self, config, domain):
-        """Read topography from external file.
+    def set_elevation(self, elev):
+        """Set topography values.
 
         Args:
-            config (dict)
-                Configuration for topography.
-                Keys:
-                    filename: Name of file with topography.
-                    elevation_units: Name of units for elevation in external file.
-            domain (Model)
-               Model with topography.
+            elev (numpy.array)
+                Numpy array [Nx*Ny] with elevation at points.
         """
         if not self.enabled:
             return
         
-        data = numpy.loadtxt(config["filename"])
-
-        # Convert to meters
-        elevation_units = config["elevation_units"]
-        if elevation_units in ["m", "meter", "meters"]:
-            pass
-        elif elevation_units in ["km", "kilometer", "kilometers"]:
-            data[:,2] *= 1000.0
-        elif elevation_units in ["ft", "feet"]:
-            data[:,2] *= 0.3048
-        else:
-            raise ValueError("Unknown units '{}' for topography elevation.".format(elevation_units))
-
-        self.verify(data, domain)
-        self.elevation = data[:,2]
-        return
-
-    def verify(self, data, domain):
-        """Verify topography data is consistent with model.
-
-        Args:
-            data (numpy.array)
-                Array of x, y, elevation, where x and y are in model coordinates.
-            domain (Model)
-               Model with topography.
-
-        Throws ValueError exception if data is not consistent with model.
-        """
-        # :TODO: Implement me.
+        self.elevation = elev
         return
 
     def generate_points(self, domain):
@@ -193,9 +173,10 @@ class Topography(object):
 
         x1 = numpy.linspace(0.0, dx*(num_x-1), num_x)
         y1 = numpy.linspace(0.0, dx*(num_y-1), num_y)
-        x,y = numpy.meshgrid(x1, y1)
+        z1 = [0]
+        x,y,z = numpy.meshgrid(x1, y1, z1)
 
-        xyzG = numpy.vstack((x.ravel(), y.ravel())).transpose()
+        xyzG = numpy.vstack((x.ravel(), y.ravel(), z.ravel())).transpose()
         xyzP = numpy.zeros(xyzG.shape)
         azRad = domain.y_azimuth * math.pi / 180.0
         xyzP[:,0] = domain.origin_x + xyzG[:,0]*math.cos(azRad) + xyzG[:,1]*math.sin(azRad)
@@ -375,13 +356,21 @@ class EarthVisionAPIModel(Model):
         return
 
     def query_topography(self, points):
-        #cmd = (
-        #    "ev_fp << EOF\n"
-        #    "{outname}<elev> = bakint({evgrd}, {inname}<x>, {inname}<y>);\n".format(
-        #        outname=outname, evgrd=self.ev_dem_2grd, inname=inname)
-        #    "EOF\n"
-        #    )
-        self.topography.read()
+        POINTS_FILENAME = "topography_points.dat"
+        ELEV_FILENAME = "topography_elev.dat"
+        
+        scale = length_units_to_scale(self.config["earthvision"]["topography_xy_units"])
+        numpy.savetxt(POINTS_FILENAME, points/scale, fmt="%16.8e")
+        
+        topo_2grd = self.config["earthvision"]["topography_2grd"]
+        cmd = "{filename_out}<elev> = bakint({ev2grd}, {filename_in}<x>, {filename_in}<y>);".format(
+            filename_in=POINTS_FILENAME, filename_out=ELEV_FILENAME, ev2grd=topo_2grd)
+        print(cmd)
+        #subprocess.run(["ev_fp"], input=cmd)
+
+        elev = numpy.loadtxt(ELEV_FILENAME)
+        elev /= length_units_to_scale(self.config["earthvision"]["topography_units"])
+        self.topography.set_elevation(elev)
         return
 
 
@@ -415,10 +404,10 @@ class App(object):
             model.import_domain()
 
         if args.import_topography:
-            points = model.topography.generate_points(model)
-            print(points)
-            #model.query_topography(points)
-            #model.import_topography()
+            if model.topography.enabled:
+                points = model.topography.generate_points(model)
+                model.query_topography(points)
+                #model.import_topography()
 
         if args.import_blocks:
             if model.topography is None:
