@@ -3,10 +3,12 @@
 """
 
 import os
+import sys
 import logging
 import argparse
 import configparser
 import math
+from abc import ABC
 
 import h5py
 import numpy
@@ -38,18 +40,18 @@ class Block(object):
             config (dict)
                 Block parameters as dictionary.
                 Keys:
-                    res_horiz: horizontal resolution (m)
-                    res_vert: vertical resolution (m)
+                    resolution_horiz: horizontal resolution (m)
+                    resolution_vert: vertical resolution (m)
                     z_top: Elevation of top of block (m)
                     z_bot: Elevation of bottom of block (m)
                     z_top_offset: Vertical offset of top set of points below top of block (m)
         """
         self.name = name
-        self.res_horiz = config["res_horiz"]
-        self.res_vert = config["res_vert"]
-        self.z_top = config["z_top"]
-        self.z_bot = config["z_bot"]
-        self.z_top_offset = config["z_top_offset"]
+        self.res_horiz = float(config["resolution_horiz"])
+        self.res_vert = float(config["resolution_vert"])
+        self.z_top = float(config["z_top"])
+        self.z_bot = float(config["z_bot"])
+        self.z_top_offset = float(config["z_top_offset"])
         return
 
     def get_dims(self, domain):
@@ -116,11 +118,14 @@ class Topography(object):
         Args:
            config (dict)
              True if use of topography is enabled, False otherwise.
+             Keys:
+                 use_topography: Model uses topography
+                 resolution_horiz: Horizontal resolution in m
         """
         self.elevation = None
-        self.enabled = config["use_topography"]
-        self.resolution_horiz = config["resolution_horiz"] if self.enabled else None
-        self.resolution_vert = config["resolution_horiz"] if self.enabled else None
+        self.enabled = bool(config["use_topography"])
+        self.resolution_horiz = float(config["resolution_horiz"]) if self.enabled else None
+        self.resolution_vert = float(config["resolution_horiz"]) if self.enabled else None
         return
 
     def read(self, config, domain):
@@ -129,6 +134,9 @@ class Topography(object):
         Args:
             config (dict)
                 Configuration for topography.
+                Keys:
+                    filename: Name of file with topography.
+                    elevation_units: Name of units for elevation in external file.
             domain (Model)
                Model with topography.
         """
@@ -181,7 +189,7 @@ class Topography(object):
         num_y = 1 + int(domain.dim_y / dx)
         logger = logging.getLogger(__name__)
         logger.info("Topography contains {} points ({} x {}).".format(
-            name, num_x*num_y, num_x, num_y))
+            num_x*num_y, num_x, num_y))
 
         x1 = numpy.linspace(0.0, dx*(num_x-1), num_x)
         y1 = numpy.linspace(0.0, dx*(num_y-1), num_y)
@@ -189,9 +197,9 @@ class Topography(object):
 
         xyzG = numpy.vstack((x.ravel(), y.ravel())).transpose()
         xyzP = numpy.zeros(xyzG.shape)
-        azRad = y_azimuth * math.pi / 180.0
-        xyzP[:,0] = origin_x + xyzG[:,0]*math.cos(azRad) + xyzG[:,1]*math.sin(azRad)
-        xyzP[:,1] = origin_y - xyzG[:,0]*math.sin(azRad) + xyzG[:,1]*math.cos(azRad)
+        azRad = domain.y_azimuth * math.pi / 180.0
+        xyzP[:,0] = domain.origin_x + xyzG[:,0]*math.cos(azRad) + xyzG[:,1]*math.sin(azRad)
+        xyzP[:,1] = domain.origin_y - xyzG[:,0]*math.sin(azRad) + xyzG[:,1]*math.cos(azRad)
         return xyzP
     
 
@@ -209,7 +217,7 @@ class HDF5Storage(object):
         self.filename = filename
         return
 
-    def write_domain_attributes(self, domain):
+    def save_domain(self, domain):
         """Write domain attributes to HDF5 file.
 
         Args:
@@ -236,7 +244,7 @@ class HDF5Storage(object):
         h5.close()
         return
 
-    def write_topography(self, topography):
+    def save_topography(self, topography):
         """Write topography to HDF5 file.
 
         Args:
@@ -277,7 +285,7 @@ class HDF5Storage(object):
         h5.close()        
         return topography
     
-    def write_block(self, block, data):
+    def save_block(self, block, data):
         BLOCK_ATTRS = (
             "ressolution_horiz",
             "resolution_vert",
@@ -292,7 +300,7 @@ class HDF5Storage(object):
         return
 
 
-class Model(object):
+class Model(ABC):
     """Georeferenced model composed of logical grids, potentially warped by topography.
     """
     
@@ -314,27 +322,33 @@ class Model(object):
         """
         self.description = config["geomodelgrids"]["description"]
         self.version = config["geomodelgrids"]["version"]
-        self.projection_wkt = config["coordsys"]["projection"]
-        self.origin_x = config["coordsys"]["origin_x"]
-        self.origin_y = config["coordsys"]["origin_y"]
-        self.y_azimuth = config["coordsys"]["y_azimuth"]
+        self.projection = config["coordsys"]["projection"]
+        self.origin_x = float(config["coordsys"]["origin_x"])
+        self.origin_y = float(config["coordsys"]["origin_y"])
+        self.y_azimuth = float(config["coordsys"]["y_azimuth"])
         self.data_values = config["data"]["values"]
         self.data_units = config["data"]["units"]
-        self.dim_x = config["domain"]["dim_x"]
-        self.dim_y = config["domain"]["dim_y"]
-        self.dim_z = config["domain"]["dim_z"]
+        self.dim_x = float(config["domain"]["dim_x"])
+        self.dim_y = float(config["domain"]["dim_y"])
+        self.dim_z = float(config["domain"]["dim_z"])
         
         self.config = config
 
         self.topography = Topography(config["topography"])
         for name in string_to_list(config["domain"]["blocks"]):
-            block = Block(name, config["name"])
+            block = Block(name, config[name])
             self.blocks.append(block)
 
         self.storage = HDF5Storage(config["geomodelgrids"]["filename"])
         return
+
+    def import_domain(self):
+        """Write domain information to storage."""
+        self.storage.save_domain(self)
+        return
     
-    def import_topography(self, values):
+    def import_topography(self):
+        self.storage.save_topography(self.topography)
         return
 
     def load_topography(self):
@@ -343,14 +357,14 @@ class Model(object):
         return
     
     def import_block(self, block, values):
-        self.storage.write_block(block, values)
+        self.storage.save_block(block, values)
         return
 
-    @abstractmethod
+    #@abstractmethod
     def query_topography(self, points):
         pass
     
-    @abstractmethod
+    #@abstractmethod
     def query_values(self, points):
         pass
     
@@ -361,12 +375,13 @@ class EarthVisionAPIModel(Model):
         return
 
     def query_topography(self, points):
-        cmd = (
-            "ev_fp << EOF\n"
-            "{outname}<elev> = bakint({evgrd}, {inname}<x>, {inname}<y>);".format(
-                outname=outname, evgrd=self.ev_dem_2grd, inname=inname)
-            "EOF"
-            )
+        #cmd = (
+        #    "ev_fp << EOF\n"
+        #    "{outname}<elev> = bakint({evgrd}, {inname}<x>, {inname}<y>);\n".format(
+        #        outname=outname, evgrd=self.ev_dem_2grd, inname=inname)
+        #    "EOF\n"
+        #    )
+        self.topography.read()
         return
 
 
@@ -389,22 +404,31 @@ class App(object):
         if args.show_progress:
             self.show_progress = True
         config = self.initialize(args.config)
-        model = EarthVisionAPIModel(config)
+
+        if args.show_parameters:
+            self.show_parameters(config)
+            return
         
-        if args.import_topography_grid:
+        model = EarthVisionAPIModel(config)
+
+        if args.import_domain:
+            model.import_domain()
+
+        if args.import_topography:
             points = model.topography.generate_points(model)
-            values = model.query_topography(points)
-            model.import_topography(values)
-        else:
-            model.load_topography()
+            print(points)
+            #model.query_topography(points)
+            #model.import_topography()
 
         if args.import_blocks:
+            if model.topography is None:
+                model.load_topography()
             for block in model.blocks:
                 points = block.generate_points(model)
                 values = model.query_values(points)
                 model.import_block(block, values)
         return
-
+ 
     def initialize(self, config_filenames):
         """Set parameters from config file and DEFAULTS.
 
@@ -420,15 +444,15 @@ class App(object):
                 print("Fetching parameters from {}...".format(filename))
             config.read(filename)
 
-        self.config = {s: dict(config.items(s)) for s in config.sections()}
-        return
+        config = {s: dict(config.items(s)) for s in config.sections()}
+        return config
     
-    def show_parameters(self):
+    def show_parameters(self, config):
         """Write parameters to stdout.
         """
-        config = configparser.ConfigParser()
-        config.read_dict(self.config)
-        config.write(sys.stdout)
+        parser = configparser.ConfigParser()
+        parser.read_dict(config)
+        parser.write(sys.stdout)
         return
 
     def _parse_command_line(self):
@@ -441,6 +465,7 @@ class App(object):
         parser = argparse.ArgumentParser(description=DESCRIPTION)
         parser.add_argument("--config", action="store", dest="config", required=True)
         parser.add_argument("--show-parameters", action="store_true", dest="show_parameters")
+        parser.add_argument("--import-domain", action="store_true", dest="import_domain")
         parser.add_argument("--import-topography", action="store_true", dest="import_topography")
         parser.add_argument("--import-blocks", action="store_true", dest="import_blocks")
 
@@ -459,7 +484,7 @@ class App(object):
 
 # ------------------------------------------------------------------------------
 if __name__ == "__main__":
-    App.main()
+    App().main()
 
 
 # End of file
