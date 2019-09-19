@@ -36,7 +36,7 @@ def length_units_to_scale(name):
     elif name in ["ft", "feet"]:
         value = 0.3048
     else:
-        raise ValueError("Unknown units '{}' for topography elevation.".format(elevation_units))
+        raise ValueError("Unknown units '{}' for topography elevation.".format(name))
     return value
     
 
@@ -112,7 +112,7 @@ class Block(object):
             z[:,:,0] += self.z_top_offset
         else:
             z = self.z_top - z
-        
+
         xyzG = numpy.vstack((x.ravel(), y.ravel(), z.ravel(),)).transpose()
         xyzP = numpy.zeros(xyzG.shape)
         azRad = y_azimuth * math.pi / 180.0
@@ -138,7 +138,6 @@ class Topography(object):
         self.elevation = None
         self.enabled = bool(config["use_topography"])
         self.resolution_horiz = float(config["resolution_horiz"]) if self.enabled else None
-        self.resolution_vert = float(config["resolution_horiz"]) if self.enabled else None
         return
 
     def set_elevation(self, elev):
@@ -173,21 +172,42 @@ class Topography(object):
 
         x1 = numpy.linspace(0.0, dx*(num_x-1), num_x)
         y1 = numpy.linspace(0.0, dx*(num_y-1), num_y)
-        z1 = [0]
-        x,y,z = numpy.meshgrid(x1, y1, z1)
+        x,y = numpy.meshgrid(x1, y1)
+        z = numpy.zeros(x.shape)
 
-        xyzG = numpy.vstack((x.ravel(), y.ravel(), z.ravel())).transpose()
+        xyzG = numpy.stack((x, y, z), axis=2)
         xyzP = numpy.zeros(xyzG.shape)
         azRad = domain.y_azimuth * math.pi / 180.0
-        xyzP[:,0] = domain.origin_x + xyzG[:,0]*math.cos(azRad) + xyzG[:,1]*math.sin(azRad)
-        xyzP[:,1] = domain.origin_y - xyzG[:,0]*math.sin(azRad) + xyzG[:,1]*math.cos(azRad)
+        xyzP[:,:,0] = domain.origin_x + xyzG[:,:,0]*math.cos(azRad) + xyzG[:,:,1]*math.sin(azRad)
+        xyzP[:,:,1] = domain.origin_y - xyzG[:,:,0]*math.sin(azRad) + xyzG[:,:,1]*math.cos(azRad)
         return xyzP
     
 
 class HDF5Storage(object):
     """HDF5 file for storing gridded model.
     """
-
+    DOMAIN_ATTRS = (
+        "description",
+        "version",
+        "projection",
+        "origin_x",
+        "origin_y",
+        "y_azimuth",
+        "data_values",
+        "data_units",
+        "dim_x",
+        "dim_y",
+        "dim_z",
+    )
+    TOPOGRAPHY_ATTRS = (
+        "resolution_horiz",
+    )
+    BLOCK_ATTRS = (
+        "ressolution_horiz",
+        "resolution_vert",
+        "z_top",
+    )    
+    
     def __init__(self, filename):
         """Constructor.
 
@@ -205,22 +225,9 @@ class HDF5Storage(object):
             domain (Model):
                 Model domain.
         """
-        DOMAIN_ATTRS = (
-            "description",
-            "version",
-            "projection",
-            "origin_x",
-            "origin_y",
-            "y_azimuth",
-            "data_values",
-            "data_units",
-            "dim_x",
-            "dim_y",
-            "dim_z",
-            )
         h5 = h5py.File(self.filename, "w")
         attrs = h5.attrs
-        for attr in DOMAIN_ATTRS:
+        for attr in self.DOMAIN_ATTRS:
             attrs[attr] = getattr(domain, attr)
         h5.close()
         return
@@ -232,15 +239,10 @@ class HDF5Storage(object):
             topography (Topography)
                 Surface topography.
         """
-        TOPOGRAPHY_ATTRS = (
-            "ressolution_horiz",
-            "resolution_vert",
-            )
-        
         h5 = h5py.File(self.filename, "w")
         topo_dataset = h5.create_dataset("topography", data=topography.elevation)
         attrs = topo_dataset.attrs
-        for attr in DOMAIN_ATTRS:
+        for attr in self.TOPOGRAPHY_ATTRS:
             attrs[attr] = getattr(topography, attr)
         h5.close()
         return
@@ -252,30 +254,21 @@ class HDF5Storage(object):
             topography (Topography)
                 Surface topography.
         """
-        TOPOGRAPHY_ATTRS = (
-            "ressolution_horiz",
-            "resolution_vert",
-            )
         h5 = h5py.File(self.filename, "r")
         topography = Topography()
         topo_dataset = h5["topography"]
         topography.elevation = topo_dataset[:]
         attrs = topo_dataset.attrs
-        for attr in DOMAIN_ATTRS:
+        for attr in self.TOPOGRAPHY_ATTRS:
             setattr(topography, attr, attrs[attr])
         h5.close()        
         return topography
     
     def save_block(self, block, data):
-        BLOCK_ATTRS = (
-            "ressolution_horiz",
-            "resolution_vert",
-            "z_top",
-            )
         h5 = h5py.File(self.filename, "w")
         block_dataset = h5.create_dataset(block.name, data=data)
         attrs = block_dataset.attrs
-        for attr in BLOCK_ATTRS:
+        for attr in self.BLOCK_ATTRS:
             attrs[attr] = getattr(block, attr)
         h5.close()
         return
@@ -353,14 +346,22 @@ class Model(ABC):
 class EarthVisionAPIModel(Model):
 
     def query_values(self, points):
+        """
+        """
         return
 
     def query_topography(self, points):
-        POINTS_FILENAME = "topography_points.dat"
-        ELEV_FILENAME = "topography_elev.dat"
+        """Query EarthVision model for elevation of ground surface at points.
+
+        Args:
+            points (numpy.array [Nx,Ny,Nz])
+                Numpy array with coordinates of points.
+        """
+        POINTS_FILENAME = "topography_points.dat" # Must have .dat suffix.
+        ELEV_FILENAME = "topography_elev.dat" # Must have .data suffix.
         
-        scale = length_units_to_scale(self.config["earthvision"]["topography_xy_units"])
-        numpy.savetxt(POINTS_FILENAME, points/scale, fmt="%16.8e")
+        scale = length_units_to_scale(self.config["earthvision"]["xy_units"])
+        numpy.savetxt(POINTS_FILENAME, points.reshape((-1, points.shape[2]))/scale, fmt="%16.8e")
         
         topo_2grd = self.config["earthvision"]["topography_2grd"]
         cmd = "{filename_out}<elev> = bakint({ev2grd}, {filename_in}<x>, {filename_in}<y>);".format(
@@ -368,8 +369,8 @@ class EarthVisionAPIModel(Model):
         print(cmd)
         #subprocess.run(["ev_fp"], input=cmd)
 
-        elev = numpy.loadtxt(ELEV_FILENAME)
-        elev /= length_units_to_scale(self.config["earthvision"]["topography_units"])
+        elev = numpy.loadtxt(ELEV_FILENAME).reshape(points.shape[0:2])
+        elev *= length_units_to_scale(self.config["earthvision"]["elev_units"])
         self.topography.set_elevation(elev)
         return
 
@@ -407,7 +408,7 @@ class App(object):
             if model.topography.enabled:
                 points = model.topography.generate_points(model)
                 model.query_topography(points)
-                #model.import_topography()
+                model.import_topography()
 
         if args.import_blocks:
             if model.topography is None:
