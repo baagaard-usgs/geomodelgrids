@@ -7,6 +7,7 @@ import sys
 import logging
 import argparse
 import configparser
+import subprocess
 import math
 from abc import ABC
 
@@ -348,7 +349,11 @@ class Model(ABC):
 
 class EarthVisionAPIModel(Model):
 
-    # ev_facedump CenCal_104_125.faces to get mapping from strngs to ids.
+    def initialize(config):
+        super().initialize(config)
+
+        # ev_facedump CenCal_104_125.faces to get mapping from strngs to ids.
+        return
     
     def query_values(self, points):
         """Query EarthVision model for values at points.
@@ -360,17 +365,38 @@ class EarthVisionAPIModel(Model):
         POINTS_FILENAME = "block_points.dat" # Must have .dat suffix.
         VALUES_FILENAME = "block_values.dat" # Must have .data suffix.
         
+        model_dir = os.path.expanduser(self.config["earthvision"]["model_dir"])
+        points_abspath = os.path.join(model_dir, POINTS_FILENAME)
+        values_abspath = os.path.join(model_dir, VALUES_FILENAME)
+
         scale = length_units_to_scale(self.config["earthvision"]["xy_units"])
-        numpy.savetxt(POINTS_FILENAME, points.reshape((-1, points.shape[2]))/scale, fmt="%16.8e")
+        numpy.savetxt(points_abspath, points.reshape((-1, points.shape[2]))/scale, fmt="%16.8e")
 
         ev_model = self.config["earthvision"]["geologic_model"]
-        cmd = "ev_label -m {ev_model} -o {filename_out} {filename_in} -suppress VolumeIndex".format(
+        cmd = "ev_label -m {ev_model} -o {filename_out} -suppress VolumeIndex {filename_in}".format(
             filename_in=POINTS_FILENAME, filename_out=VALUES_FILENAME, ev_model=ev_model)
-        print(cmd)
-        #subprocess.run(["ev_fp"], input=cmd)
+        subprocess.run(cmd.split(), cwd=model_dir, env=ev_env)
 
-        #values = numpy.loadtxt(ELEV_FILENAME).reshape(points.shape[0:2])
-        values = None
+        values = numpy.loadtxt(ELEV_FILENAME).reshape(points.shape[0:2])
+
+        converters = {
+            0: lambda s: float(s),
+            1: lambda s: float(s),
+            2: lambda s: float(s),
+            3: lambda s: s.strip('"'),
+            4: lambda s: s.strip('"'),
+        }
+        dtype = {
+            "names": ("x", "y", "z", "fault_block", "zone"),
+            "formats": ("f4", "f4", "f4", "S32", "S32")
+        }
+        data = numpy.loadtxt("ev_label_out.txt", delimiter="\t", dtype=dtype, converters=converters)
+        fault_block_id = numpy.array([self.faultblock_ids[name] for name in data["fault_block"]])
+        zone_id = numpy.array([self.zone_ids[name] for name in data["zone"]])
+        rule = [self.rules[(v["fault_block"],v["zone"])] for v in data]
+        z_depth = self.topography.elevation - data["z"]
+        
+        values = numpy.array([fn(depth) for fn,depth in zip(rule, z_depth)])
         return values
 
     def query_topography(self, points):
@@ -383,21 +409,25 @@ class EarthVisionAPIModel(Model):
         POINTS_FILENAME = "topography_points.dat" # Must have .dat suffix.
         ELEV_FILENAME = "topography_elev.dat" # Must have .data suffix.
         
+        model_dir = os.path.expanduser(self.config["earthvision"]["model_dir"])
+        points_abspath = os.path.join(model_dir, POINTS_FILENAME)
+        elev_abspath = os.path.join(model_dir, ELEV_FILENAME)
         scale = length_units_to_scale(self.config["earthvision"]["xy_units"])
-        #os.mkfifo(POINTS_FILENAME)
-        numpy.savetxt(POINTS_FILENAME, points.reshape((-1, points.shape[2]))/scale, fmt="%16.8e")
+
+        numpy.savetxt(points_abspath, points.reshape((-1, points.shape[2]))/scale, fmt="%16.8e")
         
         topo_2grd = self.config["earthvision"]["topography_2grd"]
-        model_dir = os,path.expanduser(self.config["earthvision"]["model_dir"])
         ev_env = self.config["earthvision.environment"]
-        cmd = "{filename_out}<elev> = bakint({ev2grd}, {filename_in}<x>, {filename_in}<y>);".format(
+        formula = "{filename_out}<elev> = bakint({ev2grd}, {filename_in}<x>, {filename_in}<y>);".format(
             filename_in=POINTS_FILENAME, filename_out=ELEV_FILENAME, ev2grd=topo_2grd)
-        #subprocess.run(["ev_fp"], input=cmd, cwd=model_dir, env=ev_env)
+        subprocess.run(["ev_fp"], input=formula.encode("utf-8"), cwd=model_dir, env=ev_env)
 
-        #os.mkfifo(ELEV_FILENAME)
-        elev = numpy.loadtxt(ELEV_FILENAME).reshape(points.shape[0:2])
+        elev = numpy.loadtxt(elev_abspath).reshape(points.shape[0:2])
         elev *= length_units_to_scale(self.config["earthvision"]["elev_units"])
         self.topography.set_elevation(elev)
+
+        os.remove(points_abspath)
+        os.remove(elev_abspath)        
         return
 
 
@@ -453,6 +483,7 @@ class App(object):
                 Name of configuration (INI) file with parameters.
         """
         config = configparser.ConfigParser()
+        config.optionxform = str
         for filename in config_filenames.split(","):
             if not os.path.isfile(filename):
                 raise IOError("Could not find configuration file '{}'.".format(filename))
