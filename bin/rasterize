@@ -30,6 +30,15 @@ def string_to_list(list_string):
 
 
 def length_units_to_scale(name):
+    """Get length scale associated with units.
+
+    Args:
+        name (str):
+           Units of length, e.g., "m", "meter", "km", "kilometer", "ft", "feet".
+
+    Returns:
+        Length of unit in meters.
+    """
     value = 1.0
     if name in ["m", "meter", "meters"]:
         value = 1.0
