@@ -352,7 +352,34 @@ class EarthVisionAPIModel(Model):
     def initialize(config):
         super().initialize(config)
 
-        # ev_facedump CenCal_104_125.faces to get mapping from strngs to ids.
+        self._get_faultblocks_zones()
+        return
+
+    def _get_faultblocks_zones(self):
+        FAULTBLOCK_HEADING = "Fault Block Names"
+        ZONE_HEADING = "Zone Names"
+        NAME_PATTERN = r"^\[([0-9]+)\]\s([\S]+.+)"
+
+        def _read_names(lines, start):
+            id_mapping = {}
+            for line in lines[start:]:
+            match = re.search(NAME_PATTERN, line.strip())
+            if match and len(match.groups()) == 2:
+                groups = match.groups()
+                id_mapping[groups[1]] = groups[0]
+            else:
+                break
+            return id_mapping
+
+        ev_faces = self.config["earthvision"]["geologic_model"].replace(".seq", ".face")
+        cmd = "ev_facedump {ev_faces}".format(ev_faces=ev_faces)
+        result = subprocess.run(cmd.split(), cwd=model_dir, env=ev_env)
+        lines = result.stdout
+        for iline, line in enumerate(lines):
+            if line.startswith(FAULTBLOCK_HEADING):
+                self.fault_block_ids = _read_names(lines, iline+1)
+            if line.startswith(ZONE_HEADING):
+                self.zone_ids = _read_names(lines, iline+1)
         return
     
     def query_values(self, points):
@@ -377,8 +404,6 @@ class EarthVisionAPIModel(Model):
             filename_in=POINTS_FILENAME, filename_out=VALUES_FILENAME, ev_model=ev_model)
         subprocess.run(cmd.split(), cwd=model_dir, env=ev_env)
 
-        values = numpy.loadtxt(ELEV_FILENAME).reshape(points.shape[0:2])
-
         converters = {
             0: lambda s: float(s),
             1: lambda s: float(s),
@@ -393,10 +418,9 @@ class EarthVisionAPIModel(Model):
         data = numpy.loadtxt("ev_label_out.txt", delimiter="\t", dtype=dtype, converters=converters)
         fault_block_id = numpy.array([self.faultblock_ids[name] for name in data["fault_block"]])
         zone_id = numpy.array([self.zone_ids[name] for name in data["zone"]])
-        rule = [self.rules[(v["fault_block"],v["zone"])] for v in data]
         z_depth = self.topography.elevation - data["z"]
         
-        values = numpy.array([fn(depth) for fn,depth in zip(rule, z_depth)])
+        values = numpy.array([self.rules[(fb_id,z_id)](pt['x'],pt['y'],pt_depth) for (pt, fb_id, z_id, pt_depth) in zip(data, fault_block_id, zone_id, z_depth)])
         return values
 
     def query_topography(self, points):
