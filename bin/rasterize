@@ -9,6 +9,7 @@ import argparse
 import configparser
 import subprocess
 import math
+import re
 from abc import ABC
 
 import h5py
@@ -349,7 +350,7 @@ class Model(ABC):
 
 class EarthVisionAPIModel(Model):
 
-    def initialize(config):
+    def initialize(self, config):
         super().initialize(config)
 
         self._get_faultblocks_zones()
@@ -363,21 +364,24 @@ class EarthVisionAPIModel(Model):
         def _read_names(lines, start):
             id_mapping = {}
             for line in lines[start:]:
-            match = re.search(NAME_PATTERN, line.strip())
-            if match and len(match.groups()) == 2:
-                groups = match.groups()
-                id_mapping[groups[1]] = groups[0]
-            else:
-                break
+                match = re.search(NAME_PATTERN, line.strip())
+                if match and len(match.groups()) == 2:
+                    groups = match.groups()
+                    id_mapping[groups[1]] = groups[0]
+                else:
+                    break
             return id_mapping
 
-        ev_faces = self.config["earthvision"]["geologic_model"].replace(".seq", ".face")
+        model_dir = os.path.expanduser(self.config["earthvision"]["model_dir"])
+        ev_env = self.config["earthvision.environment"]
+        ev_faces = self.config["earthvision"]["geologic_model"].replace(".seq", ".faces")
         cmd = "ev_facedump {ev_faces}".format(ev_faces=ev_faces)
-        result = subprocess.run(cmd.split(), cwd=model_dir, env=ev_env)
-        lines = result.stdout
+        result = subprocess.run(cmd.split(), cwd=model_dir, env=ev_env, stdout=subprocess.PIPE)
+        lines = result.stdout.decode().split("\n")
+        import pdb; pdb.set_trace()
         for iline, line in enumerate(lines):
             if line.startswith(FAULTBLOCK_HEADING):
-                self.fault_block_ids = _read_names(lines, iline+1)
+                self.faultblock_ids = _read_names(lines, iline+1)
             if line.startswith(ZONE_HEADING):
                 self.zone_ids = _read_names(lines, iline+1)
         return
@@ -416,11 +420,11 @@ class EarthVisionAPIModel(Model):
             "formats": ("f4", "f4", "f4", "S32", "S32")
         }
         data = numpy.loadtxt("ev_label_out.txt", delimiter="\t", dtype=dtype, converters=converters)
-        fault_block_id = numpy.array([self.faultblock_ids[name] for name in data["fault_block"]])
+        faultblock_id = numpy.array([self.faultblock_ids[name] for name in data["fault_block"]])
         zone_id = numpy.array([self.zone_ids[name] for name in data["zone"]])
         z_depth = self.topography.elevation - data["z"]
         
-        values = numpy.array([self.rules[(fb_id,z_id)](pt['x'],pt['y'],pt_depth) for (pt, fb_id, z_id, pt_depth) in zip(data, fault_block_id, zone_id, z_depth)])
+        values = numpy.array([self.rules[(fb_id,z_id)](pt['x'],pt['y'],pt_depth) for (pt, fb_id, z_id, pt_depth) in zip(data, faultblock_id, zone_id, z_depth)])
         return values
 
     def query_topography(self, points):
