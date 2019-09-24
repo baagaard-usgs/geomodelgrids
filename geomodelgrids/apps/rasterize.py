@@ -6,9 +6,8 @@ import argparse
 import logging
 import configparser
 
-import config
-
-import earthvision
+from .. import config
+from .. import earthvision
 
 class App():
     """Application for generating a rasterized model.
@@ -48,7 +47,7 @@ class App():
         logging.basicConfig(level=log_level, filename="rasterize.log")
         if args.show_progress:
             self.show_progress = True
-        self.initialize(args.config)
+        self.initialize(args.config.split(","))
 
         if args.show_parameters:
             self.show_parameters()
@@ -80,7 +79,6 @@ class App():
             config_filename (str)
                 Name of configuration (INI) file(s) with parameters.
         """
-
         self.config = config.get_config(config_filenames)
 
     def show_parameters(self):

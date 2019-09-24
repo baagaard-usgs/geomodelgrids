@@ -9,7 +9,7 @@ setup(
     url="https://github.com/baagaard-usgs/geomodelgrids",
     version="1.0.0",
     packages=[
-        "gmprocess",
-    },
+        "geomodelgrids",
+    ],
     scripts=glob.glob("bin/*"),
 )

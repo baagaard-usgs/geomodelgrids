@@ -6,11 +6,11 @@ import re
 
 import numpy
 
-import geomodelgrids.model
-import geomodelgrids.units
-import api
+from .. import model
+from .. import units
+from . import api
 
-class RulesModel(geomodelgrids.model.Model):
+class RulesModel(model.Model):
     """EarthVision model constructed from rules applies to fault blocks and zones.
     """
 
