@@ -3,6 +3,7 @@
 
 import os
 import re
+from importlib import import_module
 
 import numpy
 
@@ -14,12 +15,13 @@ class RulesModel(model.Model):
     """EarthVision model constructed from rules applies to fault blocks and zones.
     """
 
-    def __init__(self):
+    def __init__(self, config):
         """Constructor."""
         self.model_dir = None
         self.api = None
         self.faultblock_ids = {}
         self.zone_ids = {}
+        super().__init__(config)
     
     def initialize(self, config):
         """Initialize model.
@@ -57,7 +59,10 @@ class RulesModel(model.Model):
         zone_id = numpy.array([self.zone_ids[name] for name in data["zone"]])
         z_depth = self.topography.elevation - data["z"]
 
-        values = numpy.array([self.rules[(fb_id, z_id)](pt['x'], pt['y'], pt_depth) for (pt, fb_id, z_id, pt_depth) in zip(data, faultblock_id, zone_id, z_depth)])
+        fn_path = self.config.get("earthvision", "rules_fn")
+        rules_fn = getattr(import_module(".".join(fn_path[:-1])), fn_path[-1])
+        
+        values = numpy.array([rules_fn(fb_id, z_id)(pt['x'], pt['y'], pt_depth) for (pt, fb_id, z_id, pt_depth) in zip(data, faultblock_id, zone_id, z_depth)])
         return values
 
     def query_topography(self, points):
