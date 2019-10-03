@@ -3,6 +3,7 @@
 
 import os
 import re
+import sys
 from importlib import import_module
 
 import numpy
@@ -37,12 +38,14 @@ class RulesModel(model.Model):
         self.api = api.EarthVisionAPI(self.model_dir, ev_env)
         self._get_faultblocks_zones()
 
-    def query_values(self, points):
+    def query_values(self, points, topography_block):
         """Query EarthVision model for values at points.
 
         Args:
             points (numpy.array [Nx,Ny,Nz])
                 Numpy array with coordinates of points in model coordinates.
+            topography_block (numpy.array [Nx,Ny])
+                Numpy array with elevation of topography at block points.
         """
         POINTS_FILENAME = "block_points.dat" # Must have .dat suffix.
         VALUES_FILENAME = "block_values.dat" # Must have .data suffix.
@@ -50,19 +53,28 @@ class RulesModel(model.Model):
         points_abspath = os.path.join(self.model_dir, POINTS_FILENAME)
 
         scale = units.length_scale(self.config["earthvision"]["xy_units"])
-        numpy.savetxt(points_abspath, points.reshape((-1, points.shape[2]))/scale, fmt="%16.8e")
+        numpy.savetxt(points_abspath, points.reshape((-1, points.shape[3]))/scale, fmt="%16.8e")
 
         ev_model = self.config["earthvision"]["geologic_model"]
         data = self.api.ev_label(VALUES_FILENAME, POINTS_FILENAME, ev_model)
 
         faultblock_id = numpy.array([self.faultblock_ids[name] for name in data["fault_block"]])
         zone_id = numpy.array([self.zone_ids[name] for name in data["zone"]])
-        z_depth = self.topography.elevation - data["z"]
+        depth = numpy.zeros(points.shape[:-1])
+        for iz in range(depth.shape[-1]):
+            depth[:, :, iz] = topography_block - points[:, :, iz, 2]
 
-        fn_path = self.config.get("earthvision", "rules_fn")
+        fn_path = self.config["earthvision"]["rules_fn"].split(".")
+        if "rules_pythonpath" in self.config["earthvision"]:
+            path = self.config["earthvision"]["rules_pythonpath"]
+            if not path in sys.path:
+                sys.path.append(path)
         rules_fn = getattr(import_module(".".join(fn_path[:-1])), fn_path[-1])
         
-        values = numpy.array([rules_fn(fb_id, z_id)(pt['x'], pt['y'], pt_depth) for (pt, fb_id, z_id, pt_depth) in zip(data, faultblock_id, zone_id, z_depth)])
+        import pdb; pdb.set_trace()
+        values = numpy.array([rules_fn(pt["fault_block"], pt["zone"])(pt['x'], pt['y'], pt_depth) for (pt, pt_depth) in zip(data, depth.ravel())])
+        # :TODO: Append fault block and volume id
+        values = values.reshape((points.shape[0], points.shape[1], points.shape[2], -1))
         return values
 
     def query_topography(self, points):

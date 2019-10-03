@@ -31,8 +31,8 @@ class Block():
                     z_top_offset: Vertical offset of top set of points below top of block (m)
         """
         self.name = name
-        self.res_horiz = float(config["resolution_horiz"])
-        self.res_vert = float(config["resolution_vert"])
+        self.resolution_horiz = float(config["resolution_horiz"])
+        self.resolution_vert = float(config["resolution_vert"])
         self.z_top = float(config["z_top"])
         self.z_bot = float(config["z_bot"])
         self.z_top_offset = float(config["z_top_offset"])
@@ -47,9 +47,9 @@ class Block():
         Returns:
             Array of points in block (Nx*Ny*Nz, 3)
         """
-        num_x = 1 + int(domain.dim_x / self.res_horiz)
-        num_y = 1 + int(domain.dim_y / self.res_horiz)
-        num_z = 1 + int((self.z_top-self.z_bot) / self.res_vert)
+        num_x = 1 + int(domain.dim_x / self.resolution_horiz)
+        num_y = 1 + int(domain.dim_y / self.resolution_horiz)
+        num_z = 1 + int((self.z_top-self.z_bot) / self.resolution_vert)
         return (num_x, num_y, num_z)
 
     def generate_points(self, domain):
@@ -67,15 +67,15 @@ class Block():
         logger.info("Block '{}' contains {} points ({} x {} x {}).".format(
             self.name, num_x*num_y*num_z, num_x, num_y, num_z,))
 
-        x1 = numpy.linspace(0.0, self.res_horiz*(num_x-1), num_x)
-        y1 = numpy.linspace(0.0, self.res_horiz*(num_y-1), num_y)
-        z1 = numpy.linspace(0.0, self.res_vert*(num_z-1), num_z)
+        x1 = numpy.linspace(0.0, self.resolution_horiz*(num_x-1), num_x)
+        y1 = numpy.linspace(0.0, self.resolution_horiz*(num_y-1), num_y)
+        z1 = numpy.linspace(0.0, self.resolution_vert*(num_z-1), num_z)
         x, y, z = numpy.meshgrid(x1, y1, z1)
 
         domain_top = 0.0
         domain_bot = -domain.dim_z
         if domain.topography is not None:
-            topo_geo = domain.topography.elevation
+            topo_geo = self.get_block_elevation(domain.topography)
             for iz in range(z.shape[-1]):
                 z[:, :, iz] = domain_bot + (topo_geo-domain_bot)/(domain_top-domain_bot)*(self.z_top - z[:, :, iz] - domain_bot)
 
@@ -91,6 +91,24 @@ class Block():
         xyz_model[:, :, :, 1] = domain.origin_y - xyz_geo[:, :, :, 0]*math.sin(az_rad) + xyz_geo[:, :, :, 1]*math.cos(az_rad)
         xyz_model[:, :, :, 2] = xyz_geo[:, :, :, 2]
         return xyz_model
+
+
+    def get_block_elevation(self, topography):
+        """Get topography grid for block.
+        Args:
+            domain (Model)
+                Model domain.
+
+        Returns:
+            3D array (Nx*Ny*Nz,3) of point locations in block.
+        """
+        TOLERANCE = 0.01
+        num_skip = int(0.01 + self.resolution_horiz / topography.resolution_horiz)
+        if math.fabs(num_skip * topography.resolution_horiz - self.resolution_horiz) > TOLERANCE:
+            raise ValueError("Block resolution ({}) must be a integer multiple of the topography resolution ({})".format(
+                self.resolution_horiz, topography.resolution_horiz))
+
+        return topography.elevation[::num_skip, ::num_skip]
 
 
 class Topography():
@@ -227,10 +245,12 @@ class Model(ABC):
         """
 
     #@abstractmethod
-    def query_values(self, points):
+    def query_values(self, points, topography_block):
         """Query EarthVision model for values at points.
 
         Args:
+            topography_block (numpy.array [Nx,Ny])
+                Numpy array with elevation of topography at block points.
             points (numpy.array [Nx,Ny,Nz])
                 Numpy array with coordinates of points in model coordinates.
         """

@@ -1,7 +1,9 @@
 """API for running some specific EarthVision programs.
 """
 
+import os
 import subprocess
+import logging
 
 import numpy
 
@@ -24,6 +26,9 @@ class EarthVisionAPI():
             Name of faces file for model.
         """
         cmd = "ev_facedump {ev_faces}".format(ev_faces=filename_faces)
+        logger = logging.getLogger(__name__)
+        logger.info("Running EarthVision command '{}' in directory '{}' and environment {}.".format(
+            cmd, self.model_dir, self.env))
         result = subprocess.run(cmd.split(), cwd=self.model_dir, env=self.env, stdout=subprocess.PIPE)
         return result.stdout.decode().split("\n")
 
@@ -43,18 +48,21 @@ class EarthVisionAPI():
             0: float,
             1: float,
             2: float,
-            3: lambda s: s.strip('"'),
-            4: lambda s: s.strip('"'),
+            3: lambda s: s.decode("utf-8").strip('"'),
+            4: lambda s: s.decode("utf-8").strip('"'),
         }
         DTYPE = {
             "names": ("x", "y", "z", "fault_block", "zone"),
-            "formats": ("f4", "f4", "f4", "S32", "S32")
+            "formats": ("f4", "f4", "f4", "<U32", "<U32")
         }
 
         cmd = "ev_label -m {ev_model} -o {filename_out} -suppress VolumeIndex {filename_in}".format(
             filename_in=filename_points, filename_out=filename_values, ev_model=filename_model)
+        logger = logging.getLogger(__name__)
+        logger.info("Running EarthVision command '{}' in directory '{}' and environment {}.".format(
+            cmd, self.model_dir, self.env))
         subprocess.run(cmd.split(), cwd=self.model_dir, env=self.env)
-        values_abspath = os.path.join(model_dir, filename_values)
+        values_abspath = os.path.join(self.model_dir, filename_values)
         return numpy.loadtxt(values_abspath, delimiter="\t", dtype=DTYPE, converters=CONVERTERS)
 
 
@@ -67,6 +75,9 @@ class EarthVisionAPI():
             filename_out (str)
                 Name of output file in formula.
         """
+        logger = logging.getLogger(__name__)
+        logger.info("Running EarthVision command '{}' with input '{}' in directory '{}' and environment {}.".format(
+            cmd, formula, self.model_dir, self.env))
         result = subprocess.run(["ev_fp"], input=formula.encode("utf-8"), cwd=self.model_dir, env=self.env, stdout=subprocess.PIPE)
         return numpy.loadtxt(filename_out) if filename_out else result.stdout
 
