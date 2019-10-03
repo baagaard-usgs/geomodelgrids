@@ -1,5 +1,5 @@
 """Rules for defining elastic properties given x, y, depth as given in
-the electronic supplement of Aagaard et al. (2010).
+the electronic supplement of Aagaard et al. (2010) with some minor corrections.
 http://www.seismosoc.org/Publications/BSSA_html/bssa_100-6/2009379-esupp/velocitymodel.html
 
 Aagaard, B. T., R. W. Graves, A. Rodgers, T. M. Brocher,
@@ -8,6 +8,27 @@ R. C. Jachens (2010, December), Ground motion modeling of Hayward
 fault scenario earthquakes, Part II: Simulation of long-period and
 broadband ground motions, Bulletin of the Seismological Society of
 America, 100(6), 2945-2977, doi: 10.1785/0120090379.
+
+Corrections:
+
+  1. Fix typos in Vp equation for Franciscan for d >= 3.0 (0.0. -> 0.)
+
+  2. Correct coefficient (0.00064 -> 0.0064) for 4th order term in
+  generic Vs equation.
+
+  3. Correct coefficient (2.24 -> 2.48175) for constant term in
+  Quaternary-Tertiary - sedimentary rocks Vp equation for 0.5 < d <
+  10.0.
+
+  4. Correct coefficient (4.46 -> 4.64) for constant term in Teriary
+  sedimentary rocks (South Bay) and Cenozoic sedimentary rocks (Half
+  Moon Bay region) for Vp equation 4 < d < 7.0.
+
+  5. For density of Mafic and Great Valley ophiolite, use Vp0 if d <
+  10.0, otherwise use same equation with Vp0 replaced with Vp(d).
+
+  6. For density of Franciscan (Foothills, Napa-Sonoma, and Berkeley),
+  use density0 if d < 3.0, otherwise use generic density.
 
 Vp and Vs are in km/s. Density is in g/cm**3.
 
@@ -120,7 +141,7 @@ def mafic_great_valley_ophiolite(x, y, depth):
 
     vs = default_vs(depth, vp)
 
-    density = 0.227 + 1.6612*vp0 - 0.4721*vp0**2 + 0.0671*vp0**3 - 0.0043*vp0**4 + 0.0001*vp0**5
+    density = 0.227 + 1.6612*vp0 - 0.4721*vp0**2 + 0.0671*vp0**3 - 0.0043*vp0**4 + 0.0001*vp0**5 if depth < 10.0 else 0.227 + 1.6612*vp - 0.4721*vp**2 + 0.0671*vp**3 - 0.0043*vp**4 + 0.0001*vp**5
 
     qs = 13.0 if vs < 0.3 else default_qs(depth, vs)
     qp = default_qp(depth, qs)
@@ -154,7 +175,7 @@ def franciscan_foothills(x, y, depth):
 
     vs = default_vs(depth, vp)
 
-    density = density0
+    density = density0 if depth < 3.0 else default_density(depth, vp)
 
     qs = 13.0 if vs < 0.3 else default_qs(depth, vs)
     qp = default_qp(depth, qs)
@@ -188,7 +209,7 @@ def franciscan_napa_sonoma(x, y, depth):
 
     vs = default_vs(depth, vp)
 
-    density = density0
+    density = density0 if depth < 3.0 else default_density(depth, vp)
 
     qs = 13.0 if vs < 0.3 else default_qs(depth, vs)
     qp = default_qp(depth, qs)
@@ -222,7 +243,7 @@ def franciscan_berkeley(x, y, depth):
 
     vs = default_vs(depth, vp)
 
-    density = density0
+    density = density0 if depth < 3.0 else default_density(depth, vp)
 
     qs = 13.0 if vs < 0.3 else default_qs(depth, vs)
     qp = default_qp(depth, qs)
@@ -327,7 +348,7 @@ def quaternary_tertiary_sedimentary(x, y, depth):
     elif depth < 10.0:
         vp = 2.48175 + 0.6*depth
     else:
-        vp = 1500
+        vp = 2.48175+0.6*10.0
 
     if depth < 0.025:
         vs = 0.08 + 2.5*depth
