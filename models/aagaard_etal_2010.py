@@ -30,7 +30,9 @@ Corrections:
   6. For density of Franciscan (Foothills, Napa-Sonoma, and Berkeley),
   use density0 if d < 3.0, otherwise use generic density.
 
-Vp and Vs are in km/s. Density is in g/cm**3.
+The rules were originally developed with Vp and Vs in km/s and density
+in g/cm**3. Here all rules have been converted to SI base units with
+Vp and Vs in m/s and density in kg/m**3.
 
 """
 
@@ -43,12 +45,12 @@ def default_vs(depth, vp):
         depth (float)
             Depth of location in km.
         vp (float)
-            P wave speed in km/s.
+            P wave speed in m/s.
 
     Returns:
-        S wave speed in km/s.
+        S wave speed in m/s.
     """
-    return 0.7858 - 1.2344*vp + 0.7949*vp**2 - 0.1238*vp**3 + 0.0064*vp**4
+    return 785.8 - 1.2344*vp + 0.7949e-3*vp**2 - 0.1238e-6*vp**3 + 0.0064e-9*vp**4
 
 
 def default_density(depth, vp):
@@ -58,12 +60,12 @@ def default_density(depth, vp):
         depth (float)
             Depth of location in km.
         vp (float)
-            P wave speed in km/s.
+            P wave speed in m/s.
 
     Returns:
-        Density in g/cm**3.
+        Density in kg/m**3.
     """
-    return 1.74*vp**0.25
+    return 1.74e+3 * (vp*1.0e-3)**0.25
 
 
 def default_qs(depth, vs):
@@ -73,12 +75,12 @@ def default_qs(depth, vs):
         depth (float)
             Depth of location in km.
         vs (float)
-            S wave speed in km/s.
+            S wave speed in m/s.
 
     Returns:
         Quality factor for S wave.
     """
-    return -16.0 + 104.13*vs - 25.225*vs**2 + 8.2184*vs**3
+    return -16.0 + 104.13e-3*vs - 25.225e-6*vs**2 + 8.2184e-9*vs**3
 
 
 def default_qp(depth, qs):
@@ -108,15 +110,15 @@ def upper_mantle(x, y, depth):
             Depth of location in km.
 
     Returns:
-        Tuple of density (g/cm**3), Vp (km/s), Vs (km/s), Qp, and Qs
+        Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
     """
-    vp = 7.77 if depth < 20.0 else 7.77 + 0.001*(depth-20)
+    vp = 7.77e+3 if depth < 20.0e+3 else 7.77e+3 + 0.001*(depth-20.0e+3)
 
-    vs = 4.41 if depth < 20.0 else 4.41 + 0.0006*(depth-20)
+    vs = 4.41e+3 if depth < 20.03+3 else 4.41e+3 + 0.0006*(depth-20.0e+3)
 
-    density = 3.3
+    density = 3.3e+3
 
-    qs = 13.0 if vs < 0.3 else default_qs(depth, vs)
+    qs = 13.0 if vs < 300.0 else default_qs(depth, vs)
     qp = default_qp(depth, qs)
     return (density, vp, vs, qp, qs)
 
@@ -133,17 +135,18 @@ def mafic_great_valley_ophiolite(x, y, depth):
             Depth of location in km.
 
     Returns:
-        Tuple of density (g/cm**3), Vp (km/s), Vs (km/s), Qp, and Qs
+        Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
     """
-    vp0 = 5.9
+    vp0 = 5.9e+3
 
-    vp = vp0 if depth < 10.0 else vp0 + 0.056*(depth-10)
+    vp = vp0 if depth < 10.0e+3 else vp0 + 0.056*(depth-10e+3)
 
     vs = default_vs(depth, vp)
 
-    density = 0.227 + 1.6612*vp0 - 0.4721*vp0**2 + 0.0671*vp0**3 - 0.0043*vp0**4 + 0.0001*vp0**5 if depth < 10.0 else 0.227 + 1.6612*vp - 0.4721*vp**2 + 0.0671*vp**3 - 0.0043*vp**4 + 0.0001*vp**5
+    vd = vp0 if depth < 10.0e+3 else vp
+    density = 227.0 + 1.6612*vd - 0.4721e-3*vd**2 + 0.0671e-6*vd**3 - 0.0043e-9*vd**4 + 0.0001e-12*vd**5
 
-    qs = 13.0 if vs < 0.3 else default_qs(depth, vs)
+    qs = 13.0 if vs < 300.0 else default_qs(depth, vs)
     qp = default_qp(depth, qs)
     return (density, vp, vs, qp, qs)
 
@@ -160,24 +163,24 @@ def franciscan_foothills(x, y, depth):
             Depth of location in km.
 
     Returns:
-        Tuple of density (g/cm**3), Vp (km/s), Vs (km/s), Qp, and Qs
+        Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
     """
-    a = 0.13
-    vp0 = 5.4 + a
-    density0 = 1.74*vp0**0.25
+    a = 0.13e+3
+    vp0 = 5.4e+3 + a
+    density0 = 1.74e+3*(vp0*1.0e-3)**0.25
 
-    if depth < 1.0:
-        vp = a + 2.5 + 2.0*depth
-    elif depth < 3.0:
-        vp = a + 4.5 + 0.45*(depth-1.0)
+    if depth < 1.0e+3:
+        vp = a + 2.5e+3 + 2.0*depth
+    elif depth < 3.0e+3:
+        vp = a + 4.5e+3 + 0.45*(depth-1.0e+3)
     else:
-        vp = a + 5.4 + 0.0588*(depth-3.0)
+        vp = a + 5.4e+3 + 0.0588*(depth-3.0e+3)
 
     vs = default_vs(depth, vp)
 
-    density = density0 if depth < 3.0 else default_density(depth, vp)
+    density = density0 if depth < 3.0e+3 else default_density(depth, vp)
 
-    qs = 13.0 if vs < 0.3 else default_qs(depth, vs)
+    qs = 13.0 if vs < 300.0 else default_qs(depth, vs)
     qp = default_qp(depth, qs)
     return (density, vp, vs, qp, qs)
 
@@ -194,24 +197,24 @@ def franciscan_napa_sonoma(x, y, depth):
             Depth of location in km.
 
     Returns:
-        Tuple of density (g/cm**3), Vp (km/s), Vs (km/s), Qp, and Qs
+        Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
     """
-    a = 0.03
-    vp0 = 5.4 + a
-    density0 = 1.74*vp0**0.25
+    a = 0.03e+3
+    vp0 = 5.4e+3 + a
+    density0 = 1.74e+3 * (vp0*1.0e-3)**0.25
 
-    if depth < 1.0:
-        vp = a + 2.5 + 2.0*depth
-    elif depth < 3.0:
-        vp = a + 4.5 + 0.45*(depth-1.0)
+    if depth < 1.0e+3:
+        vp = a + 2.5e+3 + 2.0*depth
+    elif depth < 3.0e+3:
+        vp = a + 4.5e+3 + 0.45*(depth-1.0e+3)
     else:
-        vp = a + 5.4 + 0.0588*(depth-3.0)
+        vp = a + 5.4e+3 + 0.0588*(depth-3.0e+3)
 
     vs = default_vs(depth, vp)
 
-    density = density0 if depth < 3.0 else default_density(depth, vp)
+    density = density0 if depth < 3.0e+3 else default_density(depth, vp)
 
-    qs = 13.0 if vs < 0.3 else default_qs(depth, vs)
+    qs = 13.0 if vs < 300.0 else default_qs(depth, vs)
     qp = default_qp(depth, qs)
     return (density, vp, vs, qp, qs)
 
@@ -228,24 +231,24 @@ def franciscan_berkeley(x, y, depth):
             Depth of location in km.
 
     Returns:
-        Tuple of density (g/cm**3), Vp (km/s), Vs (km/s), Qp, and Qs
+        Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
     """
-    a = -0.03
-    vp0 = 5.4 + a
-    density0 = 1.74*vp0**0.25
+    a = -0.03e+3
+    vp0 = 5.4e+3 + a
+    density0 = 1.74e+3 * (vp0*1.0-3)**0.25
 
-    if depth < 1.0:
-        vp = a + 2.5 + 2.0*depth
-    elif depth < 3.0:
-        vp = a + 4.5 + 0.45*(depth-1.0)
+    if depth < 1.0e+3:
+        vp = a + 2.5e+3 + 2.0*depth
+    elif depth < 3.0e+3:
+        vp = a + 4.5e+3 + 0.45*(depth-1.0e+3)
     else:
-        vp = a + 5.4 + 0.0588*(depth-3.0)
+        vp = a + 5.4e+3 + 0.0588*(depth-3.0e+3)
 
     vs = default_vs(depth, vp)
 
-    density = density0 if depth < 3.0 else default_density(depth, vp)
+    density = density0 if depth < 3.0e+3 else default_density(depth, vp)
 
-    qs = 13.0 if vs < 0.3 else default_qs(depth, vs)
+    qs = 13.0 if vs < 300.0 else default_qs(depth, vs)
     qp = default_qp(depth, qs)
     return (density, vp, vs, qp, qs)
 
@@ -262,27 +265,27 @@ def salinian_granitic(x, y, depth):
             Depth of location in km.
 
     Returns:
-        Tuple of density (g/cm**3), Vp (km/s), Vs (km/s), Qp, and Qs
+        Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
     """
-    vp0 = 5.64
-    density0 = 0.06 + 1.6612*vp0 - 0.4721*vp0**2 + 0.0671*vp0**3 - 0.0043*vp0**4 + 0.0001*vp0**5
+    vp0 = 5.64e+3
 
-    if depth < 0.5:
-        vp = 1.5 + 5.0*depth
+    if depth < 0.5e+3:
+        vp = 1.5e+3 + 5.0*depth
     elif depth < 1.5:
-        vp = 4.0 + 1.3*(depth-0.5)
+        vp = 4.0e+3 + 1.3*(depth-0.5e+3)
     elif depth < 2.5:
-        vp = 5.3 + 0.3*(depth-1.5)
+        vp = 5.3e+3 + 0.3*(depth-1.5e+3)
     elif depth < 5.0:
-        vp = 5.6 + 0.08*(depth-2.5)
+        vp = 5.6e+3 + 0.08*(depth-2.5e+3)
     else:
-        vp = 5.8 + 0.06*(depth-5.0)
+        vp = 5.8e+3 + 0.06*(depth-5.0e+3)
 
     vs = default_vs(depth, vp)
 
-    density = density0 if depth < 3.0 else 0.06 + 1.6612*vp - 0.4721*vp**2 + 0.0671*vp**3 - 0.0043*vp**4 + 0.0001*vp**5
+    vd = vp0 if depth < 3.0e+3 else vp
+    density = 60.0 + 1.6612*vd - 0.4721e-3*vd**2 + 0.0671e-6*vd**3 - 0.0043e-9*vd**4 + 0.0001e-12*vd**5
 
-    qs = 13.0 if vs < 0.3 else default_qs(depth, vs)
+    qs = 13.0 if vs < 300.0 else default_qs(depth, vs)
     qp = default_qp(depth, qs)
     return (density, vp, vs, qp, qs)
 
@@ -299,30 +302,30 @@ def great_valley_sequence_sedimentary(x, y, depth):
             Depth of location in km.
 
     Returns:
-        Tuple of density (g/cm**3), Vp (km/s), Vs (km/s), Qp, and Qs
+        Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
     """
-    vp0 = 4.25
-    density0 = 1.74*vp0**0.25
+    vp0 = 4.25e+3
+    density0 = 1.74e+3 * (vp0*1.0e-3)**0.25
 
-    if depth < 3.6:
-        vp = 2.5 + 0.5833*depth
-    elif depth < 8.0:
-        vp = 4.6 + 0.18182*(depth-3.6)
-    elif depth < 11.0:
-        vp = 5.4 + 0.166*(depth-8.0)
+    if depth < 3.6e+3:
+        vp = 2.5e+3 + 0.5833*depth
+    elif depth < 8.0e+3:
+        vp = 4.6e+3 + 0.18182*(depth-3.6e+3)
+    elif depth < 11.0e+3:
+        vp = 5.4e+3 + 0.166*(depth-8.0e+3)
     else:
-        vp = 5.9 + 0.0666*(depth-11.0)
+        vp = 5.9e+3 + 0.0666*(depth-11.0e+3)
 
-    if depth < 1.0:
-        vs = 0.6 + 1.183*depth
-    elif depth < 5.0:
-        vs = 1.5 + 0.2836*depth
+    if depth < 1.0e+3:
+        vs = 0.6e+3 + 1.183*depth
+    elif depth < 5.0e+3:
+        vs = 1.5e+3 + 0.2836*depth
     else:
         vs = default_vs(depth, vp)
 
-    density = density0 if depth < 3.0 else default_density(depth, vp)
+    density = density0 if depth < 3.0e+3 else default_density(depth, vp)
 
-    qs = 13.0 if vs < 0.3 else default_qs(depth, vs)
+    qs = 13.0 if vs < 300.0 else default_qs(depth, vs)
     qp = default_qp(depth, qs)
     return (density, vp, vs, qp, qs)
 
@@ -339,27 +342,27 @@ def quaternary_tertiary_sedimentary(x, y, depth):
             Depth of location in km.
 
     Returns:
-        Tuple of density (g/cm**3), Vp (km/s), Vs (km/s), Qp, and Qs
+        Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
     """
-    if depth < 0.04:
-        vp = 0.7 + 42.968*depth - 575.8*depth**2 + 2931.6*depth**3 - 3977.6*depth**4
-    elif depth < 0.5:
-        vp = 1.5 + 3.735*depth - 3.543*depth**2
-    elif depth < 10.0:
-        vp = 2.48175 + 0.6*depth
+    if depth < 40.0:
+        vp = 700.0 + 42.968*depth - 575.8e-3*depth**2 + 2931.6e-6*depth**3 - 3977.6e-9*depth**4
+    elif depth < 500.0:
+        vp = 1.5e+3 + 3.735*depth - 3.543e-3*depth**2
+    elif depth < 10.0e+3:
+        vp = 2.48175e+3 + 0.6*depth
     else:
-        vp = 2.48175+0.6*10.0
+        vp = 2.48175e+3 + 0.6*10.0e+3
 
-    if depth < 0.025:
-        vs = 0.08 + 2.5*depth
-    elif depth < 0.05:
-        vs = (vp-1.36) / 1.16
+    if depth < 25.0:
+        vs = 80.0 + 2.5*depth
+    elif depth < 50.0:
+        vs = (vp-1360.0) / 1.16
     else:
         vs = default_vs(depth, vp)
 
     density = default_density(depth, vp)
 
-    qs = 13.0 if vs < 0.3 else default_qs(depth, vs)
+    qs = 13.0 if vs < 300.0 else default_qs(depth, vs)
     qp = default_qp(depth, qs)
     return (density, vp, vs, qp, qs)
 
@@ -376,15 +379,15 @@ def tertiary_sedimentary_lahondabasin(x, y, depth):
             Depth of location in km.
 
     Returns:
-        Tuple of density (g/cm**3), Vp (km/s), Vs (km/s), Qp, and Qs
+        Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
     """
-    vp = 2.24 + 2.62*depth - 0.74432*depth**2 + 0.0707*depth**3 if depth < 3.0 else 5.32 + 0.027*(depth-3.0)
+    vp = 2.24e+3 + 2.62*depth - 0.74432e-3*depth**2 + 0.0707e-6*depth**3 if depth < 3.0e+3 else 5.32e+3 + 0.027*(depth-3.0e+3)
 
-    vs = 0.5 + 6.633*depth if depth < 0.05 else default_vs(depth, vp)
+    vs = 500.0 + 6.633*depth if depth < 50.0 else default_vs(depth, vp)
 
     density = default_density(depth, vp)
 
-    qs = 13.0 if vs < 0.3 else default_qs(depth, vs)
+    qs = 13.0 if vs < 300.0 else default_qs(depth, vs)
     qp = default_qp(depth, qs)
     return (density, vp, vs, qp, qs)
 
@@ -401,22 +404,22 @@ def tertiary_sedimentary_southbay(x, y, depth):
             Depth of location in km.
 
     Returns:
-        Tuple of density (g/cm**3), Vp (km/s), Vs (km/s), Qp, and Qs
+        Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
     """
-    if depth < 0.75:
-        vp = 1.80 + 1.2*depth
-    elif depth < 4.0:
-        vp = 2.70 + 0.597*(depth-0.75)
-    elif depth < 7.0:
-        vp = 4.64 + 0.417*(depth-4.0)
+    if depth < 750.0:
+        vp = 1.80e+3 + 1.2*depth
+    elif depth < 4.0e+3:
+        vp = 2.70e+3 + 0.597*(depth-750.0)
+    elif depth < 7.0e+3:
+        vp = 4.64e+3 + 0.417*(depth-4.0e+3)
     else:
-        vp = 5.891 + 0.06*(depth-7.0)
+        vp = 5.891e+3 + 0.06*(depth-7.0e+3)
 
-    vs = 0.5 + 0.4*depth if depth < 0.05 else default_vs(depth, vp)
+    vs = 500.0 + 0.4*depth if depth < 50.0 else default_vs(depth, vp)
 
     density = default_density(depth, vp)
 
-    qs = 13.0 if vs < 0.3 else default_qs(depth, vs)
+    qs = 13.0 if vs < 300.0 else default_qs(depth, vs)
     qp = default_qp(depth, qs)
     return (density, vp, vs, qp, qs)
 
@@ -433,22 +436,22 @@ def cenozoic_sedimentary_halfmoonbay(x, y, depth):
             Depth of location in km.
 
     Returns:
-        Tuple of density (g/cm**3), Vp (km/s), Vs (km/s), Qp, and Qs
+        Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
     """
-    if depth < 0.05:
-        vp = 0.7 + 31.4*depth
-    elif depth < 4.0:
-        vp = 2.24 + 0.6*(depth-0.05)
-    elif depth < 7.0:
-        vp = 4.64 + 0.417*(depth-4.0)
+    if depth < 50.0:
+        vp = 700.0 + 31.4*depth
+    elif depth < 4.0e+3:
+        vp = 2.24e+3 + 0.6*(depth-50.0)
+    elif depth < 7.0e+3:
+        vp = 4.64e+3 + 0.417*(depth-4.0e+3)
     else:
-        vp = 5.891 + 0.06*(depth-7.0)
+        vp = 5.891e+3 + 0.06*(depth-7.0e+3)
 
-    vs = 0.5 + 0.4*depth if depth < 0.05 else default_vs(depth, vp)
+    vs = 500.0 + 0.4*depth if depth < 50.0 else default_vs(depth, vp)
 
     density = default_density(depth, vp)
 
-    qs = 13.0 if vs < 0.3 else default_qs(depth, vs)
+    qs = 13.0 if vs < 300.0 else default_qs(depth, vs)
     qp = default_qp(depth, qs)
     return (density, vp, vs, qp, qs)
 
@@ -464,13 +467,13 @@ def seawater(x, y, depth):
             Depth of location in km.
 
     Returns:
-        Tuple of density (g/cm**3), Vp (km/s), Vs (km/s), Qp, and Qs
+        Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
     """
-    vp = 1.5
+    vp = 1500.0
 
     vs = UNKNOWN
 
-    density = 1.0
+    density = 1000.0
 
     qs = UNKNOWN
     qp = UNKNOWN
@@ -489,7 +492,7 @@ def outside_model(x, y, depth):
             Depth of location in km.
 
     Returns:
-        Tuple of density (g/cm**3), Vp (km/s), Vs (km/s), Qp, and Qs
+        Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
     """
     vp = UNKNOWN
     vs = UNKNOWN
