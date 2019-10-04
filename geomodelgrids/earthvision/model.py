@@ -58,8 +58,6 @@ class RulesModel(model.Model):
         ev_model = self.config["earthvision"]["geologic_model"]
         data = self.api.ev_label(VALUES_FILENAME, POINTS_FILENAME, ev_model)
 
-        faultblock_id = numpy.array([self.faultblock_ids[name] for name in data["fault_block"]])
-        zone_id = numpy.array([self.zone_ids[name] for name in data["zone"]])
         depth = numpy.zeros(points.shape[:-1])
         for iz in range(depth.shape[-1]):
             depth[:, :, iz] = topography_block - points[:, :, iz, 2]
@@ -71,9 +69,15 @@ class RulesModel(model.Model):
                 sys.path.append(path)
         rules_fn = getattr(import_module(".".join(fn_path[:-1])), fn_path[-1])
         
-        import pdb; pdb.set_trace()
         values = numpy.array([rules_fn(pt["fault_block"], pt["zone"])(pt['x'], pt['y'], pt_depth) for (pt, pt_depth) in zip(data, depth.ravel())])
-        # :TODO: Append fault block and volume id
+        del depth
+
+        # Append fault block and zone id to values
+        # :KLUDGE: Fault block and zone id are converted from int to float
+        faultblock_id = numpy.array([self.faultblock_ids[name] for name in data["fault_block"]])
+        zone_id = numpy.array([self.zone_ids[name] for name in data["zone"]])
+        values = numpy.hstack((values, faultblock_id.reshape((-1,1)), zone_id.reshape((-1,1))))
+        
         values = values.reshape((points.shape[0], points.shape[1], points.shape[2], -1))
         return values
 
@@ -116,7 +120,7 @@ class RulesModel(model.Model):
                 match = re.search(NAME_PATTERN, line.strip())
                 if match and len(match.groups()) == 2:
                     groups = match.groups()
-                    id_mapping[groups[1]] = groups[0]
+                    id_mapping[groups[1]] = int(groups[0])
                 else:
                     break
             return id_mapping

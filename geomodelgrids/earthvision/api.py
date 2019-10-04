@@ -77,7 +77,7 @@ class EarthVisionAPI():
         """
         logger = logging.getLogger(__name__)
         logger.info("Running EarthVision command '{}' with input '{}' in directory '{}' and environment {}.".format(
-            cmd, formula, self.model_dir, self.env))
+            "ev_fp", formula, self.model_dir, self.env))
         result = subprocess.run(["ev_fp"], input=formula.encode("utf-8"), cwd=self.model_dir, env=self.env, stdout=subprocess.PIPE)
         return numpy.loadtxt(filename_out) if filename_out else result.stdout
 

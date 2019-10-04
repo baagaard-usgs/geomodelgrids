@@ -24,7 +24,7 @@ class HDF5Storage():
         "resolution_horiz",
     )
     BLOCK_ATTRS = (
-        "ressolution_horiz",
+        "resolution_horiz",
         "resolution_vert",
         "z_top",
     )
