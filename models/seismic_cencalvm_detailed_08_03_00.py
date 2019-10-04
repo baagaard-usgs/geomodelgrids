@@ -60,5 +60,6 @@ def get_rules(fault_block, zone):
         "QT_South_Bay": aagaard_etal_2010.quaternary_tertiary_sedimentary,
         "<null>": aagaard_etal_2010.outside_model,
         "water": aagaard_etal_2010.seawater,
+        "": aagaard_etal_2010.outside_model,
     }
     return RULES[zone]
