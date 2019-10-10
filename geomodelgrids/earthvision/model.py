@@ -49,6 +49,7 @@ class RulesModel(model.Model):
         VALUES_FILENAME = "block_values.dat" # Must have .data suffix.
 
         points_abspath = os.path.join(self.model_dir, POINTS_FILENAME)
+        points = block.generate_points(self)
 
         scale = units.length_scale(self.config["earthvision"]["xy_units"])
         numpy.savetxt(points_abspath, points.reshape((-1, points.shape[3]))/scale, fmt="%16.8e")
@@ -56,13 +57,12 @@ class RulesModel(model.Model):
         ev_model = self.config["earthvision"]["geologic_model"]
         data = self.api.ev_label(VALUES_FILENAME, POINTS_FILENAME, ev_model)
 
-        points = block.generate_points(self)
-        block_elevation = block.get_block_elevation(self.topography)
+        topography_block = block.get_block_elevation(self.topography)
         depth = numpy.zeros(points.shape[:-1])
         for iz in range(depth.shape[-1]):
             depth[:, :, iz] = topography_block - points[:, :, iz, 2]
         depth[:, :, 0] -= block.z_top_offset
-        del block_elevation
+        del topography_block
 
         fn_path = self.config["earthvision"]["rules_fn"].split(".")
         if "rules_pythonpath" in self.config["earthvision"]:
