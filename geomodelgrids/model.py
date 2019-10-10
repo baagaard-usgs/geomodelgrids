@@ -245,14 +245,12 @@ class Model(ABC):
         """
 
     #@abstractmethod
-    def query_values(self, points, topography_block):
+    def query_values(self, block):
         """Query EarthVision model for values at points.
 
         Args:
-            topography_block (numpy.array [Nx,Ny])
-                Numpy array with elevation of topography at block points.
-            points (numpy.array [Nx,Ny,Nz])
-                Numpy array with coordinates of points in model coordinates.
+            block (Block)
+                Block information.
         """
 
 
