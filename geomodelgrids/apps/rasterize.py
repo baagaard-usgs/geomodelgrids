@@ -68,9 +68,7 @@ class App():
             if model.topography.elevation is None:
                 model.load_topography()
             for block in model.blocks:
-                points = block.generate_points(model)
-                block_elevation = block.get_block_elevation(model.topography)
-                values = model.query_values(points, block_elevation)
+                values = model.query_values(block)
                 model.import_block(block, values)
 
     def initialize(self, config_filenames):

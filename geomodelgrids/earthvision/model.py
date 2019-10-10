@@ -38,14 +38,12 @@ class RulesModel(model.Model):
         self.api = api.EarthVisionAPI(self.model_dir, ev_env)
         self._get_faultblocks_zones()
 
-    def query_values(self, points, topography_block):
+    def query_values(self, block):
         """Query EarthVision model for values at points.
 
         Args:
-            points (numpy.array [Nx,Ny,Nz])
-                Numpy array with coordinates of points in model coordinates.
-            topography_block (numpy.array [Nx,Ny])
-                Numpy array with elevation of topography at block points.
+            block (Block)
+                Block information.
         """
         POINTS_FILENAME = "block_points.dat" # Must have .dat suffix.
         VALUES_FILENAME = "block_values.dat" # Must have .data suffix.
@@ -58,9 +56,13 @@ class RulesModel(model.Model):
         ev_model = self.config["earthvision"]["geologic_model"]
         data = self.api.ev_label(VALUES_FILENAME, POINTS_FILENAME, ev_model)
 
+        points = block.generate_points(self)
+        block_elevation = block.get_block_elevation(self.topography)
         depth = numpy.zeros(points.shape[:-1])
         for iz in range(depth.shape[-1]):
             depth[:, :, iz] = topography_block - points[:, :, iz, 2]
+        depth[:, :, 0] -= block.z_top_offset
+        del block_elevation
 
         fn_path = self.config["earthvision"]["rules_fn"].split(".")
         if "rules_pythonpath" in self.config["earthvision"]:
