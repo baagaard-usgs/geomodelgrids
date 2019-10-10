@@ -59,6 +59,8 @@ class HDF5Storage():
                 Surface topography.
         """
         h5 = h5py.File(self.filename, "a")
+        if "topography" in h5:
+            del h5["topography"]
         topo_dataset = h5.create_dataset("topography", data=topography.elevation)
         attrs = topo_dataset.attrs
         for attr in self.TOPOGRAPHY_ATTRS:
@@ -92,6 +94,8 @@ class HDF5Storage():
                 Numpy array [Nx,Ny,Nz,Nv] of gridded data.
         """
         h5 = h5py.File(self.filename, "a")
+        if block.name in h5:
+            del h5[block.name]
         block_dataset = h5.create_dataset(block.name, data=data)
         attrs = block_dataset.attrs
         for attr in self.BLOCK_ATTRS:
