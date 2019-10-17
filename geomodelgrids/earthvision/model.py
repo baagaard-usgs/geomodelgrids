@@ -10,6 +10,7 @@ import numpy
 
 from .. import model
 from .. import units
+from .. import config
 from . import api
 
 class RulesModel(model.Model):
@@ -99,11 +100,13 @@ class RulesModel(model.Model):
 
         numpy.savetxt(points_abspath, points.reshape((-1, points.shape[2]))/scale, fmt="%16.8e")
 
-        topo_2grd = self.config["earthvision"]["topography_2grd"]
-        formula = "{filename_out}<elev> = bakint({ev2grd}, {filename_in}<x>, {filename_in}<y>);".format(
-            filename_in=POINTS_FILENAME, filename_out=ELEV_FILENAME, ev2grd=topo_2grd)
-        elev = self.api.ev_fp(formula, elev_abspath).reshape(points.shape[0:2])
-        elev *= units.length_scale(self.config["earthvision"]["elev_units"])
+        elev = -1.0e+20 * numpy.ones(points.shape[0:2])
+        for grd_filename in config.string_to_list(self.config["earthvision"]["topography_2grd"]):
+            formula = "{filename_out}<elev> = bakint({ev2grd}, {filename_in}<x>, {filename_in}<y>);".format(
+                filename_in=POINTS_FILENAME, filename_out=ELEV_FILENAME, ev2grd=grd_filename)
+            elev_grd = self.api.ev_fp(formula, elev_abspath).reshape(points.shape[0:2])
+            elev_grd *= units.length_scale(self.config["earthvision"]["elev_units"])
+            elev = numpy.maximum(elev_grd, elev)
         self.topography.set_elevation(elev)
 
         os.remove(points_abspath)
