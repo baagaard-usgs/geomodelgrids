@@ -94,9 +94,12 @@ class HDF5Storage():
                 Numpy array [Nx,Ny,Nz,Nv] of gridded data.
         """
         h5 = h5py.File(self.filename, "a")
-        if block.name in h5:
-            del h5[block.name]
-        block_dataset = h5.create_dataset(block.name, data=data)
+        if not "blocks" in h5:
+            h5.create_group("blocks")
+        blocks_group = h5["blocks"]
+        if block.name in blocks_group:
+            del blocks_group[block.name]
+        block_dataset = blocks_group.create_dataset(block.name, data=data)
         attrs = block_dataset.attrs
         for attr in self.BLOCK_ATTRS:
             attrs[attr] = getattr(block, attr)
