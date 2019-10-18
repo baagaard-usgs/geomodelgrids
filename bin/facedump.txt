@@ -1,0 +1,225 @@
+Version 6
+Closed, Sliced
+Info
+Key: Unsliced	Data: CenCal_104_125.unsliced.faces
+Key: SequenceFile	Data: CenCal_104_125.seq
+Key: Title1	Data: Unknown
+Key: Title2	Data: Unknown
+Key: FacesFromType	Data: ply
+Key: Units	Data: Unknown
+Key: Accuracy	Data: 0.250000
+
+Space
+range: -73.000000 to 209.000000, 147.000000 to 463.000000, -45.000000 to 2.000000
+x and y units: unknown
+z       units: unknown
+proj: Local Rectangular
+
+Total Space Volume: 4188264.000000
+
+Fault Block Names:
+[1]	south_coast C
+[2]	Gabilan
+[3]	Pilarcitos
+[4]	Halfmoon Bay
+[5]	La Honda
+[6]	deep_felsic
+[7]	San Leandro
+[8]	Berkeley
+[9]	Napa
+[10]	Chabot
+[11]	Sonoma
+[12]	Alexander
+[13]	Santa Rosa
+[14]	Sunol
+[15]	San Felipe
+[16]	W Diablo Range
+[17]	Great Valley
+[18]	Quin Sabe
+[19]	E Diablo Range
+[20]	GV basement
+[21]	Foothills
+[22]	Central Bay Block
+[23]	Evergreen
+[24]	Merced
+[25]	N. shelf
+[26]	Sur
+
+Zone Names:
+[1]	Mantle
+[2]	Lower Crust
+[3]	Great_Valley_Ophiolite
+[4]	San Leandro G
+[5]	Logan G
+[6]	Kjf_Berkeley
+[7]	Kjf_Chabot
+[8]	Kjf_Foothills
+[9]	Kjf_Merced
+[10]	Kjf_Sur
+[11]	Kjf_Napa_Somoma
+[12]	Kjf_Bay Block
+[13]	Kjf_Evergreen
+[14]	Kjf_E_Diablo
+[15]	Kjf_W_Diablo
+[16]	Valley Sequence
+[17]	Kgr_Gab
+[18]	Kgr_Halfmoon
+[19]	Kgr_SCoast
+[20]	Kgr_NShelf
+[21]	Great Valley Seq
+[22]	Cenozoic_Great Valley
+[23]	Cenozoic_Halfmoon
+[24]	Cenozoic_Ever
+[25]	T_SouthBay
+[26]	T_La Honda
+[27]	T_Pilarcitos
+[28]	T_Bay_Block_Santa_Rosa
+[29]	T_Berkeley
+[30]	Cenozoic
+[31]	QT_Bay_Block_Santa Rosa
+[32]	QT_Merced_Pilarcitos
+[33]	QT_South_Bay
+[34]	<null>
+[35]	water
+
+Volume[000] World	/World/
+Volume[001] Outside	/World/Outside
+Volume[002] Roi		/World/Roi/
+Volume[003] Zone	/World/Roi/south_coast C/water
+Volume[004] Zone	/World/Roi/N. shelf/water
+Volume[005] Zone	/World/Roi/Gabilan/water
+Volume[006] Zone	/World/Roi/San Leandro/Valley Sequence
+Volume[007] Zone	/World/Roi/Pilarcitos/water
+Volume[008] Zone	/World/Roi/La Honda/QT_South_Bay
+Volume[009] Zone	/World/Roi/Halfmoon Bay/water
+Volume[010] Zone	/World/Roi/deep_felsic/Lower Crust
+Volume[011] Zone	/World/Roi/Merced/water
+Volume[012] Zone	/World/Roi/Foothills/Kjf_Foothills
+Volume[013] Zone	/World/Roi/Great Valley/water
+Volume[014] Zone	/World/Roi/San Felipe/Valley Sequence
+Volume[015] Zone	/World/Roi/Napa/water
+Volume[016] Zone	/World/Roi/Berkeley/water
+Volume[017] Zone	/World/Roi/Sunol/Valley Sequence
+Volume[018] Zone	/World/Roi/Santa Rosa/water
+Volume[019] Zone	/World/Roi/Alexander/Kjf_Napa_Somoma
+Volume[020] Zone	/World/Roi/Sonoma/water
+Volume[021] Zone	/World/Roi/Chabot/water
+Volume[022] Zone	/World/Roi/W Diablo Range/Kjf_W_Diablo
+Volume[023] Zone	/World/Roi/GV basement/Great_Valley_Ophiolite
+Volume[024] Zone	/World/Roi/Quin Sabe/QT_South_Bay
+Volume[025] Zone	/World/Roi/E Diablo Range/Kjf_E_Diablo
+Volume[026] Zone	/World/Roi/Evergreen/water
+Volume[027] Zone	/World/Roi/Central Bay Block/water
+Volume[028] Zone	/World/Roi/Sur/water
+Volume[029] FaultB	/World/Roi/south_coast C/
+Volume[030] Zone	/World/Roi/south_coast C/Kgr_SCoast
+Volume[031] Zone	/World/Roi/south_coast C/T_SouthBay
+Volume[032] Zone	/World/Roi/south_coast C/QT_South_Bay
+Volume[033] Zone	/World/Roi/south_coast C/Lower Crust
+Volume[034] Zone	/World/Roi/south_coast C/Mantle
+Volume[035] FaultB	/World/Roi/Gabilan/
+Volume[036] Zone	/World/Roi/Gabilan/QT_South_Bay
+Volume[037] Zone	/World/Roi/Gabilan/T_SouthBay
+Volume[038] Zone	/World/Roi/Gabilan/Kgr_Gab
+Volume[039] Zone	/World/Roi/Gabilan/Lower Crust
+Volume[040] Zone	/World/Roi/Gabilan/Mantle
+Volume[041] FaultB	/World/Roi/Pilarcitos/
+Volume[042] Zone	/World/Roi/Pilarcitos/Kjf_Foothills
+Volume[043] Zone	/World/Roi/Pilarcitos/T_Pilarcitos
+Volume[044] Zone	/World/Roi/Pilarcitos/QT_Merced_Pilarcitos
+Volume[045] Zone	/World/Roi/Pilarcitos/Lower Crust
+Volume[046] Zone	/World/Roi/Pilarcitos/Mantle
+Volume[047] FaultB	/World/Roi/Halfmoon Bay/
+Volume[048] Zone	/World/Roi/Halfmoon Bay/Cenozoic_Halfmoon
+Volume[049] Zone	/World/Roi/Halfmoon Bay/Kgr_Halfmoon
+Volume[050] Zone	/World/Roi/Halfmoon Bay/Lower Crust
+Volume[051] Zone	/World/Roi/Halfmoon Bay/Mantle
+Volume[052] Zone	/World/Roi/La Honda/T_La Honda
+Volume[053] FaultB	/World/Roi/La Honda/
+Volume[054] Zone	/World/Roi/La Honda/Logan G
+Volume[055] Zone	/World/Roi/La Honda/Mantle
+Volume[056] Zone	/World/Roi/deep_felsic/Mantle
+Volume[057] FaultB	/World/Roi/deep_felsic/
+Volume[058] Zone	/World/Roi/deep_felsic/Kgr_Gab
+Volume[059] FaultB	/World/Roi/San Leandro/
+Volume[060] Zone	/World/Roi/San Leandro/San Leandro G
+Volume[061] FaultB	/World/Roi/Berkeley/
+Volume[062] Zone	/World/Roi/Berkeley/T_Berkeley
+Volume[063] Zone	/World/Roi/Berkeley/Great Valley Seq
+Volume[064] Zone	/World/Roi/Berkeley/Kjf_Berkeley
+Volume[065] FaultB	/World/Roi/Napa/
+Volume[066] Zone	/World/Roi/Napa/Cenozoic
+Volume[067] Zone	/World/Roi/Napa/Kjf_Napa_Somoma
+Volume[068] Zone	/World/Roi/Napa/Lower Crust
+Volume[069] Zone	/World/Roi/Napa/Mantle
+Volume[070] FaultB	/World/Roi/Chabot/
+Volume[071] Zone	/World/Roi/Chabot/T_Berkeley
+Volume[072] Zone	/World/Roi/Chabot/Great Valley Seq
+Volume[073] Zone	/World/Roi/Chabot/Kjf_Chabot
+Volume[074] Zone	/World/Roi/Chabot/Lower Crust
+Volume[075] Zone	/World/Roi/Chabot/Mantle
+Volume[076] FaultB	/World/Roi/Sonoma/
+Volume[077] Zone	/World/Roi/Sonoma/Cenozoic
+Volume[078] Zone	/World/Roi/Sonoma/Kjf_Napa_Somoma
+Volume[079] Zone	/World/Roi/Sonoma/Lower Crust
+Volume[080] Zone	/World/Roi/Sonoma/Mantle
+Volume[081] FaultB	/World/Roi/Alexander/
+Volume[082] Zone	/World/Roi/Alexander/Cenozoic
+Volume[083] Zone	/World/Roi/Alexander/Lower Crust
+Volume[084] Zone	/World/Roi/Alexander/Mantle
+Volume[085] FaultB	/World/Roi/Santa Rosa/
+Volume[086] Zone	/World/Roi/Santa Rosa/T_Bay_Block_Santa_Rosa
+Volume[087] Zone	/World/Roi/Santa Rosa/QT_Bay_Block_Santa Rosa
+Volume[088] Zone	/World/Roi/Santa Rosa/Kjf_Bay Block
+Volume[089] Zone	/World/Roi/Santa Rosa/Lower Crust
+Volume[090] Zone	/World/Roi/Santa Rosa/Mantle
+Volume[091] FaultB	/World/Roi/Sunol/
+Volume[092] Zone	/World/Roi/Sunol/Lower Crust
+Volume[093] Zone	/World/Roi/Sunol/Mantle
+Volume[094] FaultB	/World/Roi/San Felipe/
+Volume[095] Zone	/World/Roi/San Felipe/QT_South_Bay
+Volume[096] FaultB	/World/Roi/W Diablo Range/
+Volume[097] Zone	/World/Roi/W Diablo Range/Great Valley Seq
+Volume[098] Zone	/World/Roi/W Diablo Range/Cenozoic
+Volume[099] Zone	/World/Roi/W Diablo Range/Lower Crust
+Volume[100] Zone	/World/Roi/W Diablo Range/Mantle
+Volume[101] FaultB	/World/Roi/Great Valley/
+Volume[102] Zone	/World/Roi/Great Valley/Cenozoic_Great Valley
+Volume[103] Zone	/World/Roi/Great Valley/Valley Sequence
+Volume[104] FaultB	/World/Roi/Quin Sabe/
+Volume[105] Zone	/World/Roi/Quin Sabe/Valley Sequence
+Volume[106] FaultB	/World/Roi/E Diablo Range/
+Volume[107] Zone	/World/Roi/E Diablo Range/Lower Crust
+Volume[108] Zone	/World/Roi/GV basement/Lower Crust
+Volume[109] FaultB	/World/Roi/GV basement/
+Volume[110] Zone	/World/Roi/GV basement/Mantle
+Volume[111] FaultB	/World/Roi/Foothills/
+Volume[112] Zone	/World/Roi/Foothills/T_SouthBay
+Volume[113] Zone	/World/Roi/Foothills/QT_South_Bay
+Volume[114] Zone	/World/Roi/Foothills/Lower Crust
+Volume[115] Zone	/World/Roi/Foothills/Mantle
+Volume[116] FaultB	/World/Roi/Central Bay Block/
+Volume[117] Zone	/World/Roi/Central Bay Block/Kjf_Bay Block
+Volume[118] Zone	/World/Roi/Central Bay Block/QT_Bay_Block_Santa Rosa
+Volume[119] Zone	/World/Roi/Central Bay Block/T_Bay_Block_Santa_Rosa
+Volume[120] Zone	/World/Roi/Central Bay Block/Lower Crust
+Volume[121] Zone	/World/Roi/Central Bay Block/Mantle
+Volume[122] FaultB	/World/Roi/Evergreen/
+Volume[123] Zone	/World/Roi/Evergreen/Cenozoic_Ever
+Volume[124] Zone	/World/Roi/Evergreen/Kjf_Evergreen
+Volume[125] Zone	/World/Roi/Evergreen/Lower Crust
+Volume[126] Zone	/World/Roi/Evergreen/Mantle
+Volume[127] FaultB	/World/Roi/Merced/
+Volume[128] Zone	/World/Roi/Merced/QT_Merced_Pilarcitos
+Volume[129] Zone	/World/Roi/Merced/Kjf_Merced
+Volume[130] Zone	/World/Roi/Merced/Mantle
+Volume[131] FaultB	/World/Roi/N. shelf/
+Volume[132] Zone	/World/Roi/N. shelf/Cenozoic
+Volume[133] Zone	/World/Roi/N. shelf/Kgr_NShelf
+Volume[134] Zone	/World/Roi/N. shelf/Lower Crust
+Volume[135] Zone	/World/Roi/N. shelf/Mantle
+Volume[136] FaultB	/World/Roi/Sur/
+Volume[137] Zone	/World/Roi/Sur/Cenozoic
+Volume[138] Zone	/World/Roi/Sur/Kjf_Sur
+Volume[139] Zone	/World/Roi/Sur/Lower Crust
+Volume[140] Zone	/World/Roi/Sur/Mantle

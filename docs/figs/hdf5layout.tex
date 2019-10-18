@@ -59,20 +59,26 @@ font={\bfseries},
   \node (model) [root] {Root (Model)};
 
   % Model attributes
-  \node (model-attrs) [below=of model.center, attributes, subset-right, yshift=-4.0em] {%
+  \node (model-attrs) [below=of model.center, attributes, subset-right, yshift=-8.0em] {%
     \begin{attributes}
     \item description (string)
-    \item domain\_dim (int)
-    \item num\_grids (int)
-    \item coordsys (string)
+    \item version (string)
     \item data\_names (string)
     \item data\_units (string)
+    \item projection (string)
+    \item origin\_x (float)
+    \item origin\_y (float)
+    \item y\_azimuth (float)
+    \item dim\_x (float)
+    \item dim\_y (float)
+    \item dim\_z (float)
+    \item num\_blocks (int)
     \end{attributes}
   };
   \draw[arrowto] (model.south) |- (model-attrs.west);
 
   % Topography
-  \node (topography) [below=of model-attrs.west, dataset, yshift=-4em] {topography [$N_x \times N_y$]};
+  \node (topography) [below=of model-attrs.west, dataset, yshift=-8em] {topography [$N_x \times N_y$]};
   \node (topography-attrs) [right=of topography.east, attributes] {%
     \begin{attributes}
     \item resolution (float)
@@ -81,32 +87,32 @@ font={\bfseries},
   \draw[arrowto] (model.south) |- (topography.west);
   \draw[connector] (topography.east) -- (topography-attrs.west);
 
-  % Grid 0
-  \node (grid-0) [below=of topography.west, dataset, yshift=-2.0em] {grid-0 [$N_x \times N_y \times N_{z0} \times N_v$]};
-  \node (grid-0-attrs) [right=of grid-0.east, attributes] {%
+  % Block 0
+  \node (block-0) [below=of topography.west, dataset, yshift=-2.0em] {block-0 [$N_x \times N_y \times N_{z0} \times N_v$]};
+  \node (block-0-attrs) [right=of block-0.east, attributes] {%
     \begin{attributes}
     \item horiz\_resolution (float)
     \item vert\_resolution (float)
     \item top\_elevation (float)
     \end{attributes}
   };
-  \draw[arrowto] (model.south) |- (grid-0.west);
-  \draw[connector] (grid-0.east) -- (grid-0-attrs.west);
+  \draw[arrowto] (model.south) |- (block-0.west);
+  \draw[connector] (block-0.east) -- (block-0-attrs.west);
 
-  \node [below=of grid-0.west, yshift=0.5em] {\vdots};
+  \node [below=of block-0.west, yshift=0.5em] {\vdots};
   
 
-  % Grid n
-  \node (grid-n) [below=of grid-0.west, dataset, yshift=-4.0em] {grid-n [$N_x \times N_y \times N_{zn} \times N_v$]};
-  \node (grid-n-attrs) [right=of grid-n.east, attributes] {%
+  % Block n
+  \node (block-n) [below=of block-0.west, dataset, yshift=-4.0em] {block-n [$N_x \times N_y \times N_{zn} \times N_v$]};
+  \node (block-n-attrs) [right=of block-n.east, attributes] {%
     \begin{attributes}
     \item horiz\_resolution (float)
     \item vert\_resolution (float)
     \item top\_elevation (float)
     \end{attributes}
   };
-  \draw[arrowto] (model.south) |- (grid-n.west);
-  \draw[connector] (grid-n.east) -- (grid-n-attrs.west);
+  \draw[arrowto] (model.south) |- (block-n.west);
+  \draw[connector] (block-n.east) -- (block-n-attrs.west);
 
 
   % Legend
