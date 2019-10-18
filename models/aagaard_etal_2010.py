@@ -30,9 +30,9 @@ Corrections:
   6. For density of Franciscan (Foothills, Napa-Sonoma, and Berkeley),
   use density0 if d < 3.0, otherwise use generic density.
 
-The rules were originally developed with Vp and Vs in km/s and density
-in g/cm**3. Here all rules have been converted to SI base units with
-Vp and Vs in m/s and density in kg/m**3.
+The rules were originally developed with Vp and Vs in km/s, density in
+g/cm**3, and depth in km. Here all rules have been converted to SI
+base units with Vp and Vs in m/s, density in kg/m**3, and depth in m.
 
 """
 
@@ -43,7 +43,7 @@ def default_vs(depth, vp):
 
     Args:
         depth (float)
-            Depth of location in km.
+            Depth of location in m.
         vp (float)
             P wave speed in m/s.
 
@@ -58,7 +58,7 @@ def default_density(depth, vp):
 
     Args:
         depth (float)
-            Depth of location in km.
+            Depth of location in m.
         vp (float)
             P wave speed in m/s.
 
@@ -73,7 +73,7 @@ def default_qs(depth, vs):
 
     Args:
         depth (float)
-            Depth of location in km.
+            Depth of location in m.
         vs (float)
             S wave speed in m/s.
 
@@ -88,7 +88,7 @@ def default_qp(depth, qs):
 
     Args:
         depth (float)
-            Depth of location in km.
+            Depth of location in m.
         qs (float)
             Quality factor for S wave.
 
@@ -107,7 +107,7 @@ def upper_mantle(x, y, depth):
         y (float)
             Model y coordinate.
         depth (float)
-            Depth of location in km.
+            Depth of location in m.
 
     Returns:
         Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
@@ -132,7 +132,7 @@ def mafic_great_valley_ophiolite(x, y, depth):
         y (float)
             Model y coordinate.
         depth (float)
-            Depth of location in km.
+            Depth of location in m.
 
     Returns:
         Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
@@ -160,7 +160,7 @@ def franciscan_foothills(x, y, depth):
         y (float)
             Model y coordinate.
         depth (float)
-            Depth of location in km.
+            Depth of location in m.
 
     Returns:
         Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
@@ -194,7 +194,7 @@ def franciscan_napa_sonoma(x, y, depth):
         y (float)
             Model y coordinate.
         depth (float)
-            Depth of location in km.
+            Depth of location in m.
 
     Returns:
         Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
@@ -228,7 +228,7 @@ def franciscan_berkeley(x, y, depth):
         y (float)
             Model y coordinate.
         depth (float)
-            Depth of location in km.
+            Depth of location in m.
 
     Returns:
         Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
@@ -262,7 +262,7 @@ def salinian_granitic(x, y, depth):
         y (float)
             Model y coordinate.
         depth (float)
-            Depth of location in km.
+            Depth of location in m.
 
     Returns:
         Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
@@ -299,7 +299,7 @@ def great_valley_sequence_sedimentary(x, y, depth):
         y (float)
             Model y coordinate.
         depth (float)
-            Depth of location in km.
+            Depth of location in m.
 
     Returns:
         Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
@@ -339,7 +339,7 @@ def quaternary_tertiary_sedimentary(x, y, depth):
         y (float)
             Model y coordinate.
         depth (float)
-            Depth of location in km.
+            Depth of location in m.
 
     Returns:
         Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
@@ -376,7 +376,7 @@ def tertiary_sedimentary_lahondabasin(x, y, depth):
         y (float)
             Model y coordinate.
         depth (float)
-            Depth of location in km.
+            Depth of location in m.
 
     Returns:
         Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
@@ -401,7 +401,7 @@ def tertiary_sedimentary_southbay(x, y, depth):
         y (float)
             Model y coordinate.
         depth (float)
-            Depth of location in km.
+            Depth of location in m.
 
     Returns:
         Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
@@ -433,7 +433,7 @@ def cenozoic_sedimentary_halfmoonbay(x, y, depth):
         y (float)
             Model y coordinate.
         depth (float)
-            Depth of location in km.
+            Depth of location in m.
 
     Returns:
         Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
@@ -464,7 +464,7 @@ def seawater(x, y, depth):
         y (float)
             Model y coordinate.
         depth (float)
-            Depth of location in km.
+            Depth of location in m.
 
     Returns:
         Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
@@ -489,7 +489,7 @@ def outside_model(x, y, depth):
         y (float)
             Model y coordinate.
         depth (float)
-            Depth of location in km.
+            Depth of location in m.
 
     Returns:
         Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
