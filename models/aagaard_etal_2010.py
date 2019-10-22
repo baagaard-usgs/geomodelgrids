@@ -16,18 +16,14 @@ Corrections:
   2. Correct coefficient (0.00064 -> 0.0064) for 4th order term in
   generic Vs equation.
 
-  3. Correct coefficient (2.24 -> 2.48175) for constant term in
-  Quaternary-Tertiary - sedimentary rocks Vp equation for 0.5 < d <
-  10.0.
-
-  4. Correct coefficient (4.46 -> 4.64) for constant term in Teriary
+  3. Correct coefficient (4.46 -> 4.64) for constant term in Teriary
   sedimentary rocks (South Bay) and Cenozoic sedimentary rocks (Half
   Moon Bay region) for Vp equation 4 < d < 7.0.
 
-  5. For density of Mafic and Great Valley ophiolite, use Vp0 if d <
+  4. For density of Mafic and Great Valley ophiolite, use Vp0 if d <
   10.0, otherwise use same equation with Vp0 replaced with Vp(d).
 
-  6. For density of Franciscan (Foothills, Napa-Sonoma, and Berkeley),
+  5. For density of Franciscan (Foothills, Napa-Sonoma, and Berkeley),
   use density0 if d < 3.0, otherwise use generic density.
 
 The rules were originally developed with Vp and Vs in km/s, density in
@@ -349,9 +345,9 @@ def quaternary_tertiary_sedimentary(x, y, depth):
     elif depth < 500.0:
         vp = 1.5e+3 + 3.735*depth - 3.543e-3*depth**2
     elif depth < 10.0e+3:
-        vp = 2.48175e+3 + 0.6*depth
+        vp = 2.24e+3 + 0.6*depth
     else:
-        vp = 2.48175e+3 + 0.6*10.0e+3
+        vp = 2.24e+3 + 0.6*10.0e+3
 
     if depth < 25.0:
         vs = 80.0 + 2.5*depth
