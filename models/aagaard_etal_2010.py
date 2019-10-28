@@ -110,7 +110,7 @@ def upper_mantle(x, y, depth):
     """
     vp = 7.77e+3 if depth < 20.0e+3 else 7.77e+3 + 0.001*(depth-20.0e+3)
 
-    vs = 4.41e+3 if depth < 20.03+3 else 4.41e+3 + 0.0006*(depth-20.0e+3)
+    vs = 4.41e+3 if depth < 20.0e+3 else 4.41e+3 + 0.0006*(depth-20.0e+3)
 
     density = 3.3e+3
 
@@ -231,7 +231,7 @@ def franciscan_berkeley(x, y, depth):
     """
     a = -0.03e+3
     vp0 = 5.4e+3 + a
-    density0 = 1.74e+3 * (vp0*1.0-3)**0.25
+    density0 = 1.74e+3 * (vp0*1.0e-3)**0.25
 
     if depth < 1.0e+3:
         vp = a + 2.5e+3 + 2.0*depth
@@ -267,11 +267,11 @@ def salinian_granitic(x, y, depth):
 
     if depth < 0.5e+3:
         vp = 1.5e+3 + 5.0*depth
-    elif depth < 1.5:
+    elif depth < 1.5e+3:
         vp = 4.0e+3 + 1.3*(depth-0.5e+3)
-    elif depth < 2.5:
+    elif depth < 2.5e+3:
         vp = 5.3e+3 + 0.3*(depth-1.5e+3)
-    elif depth < 5.0:
+    elif depth < 5.0e+3:
         vp = 5.6e+3 + 0.08*(depth-2.5e+3)
     else:
         vp = 5.8e+3 + 0.06*(depth-5.0e+3)
