@@ -24,4 +24,4 @@ release.
 
 ## Authors
 
-* Brad Aagard, Earthquake Science Center, USGS, USA
+* Brad Aagard, Geologic Hazards Science Center, USGS, USA

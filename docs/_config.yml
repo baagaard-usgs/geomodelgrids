@@ -1,0 +1,11 @@
+remote_theme: pmarsceill/just-the-docs
+title: GeoModelGrids
+baseurl: /geomodelgrids
+#search_enabled: true
+aux_links:
+    "GitHub repository":
+      - "//github.com/baagaard-usgs/geomodelgrids"
+
+plugins:
+  - jekyll-seo-tag
+  

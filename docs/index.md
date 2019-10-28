@@ -1,11 +1,20 @@
-# GeoModelGrids
+# Objective
 
-Georeferenced grid-based models composed of blocks, where each block
-is a uniform grid with potentially different resolutions.
+The GeoModelGrids project focuses on storing and querying
+georeferenced grid-based models. The models are composed of blocks,
+where each block is a uniform grid with potentially different
+resolutions.
 
-The main use case is 3-D seismic velocity models for use in modeling
-earthquake ground motions.
+# Motivation
 
-## Physical and Topological Grids
+* Store models using a self-describing, portable, widely-used storage
+  scheme, [HDF5](https://www.hdfgroup.org/).
+* Support queries on a wide range of platforms, from laptops and
+  desktops to large clusters.
+* Support variable resolution models that include topography.
 
-![Physical and Topological Grids](figs/gridmapping.png)
+# Target Use Cases
+
+* Storing and querying 3-D seismic velocity models in running computer
+simulations of earthquake ground motions.
+

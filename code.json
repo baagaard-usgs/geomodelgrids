@@ -26,7 +26,8 @@
         },
         "laborHours": null,
         "languages": [
-            "Python"
+            "Python",
+	    "C++"
         ],
         "tags": [
             "seismic velocity model",
@@ -37,7 +38,7 @@
             "email": "baagaard@usgs.gov"
         },
         "date": {
-            "metadataLastUpdated": "2019-09-23"
+            "metadataLastUpdated": "2019-10-24"
         }
     }
   ]
