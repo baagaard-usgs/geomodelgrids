@@ -33,15 +33,18 @@ toc:
   - title: C++ API
     subitems:
       - page: Destktop (Serial Interface)
-        url: /query/serial.html
+        url: /cxx-api/serial.html
+        subsubitems:
+          - page: Query
+            url: /cxx-api/serial-query.html
       - page: Cluster (Parallel Interface)
-        url: /query/parallel.html
+        url: /cxx-api/parallel.html
   - title: C API
     subitems:
       - page: Destktop (Serial Interface)
-        url: /query/serial.html
+        url: /c-api/serial.html
       - page: Cluster (Parallel Interface)
-        url: /query/parallel.html
+        url: /c-api/parallel.html
   - title: Developer
     subitems:
       - page: Code layout
