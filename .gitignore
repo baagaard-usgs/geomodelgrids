@@ -3,6 +3,7 @@ docs/Gemfile.lock
 docs/overview/figs/gridmapping.pdf
 docs/overview/figs/hdf5layout.pdf
 *~
+*.pyc
 *.aux
 *.log
 data
