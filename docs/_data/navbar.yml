@@ -28,6 +28,16 @@ toc:
             url: /scripting/data-structures/rasterize.html
           - page: Model
             url: /scripting/data-structures/model.html
+          - page: Block
+            url: /scripting/data-structures/block.html
+          - page: Topography
+            url: /scripting/data-structures/topography.html
+          - page: RulesModel
+            url: /scripting/data-structures/earthvision-model.html
+          - page: HDF5Storage
+            url: /scripting/data-structures/io-hdf5.html
+          - page: EarthVisionAPI
+            url: /scripting/data-structures/earthvision-api.html
       - page: Writing Python scripts
         url: /scripting/scripting.html
   - title: C++ API

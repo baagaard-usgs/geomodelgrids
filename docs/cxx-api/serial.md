@@ -1,4 +1,4 @@
-# C++ API
+# C++ Serial API
 
 All classes in the serial C++ API are in the `geomodelgrids::serial` namespace.
 
