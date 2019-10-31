@@ -45,6 +45,12 @@ font={\bfseries},
   bottom color=ltblue,
   anchor=west]
   
+\tikzstyle{group} = [
+  default,
+  top color=ltgreen!50!white,
+  bottom color=ltgreen,
+  anchor=west]
+  
 \tikzstyle{subset-right} = [
   xshift=2em]
 
@@ -63,7 +69,7 @@ font={\bfseries},
     \begin{attributes}
     \item description (string)
     \item version (string)
-    \item data\_names (string)
+    \item data\_values (string)
     \item data\_units (string)
     \item projection (string)
     \item origin\_x (float)
@@ -72,7 +78,6 @@ font={\bfseries},
     \item dim\_x (float)
     \item dim\_y (float)
     \item dim\_z (float)
-    \item num\_blocks (int)
     \end{attributes}
   };
   \draw[arrowto] (model.south) |- (model-attrs.west);
@@ -81,42 +86,45 @@ font={\bfseries},
   \node (topography) [below=of model-attrs.west, dataset, yshift=-8em] {topography [$N_x \times N_y$]};
   \node (topography-attrs) [right=of topography.east, attributes] {%
     \begin{attributes}
-    \item resolution (float)
+    \item resolution\_horiz (float)
     \end{attributes}
   };
   \draw[arrowto] (model.south) |- (topography.west);
   \draw[connector] (topography.east) -- (topography-attrs.west);
 
+  \node (blocks) [below=of topography.west, group, yshift=-2.0em] {blocks};
+  
   % Block 0
-  \node (block-0) [below=of topography.west, dataset, yshift=-2.0em] {block-0 [$N_x \times N_y \times N_{z0} \times N_v$]};
+  \node (block-0) [below=of blocks.south, dataset, subset-right] {block-0 [$N_x \times N_y \times N_{z0} \times N_v$]};
   \node (block-0-attrs) [right=of block-0.east, attributes] {%
     \begin{attributes}
-    \item horiz\_resolution (float)
-    \item vert\_resolution (float)
-    \item top\_elevation (float)
+    \item resolution\_horiz (float)
+    \item resoution\_vert (float)
+    \item z\_top (float)
     \end{attributes}
   };
-  \draw[arrowto] (model.south) |- (block-0.west);
+  \draw[arrowto] (blocks.south) |- (block-0.west);
   \draw[connector] (block-0.east) -- (block-0-attrs.west);
 
   \node [below=of block-0.west, yshift=0.5em] {\vdots};
-  
+  \draw[arrowto] (model.south) |- (blocks.west);  
 
   % Block n
   \node (block-n) [below=of block-0.west, dataset, yshift=-4.0em] {block-n [$N_x \times N_y \times N_{zn} \times N_v$]};
   \node (block-n-attrs) [right=of block-n.east, attributes] {%
     \begin{attributes}
-    \item horiz\_resolution (float)
-    \item vert\_resolution (float)
-    \item top\_elevation (float)
+    \item resolution\_horiz (float)
+    \item resolution\_vert (float)
+    \item z\_top (float)
     \end{attributes}
   };
-  \draw[arrowto] (model.south) |- (block-n.west);
+  \draw[arrowto] (blocks.south) |- (block-n.west);
   \draw[connector] (block-n.east) -- (block-n-attrs.west);
 
 
   % Legend
   \matrix [draw,below left, row sep=0.8em] at (current bounding box.north east) {
+    \node [group, legend] {Group}; \\
     \node [dataset, legend] {Dataset (float array)}; \\
     \node [attributes, legend] {Attributes}; \\
   };

@@ -1,0 +1,61 @@
+toc:
+  - title: Overview
+    subitems:
+      - page: Objective
+        url: /
+      - page: Features
+        url: /overview/features.html
+      - page: Storage Layout
+        url: /overview/storage-layout.html
+  - title: Getting Started
+    subitems:
+      - page: Installation
+        url: /getting-started/install.html
+      - page: Running the code
+        url: /getting-started/running.html
+  - title: Using geomodelgrids
+    subitems:
+      - page: The geogrid_info command
+        url: /apps/info.html
+      - page: The geogrid_query command
+        url: /apps/query.html
+  - title: Python scripting
+    subitems:
+      - page: Data structures
+        url: /scripting/data-structures.html
+        subsubitems:
+          - page: RasterizeApp
+            url: /scripting/data-structures/rasterize.html
+          - page: Model
+            url: /scripting/data-structures/model.html
+          - page: Block
+            url: /scripting/data-structures/block.html
+          - page: Topography
+            url: /scripting/data-structures/topography.html
+          - page: RulesModel
+            url: /scripting/data-structures/earthvision-model.html
+          - page: HDF5Storage
+            url: /scripting/data-structures/io-hdf5.html
+          - page: EarthVisionAPI
+            url: /scripting/data-structures/earthvision-api.html
+      - page: Writing Python scripts
+        url: /scripting/scripting.html
+  - title: C++ API
+    subitems:
+      - page: Destktop (Serial Interface)
+        url: /cxx-api/serial.html
+        subsubitems:
+          - page: Query
+            url: /cxx-api/serial-query.html
+      - page: Cluster (Parallel Interface)
+        url: /cxx-api/parallel.html
+  - title: C API
+    subitems:
+      - page: Destktop (Serial Interface)
+        url: /c-api/serial.html
+      - page: Cluster (Parallel Interface)
+        url: /c-api/parallel.html
+  - title: Developer
+    subitems:
+      - page: Code layout
+        url: /developer/code-layout.html
