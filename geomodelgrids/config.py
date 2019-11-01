@@ -4,17 +4,20 @@
 import os
 import configparser
 
-def string_to_list(list_string):
+
+def string_to_list(list_string, delimiter=","):
     """Convert list as string into a list of objects.
 
     Args:
         list_string (str):
             List as string, e.g., "[a, b, c]"
+        delimiter (str):
+            Character(s) separating strings.
 
     Returns:
         List of objects, e.g., ["a", "b", "c"]
     """
-    values = [value.strip() for value in list_string[1:-1].split(",")]
+    values = [value.strip() for value in list_string[1:-1].split(delimiter)]
     return values
 
 

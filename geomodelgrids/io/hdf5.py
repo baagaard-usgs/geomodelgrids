@@ -8,7 +8,17 @@ class HDF5Storage():
     """HDF5 file for storing gridded model.
     """
     DOMAIN_ATTRS = (
+        "title",
+        "id",
         "description",
+        "keywords",
+        "creator_name",
+        "creator_email",
+        "creator_institution",
+        "acknowledgments",
+        "authors",
+        "references",
+        "doi",
         "version",
         "data_values",
         "data_units",

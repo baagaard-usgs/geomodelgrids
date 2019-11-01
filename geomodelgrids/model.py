@@ -49,7 +49,7 @@ class Block():
         """
         num_x = 1 + int(domain.dim_x / self.resolution_horiz)
         num_y = 1 + int(domain.dim_y / self.resolution_horiz)
-        num_z = 1 + int((self.z_top-self.z_bot) / self.resolution_vert)
+        num_z = 1 + int((self.z_top - self.z_bot) / self.resolution_vert)
         return (num_x, num_y, num_z)
 
     def generate_points(self, domain):
@@ -65,11 +65,11 @@ class Block():
         (num_x, num_y, num_z) = self.get_dims(domain)
         logger = logging.getLogger(__name__)
         logger.info("Block '{}' contains {} points ({} x {} x {}).".format(
-            self.name, num_x*num_y*num_z, num_x, num_y, num_z,))
+            self.name, num_x * num_y * num_z, num_x, num_y, num_z,))
 
-        x1 = numpy.linspace(0.0, self.resolution_horiz*(num_x-1), num_x)
-        y1 = numpy.linspace(0.0, self.resolution_horiz*(num_y-1), num_y)
-        z1 = numpy.linspace(0.0, self.resolution_vert*(num_z-1), num_z)
+        x1 = numpy.linspace(0.0, self.resolution_horiz * (num_x - 1), num_x)
+        y1 = numpy.linspace(0.0, self.resolution_horiz * (num_y - 1), num_y)
+        z1 = numpy.linspace(0.0, self.resolution_vert * (num_z - 1), num_z)
         x, y, z = numpy.meshgrid(x1, y1, z1)
 
         domain_top = 0.0
@@ -77,7 +77,8 @@ class Block():
         if domain.topography is not None:
             topo_geo = self.get_block_elevation(domain.topography)
             for iz in range(z.shape[-1]):
-                z[:, :, iz] = domain_bot + (topo_geo-domain_bot)/(domain_top-domain_bot)*(self.z_top - z[:, :, iz] - domain_bot)
+                z[:, :, iz] = domain_bot + (topo_geo - domain_bot) / (domain_top -
+                                                                      domain_bot) * (self.z_top - z[:, :, iz] - domain_bot)
 
             # Move top points down
             z[:, :, 0] += self.z_top_offset
@@ -87,11 +88,12 @@ class Block():
         xyz_geo = numpy.stack((x, y, z), axis=3)
         xyz_model = numpy.zeros(xyz_geo.shape)
         az_rad = domain.y_azimuth * math.pi / 180.0
-        xyz_model[:, :, :, 0] = domain.origin_x + xyz_geo[:, :, :, 0]*math.cos(az_rad) + xyz_geo[:, :, :, 1]*math.sin(az_rad)
-        xyz_model[:, :, :, 1] = domain.origin_y - xyz_geo[:, :, :, 0]*math.sin(az_rad) + xyz_geo[:, :, :, 1]*math.cos(az_rad)
+        xyz_model[:, :, :, 0] = domain.origin_x + xyz_geo[:, :, :, 0] * \
+            math.cos(az_rad) + xyz_geo[:, :, :, 1] * math.sin(az_rad)
+        xyz_model[:, :, :, 1] = domain.origin_y - xyz_geo[:, :, :, 0] * \
+            math.sin(az_rad) + xyz_geo[:, :, :, 1] * math.cos(az_rad)
         xyz_model[:, :, :, 2] = xyz_geo[:, :, :, 2]
         return xyz_model
-
 
     def get_block_elevation(self, topography):
         """Get topography grid for block.
@@ -156,18 +158,18 @@ class Topography():
         num_y = 1 + int(domain.dim_y / dx)
         logger = logging.getLogger(__name__)
         logger.info("Topography contains {} points ({} x {}).".format(
-            num_x*num_y, num_x, num_y))
+            num_x * num_y, num_x, num_y))
 
-        x1 = numpy.linspace(0.0, dx*(num_x-1), num_x)
-        y1 = numpy.linspace(0.0, dx*(num_y-1), num_y)
+        x1 = numpy.linspace(0.0, dx * (num_x - 1), num_x)
+        y1 = numpy.linspace(0.0, dx * (num_y - 1), num_y)
         x, y = numpy.meshgrid(x1, y1)
         z = numpy.zeros(x.shape)
 
         xyz_geo = numpy.stack((x, y, z), axis=2)
         xyz_model = numpy.zeros(xyz_geo.shape)
         az_rad = domain.y_azimuth * math.pi / 180.0
-        xyz_model[:, :, 0] = domain.origin_x + xyz_geo[:, :, 0]*math.cos(az_rad) + xyz_geo[:, :, 1]*math.sin(az_rad)
-        xyz_model[:, :, 1] = domain.origin_y - xyz_geo[:, :, 0]*math.sin(az_rad) + xyz_geo[:, :, 1]*math.cos(az_rad)
+        xyz_model[:, :, 0] = domain.origin_x + xyz_geo[:, :, 0] * math.cos(az_rad) + xyz_geo[:, :, 1] * math.sin(az_rad)
+        xyz_model[:, :, 1] = domain.origin_y - xyz_geo[:, :, 0] * math.sin(az_rad) + xyz_geo[:, :, 1] * math.cos(az_rad)
         return xyz_model
 
 
@@ -190,14 +192,24 @@ class Model(ABC):
             config (dict)
                 Model configuration.
         """
+        self.title = config["geomodelgrids"]["title"]
+        self.id = config["geomodelgrids"]["id"]
         self.description = config["geomodelgrids"]["description"]
+        self.keywords = string_to_list(config["geomodelgrids"]["keywords"])
+        self.creator_name = config["geomodelgrids"]["creator_name"]
+        self.creator_email = config["geomodelgrids"]["creator_email"]
+        self.creator_institution = config["geomodelgrids"]["creator_institution"]
+        self.acknowledgments = config["geomodelgrids"]["acknowledgments"]
+        self.authors = string_to_list(config["geomodelgrids"]["authors"], delimiter="|")
+        self.references = string_to_list(config["geomodelgrids"]["references"], delimiter="|")
+        self.doi = config["geomodelgrids"]["doi"]
         self.version = config["geomodelgrids"]["version"]
         self.projection = config["coordsys"]["projection"]
         self.origin_x = float(config["coordsys"]["origin_x"])
         self.origin_y = float(config["coordsys"]["origin_y"])
         self.y_azimuth = float(config["coordsys"]["y_azimuth"])
-        self.data_values = config["data"]["values"]
-        self.data_units = config["data"]["units"]
+        self.data_values = string_to_list(config["data"]["values"])
+        self.data_units = string_to_list(config["data"]["units"])
         self.dim_x = float(config["domain"]["dim_x"])
         self.dim_y = float(config["domain"]["dim_y"])
         self.dim_z = float(config["domain"]["dim_z"])
