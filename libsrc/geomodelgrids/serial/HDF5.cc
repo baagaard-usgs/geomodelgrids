@@ -269,10 +269,28 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
         if (datatype < 0) { throw std::runtime_error("Could not get datatype of"); }
         assert(H5Tis_variable_str(datatype) > 0);
 
+        hid_t dataspace = H5Aget_space(attribute);
+        if (dataspace < 0) { throw std::runtime_error("Could not get dataspace of"); }
+
         char* buffer = NULL;
-        herr_t err = H5Aread(attribute, datatype, (void*)&buffer);
+        hsize_t stringLength = H5Tget_size(datatype);
+        if (stringLength > 0) { // Fixed length strings
+            buffer = new char[stringLength];assert(buffer);
+        } // if
+
+        herr_t err = H5Aread(attribute, datatype, &buffer);
         if (err < 0) { throw std::runtime_error("Could not read"); }
         value = buffer;
+
+        if (stringLength > 0) {
+            delete[] buffer;buffer = NULL;
+        } else {
+            herr_t err = H5Dvlen_reclaim(datatype, dataspace, H5P_DEFAULT, buffer);
+            if (err < 0) { throw std::runtime_error("Could not reclaim variable length string for"); }
+        } // if/else
+
+        err = H5Sclose(dataspace);
+        if (err < 0) { throw std::runtime_error("Could not close dataspace for"); }
 
         err = H5Tclose(datatype);
         if (err < 0) { throw std::runtime_error("Could not close datatype for"); }
@@ -285,7 +303,7 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
         msg << err.what() << " attribute '" << name << "' of '" << path << "'.";
         throw std::runtime_error(msg.str());
     } // try/catch
-    
+
     return value;
 } // readAttribute
 
@@ -308,20 +326,35 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
         if (datatype < 0) { throw std::runtime_error("Could not get datatype of"); }
 
         hid_t dataspace = H5Aget_space(attribute);
+        if (dataspace < 0) { throw std::runtime_error("Could not get dataspace of"); }
         const hsize_t ndims = H5Sget_simple_extent_ndims(dataspace);assert(1 == ndims);
         hsize_t dims[1];
         H5Sget_simple_extent_dims(dataspace, dims, NULL);
-	const hsize_t numStrings = dims[0];assert(numStrings > 0);
+        const hsize_t numStrings = dims[0];assert(numStrings > 0);
 
         char** buffer = new char*[numStrings];
-        herr_t err = H5Aread(attribute, datatype, (void*)buffer);
+        hsize_t stringLength = H5Tget_size(datatype);
+        if (stringLength > 0) { // Fixed length strings
+            for (size_t i = 0; i < numStrings; ++i) {
+                buffer[i] = new char[stringLength];assert(buffer[i]);
+            } // for
+        } // if
+
+        herr_t err = H5Aread(attribute, datatype, buffer);
         if (err < 0) { throw std::runtime_error("Could not read"); }
 
         values->resize(numStrings);
         for (size_t i = 0; i < values->size(); ++i) {
             (*values)[i] = buffer[i];
         } // for
-        err = H5Dvlen_reclaim(datatype, dataspace, H5P_DEFAULT, buffer);
+        if (stringLength > 0) {
+            for (size_t i = 0; i < numStrings; ++i) {
+                delete[] buffer[i];buffer[i] = NULL;
+            } // for
+        } else {
+            herr_t err = H5Dvlen_reclaim(datatype, dataspace, H5P_DEFAULT, buffer);
+            assert(err);
+        } // if/else`
         delete[] buffer;buffer = NULL;
 
         err = H5Sclose(dataspace);
