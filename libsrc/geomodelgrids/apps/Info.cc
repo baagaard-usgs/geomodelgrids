@@ -12,6 +12,7 @@
 #include "geomodelgrids/serial/Topography.hh" // USES Topography
 
 #include <getopt.h> // USES getopt_long()
+#include <iomanip>
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream, std::istringstream
 
@@ -21,6 +22,9 @@ namespace geomodelgrids {
         namespace _Info {
             std::string join(const std::vector<std::string>& values,
                              const std::string& delimiter);
+
+            std::string indent(const size_t level,
+                               const size_t width=4);
 
         } // _Info
     } // apps
@@ -159,6 +163,106 @@ geomodelgrids::apps::Info::_printHelp(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Print model description.
+void
+geomodelgrids::apps::Info::_printDescription(geomodelgrids::serial::Model* const model) {
+    assert(model);
+
+    const geomodelgrids::serial::ModelInfo* info = model->getInfo();assert(info);
+    std::cout << _Info::indent(1) << "Title: " << info->getTitle() << "\n";
+    std::cout << _Info::indent(1) << "Id: " << info->getId() << "\n";
+    std::cout << _Info::indent(1) << "Description: " << info->getDescription() << "\n";
+    std::cout << _Info::indent(1) << "Keywords: " << _Info::join(info->getKeywords(), ", ") << "\n";
+
+    std::cout << _Info::indent(1) << "Creator: "
+              << info->getCreatorName() << ", "
+              << info->getCreatorInstitution() << ", "
+              << info->getCreatorEmail() << "\n";
+    std::cout << _Info::indent(1) << "Authors: " << _Info::join(info->getAuthors(), "; ") << "\n";
+    std::cout << _Info::indent(1) << "References:\n" << _Info::indent(2) <<
+        _Info::join(info->getReferences(), std::string("\n") + _Info::indent(2)) << "\n";
+
+    std::cout << _Info::indent(1) << "Acknowledgments: " << info->getAcknowledgments() << "\n";
+    std::cout << _Info::indent(1) << "DOI: " << info->getDOI() << "\n";
+    std::cout << _Info::indent(1) << "Version: " << info->getVersion() << "\n";
+
+    const double* dims = model->getDims();
+    std::cout << _Info::indent(1) << "Dimensions of model (m): x=" << dims[0] << ", y="<< dims[1] << ", z=" << dims[2] << "\n";
+} // _printDescription
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Print model coordinate system.
+void
+geomodelgrids::apps::Info::_printCoordSys(geomodelgrids::serial::Model* const model) {
+    assert(model);
+
+    std::cout << _Info::indent(1) << "Coordinate system:\n";
+
+    std::cout << _Info::indent(2) << "Projection (WKT): " << model->getProjectionString() << "\n";
+
+    const double* origin = model->getOrigin();
+    std::cout << _Info::indent(2) << "Origin: x=" << origin[0] <<", y=" << origin[1] << "\n";
+
+    std::cout << _Info::indent(2) << "Azimuth (degrees) of y axis from north: " << model->getYAzimuth() << "\n";
+} // _printCoordSys
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Print model coordinate system.
+void
+geomodelgrids::apps::Info::_printValues(geomodelgrids::serial::Model* const model) {
+    assert(model);
+
+    std::cout << _Info::indent(1) << "Values stored in model:\n";
+
+    const std::vector<std::string>& names = model->getValueNames();
+    const std::vector<std::string>& units = model->getValueUnits();
+    const size_t size = names.size();
+    assert(units.size() == size);
+    for (size_t i = 0; i < size; ++i) {
+        std::cout << _Info::indent(2) << i << ": " << names[i] << " (" << units[i] << ")" << "\n";
+    } // for
+} // _printValues
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Print description of model blocks.
+void
+geomodelgrids::apps::Info::_printBlocks(geomodelgrids::serial::Model* const model) {
+    assert(model);
+
+    std::cout << _Info::indent(1) << "Topography:\n";
+    const geomodelgrids::serial::Topography* topography = model->getTopography();
+    if (topography) {
+        std::cout << _Info::indent(2) << "Horizontal resolution (m): " << topography->getResolutionHoriz() << "\n";
+    } else {
+        std::cout << _Info::indent(2) << "None\n";
+    } // if/else
+
+    const std::vector<geomodelgrids::serial::Block*>& blocks = model->getBlocks();
+    const size_t numBlocks = blocks.size();
+    std::cout << _Info::indent(1) << "Blocks ("<< numBlocks << ")\n";
+    for (size_t i = 0; i < numBlocks; ++i) {
+        assert(blocks[i]);
+        std::cout << _Info::indent(2) << "Block '" << blocks[i]->getName() << "'\n";
+        std::cout << _Info::indent(3) << "Resolution (m): horizontal="
+                  << blocks[i]->getResolutionHoriz()
+                  << ", vertical=" << blocks[i]->getResolutionVert() << "\n";
+        std::cout << _Info::indent(3) << "Elevation (m) of top of block in logical space: " << blocks[i]->getZTop() << "\n";
+
+        const size_t* dims = blocks[i]->getDims();
+        std::cout << _Info::indent(3) << "Number of points: x=" << dims[0] << ", y=" << dims[1] << ", z=" << dims[2] << "\n";
+
+        const double dim_x = blocks[i]->getResolutionHoriz() * (dims[0] - 1);
+        const double dim_y = blocks[i]->getResolutionHoriz() * (dims[1] - 1);
+        const double dim_z = blocks[i]->getResolutionVert() * (dims[2] - 1);
+        std::cout << _Info::indent(3) << "Dimensions (m): x=" << dim_x << ", y=" << dim_y << ", z=" << dim_z << "\n";
+    } // for
+} // _printBlocks
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 std::string
 geomodelgrids::apps::_Info::join(const std::vector<std::string>& values,
                                  const std::string& delimiter) {
@@ -175,102 +279,13 @@ geomodelgrids::apps::_Info::join(const std::vector<std::string>& values,
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Print model description.
-void
-geomodelgrids::apps::Info::_printDescription(geomodelgrids::serial::Model* const model) {
-    assert(model);
-
-    const geomodelgrids::serial::ModelInfo* info = model->getInfo();assert(info);
-    std::cout << "Title: " << info->getTitle() << "\n";
-    std::cout << "Id: " << info->getId() << "\n";
-    std::cout << "Description: " << info->getDescription() << "\n";
-    std::cout << "Keywords: " << _Info::join(info->getKeywords(), ", ") << "\n";
-
-    std::cout << "Creator: "
-              << info->getCreatorName() << ", "
-              << info->getCreatorInstitution() << ", "
-              << info->getCreatorEmail() << "\n";
-    std::cout << "Authors: " << _Info::join(info->getAuthors(), "; ") << "\n";
-    std::cout << "References:\n\t" << _Info::join(info->getReferences(), "\n\t") << "\n";
-
-    std::cout << "Acknowledgments: " << info->getAcknowledgments() << "\n";
-    std::cout << "DOI: " << info->getDOI() << "\n";
-    std::cout << "Version: " << info->getVersion() << "\n";
-
-    const double* dims = model->getDims();
-    std::cout << "Dimensions of model (m): x=" << dims[0] << ", y="<< dims[1] << ", z=" << dims[2] << "\n";
-} // _printDescription
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Print model coordinate system.
-void
-geomodelgrids::apps::Info::_printCoordSys(geomodelgrids::serial::Model* const model) {
-    assert(model);
-
-    std::cout << "Coordinate system:\n";
-
-    std::cout << "    Projection (WKT): " << model->getProjectionString() << "\n";
-
-    const double* origin = model->getOrigin();
-    std::cout << "    Origin: x=" << origin[0] <<", y=" << origin[1] << "\n";
-
-    std::cout << "    Azimuth (degrees) of y axis from north: " << model->getYAzimuth() << "\n";
-} // _printCoordSys
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Print model coordinate system.
-void
-geomodelgrids::apps::Info::_printValues(geomodelgrids::serial::Model* const model) {
-    assert(model);
-
-    std::cout << "Values stored in model:\n";
-
-    const std::vector<std::string>& names = model->getValueNames();
-    const std::vector<std::string>& units = model->getValueUnits();
-    const size_t size = names.size();
-    assert(units.size() == size);
-    for (size_t i = 0; i < size; ++i) {
-        std::cout << "\t" << i << ": " << names[i] << "(" << units[i] << ")" << "\n";
-    } // for
-} // _printValues
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Print description of model blocks.
-void
-geomodelgrids::apps::Info::_printBlocks(geomodelgrids::serial::Model* const model) {
-    assert(model);
-
-    std::cout << "Topography:\n";
-    const geomodelgrids::serial::Topography* topography = model->getTopography();
-    if (topography) {
-        std::cout << "\tHorizontal resolution (m): " << topography->getResolutionHoriz() << "\n";
-    } else {
-        std::cout << "\tNone\n";
-    } // if/else
-
-    const std::vector<geomodelgrids::serial::Block*>& blocks = model->getBlocks();
-    const size_t numBlocks = blocks.size();
-    std::cout << "Blocks ("<< numBlocks << ")\n";
-    for (size_t i = 0; i < numBlocks; ++i) {
-        assert(blocks[i]);
-        std::cout << "\tBlock '" << blocks[i]->getName() << "'\n";
-        std::cout << "\t\tResolution (m): horizontal="
-                  << blocks[i]->getResolutionHoriz()
-                  << ", vertical=" << blocks[i]->getResolutionVert() << "\n";
-        std::cout << "\t\tElevation (m) of top of block in logical space: " << blocks[i]->getZTop() << "\n";
-
-        const size_t* dims = blocks[i]->getDims();
-        std::cout << "        Number of points: x=" << dims[0] << ", y=" << dims[1] << ", z=" << dims[2] << "\n";
-
-        const double dim_x = blocks[i]->getResolutionHoriz() * (dims[0] - 1);
-        const double dim_y = blocks[i]->getResolutionHoriz() * (dims[1] - 1);
-        const double dim_z = blocks[i]->getResolutionVert() * (dims[2] - 1);
-        std::cout << "        Dimensions (m): x=" << dim_x << ", y=" << dim_y << ", z=" << dim_z << "\n";
-    } // for
-} // _printBlocks
+std::string
+geomodelgrids::apps::_Info::indent(const size_t level,
+                                   const size_t width) {
+    std::ostringstream buffer;
+    buffer << std::setw(level*width) << " ";
+    return buffer.str();
+} // indent
 
 
 // End of file

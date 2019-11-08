@@ -92,10 +92,11 @@ geomodelgrids::serial::Model::loadMetadata(void) {
         throw std::logic_error("Model not open. Call open() before loading metadata.");
     } // if
 
-    delete _info; _info = new geomodelgrids::serial::ModelInfo;assert(_info);
+    delete _info;_info = new geomodelgrids::serial::ModelInfo;assert(_info);
     _info->load(_h5);
 
-    // :TODO: Names and units of values
+    _h5->readAttribute("/", "data_values", &_valueNames);
+    _h5->readAttribute("/", "data_units", &_valueUnits);
 
     _h5->readAttribute("/", "dim_x", H5T_NATIVE_DOUBLE, (void*)&_dims[0]);
     _h5->readAttribute("/", "dim_y", H5T_NATIVE_DOUBLE, (void*)&_dims[1]);
