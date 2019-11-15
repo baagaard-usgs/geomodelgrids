@@ -76,13 +76,13 @@ class TestData:
         resolution_horiz = block["resolution_horiz"]
         resolution_vert = block["resolution_vert"]
         z_top = block["z_top"]
-    
-        x1 = numpy.arange(0.0, model["dim_x"]+0.5*resolution_horiz, resolution_horiz)
-        y1 = numpy.arange(0.0, model["dim_y"]+0.5*resolution_horiz, resolution_horiz)
-        z1 = numpy.arange(z_top, z_top-model["dim_z"]-0.5*resolution_vert, -resolution_vert)
+
+        x1 = numpy.arange(0.0, model["dim_x"] + 0.5 * resolution_horiz, resolution_horiz)
+        y1 = numpy.arange(0.0, model["dim_y"] + 0.5 * resolution_horiz, resolution_horiz)
+        z1 = numpy.arange(z_top, z_top - model["dim_z"] - 0.5 * resolution_vert, -resolution_vert)
         x, y, z = numpy.meshgrid(x1, y1, z1, indexing="ij")
         return (x, y, z)
-        
+
 
 class OneBlockFlat(TestData):
     filename = "one-block-flat.h5"
@@ -97,7 +97,7 @@ class OneBlockFlat(TestData):
         "acknowledgments": "Thank you!",
         "authors": ["Smith, Jim", "Doe, John", "Doyle, Sarah"],
         "references": ["Reference 1", "Reference 2"],
-        "doi": ["this.is.a.doi"],
+        "doi": "this.is.a.doi",
         "version": "1.0.0",
         "data_values": ["one", "two"],
         "data_units": ["m", "m/s"],
@@ -126,10 +126,10 @@ class OneBlockFlat(TestData):
         (nx, ny, nz) = x.shape
         nvalues = len(model["data_values"])
         data = numpy.zeros((nx, ny, nz, nvalues), dtype=numpy.float32)
-        data[:,:,:,0] = 2.0 + 1.0*x + 0.4*y - 0.5*z
-        data[:,:,:,1] = -1.2 + 2.1*x - 0.9*y + 0.3*z
+        data[:, :, :, 0] = 2.0 + 1.0 * x + 0.4 * y - 0.5 * z
+        data[:, :, :, 1] = -1.2 + 2.1 * x - 0.9 * y + 0.3 * z
         block["data"] = data
-        
+
 
 if __name__ == "__main__":
     OneBlockFlat().create()
