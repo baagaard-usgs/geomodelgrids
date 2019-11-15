@@ -60,19 +60,19 @@ public:
 
     /** Get model dimensions.
      *
-     * @returns Model description.
+     * @returns Model dimension (m) [x, y, z].
      */
     const double* getDims(void) const;
 
-    /** Get coordinates of model origin.
+    /** Get coordinates of model origin in geographic projection.
      *
-     * @returns x and y coordinates of model origin.
+     * @returns Coordinates of model origin [x, y].
      */
     const double* getOrigin(void) const;
 
     /** Get azimuth of y coordinate axies.
      *
-     * @returns Model description.
+     * @returns Azimuth (degrees) of y coordinate axis.
      */
     const double getYAzimuth(void) const;
 
@@ -88,36 +88,44 @@ public:
      */
     const geomodelgrids::serial::ModelInfo* getInfo(void) const;
 
-    /** Get model description.
+    /** Get model topography.
      *
-     * @returns Model description.
+     * @returns Model topography.
      */
     const geomodelgrids::serial::Topography* getTopography(void) const;
 
-    /** Get model description.
+    /** Get model blocks.
      *
-     * @returns Model description.
+     * @returns Array of blocks in model.
      */
     const std::vector<geomodelgrids::serial::Block*>& getBlocks(void) const;
 
-    /** Does model
+    /** Does model contain given point?
      *
-     * @returns Model description.
+     * @param[in] longitude Longitude (degrees, WGS84) of point.
+     * @param[in] latitude (degrees, WGS84) of point.
+     * @param[in] Elevation (m) of point.
+     * @returns True if model contains given point, false otherwise.
      */
     bool contains(const double longitude,
                   const double latitude,
                   const double elevation) const;
 
-    /** Get model description.
+    /** Query for elevation of ground surface at point using bilinear interpolation.
      *
-     * @returns Model description.
+     * @param[in] longitude Longitude (degrees, WGS84) of point.
+     * @param[in] latitude (degrees, WGS84) of point.
+     * @returns Elevation (m) of ground surface at point.
      */
     double queryElevation(const double longitude,
                           const double latitude) const;
 
-    /** Get model description.
+    /** Query for model values at point using bilinear interpolation.
      *
-     * @returns Model description.
+     * @param[in] longitude Longitude (degrees, WGS84) of point.
+     * @param[in] latitude (degrees, WGS84) of point.
+     * @param[in] Elevation (m) of point.
+     * @returns Array of model values at point.
      */
     const double* query(const double longitude,
                         const double latitude,

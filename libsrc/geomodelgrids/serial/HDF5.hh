@@ -67,8 +67,8 @@ public:
 
     /** Get names of datasets in group.
      *
-     * @param names Names of datasets.
-     * @param group Name of parent.
+     * @param[out[names Names of datasets.
+     * @param[in] group Full path of group.
      */
     void getGroupDatasets(std::vector<std::string>* names,
                           const char* parent);
@@ -80,7 +80,7 @@ public:
      * @param[in] datatype Datatype of scalar.
      * @param[out] value Attribute value.
      */
-    void readAttribute(const char* parent,
+    void readAttribute(const char* path,
                        const char* name,
                        hid_t datatype,
                        void* value);
@@ -110,7 +110,7 @@ public:
      *
      * @param parent Full path of parent group for dataset.
      * @param name Name of dataset.
-     * @param data Data.
+     * @param data Data for chunk.
      * @param dims Dimensions of chunk.
      * @param ndims Number of dimensions of chunk.
      * @param islice Index of data slice.

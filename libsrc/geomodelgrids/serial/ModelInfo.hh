@@ -36,7 +36,7 @@ public:
 
     /** Get description.
      *
-     * @returns ModelInfo description.
+     * @returns Model description.
      */
     const std::string& getDescription(void) const;
 
