@@ -10,6 +10,7 @@ test_serial_SOURCES = \
 	TestModelInfo.cc \
 	TestBlock.cc \
 	TestTopography.cc \
+	TestModel.cc \
 	test_serial.cc
 
 noinst_HEADERS =
