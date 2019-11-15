@@ -14,11 +14,12 @@
 \tikzstyle{diagram} = [node distance=2.5em]
 
 \newenvironment{attributes}{%
-  \hspace*{-2.0em}\begin{minipage}{1.7in}\renewcommand{\labelitemi}{}\begin{itemize}\setlength{\itemsep}{-2pt}\setlength{\labelwidth}{0pt}\setlength{\labelsep}{0pt}\setlength{\itemindent}{0pt}}{%
+  \hspace*{-2.0em}\begin{minipage}{2.1in}\renewcommand{\labelitemi}{}\begin{itemize}\setlength{\itemsep}{-2pt}\setlength{\labelwidth}{0pt}\setlength{\labelsep}{0pt}\setlength{\itemindent}{0pt}}{%
 \end{itemize}\end{minipage}}
 
+\newcommand{\variable}[1]{{\itshape\MakeUppercase{#1}}}
+
 \tikzstyle{default} = [rectangle,
-  %minimum text width=10em,
   minimum height=2.0em,
   text centered,
   line width=0pt,
@@ -65,9 +66,19 @@ font={\bfseries},
   \node (model) [root] {Root (Model)};
 
   % Model attributes
-  \node (model-attrs) [below=of model.center, attributes, subset-right, yshift=-8.0em] {%
+  \node (model-attrs) [below=of model.center, attributes, subset-right, yshift=-14.0em] {%
     \begin{attributes}
+    \item title (string)
+    \item id (string)
     \item description (string)
+    \item keywords (array of strings)
+    \item creator\_name (string)
+    \item creator\_institution (string)
+    \item creator\_email (string)
+    \item acknowledgments (string)
+    \item authors (array of strings)
+    \item references (array of strings)
+    \item doi (string)
     \item version (string)
     \item data\_values (string)
     \item data\_units (string)
@@ -83,7 +94,7 @@ font={\bfseries},
   \draw[arrowto] (model.south) |- (model-attrs.west);
 
   % Topography
-  \node (topography) [below=of model-attrs.west, dataset, yshift=-8em] {topography [$N_x \times N_y$]};
+  \node (topography) [below=of model-attrs.west, dataset, yshift=-14em] {topography [$N_x \times N_y$]};
   \node (topography-attrs) [right=of topography.east, attributes] {%
     \begin{attributes}
     \item resolution\_horiz (float)
@@ -92,10 +103,10 @@ font={\bfseries},
   \draw[arrowto] (model.south) |- (topography.west);
   \draw[connector] (topography.east) -- (topography-attrs.west);
 
-  \node (blocks) [below=of topography.west, group, yshift=-2.0em] {blocks};
+  \node (blocks) [below=of topography.west, group] {blocks};
   
   % Block 0
-  \node (block-0) [below=of blocks.south, dataset, subset-right] {block-0 [$N_x \times N_y \times N_{z0} \times N_v$]};
+  \node (block-0) [below=of blocks.south, dataset, subset-right] {\variable{block-0} [$N_x \times N_y \times N_{z0} \times N_v$]};
   \node (block-0-attrs) [right=of block-0.east, attributes] {%
     \begin{attributes}
     \item resolution\_horiz (float)
@@ -110,7 +121,7 @@ font={\bfseries},
   \draw[arrowto] (model.south) |- (blocks.west);  
 
   % Block n
-  \node (block-n) [below=of block-0.west, dataset, yshift=-4.0em] {block-n [$N_x \times N_y \times N_{zn} \times N_v$]};
+  \node (block-n) [below=of block-0.west, dataset, yshift=-4.0em] {\variable{block-n} [$N_x \times N_y \times N_{zn} \times N_v$]};
   \node (block-n-attrs) [right=of block-n.east, attributes] {%
     \begin{attributes}
     \item resolution\_horiz (float)
