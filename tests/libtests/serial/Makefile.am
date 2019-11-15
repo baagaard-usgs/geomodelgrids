@@ -9,6 +9,7 @@ check_PROGRAMS = test_serial
 test_serial_SOURCES = \
 	TestModelInfo.cc \
 	TestBlock.cc \
+	TestTopography.cc \
 	test_serial.cc
 
 noinst_HEADERS =
