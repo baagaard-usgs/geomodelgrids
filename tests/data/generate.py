@@ -71,6 +71,18 @@ class TestData:
                 attrs[attr_name] = self._hdf5_type(block[attr_name], map_fn)
         h5.close()
 
+    @staticmethod
+    def create_block_xyz(model, block):
+        resolution_horiz = block["resolution_horiz"]
+        resolution_vert = block["resolution_vert"]
+        z_top = block["z_top"]
+    
+        x1 = numpy.arange(0.0, model["dim_x"]+0.5*resolution_horiz, resolution_horiz)
+        y1 = numpy.arange(0.0, model["dim_y"]+0.5*resolution_horiz, resolution_horiz)
+        z1 = numpy.arange(z_top, z_top-model["dim_z"]-0.5*resolution_vert, -resolution_vert)
+        x, y, z = numpy.meshgrid(x1, y1, z1, indexing="ij")
+        return (x, y, z)
+        
 
 class OneBlockFlat(TestData):
     filename = "one-block-flat.h5"
@@ -103,20 +115,21 @@ class OneBlockFlat(TestData):
     blocks = [
         {
             "name": "block",
-            "data": numpy.array([
-                [[[-1.1, -1.2], [-2.1, -2.2], [-3.1, -3.2], [-4.1, -4.2]],
-                 [[-5.1, -5.2], [-6.1, -6.2], [-7.1, -7.2], [-8.1, -8.2]],
-                    [[-9.1, -9.2], [-10.1, -10.2], [-11.1, -11.2], [-12.1, -12.2]]],
-                [[[1.1, 1.2], [2.1, 2.2], [3.1, 3.2], [4.1, 4.2]],
-                 [[5.1, 5.2], [6.1, 6.2], [7.1, 7.2], [8.1, 8.2]],
-                    [[9.1, 9.2], [10.1, 10.2], [11.1, 11.2], [12.1, 12.2]]],
-            ]),
             "resolution_horiz": 10.0,
             "resolution_vert": 5.0,
             "z_top": 0.0,
         }
     ]
 
+    for block in blocks:
+        x, y, z = TestData.create_block_xyz(model, block)
+        (nx, ny, nz) = x.shape
+        nvalues = len(model["data_values"])
+        data = numpy.zeros((nx, ny, nz, nvalues), dtype=numpy.float32)
+        data[:,:,:,0] = 2.0 + 1.0*x + 0.4*y - 0.5*z
+        data[:,:,:,1] = -1.2 + 2.1*x - 0.9*y + 0.3*z
+        block["data"] = data
+        
 
 if __name__ == "__main__":
     OneBlockFlat().create()

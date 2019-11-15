@@ -7,7 +7,7 @@ Makefile.in
 *.pyc
 *.aux
 *.log
-data
+models/data
 geomodelgrids.egg-info
 configure
 aclocal.m4
