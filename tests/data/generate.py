@@ -30,11 +30,11 @@ class TestData:
         ("dim_z", float),
     )
     TOPOGRAPHY_ATTRS = (
-        ("resolution_horiz", unicode),
+        ("resolution_horiz", float),
     )
     BLOCK_ATTRS = (
-        ("resolution_horiz", unicode),
-        ("resolution_vert", unicode),
+        ("resolution_horiz", float),
+        ("resolution_vert", float),
         ("z_top", float),
     )
 

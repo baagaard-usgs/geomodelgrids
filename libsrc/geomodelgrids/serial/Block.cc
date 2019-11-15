@@ -53,6 +53,7 @@ geomodelgrids::serial::Block::loadMetadata(geomodelgrids::serial::HDF5* const h5
 
     _numValues = hdims[3];
     delete[] _values;_values = NULL;
+    delete[] hdims; hdims = NULL;
 } // loadMetadata
 
 

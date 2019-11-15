@@ -231,14 +231,8 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
         hid_t attribute = H5Aopen_by_name(_file, path, name, H5P_DEFAULT, H5P_DEFAULT);
         if (attribute < 0) { throw std::runtime_error("Could not open"); }
 
-        hid_t dtype = H5Aget_type(attribute);
-        if (dtype < 0) { throw std::runtime_error("Could not get datatype of"); }
-
-        hid_t err = H5Aread(attribute, dtype, value);
+        hid_t err = H5Aread(attribute, datatype, value);
         if (err < 0) { throw std::runtime_error("Could not read"); }
-
-        err = H5Tclose(dtype);
-        if (err < 0) { throw std::runtime_error("Could not close datatype for"); }
 
         err = H5Aclose(attribute);
         if (err < 0) { throw std::runtime_error("Could not close"); }
@@ -267,14 +261,13 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
 
         hid_t datatype = H5Aget_type(attribute);
         if (datatype < 0) { throw std::runtime_error("Could not get datatype of"); }
-        assert(H5Tis_variable_str(datatype) > 0);
 
         hid_t dataspace = H5Aget_space(attribute);
         if (dataspace < 0) { throw std::runtime_error("Could not get dataspace of"); }
 
         char* buffer = NULL;
-        hsize_t stringLength = H5Tget_size(datatype);
-        if (stringLength > 0) { // Fixed length strings
+	if (0 == H5Tis_variable_str(datatype)) { // Fixed length strings
+	    const hsize_t stringLength = H5Tget_size(datatype);
             buffer = new char[stringLength];assert(buffer);
         } // if
 
@@ -282,11 +275,11 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
         if (err < 0) { throw std::runtime_error("Could not read"); }
         value = buffer;
 
-        if (stringLength > 0) {
-            delete[] buffer;buffer = NULL;
-        } else {
-            herr_t err = H5Dvlen_reclaim(datatype, dataspace, H5P_DEFAULT, buffer);
+	if (H5Tis_variable_str(datatype) > 0) { // Variable length strings
+            herr_t err = H5Dvlen_reclaim(datatype, dataspace, H5P_DEFAULT, &buffer);
             if (err < 0) { throw std::runtime_error("Could not reclaim variable length string for"); }
+        } else {
+            delete[] buffer;buffer = NULL;
         } // if/else
 
         err = H5Sclose(dataspace);
@@ -333,8 +326,8 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
         const hsize_t numStrings = dims[0];assert(numStrings > 0);
 
         char** buffer = new char*[numStrings];
-        hsize_t stringLength = H5Tget_size(datatype);
-        if (stringLength > 0) { // Fixed length strings
+	if (0 == H5Tis_variable_str(datatype)) { // Fixed length strings
+	    hsize_t stringLength = H5Tget_size(datatype);
             for (size_t i = 0; i < numStrings; ++i) {
                 buffer[i] = new char[stringLength];assert(buffer[i]);
             } // for
@@ -347,14 +340,14 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
         for (size_t i = 0; i < values->size(); ++i) {
             (*values)[i] = buffer[i];
         } // for
-        if (stringLength > 0) {
+	if (0 == H5Tis_variable_str(datatype)) { // Fixed length strings
             for (size_t i = 0; i < numStrings; ++i) {
                 delete[] buffer[i];buffer[i] = NULL;
             } // for
         } else {
-            herr_t err = H5Dvlen_reclaim(datatype, dataspace, H5P_DEFAULT, buffer);
-            assert(err);
-        } // if/else`
+	    herr_t err = H5Dvlen_reclaim(datatype, dataspace, H5P_DEFAULT, buffer);
+	    if (err < 0) { throw std::runtime_error("Could not reclaim variable length string for"); }
+        } // if/else
         delete[] buffer;buffer = NULL;
 
         err = H5Sclose(dataspace);
