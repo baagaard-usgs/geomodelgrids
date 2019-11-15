@@ -5,14 +5,14 @@ SUBDIRS = \
 	geomodelgrids \
 	bin
 
-#if ENABLE_TESTING
-#  SUBDIRS += \
-#	unittests
-#endif
+if ENABLE_TESTING
+	SUBDIRS += \
+		tests
+endif
 
-#DIST_SUBDIRS = $(SUBDIRS) \
-#	docs \
-#	models
+DIST_SUBDIRS = $(SUBDIRS) \
+	docs \
+	models
 
 EXTRA_DIST = \
 	README.md \
