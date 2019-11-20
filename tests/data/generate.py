@@ -101,7 +101,7 @@ class OneBlockFlat(TestData):
         "version": "1.0.0",
         "data_values": ["one", "two"],
         "data_units": ["m", "m/s"],
-        "projection": "",
+        "projection": "GEOGCRS["WGS 84",DATUM["World Geodetic System 1984",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ID["EPSG",6326]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8901]],CS[ellipsoidal,2],AXIS["longitude",east,ORDER[1],ANGLEUNIT["degree",0.0174532925199433,ID["EPSG",9122]]],AXIS["latitude",north,ORDER[2],ANGLEUNIT["degree",0.0174532925199433,ID["EPSG",9122]]],USAGE[SCOPE["unknown"],AREA["World"],BBOX[-90,-180,90,180]]]",
         "origin_x": 100.0,
         "origin_y": 200.0,
         "y_azimuth": 90.0,
