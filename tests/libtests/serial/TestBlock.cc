@@ -84,6 +84,7 @@ geomodelgrids::serial::TestBlock::testAccessors(void) {
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking vertical resolution", resolutionVert, block.getResolutionVert());
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking z top", zTop, block.getZTop());
     const size_t* dimsT = block.getDims();
+    CPPUNIT_ASSERT_MESSAGE("Checking dims pointer", dimsT);
     for (size_t i = 0; i < 3; ++i) {
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking dims", dims[i], dimsT[i]);
     } // for
