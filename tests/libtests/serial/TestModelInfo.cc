@@ -70,13 +70,24 @@ geomodelgrids::serial::TestModelInfo::testAccessors(void) {
     const std::string title("Title");info._title = title;
     const std::string id("Id");info._id = id;
     const std::string description("Description");info._description = description;
-    const std::vector<std::string> keywords{"key one", "key two", "key three"};info._keywords = keywords;
+
+    const size_t numKeywords = 3;
+    const char* keywordsPtr[numKeywords] = {"key one", "key two", "key three"};
+    const std::vector<std::string> keywords(keywordsPtr, keywordsPtr+numKeywords);info._keywords = keywords;
+
     const std::string creatorName("Name");info._creatorName = creatorName;
     const std::string creatorInstitution("Institution");info._creatorInstitution = creatorInstitution;
     const std::string creatorEmail("email@organization.org");info._creatorEmail = creatorEmail;
     const std::string acknowledgments("Acknowledgments");info._acknowledgments = acknowledgments;
-    const std::vector<std::string> authors{"Name 0", "Name 1", "Name 2", "Name 3"};info._authors = authors;
-    const std::vector<std::string> references{"Reference 0", "Reference 1"};info._references = references;
+
+    const size_t numAuthors = 4;
+    const char* authorsPtr[numAuthors] = {"Name 0", "Name 1", "Name 2", "Name 3"};
+    const std::vector<std::string> authors(authorsPtr, authorsPtr+numAuthors);info._authors = authors;
+
+    const size_t numReferences = 2;
+    const char* referencesPtr[numReferences] = {"Reference 0", "Reference 1"};
+    const std::vector<std::string> references(referencesPtr, referencesPtr+numReferences);info._references = references;
+
     const std::string doi("XXXX.XXX/XXX");info._doi = doi;
     const std::string version("1.2.3");info._version = version;
 
@@ -125,13 +136,24 @@ geomodelgrids::serial::TestModelInfo::testLoad(void) {
     const std::string title("One Block Flat");
     const std::string id("one-block-flat");
     const std::string description("Model with one block and no topography.");
-    const std::vector<std::string> keywords{"key one", "key two", "key three"};
+
+    const size_t numKeywords = 3;
+    const char* keywordsPtr[numKeywords] = {"key one", "key two", "key three"};
+    const std::vector<std::string> keywords(keywordsPtr, keywordsPtr+numKeywords);info._keywords = keywords;
+
     const std::string creatorName("John Doe");
     const std::string creatorInstitution("Agency");
     const std::string creatorEmail("johndoe@agency.org");
     const std::string acknowledgments("Thank you!");
-    const std::vector<std::string> authors{"Smith, Jim", "Doe, John", "Doyle, Sarah"};
-    const std::vector<std::string> references{"Reference 1", "Reference 2"};
+
+    const size_t numAuthors = 3;
+    const char* authorsPtr[numAuthors] = {"Smith, Jim", "Doe, John", "Doyle, Sarah"};
+    const std::vector<std::string> authors(authorsPtr, authorsPtr+numAuthors);info._authors = authors;
+
+    const size_t numReferences = 2;
+    const char* referencesPtr[numReferences] = {"Reference 1", "Reference 2"};
+    const std::vector<std::string> references(referencesPtr, referencesPtr+numReferences);info._references = references;
+
     const std::string doi("this.is.a.doi");
     const std::string version("1.0.0");
 
