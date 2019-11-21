@@ -87,7 +87,7 @@ geomodelgrids::serial::TestModel::testAccessors(void) {
     const char* namesPtr[numValues] = {"one", "two", "three"};
     const char* unitsPtr[numValues] = {"m", "m/s", "MPa"};
     const std::vector<std::string> valueNames(namesPtr, namesPtr+numValues);model._valueNames = valueNames;
-    const std::vector<std::string> valueUnits(unitsPtr, unitsPtr+numValues);model._valueNames = valueNames;
+    const std::vector<std::string> valueUnits(unitsPtr, unitsPtr+numValues);model._valueUnits = valueUnits;
     const std::string projectionString("Projection String");model._projectionString = projectionString;
     const double origin[2] = { 10.0, 20.0 };
     model._origin[0] = origin[0];
@@ -98,12 +98,18 @@ geomodelgrids::serial::TestModel::testAccessors(void) {
     model._dims[1] = dims[1];
     model._dims[2] = dims[2];
 
-    ModelInfo info;model._info = &info;
-    Topography topography;model._topography = &topography;
+    ModelInfo* info = new ModelInfo();model._info = info;
+    Topography* topography = new Topography();model._topography = topography;
 
-    Block one("one"), three("three"), five("five");
+    // Block* one = new Block("one");
+    // Block* three = new Block("three");
+    // Block* five = new Block("five");
     const size_t numBlocks(3);
-    Block* blocksPtr[numBlocks] = {&one, &three, &five};
+    Block* blocksPtr[numBlocks] = {
+        new Block("one"),
+        new Block("three"),
+        new Block("five"),
+    };
     const std::vector<Block*> blocks(blocksPtr, blocksPtr+numBlocks);model._blocks = blocks;
 
     const double tolerance = 1.0e-6;
@@ -136,8 +142,8 @@ geomodelgrids::serial::TestModel::testAccessors(void) {
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking dims", dims[i], dimsT[i], tolerance);
     } // for
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking info", const_cast<const ModelInfo*>(&info), model.getInfo());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking topography", const_cast<const Topography*>(&topography), model.getTopography());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking info", const_cast<const ModelInfo*>(info), model.getInfo());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking topography", const_cast<const Topography*>(topography), model.getTopography());
 
     const std::vector<Block*>& blocksT = model.getBlocks();
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking blocks size", blocks.size(), blocksT.size());
