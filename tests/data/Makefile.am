@@ -3,7 +3,8 @@ EXTRA_DIST = \
 
 
 dist_noinst_DATA = \
-	one-block-flat.h5
+	one-block-flat.h5 \
+	one-block-topo.h5
 
 
 # 'export' the input files by performing a mock install

@@ -76,7 +76,7 @@ geomodelgrids::serial::TestTopography::testAccessors(void) {
 void
 geomodelgrids::serial::TestTopography::testLoadMetadata(void) {
     geomodelgrids::serial::HDF5 h5;
-    h5.open("../../data/one-topo-topo.h5", H5F_ACC_RDONLY);
+    h5.open("../../data/one-block-topo.h5", H5F_ACC_RDONLY);
 
     Topography topo;
     topo.loadMetadata(&h5);
@@ -96,7 +96,7 @@ geomodelgrids::serial::TestTopography::testLoadMetadata(void) {
 void
 geomodelgrids::serial::TestTopography::testQuery(void) {
     geomodelgrids::serial::HDF5 h5;
-    h5.open("../../data/one-topo-topo.h5", H5F_ACC_RDONLY);
+    h5.open("../../data/one-block-topo.h5", H5F_ACC_RDONLY);
 
     Topography topo;
     topo.loadMetadata(&h5);
