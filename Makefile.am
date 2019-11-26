@@ -11,6 +11,7 @@ if ENABLE_TESTING
 endif
 
 DIST_SUBDIRS = $(SUBDIRS) \
+	developer \
 	docs \
 	models
 

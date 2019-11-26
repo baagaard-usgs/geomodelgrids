@@ -11,7 +11,7 @@ test_serial_SOURCES = \
 	TestBlock.cc \
 	TestTopography.cc \
 	TestModel.cc \
-	test_serial.cc
+	test_driver.cc
 
 noinst_HEADERS =
 

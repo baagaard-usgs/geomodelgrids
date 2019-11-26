@@ -101,9 +101,6 @@ geomodelgrids::serial::TestModel::testAccessors(void) {
     ModelInfo* info = new ModelInfo();model._info = info;
     Topography* topography = new Topography();model._topography = topography;
 
-    // Block* one = new Block("one");
-    // Block* three = new Block("three");
-    // Block* five = new Block("five");
     const size_t numBlocks(3);
     Block* blocksPtr[numBlocks] = {
         new Block("one"),
