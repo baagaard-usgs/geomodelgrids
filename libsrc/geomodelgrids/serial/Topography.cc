@@ -38,6 +38,7 @@ geomodelgrids::serial::Topography::loadMetadata(geomodelgrids::serial::HDF5* con
     for (int i = 0; i < 2; ++i) {
         _dims[i] = hdims[i];
     } // for
+    delete[] hdims;hdims = NULL;
 } // loadMetadata
 
 
