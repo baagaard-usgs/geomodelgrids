@@ -84,11 +84,12 @@ class TestData:
     def create_block_xyz(model, block):
         resolution_horiz = block["resolution_horiz"]
         resolution_vert = block["resolution_vert"]
+        dim_z = block["dim_z"]
         z_top = block["z_top"]
 
         x1 = numpy.arange(0.0, model["dim_x"] + 0.5 * resolution_horiz, resolution_horiz)
         y1 = numpy.arange(0.0, model["dim_y"] + 0.5 * resolution_horiz, resolution_horiz)
-        z1 = numpy.arange(z_top, z_top - model["dim_z"] - 0.5 * resolution_vert, -resolution_vert)
+        z1 = numpy.arange(z_top, z_top - dim_z - 0.5 * resolution_vert, -resolution_vert)
         x, y, z = numpy.meshgrid(x1, y1, z1, indexing="ij")
         return (x, y, z)
 
@@ -127,6 +128,7 @@ class OneBlockFlat(TestData):
             "resolution_horiz": 10.0,
             "resolution_vert": 5.0,
             "z_top": 0.0,
+            "dim_z": 5.0,
         }
     ]
     for block in blocks:
@@ -177,6 +179,7 @@ class OneBlockTopo(TestData):
             "resolution_horiz": 10.0,
             "resolution_vert": 5.0,
             "z_top": 0.0,
+            "dim_z": 5.0,
         }
     ]
     for block in blocks:
@@ -189,9 +192,72 @@ class OneBlockTopo(TestData):
         block["data"] = data
 
 
+class ThreeBlocksFlat(TestData):
+    filename = "three-blocks-flat.h5"
+    model = {
+        "title": "Three Blocks Flat",
+        "id": "three-blocks-flat",
+        "description": "Model with three blocks and no topography.",
+        "keywords": ["key one", "key two", "key three"],
+        "creator_name": "John Doe",
+        "creator_institution": "Agency",
+        "creator_email": "johndoe@agency.org",
+        "acknowledgments": "Thank you!",
+        "authors": ["Smith, Jim", "Doe, John", "Doyle, Sarah"],
+        "references": ["Reference 1", "Reference 2"],
+        "doi": "this.is.a.doi",
+        "version": "1.0.0",
+        "data_values": ["one", "two"],
+        "data_units": ["m", "m/s"],
+        "projection": 'GEOGCRS["WGS 84",DATUM["World Geodetic System 1984",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ID["EPSG",6326]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8901]],CS[ellipsoidal,2],AXIS["longitude",east,ORDER[1],ANGLEUNIT["degree",0.0174532925199433,ID["EPSG",9122]]],AXIS["latitude",north,ORDER[2],ANGLEUNIT["degree",0.0174532925199433,ID["EPSG",9122]]],USAGE[SCOPE["unknown"],AREA["World"],BBOX[-90,-180,90,180]]]',
+        "origin_x": 100.0,
+        "origin_y": 200.0,
+        "y_azimuth": 330.0,
+        "dim_x": 60.0,
+        "dim_y": 120.0,
+        "dim_z": 45.0,
+    }
+
+    topography = None
+
+    blocks = [
+        {
+            "name": "top",
+            "resolution_horiz": 10.0,
+            "resolution_vert": 5.0,
+            "z_top": 0.0,
+            "dim_z": 5.0,
+        },
+        {
+            "name": "middle",
+            "resolution_horiz": 20.0,
+            "resolution_vert": 10.0,
+            "z_top": -5.0,
+            "dim_z": 20.0,
+        },
+        {
+            "name": "bottom",
+            "resolution_horiz": 30.0,
+            "resolution_vert": 10.0,
+            "z_top": -25.0,
+            "dim_z": 20.0,
+        },
+    ]
+    for block in blocks:
+        x, y, z = TestData.create_block_xyz(model, block)
+        (nx, ny, nz) = x.shape
+        nvalues = len(model["data_values"])
+        data = numpy.zeros((nx, ny, nz, nvalues), dtype=numpy.float32)
+        data[:, :, :, 0] = 2.0 + 1.0 * x + 0.4 * y - 0.5 * z
+        data[:, :, :, 1] = -1.2 + 2.1 * x - 0.9 * y + 0.3 * z
+        block["data"] = data
+
+
+# ==============================================================================
 if __name__ == "__main__":
     OneBlockFlat().create()
     OneBlockTopo().create()
+    ThreeBlocksFlat().create()
 
 
 # End of file
