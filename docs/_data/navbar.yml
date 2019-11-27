@@ -42,12 +42,22 @@ toc:
         url: /scripting/scripting.html
   - title: C++ API
     subitems:
-      - page: Destktop (Serial Interface)
+      - page: Destktop (Serial) Interface
         url: /cxx-api/serial.html
         subsubitems:
           - page: Query
             url: /cxx-api/serial-query.html
-      - page: Cluster (Parallel Interface)
+          - page: Model
+            url: /cxx-api/serial-model.html
+          - page: ModelInfo
+            url: /cxx-api/serial-modelinfo.html
+          - page: Topography
+            url: /cxx-api/serial-topography.html
+          - page: Block
+            url: /cxx-api/serial-block.html
+          - page: HDF5
+            url: /cxx-api/serial-hdf5.html
+      - page: Cluster (Parallel) Interfac)
         url: /cxx-api/parallel.html
   - title: C API
     subitems:

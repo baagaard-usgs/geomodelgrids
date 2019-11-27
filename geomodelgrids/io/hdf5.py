@@ -7,8 +7,18 @@ import h5py
 class HDF5Storage():
     """HDF5 file for storing gridded model.
     """
-    DOMAIN_ATTRS = (
+    MODEL_ATTRS = (
+        "title",
+        "id",
         "description",
+        "keywords",
+        "creator_name",
+        "creator_email",
+        "creator_institution",
+        "acknowledgments",
+        "authors",
+        "references",
+        "doi",
         "version",
         "data_values",
         "data_units",
@@ -47,7 +57,7 @@ class HDF5Storage():
         """
         h5 = h5py.File(self.filename, "a")
         attrs = h5.attrs
-        for attr in self.DOMAIN_ATTRS:
+        for attr in self.MODEL_ATTRS:
             attrs[attr] = getattr(domain, attr)
         h5.close()
 

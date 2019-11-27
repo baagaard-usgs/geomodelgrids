@@ -8,7 +8,7 @@ about a model to stdout.
 Optional command line arguments are in square brackets.
 
 ```
-geogrid_info [--help] [--description] [--blocks] [--coordsys] [--values] --models=FILE_0,...,FILE_M
+geogrid_info [--help] [--description] [--coordsys] [--values] [--blocks] [--all] --models=FILE_0,...,FILE_M
 ```
 
 ### Required arguments
@@ -23,3 +23,4 @@ geogrid_info [--help] [--description] [--blocks] [--coordsys] [--values] --model
 * **--blocks** Print block grid information.
 * **--coordsys** Print coordinate system information.
 * **--values** Print names and units of values stored in the model.
+* **--all** Print description, coordinate system, values, and blocks.

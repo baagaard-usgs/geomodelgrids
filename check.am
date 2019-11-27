@@ -1,0 +1,22 @@
+AM_CPPFLAGS = -I$(top_srcdir)/libsrc
+
+
+check-local: check-TESTS
+	for f in $(TEST_LOGS); do printf "\n=== $$f ===\n\n"; cat $$f; done
+
+
+leakcheck: $(check_PROGRAMS)
+	for p in $(check_PROGRAMS); do pname=`echo $$p | sed -e s/test_//g`; valgrind --log-file=valgrind_$$pname.log --leak-check=full .libs/$$p; done
+
+# Check test coverage. Only works with gcc and requires gcov. lcov provides a GUI for viewing coverage.
+# Requires compiling and linking (CFLAGS, CXXFLAGS, LDFLAGS) with --coverage.
+libtest-coverage:
+	lcov --directory $(top_builddir)/libsrc/geomodelgrids/$(subpackage)/.libs --capture --output-file coverage.info
+	lcov --remove coverage.info '/usr/*' "$(TOOLS_DIR)/*" -o coverage_pkg.info
+	genhtml -o coverage coverage_pkg.info
+
+clean-coverage:
+	$(RM) $(RM_FLAGS) *.gcda *.gcno data/*.gcda data/*.gcno coverage.info
+	$(RM) $(RM_FLAGS) -r coverage
+
+# End of file
