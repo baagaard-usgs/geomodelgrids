@@ -14,10 +14,14 @@ libgeomodelgrids_la_SOURCES = \
 	serial/Block.cc \
 	serial/HDF5.cc
 
+libgeomodelgrids_la_LIBADD = -lhdf5
+
 
 if ENABLE_TESTING
 libgeomodelgrids_la_SOURCES += \
 	utils/TestDriver.cc
+
+libgeomodelgrids_la_LIBADD += -lcppunit
 endif
 
 
