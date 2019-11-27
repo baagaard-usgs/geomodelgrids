@@ -53,7 +53,7 @@ geomodelgrids::serial::Block::loadMetadata(geomodelgrids::serial::HDF5* const h5
 
     _numValues = hdims[3];
     delete[] _values;_values = NULL;
-    delete[] hdims; hdims = NULL;
+    delete[] hdims;hdims = NULL;
 } // loadMetadata
 
 
@@ -113,6 +113,17 @@ geomodelgrids::serial::Block::query(const double x,
                                     const double z) {
     return _values;
 } // query
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Compare order of blocks by z_top (descending order).
+bool
+geomodelgrids::serial::Block::compare(const Block* a,
+                                      const Block* b) {
+    if (a && b) { return a->_zTop > b->_zTop; }
+
+    return true;
+} // compare
 
 
 // End of file

@@ -77,6 +77,16 @@ public:
                         const double y,
                         const double z);
 
+    /** Compare order of blocks by z_top (descending order).
+     *
+     * @param[in]  a Block to compare
+     * @param[in]  b Block to compare
+     * @returns True if a.z_top > b.z_top, else false.
+     */
+    static
+    bool compare(const Block* a,
+                 const Block* b);
+
     // PRIVATE MEMBERS -------------------------------------------------------------------------------------------------
 private:
 

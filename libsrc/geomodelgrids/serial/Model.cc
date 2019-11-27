@@ -130,6 +130,7 @@ geomodelgrids::serial::Model::loadMetadata(void) {
     for (size_t i = 0; i < numBlocks; ++i) {
         _blocks[i]->loadMetadata(_h5);
     } // for
+    std::sort(_blocks.begin(), _blocks.end(), Block::compare);
 } // loadMetadata
 
 
