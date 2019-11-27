@@ -1,6 +1,4 @@
-/**
- * C++ application to print model metadata to stdout.
- */
+/// C++ application to print model metadata to stdout.
 #if !defined(geomodelgrids_apps_info_hh)
 #define geomodelgrids_apps_info_hh
 

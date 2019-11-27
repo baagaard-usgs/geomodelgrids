@@ -4,10 +4,10 @@
 namespace geomodelgrids {
     namespace apps {
         class Info;
+        class Query;
     } // apps
 } // geomodelgrids
 
 #endif // geomodelgrids_apps_appsfwd_hh
-
 
 // End of file

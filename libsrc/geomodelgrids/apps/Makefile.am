@@ -3,6 +3,7 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	Info.hh \
+	Query.hh \
 	appsfwd.hh
 
 noinst_HEADERS =
