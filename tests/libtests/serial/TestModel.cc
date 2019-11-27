@@ -154,7 +154,86 @@ geomodelgrids::serial::TestModel::testAccessors(void) {
 // Test loadMetadata().
 void
 geomodelgrids::serial::TestModel::testLoadMetadata(void) {
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Implement testLoadMetadata().", false);
+    const std::string title("Three Blocks Topo");
+    const std::string id("three-blocks-topo");
+    const std::string doi("this.is.a.doi");
+    const size_t numValues = 2;
+    const char* namesPtr[numValues] = {"one", "two" };
+    const char* unitsPtr[numValues] = {"m", "m/s"};
+    const std::vector<std::string> valueNames(namesPtr, namesPtr+numValues);
+    const std::vector<std::string> valueUnits(unitsPtr, unitsPtr+numValues);
+    const std::string projectionString("GEOGCRS[\"WGS 84\",DATUM[\"World Geodetic System 1984\",ELLIPSOID[\"WGS 84\""
+                                       ",6378137,298.257223563,LENGTHUNIT[\"metre\",1]],ID[\"EPSG\",6326]],PRIMEM[\""
+                                       "Greenwich\",0,ANGLEUNIT[\"degree\",0.0174532925199433],ID[\"EPSG\",8901]],"
+                                       "CS[ellipsoidal,2],AXIS[\"longitude\",east,ORDER[1],ANGLEUNIT[\"degree\","
+                                       "0.0174532925199433,ID[\"EPSG\",9122]]],AXIS[\"latitude\",north,ORDER[2],"
+                                       "ANGLEUNIT[\"degree\",0.0174532925199433,ID[\"EPSG\",9122]]],"
+                                       "USAGE[SCOPE[\"unknown\"],AREA[\"World\"],BBOX[-90,-180,90,180]]]");
+    const double origin[2] = { 100.0, 200.0 };
+    const double yazimuth(330.0);
+    const double dims[3] = { 60.0, 120.0, 45.0 };
+    const double topoHorizRes = 5.0;
+
+    const size_t numBlocks = 3;
+    const char* blockNamesPtr[numBlocks] = {"top", "middle", "bottom"};
+    const double blockZTop[numBlocks] = {0.0, -5.0, -25.0 };
+    const std::vector<std::string> blockNames(blockNamesPtr, blockNamesPtr+numBlocks);
+
+    const double tolerance = 1.0e-6;
+
+    Model model;
+    model.open("../../data/three-blocks-topo.h5", Model::READ);
+    model.loadMetadata();
+
+    const std::vector<std::string>& valueNamesT = model.getValueNames();
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking names of values size", valueNames.size(), valueNamesT.size());
+    for (size_t i = 0; i < valueNames.size(); ++i) {
+        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking names of values", valueNames[i], valueNamesT[i]);
+    } // for
+
+    const std::vector<std::string>& valueUnitsT = model.getValueUnits();
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking names of values size", valueUnits.size(), valueUnitsT.size());
+    for (size_t i = 0; i < valueUnits.size(); ++i) {
+        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking names of values", valueUnits[i], valueUnitsT[i]);
+    } // for
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking projection string", projectionString, model.getProjectionString());
+
+    const double* originT = model.getOrigin();
+    CPPUNIT_ASSERT_MESSAGE("Checking origin pointer", originT);
+    for (size_t i = 0; i < 2; ++i) {
+        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking origin", origin[i], originT[i]);
+    } // for
+
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking yazimuth", yazimuth, model.getYAzimuth(), tolerance);
+
+    const double* dimsT = model.getDims();
+    CPPUNIT_ASSERT_MESSAGE("Checking dims pointer", dimsT);
+    for (size_t i = 0; i < 2; ++i) {
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking dims", dims[i], dimsT[i], tolerance);
+    } // for
+
+    const ModelInfo* info = model.getInfo();
+    CPPUNIT_ASSERT_MESSAGE("Checking model info pointer", info);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking model title", title, info->getTitle());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking model id", id, info->getId());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking model doi", doi, info->getDOI());
+
+    const Topography* topography = model.getTopography();
+    CPPUNIT_ASSERT_MESSAGE("Checking topography pointer", topography);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking horizontal resolution of topography",
+                                         topoHorizRes, topography->getResolutionHoriz(), tolerance);
+
+    const std::vector<Block*>& blocksT = model.getBlocks();
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking blocks size", numBlocks, blocksT.size());
+    for (size_t i = 0; i < numBlocks; ++i) {
+        CPPUNIT_ASSERT_MESSAGE("Checking block pointer", blocksT[i]);
+        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking block names", blockNames[i], blocksT[i]->getName());
+        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking block z_top", blockZTop[i], blocksT[i]->getZTop());
+
+    } // for
+
+    model.close();
 } // testLoadMetadata
 
 
