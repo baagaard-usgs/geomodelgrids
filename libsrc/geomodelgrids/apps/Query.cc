@@ -57,7 +57,7 @@ geomodelgrids::apps::Query::run(int argc,
         double longitude, latitude, elevation;
         sin >> longitude >> latitude >> elevation;
 
-        query.query(&values, longitude, latitude, elevation);
+        query.query(&values[0], longitude, latitude, elevation);
 
         sout << longitude
              << latitude
@@ -81,10 +81,10 @@ geomodelgrids::apps::Query::_parseArgs(int argc,
                                        char* argv[]) {
     static struct option options[7] = {
         {"help", no_argument, NULL, 'h'},
-        {"values", no_argument, NULL, 'v'},
-        {"squash-min-elev", no_argument, NULL, 's'},
-        {"points", no_argument, NULL, 'p'},
-        {"output", no_argument, NULL, 'o'},
+        {"values", required_argument, NULL, 'v'},
+        {"squash-min-elev", required_argument, NULL, 's'},
+        {"points", required_argument, NULL, 'p'},
+        {"output", required_argument, NULL, 'o'},
         {"models", required_argument, NULL, 'm'},
         {0, 0, 0, 0}
     };
@@ -141,6 +141,33 @@ geomodelgrids::apps::Query::_parseArgs(int argc,
         } // default
         } // switch
     } // while
+
+    if (!_showHelp) { // Verify required arguments were provided.
+        bool optionsOkay = true;
+        std::ostringstream msg;
+        if (_valueNames.empty()) {
+            msg << "    - Missing names of values. Use --values=VALUE_0,...,VALUE_N\n";
+            optionsOkay = false;
+        } // if
+        if (_pointsFilename.empty()) {
+            msg << "    - Missing filename for list of points. Use --points=FILE_POINTS\n";
+            optionsOkay = false;
+        } // if
+        if (_outputFilename.empty()) {
+            msg << "    - Missing filename for output. Use --output=FILE_OUTPUT\n";
+            optionsOkay = false;
+        } // if
+        if (_modelFilenames.empty()) {
+            msg << "    - Missing list of model filenames. Use --models=FILE_0,...,FILE_M\n";
+            optionsOkay = false;
+        } // if
+
+        if (!optionsOkay) {
+            std::cerr << "Missing required command line arguments:\n"
+                      << msg.str() << std::endl;
+            exit(-1);
+        } // if
+    } // if
 } // _parseArgs
 
 
@@ -148,7 +175,7 @@ geomodelgrids::apps::Query::_parseArgs(int argc,
 // Print help information.
 void
 geomodelgrids::apps::Query::_printHelp(void) {
-    std::cout << "Usage: geogrids_info "
+    std::cout << "Usage: geogrids_query "
               << "[--help] [--values=VALUE_0,...,VALUE_N] [--squash-min-elev=ELEV] --models=FILE_0,...,FILE_M "
               << "--points=FILE_POINTS --output=FILE_OUTPUT\n\n"
               << "    --help                         Print help information to stdout and exit.\n"

@@ -10,6 +10,7 @@
 
 class geomodelgrids::serial::Query {
     friend class TestQuery; // unit testing
+    friend class _Query; // Helper class
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
@@ -38,12 +39,14 @@ public:
 
     /** Query model for values at a point.
      *
+     * Values array must be preallocated.
+     *
      * @param[out] values Array of values returned in query.
      * @param[in] longitude Longitude of point (degrees, WGS84 datum).
      * @param[in] latitude Latitude of point (degrees, WGS84 datum).
      * @param[in] elevation Elevation of point (m).
      */
-    void query(std::vector<double>* values,
+    void query(double* const values,
                const double longitude,
                const double latitude,
                const double elevation);
@@ -65,7 +68,7 @@ private:
     std::vector<geomodelgrids::serial::Model*> _models;
     std::vector<std::string> _valuesLowercase;
     std::vector<values_map_type> _valuesIndex;
-    double _squqshMinElev;
+    double _squashMinElev;
     bool _squash;
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
