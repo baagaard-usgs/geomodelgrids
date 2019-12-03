@@ -54,6 +54,12 @@ public:
      */
     double getZTop(void) const;
 
+    /** Get elevation of bottom of block in topological space.
+     *
+     * @returns Elevation (m) of bottom of block.
+     */
+    double getZBottom(void) const;
+
     /** Get number of values along each grid dimension.
      *
      * @returns Number of points along grid in each dimension [x, y, z].

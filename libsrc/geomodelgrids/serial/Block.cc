@@ -90,6 +90,14 @@ geomodelgrids::serial::Block::getZTop(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Get elevation of bottom of block in topological space.
+double
+geomodelgrids::serial::Block::getZBottom(void) const {
+    return _zTop - _resolutionVert*_dims[2];
+} // getZBottom
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Get number of values along each grid dimension.
 const size_t*
 geomodelgrids::serial::Block::getDims(void) const {
