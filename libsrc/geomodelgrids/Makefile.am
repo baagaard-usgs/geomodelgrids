@@ -14,7 +14,8 @@ libgeomodelgrids_la_SOURCES = \
 	serial/Topography.cc \
 	serial/Block.cc \
 	serial/HDF5.cc \
-	serial/Query.cc
+	serial/Query.cc \
+	utils/Projection.cc
 
 libgeomodelgrids_la_LIBADD = -lhdf5
 

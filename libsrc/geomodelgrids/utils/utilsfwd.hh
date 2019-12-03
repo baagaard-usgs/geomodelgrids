@@ -3,6 +3,8 @@
 
 namespace geomodelgrids {
     namespace utils {
+	class Projection;
+	
         class TestDriver;
     } // utils
 } // geomodelgrids

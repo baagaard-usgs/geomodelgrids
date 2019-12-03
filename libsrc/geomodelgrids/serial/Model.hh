@@ -6,6 +6,7 @@
 
 // Include directives ---------------------------------------------------
 #include "serialfwd.hh" // forward declarations
+#include "geomodelgrids/utils/utilsfwd.hh" // HOLDSA Projection
 
 #include <vector> // HASA std::std::vector
 #include <string> // HASA std::string
@@ -118,7 +119,7 @@ public:
      * @returns Elevation (m) of ground surface at point.
      */
     double queryElevation(const double longitude,
-                          const double latitude) const;
+                          const double latitude);
 
     /** Query for model values at point using bilinear interpolation.
      *
@@ -129,9 +130,38 @@ public:
      */
     const double* query(const double longitude,
                         const double latitude,
-                        const double elevation) const;
+                        const double elevation);
 
-    // PRIVATE MEMBERS ------------------------------------------------------
+    // PRIVATE MEMBERS -------------------------------------------------------------------------------------------------
+
+    /** Convert longitude, latitude, elevation to xyz model coordinates.
+     *
+     * @param[out] x Model x coordinate of point.
+     * @param[out] y Model y coordinate of point.
+     * @param[out] z Model z coordinate of point.
+     * @param[in] longitude Longitude (degrees, WGS84) of point.
+     * @param[in] latitude Latitude (degrees, WGS84) of point.
+     * @param[in] elevation Elevation (meters wrt MSL) of point.
+     */
+    void _toXYZ(double* x,
+                double* y,
+                double* z,
+                const double longitude,
+                const double latitude,
+                const double elevation) const;
+
+    /** Find block containing point.
+     *
+     * @param[in] x Model x coordinate of point.
+     * @param[in] y Model y coordinate of point.
+     * @param[in] z Model z coordinate of point.
+     * @returns Block containing point.
+     */
+    geomodelgrids::serial::Block* _findBlock(const double x,
+                                             const double y,
+                                             const double z) const;
+
+    // PRIVATE METHODS -------------------------------------------------------------------------------------------------
 private:
 
     std::vector<std::string> _valueNames; ///< Names of values in model.
@@ -144,7 +174,7 @@ private:
     geomodelgrids::serial::HDF5* _h5; ///< Model file.
     geomodelgrids::serial::ModelInfo* _info; ///< Model description information.
     geomodelgrids::serial::Topography* _topography; ///< Model topography.
-    // geomodelgrids::utils::Projection* _projection; ///< Geographic projection of model.
+    geomodelgrids::utils::Projection* _projection; ///< Geographic projection of model.
     std::vector<geomodelgrids::serial::Block*> _blocks; ///< Model blocks.
 
 }; // Model

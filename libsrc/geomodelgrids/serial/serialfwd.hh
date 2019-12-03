@@ -8,8 +8,8 @@ namespace geomodelgrids {
         class Block;
         class Topography;
 
-	class Query;
-	
+        class Query;
+
         class HDF5;
     } // serial
 } // geomodelgrids

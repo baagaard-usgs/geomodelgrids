@@ -40,6 +40,9 @@ public:
     geomodelgrids::serial::Query::values_map_type createModelValuesIndex(const geomodelgrids::serial::Model& model,
                                                                          const std::vector<std::string>& queryNamesLower);
 
+    static
+    unsigned char tolower(unsigned char c);
+
 }; // _Query
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -139,13 +142,17 @@ geomodelgrids::serial::_Query::toLower(const std::vector<std::string>& strings) 
     std::vector<std::string> stringsLower(numStrings);
     for (size_t i = 0; i < numStrings; ++i) {
         stringsLower[i].reserve(strings[i].size());
-        std::transform(strings[i].begin(), strings[i].end(), stringsLower[i].begin(),
-                       [](unsigned char c) {
-            return std::tolower(c);
-        });
+        std::transform(strings[i].begin(), strings[i].end(), stringsLower[i].begin(), _Query::tolower);
     } // for
     return stringsLower;
 } // toLower
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+unsigned char
+geomodelgrids::serial::_Query::tolower(unsigned char c) {
+    return std::tolower(c);
+} // tolower
 
 
 // ---------------------------------------------------------------------------------------------------------------------

@@ -6,12 +6,14 @@
 #include "geomodelgrids/serial/ModelInfo.hh" // USES ModelInfo
 #include "geomodelgrids/serial/Topography.hh" // USES Topography
 #include "geomodelgrids/serial/Block.hh" // USES Block
+#include "geomodelgrids/utils/Projection.hh" // USES Projection
 
 #include <cstring> // USES strlen()
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 #include <algorithm> // USES std::fill()
 #include <cassert> // USES assert()
+#include <cmath> // USES M_PI, cos(), sin()
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -76,7 +78,7 @@ geomodelgrids::serial::Model::close(void) {
     } // if
 
     delete _info;_info = NULL;
-    // delete _projection; _projection = NULL;
+    delete _projection;_projection = NULL;
     delete _topography;_topography = NULL;
     for (size_t i = 0; i < _blocks.size(); ++i) {
         delete _blocks[i];_blocks[i] = NULL;
@@ -131,6 +133,11 @@ geomodelgrids::serial::Model::loadMetadata(void) {
         _blocks[i]->loadMetadata(_h5);
     } // for
     std::sort(_blocks.begin(), _blocks.end(), Block::compare);
+
+    // Initialize projection
+    delete _projection;_projection = new geomodelgrids::utils::Projection();assert(_projection);
+    _projection->fromWKT(_projectionString.c_str());
+    _projection->initialize();
 } // loadMetadata
 
 
@@ -212,20 +219,15 @@ bool
 geomodelgrids::serial::Model::contains(const double longitude,
                                        const double latitude,
                                        const double elevation) const {
+    double x = 0.0;
+    double y = 0.0;
+    double z = 0.0;
+    _toXYZ(&x, &y, &z, longitude, latitude, elevation);
+
     bool inModel = false;
-
-    double xModel = 0.0;
-    double yModel = 0.0;
-    double zModel = 0.0;
-    // _projection->project(&xyzProject);
-    // Geographic coordinates to projection coordinates
-    // :TODO: @brad ADD STUFF HERE
-
-    // Projection coordinates to model coordinates
-
-    if (( xModel >= 0.0) && ( xModel <= _dims[0]) &&
-        ( yModel >= 0.0) && ( yModel <= _dims[1]) &&
-        ( zModel >= 0.0) && ( zModel <= _dims[2]) ) {
+    if (( x >= 0.0) && ( x <= _dims[0]) &&
+        ( y >= 0.0) && ( y <= _dims[1]) &&
+        ( z >= 0.0) && ( z <= _dims[2]) ) {
         inModel = true;
     } // if
 
@@ -237,8 +239,15 @@ geomodelgrids::serial::Model::contains(const double longitude,
 // Get model description.
 double
 geomodelgrids::serial::Model::queryElevation(const double longitude,
-                                             const double latitude) const {
+                                             const double latitude) {
     double elevation = 0;
+
+    if (_topography) {
+        double x = 0.0;
+        double y = 0.0;
+        _toXYZ(&x, &y, NULL, longitude, latitude, 0.0);
+        elevation = _topography->query(x, y);
+    } // if
 
     return elevation;
 } // queryElevation
@@ -249,9 +258,63 @@ geomodelgrids::serial::Model::queryElevation(const double longitude,
 const double*
 geomodelgrids::serial::Model::query(const double longitude,
                                     const double latitude,
-                                    const double elevation) const {
-    return NULL;
+                                    const double elevation) {
+    double x = 0.0;
+    double y = 0.0;
+    double z = 0.0;
+    _toXYZ(&x, &y, &z, longitude, latitude, elevation);
+    assert(contains(longitude, latitude, elevation));
+
+    geomodelgrids::serial::Block* block = _findBlock(x, y, z);assert(block);
+    return block->query(x, y, z);
 } // query
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+void
+geomodelgrids::serial::Model::_toXYZ(double* x,
+                                     double* y,
+                                     double* z,
+                                     const double longitude,
+                                     const double latitude,
+                                     const double elevation) const {
+    assert(x);
+    assert(y);
+    double xProj = 0.0;
+    double yProj = 0.0;
+    _projection->project(&xProj, &yProj, longitude, latitude);
+    const double yazimuthRad = _yazimuth * M_PI / 180.0;
+    const double cosAz = cos(yazimuthRad);
+    const double sinAz = sin(yazimuthRad);
+    const double xRel = xProj - _origin[0];
+    const double yRel = yProj - _origin[1];
+    *x = xRel*cosAz - yRel*sinAz;
+    *y = xRel*sinAz + yRel*cosAz;
+
+    if (z) {
+        double zGroundSurf = 0.0;
+        if (_topography) {
+            zGroundSurf = _topography->query(*x, *y);
+        } // if
+        const double zBottom = -_dims[2];
+        *z = -zBottom / (zGroundSurf - zBottom) * (elevation - zBottom);
+    } // if
+} // _toXYZ
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+geomodelgrids::serial::Block*
+geomodelgrids::serial::Model::_findBlock(const double x,
+                                         const double y,
+                                         const double z) const {
+    for (size_t i = 0; i < _blocks.size(); ++i) {
+        geomodelgrids::serial::Block* block = _blocks[i];assert(block);
+        if (( z <= block->getZTop()) && ( z >= block->getZBottom()) ) {
+            return block;
+        } // if
+    } // for
+    return NULL;
+} // _findBlock
 
 
 // End of file
