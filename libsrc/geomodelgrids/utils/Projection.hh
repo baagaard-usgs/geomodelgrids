@@ -6,6 +6,8 @@
 
 #include "utilsfwd.hh" // forward declarations
 
+#include "proj.h" // HOLDSA PJ
+
 #include <string> // HASA std::string
 
 class geomodelgrids::utils::Projection {
@@ -20,11 +22,21 @@ public:
     /// Destructor
     ~Projection(void);
 
-    /** Create projection from WKT string.
+    /** Set source coordinate system.
      *
-     * @param[in] wkt Projection information as Well-Known Text string.
+     * String can be EPSG:XXXX, WKT, or Proj.
+     *
+     * @param[in] value String specifying source coordinate system.
      */
-    void fromWKT(const char* wkt);
+    void setSrc(const char* value);
+
+    /** Set destination coordinate system.
+     *
+     * String can be EPSG:XXXX, WKT, or Proj.
+     *
+     * @param[in] value String specifying destination coordinate system.
+     */
+    void setDest(const char* value);
 
     /// Initialize projection.
     void initialize(void);
@@ -43,6 +55,10 @@ public:
 
     // PRIVATE MEMBERS -------------------------------------------------------------------------------------------------
 private:
+
+    std::string _srcString;
+    std::string _destString;
+    PJ* _proj;
 
 }; // Projection
 

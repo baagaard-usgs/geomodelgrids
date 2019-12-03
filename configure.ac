@@ -48,8 +48,9 @@ AC_SUBST(AM_LDFLAGS)
 
 # ----------------------------------------------------------------------
 # PROJ4
-AC_CHECK_LIB(proj, pj_init_plus, [
-  AC_CHECK_HEADER([proj_api.h], [], [
+#AC_CHECK_LIB(proj, proj_create_crs_to_crs, [
+AC_SEARCH_LIBS([proj_create_crs_to_crs], [proj], [
+  AC_CHECK_HEADER([proj.h], [], [
     AC_MSG_ERROR([Proj4 header not found; try CPPFLAGS="-I<Proj4 include dir>"])
   ])
 ],[

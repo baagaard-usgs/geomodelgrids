@@ -22,7 +22,8 @@ geomodelgrids::serial::Model::Model(void) :
     _yazimuth(0.0),
     _h5(NULL),
     _info(NULL),
-    _topography(NULL) {
+    _topography(NULL),
+    _projection(NULL) {
     _origin[0] = 0.0;
     _origin[1] = 0.0;
     _dims[0] = 0.0;
@@ -136,7 +137,8 @@ geomodelgrids::serial::Model::loadMetadata(void) {
 
     // Initialize projection
     delete _projection;_projection = new geomodelgrids::utils::Projection();assert(_projection);
-    _projection->fromWKT(_projectionString.c_str());
+    _projection->setSrc("EPSG:4326");
+    _projection->setDest(_projectionString.c_str());
     _projection->initialize();
 } // loadMetadata
 
