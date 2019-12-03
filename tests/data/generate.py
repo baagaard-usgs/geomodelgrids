@@ -56,7 +56,8 @@ class TestData:
 
         # Topography
         if not self.topography is None:
-            topo_dataset = h5.create_dataset("topography", data=self.topography["elevation"])
+            topo_dataset = h5.create_dataset("topography", data=self.topography["elevation"],
+                                             chunks=self.topography["chunk_size"])
             attrs = topo_dataset.attrs
             for attr_name, map_fn in self.TOPOGRAPHY_ATTRS:
                 attrs[attr_name] = self._hdf5_type(self.topography[attr_name], map_fn)
@@ -65,7 +66,8 @@ class TestData:
         h5.create_group("blocks")
         blocks_group = h5["blocks"]
         for block in self.blocks:
-            block_dataset = blocks_group.create_dataset(block["name"], data=block["data"])
+            block_dataset = blocks_group.create_dataset(block["name"], data=block["data"],
+                                                        chunks=block["chunk_size"])
             attrs = block_dataset.attrs
             for attr_name, map_fn in self.BLOCK_ATTRS:
                 attrs[attr_name] = self._hdf5_type(block[attr_name], map_fn)
@@ -129,6 +131,7 @@ class OneBlockFlat(TestData):
             "resolution_vert": 5.0,
             "z_top": 0.0,
             "dim_z": 5.0,
+            "chunk_size": (1, 1, 2, 2),
         }
     ]
     for block in blocks:
@@ -164,11 +167,12 @@ class OneBlockTopo(TestData):
         "y_azimuth": 90.0,
         "dim_x": 30.0,
         "dim_y": 40.0,
-        "dim_z": 5.0,
+        "dim_z": 10.0,
     }
 
     topography = {
         "resolution_horiz": 10.0,
+        "chunk_size": (2,2),
         }
     x, y = TestData.create_groundsurf_xy(model, topography)
     topography["elevation"] = 1.5 + 0.2*x -0.1*y + 0.05*x*y
@@ -180,6 +184,7 @@ class OneBlockTopo(TestData):
             "resolution_vert": 5.0,
             "z_top": 0.0,
             "dim_z": 5.0,
+            "chunk_size": (1, 1, 2, 2),
         }
     ]
     for block in blocks:
@@ -227,6 +232,7 @@ class ThreeBlocksFlat(TestData):
             "resolution_vert": 5.0,
             "z_top": 0.0,
             "dim_z": 5.0,
+            "chunk_size": (4, 4, 2, 2),
         },
         {
             "name": "middle",
@@ -234,6 +240,7 @@ class ThreeBlocksFlat(TestData):
             "resolution_vert": 10.0,
             "z_top": -5.0,
             "dim_z": 20.0,
+            "chunk_size": (2, 2, 3, 2),
         },
         {
             "name": "bottom",
@@ -241,6 +248,7 @@ class ThreeBlocksFlat(TestData):
             "resolution_vert": 10.0,
             "z_top": -25.0,
             "dim_z": 20.0,
+            "chunk_size": (1, 1, 3, 2),
         },
     ]
     for block in blocks:
@@ -281,6 +289,7 @@ class ThreeBlocksTopo(TestData):
 
     topography = {
         "resolution_horiz": 5.0,
+            "chunk_size": (4, 4),
         }
     x, y = TestData.create_groundsurf_xy(model, topography)
     topography["elevation"] = 1.5 + 0.2*x -0.1*y + 0.05*x*y
@@ -292,6 +301,7 @@ class ThreeBlocksTopo(TestData):
             "resolution_vert": 5.0,
             "z_top": 0.0,
             "dim_z": 5.0,
+            "chunk_size": (4, 4, 2, 2),
         },
         {
             "name": "middle",
@@ -299,6 +309,7 @@ class ThreeBlocksTopo(TestData):
             "resolution_vert": 10.0,
             "z_top": -5.0,
             "dim_z": 20.0,
+            "chunk_size": (2, 2, 3, 2),
         },
         {
             "name": "bottom",
@@ -306,6 +317,7 @@ class ThreeBlocksTopo(TestData):
             "resolution_vert": 10.0,
             "z_top": -25.0,
             "dim_z": 20.0,
+            "chunk_size": (1, 1, 3, 2),
         },
     ]
     for block in blocks:
