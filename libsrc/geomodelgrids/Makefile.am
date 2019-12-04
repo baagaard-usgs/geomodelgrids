@@ -9,12 +9,13 @@ lib_LTLIBRARIES = libgeomodelgrids.la
 libgeomodelgrids_la_SOURCES = \
 	apps/Info.cc \
 	apps/Query.cc \
+	serial/Query.cc \
 	serial/ModelInfo.cc \
 	serial/Model.cc \
 	serial/Topography.cc \
 	serial/Block.cc \
 	serial/HDF5.cc \
-	serial/Query.cc \
+	serial/Hyperslab.cc \
 	utils/Projection.cc
 
 libgeomodelgrids_la_LIBADD = -lhdf5

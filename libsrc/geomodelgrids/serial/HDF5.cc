@@ -266,8 +266,8 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
         if (dataspace < 0) { throw std::runtime_error("Could not get dataspace of"); }
 
         char* buffer = NULL;
-	if (0 == H5Tis_variable_str(datatype)) { // Fixed length strings
-	    const hsize_t stringLength = H5Tget_size(datatype);
+        if (0 == H5Tis_variable_str(datatype)) { // Fixed length strings
+            const hsize_t stringLength = H5Tget_size(datatype);
             buffer = new char[stringLength];assert(buffer);
         } // if
 
@@ -275,7 +275,7 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
         if (err < 0) { throw std::runtime_error("Could not read"); }
         value = buffer;
 
-	if (H5Tis_variable_str(datatype) > 0) { // Variable length strings
+        if (H5Tis_variable_str(datatype) > 0) { // Variable length strings
             herr_t err = H5Dvlen_reclaim(datatype, dataspace, H5P_DEFAULT, &buffer);
             if (err < 0) { throw std::runtime_error("Could not reclaim variable length string for"); }
         } else {
@@ -326,8 +326,8 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
         const hsize_t numStrings = dims[0];assert(numStrings > 0);
 
         char** buffer = new char*[numStrings];
-	if (0 == H5Tis_variable_str(datatype)) { // Fixed length strings
-	    hsize_t stringLength = H5Tget_size(datatype);
+        if (0 == H5Tis_variable_str(datatype)) { // Fixed length strings
+            hsize_t stringLength = H5Tget_size(datatype);
             for (size_t i = 0; i < numStrings; ++i) {
                 buffer[i] = new char[stringLength];assert(buffer[i]);
             } // for
@@ -340,13 +340,13 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
         for (size_t i = 0; i < values->size(); ++i) {
             (*values)[i] = buffer[i];
         } // for
-	if (0 == H5Tis_variable_str(datatype)) { // Fixed length strings
+        if (0 == H5Tis_variable_str(datatype)) { // Fixed length strings
             for (size_t i = 0; i < numStrings; ++i) {
                 delete[] buffer[i];buffer[i] = NULL;
             } // for
         } else {
-	    herr_t err = H5Dvlen_reclaim(datatype, dataspace, H5P_DEFAULT, buffer);
-	    if (err < 0) { throw std::runtime_error("Could not reclaim variable length string for"); }
+            herr_t err = H5Dvlen_reclaim(datatype, dataspace, H5P_DEFAULT, buffer);
+            if (err < 0) { throw std::runtime_error("Could not reclaim variable length string for"); }
         } // if/else
         delete[] buffer;buffer = NULL;
 
@@ -386,20 +386,14 @@ geomodelgrids::serial::HDF5::readDatasetChunk(const char* parent,
     try {
         // Open group
         hid_t group = H5Gopen2(_file, parent, H5P_DEFAULT);
-        if (group < 0) {
-            throw std::runtime_error("Could not open group.");
-        }
+        if (group < 0) { throw std::runtime_error("Could not open group."); }
 
         // Open the dataset
         hid_t dataset = H5Dopen2(group, name, H5P_DEFAULT);
-        if (dataset < 0) {
-            throw std::runtime_error("Could not open dataset.");
-        }
+        if (dataset < 0) { throw std::runtime_error("Could not open dataset."); }
 
         hid_t dataspace = H5Dget_space(dataset);
-        if (dataspace < 0) {
-            throw std::runtime_error("Could not get dataspace.");
-        }
+        if (dataspace < 0) { throw std::runtime_error("Could not get dataspace."); }
 
         *ndims = H5Sget_simple_extent_ndims(dataspace);
         assert(*ndims > 0);
@@ -422,51 +416,37 @@ geomodelgrids::serial::HDF5::readDatasetChunk(const char* parent,
         offset[0] = chunk;
 
         hid_t chunkspace = H5Screate_simple(*ndims, *dimsChunk, 0);
-        if (chunkspace < 0) {
-            throw std::runtime_error("Could not create chunk dataspace.");
-        }
+        if (chunkspace < 0) { throw std::runtime_error("Could not create chunk dataspace."); }
 
         herr_t err = H5Sselect_hyperslab(dataspace, H5S_SELECT_SET,
                                          offset, stride, count, *dimsChunk);
         delete[] count;count = 0;
         delete[] stride;stride = 0;
         delete[] offset;offset = 0;
-        if (err < 0) {
-            throw std::runtime_error("Could not select hyperslab.");
-        }
+        if (err < 0) { throw std::runtime_error("Could not select hyperslab."); }
 
         int sizeBytes = H5Tget_size(datatype);
         for (int i = 0; i < *ndims; ++i) {
             sizeBytes *= (*dimsChunk)[i];
-        }
+        } // for
         delete[] *data;*data = (sizeBytes > 0) ? new char[sizeBytes] : 0;
         delete[] dims;dims = 0;
 
         err = H5Dread(dataset, datatype, chunkspace, dataspace,
                       H5P_DEFAULT, (void*)*data);
-        if (err < 0) {
-            throw std::runtime_error("Could not read data.");
-        }
+        if (err < 0) { throw std::runtime_error("Could not read data."); }
 
         err = H5Sclose(chunkspace);
-        if (err < 0) {
-            throw std::runtime_error("Could not close chunk dataspace.");
-        }
+        if (err < 0) { throw std::runtime_error("Could not close chunk dataspace."); }
 
         err = H5Sclose(dataspace);
-        if (err < 0) {
-            throw std::runtime_error("Could not close dataspace.");
-        }
+        if (err < 0) { throw std::runtime_error("Could not close dataspace."); }
 
         err = H5Dclose(dataset);
-        if (err < 0) {
-            throw std::runtime_error("Could not close dataset.");
-        }
+        if (err < 0) { throw std::runtime_error("Could not close dataset."); }
 
         err = H5Gclose(group);
-        if (err < 0) {
-            throw std::runtime_error("Could not close group.");
-        }
+        if (err < 0) { throw std::runtime_error("Could not close group."); }
 
     } catch (const std::exception& err) {
         std::ostringstream msg;

@@ -11,6 +11,7 @@ namespace geomodelgrids {
         class Query;
 
         class HDF5;
+        class Hyperslab;
     } // serial
 } // geomodelgrids
 

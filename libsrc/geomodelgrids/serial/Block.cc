@@ -3,6 +3,7 @@
 #include "Block.hh" // implementation of class methods
 
 #include "geomodelgrids/serial/HDF5.hh" // USES HDF5
+#include "geomodelgrids/serial/Hyperslab.hh" // USES Hyperslab
 
 #include <cstring> // USES strlen()
 #include <stdexcept> // USES std::runtime_error
@@ -13,6 +14,7 @@
 // Default constructor.
 geomodelgrids::serial::Block::Block(const char* name) :
     _name(name),
+    _hyperslab(NULL),
     _resolutionHoriz(0.0),
     _resolutionVert(0.0),
     _zTop(0.0),
@@ -27,6 +29,7 @@ geomodelgrids::serial::Block::Block(const char* name) :
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor
 geomodelgrids::serial::Block::~Block(void) {
+    delete _hyperslab;_hyperslab = NULL;
     delete[] _values;_values = NULL;
 } // destructor
 
@@ -114,13 +117,50 @@ geomodelgrids::serial::Block::getNumValues(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Prepare for querying.
+void
+geomodelgrids::serial::Block::openQuery(geomodelgrids::serial::HDF5* const h5) {
+    const size_t ndims = 3;
+    size_t dims[ndims];
+    dims[0] = 2;
+    dims[1] = 2;
+    dims[2] = _dims[2];
+    const std::string blockPath(std::string("/blocks/") + _name);
+    delete _hyperslab;_hyperslab = new geomodelgrids::serial::Hyperslab(h5, blockPath.c_str(), dims, ndims);
+
+    delete[] _values;_values = (_numValues > 0) ? new double(_numValues) : NULL;
+} // openQuery
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Query for values at a point using bilinear interpolation.
 const double*
 geomodelgrids::serial::Block::query(const double x,
                                     const double y,
                                     const double z) {
+    assert(x >= 0.0);
+    assert(y >= 0.0);
+    assert(z <= 0.0);
+
+    assert( (_numValues > 0 && _values) || (!_numValues && !_values) );
+
+    double index[3];
+    index[0] = x / _resolutionHoriz;assert(index[0] < double(_dims[0]));
+    index[1] = y / _resolutionHoriz;assert(index[1] < double(_dims[1]));
+    index[2] = -z / _resolutionVert;assert(index[2] < double(_dims[2]));
+    _hyperslab->interpolate(_values, index);
+
     return _values;
 } // query
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Cleanup after querying.
+void
+geomodelgrids::serial::Block::closeQuery(void) {
+    delete _hyperslab;_hyperslab = NULL;
+    delete[] _values;_values = NULL;
+} // closeQuery
 
 
 // ---------------------------------------------------------------------------------------------------------------------
