@@ -4,7 +4,7 @@ nobase_pkgpyexec_PYTHON = \
 	model.py \
 	units.py \
 	apps/__init__.py \
-	apps/raserize.py \
+	apps/rasterize.py \
 	earthvision/__init__.py \
 	earthvision/api.py \
 	earthvision/model.py \
