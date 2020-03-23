@@ -1,0 +1,33 @@
+# docker build --build-arg BASE_IMAGE=${VARIABLE_NAME} -f DOCKERFILE . -t IMAGE_NAME .
+
+
+ARG BASE_IMAGE
+from ${BASE_IMAGE} as src
+MAINTAINER Brad Aagaard <baagaard@usgs.gov>
+
+USER ${GEOMODELGRIDS_USER}
+ENV TOP_DIR /home/${GEOMODELGRIDS_USER}
+
+# Copy source code
+ENV PREFIX_DIR ${TOP_DIR}/geomodelgrids
+ENV BUILD_DIR ${TOP_DIR}/build
+ENV SRC_DIR ${TOP_DIR}/src
+
+COPY --chown=geomodelgrids-user:geomodelgrids-user . ${SRC_DIR}
+WORKDIR ${SRC_DIR}
+RUN autoreconf --install --verbose --force
+
+RUN mkdir -p ${BUILD_DIR}
+ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${HDF5_LIBDIR}:${PREFIX_DIR}/lib:${PREFIX_DIR}/lib64
+ENV PYTHONPATH ${PYTHONPATH}:${PREFIX_DIR}/lib/python${PYTHON_VERSION}/site-packages:${PREFIX_DIR}/lib64/python${PYTHON_VERSION}/site-packages
+
+WORKDIR ${BUILD_DIR}
+RUN ${SRC_DIR}/configure --prefix=${PREFIX_DIR} --enable-testing CPPFLAGS="-I/opt/geomodelgrids/dependencies/include -I${HDF5_INCDIR}" LDFLAGS="-L/opt/geomodelgrids/dependencies/lib -L${HDF5_LIBDIR}"
+
+
+# TESTING ----------
+from src as test
+
+RUN make -j$(nproc) install && make -j$(nproc) check VERBOSE=1
+
+CMD /bin/bash

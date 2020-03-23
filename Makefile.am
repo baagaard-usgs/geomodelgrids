@@ -10,7 +10,6 @@ if ENABLE_TESTING
 endif
 
 DIST_SUBDIRS = $(SUBDIRS) \
-	developer \
 	docs \
 	models
 
@@ -23,7 +22,11 @@ EXTRA_DIST = \
 	LICENSE.md \
 	MANIFEST \
 	setup.py \
-	code.json
+	code.json \
+	developer/autopep8.cfg \
+	developer/uncrustify.cfg \
+	docker/debian-stable-gcc8 \
+	docker/geomodelgrids-testenv
 
 
 # End of file

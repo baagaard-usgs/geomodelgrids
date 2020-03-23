@@ -38,9 +38,6 @@ AC_PROG_CC
 AC_PROG_LIBTOOL
 AC_PROG_INSTALL
 
-# Require C++-11
-AX_CXX_COMPILE_STDCXX(11)
-
 AC_PROG_LIBTOOL
 if test "$allow_undefined_flag" = unsupported; then
     # See issue119.
@@ -71,6 +68,9 @@ fi
 # CPPUNIT
 AM_CONDITIONAL([ENABLE_TESTING], [test "$enable_testing" = yes])
 if test "$enable_testing" = "yes" ; then
+  # Require C++-11
+  AX_CXX_COMPILE_STDCXX(11)
+
   CIT_CPPUNIT_HEADER
   CIT_CPPUNIT_LIB
 fi
@@ -131,6 +131,8 @@ AC_CONFIG_FILES([Makefile
 	tests/data/Makefile
 	tests/libtests/Makefile
 	tests/libtests/serial/Makefile
+	docs/Makefile
+	models/Makefile
 	])
 
 AC_OUTPUT
