@@ -48,7 +48,8 @@ geomodelgrids::utils::Projection::initialize(void) {
     _proj = proj_create_crs_to_crs(NULL, _srcString.c_str(), _destString.c_str(), NULL);
     if (!_proj) {
         std::stringstream msg;
-        msg << "Error creating projection from '" << _srcString << "' to '" << _destString << "'.";
+        msg << "Error creating projection from '" << _srcString << "' to '" << _destString << "'.\n"
+	    << proj_errno_string(proj_errno(_proj));
         throw std::runtime_error(msg.str());
     } // if
 } // initialize
