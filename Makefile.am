@@ -6,8 +6,7 @@ SUBDIRS = \
 	bin
 
 if ENABLE_TESTING
-	SUBDIRS += \
-		tests
+  SUBDIRS += tests
 endif
 
 DIST_SUBDIRS = $(SUBDIRS) \
