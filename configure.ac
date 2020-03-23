@@ -38,6 +38,9 @@ AC_PROG_CC
 AC_PROG_LIBTOOL
 AC_PROG_INSTALL
 
+# Require C++-11
+AX_CXX_COMPILE_STDCXX(11)
+
 AC_PROG_LIBTOOL
 if test "$allow_undefined_flag" = unsupported; then
     # See issue119.
@@ -47,15 +50,14 @@ AM_CONDITIONAL([NO_UNDEFINED], [test "$allow_undefined_flag" = unsupported])
 AC_SUBST(AM_LDFLAGS)
 
 # ----------------------------------------------------------------------
-# PROJ4
-#AC_CHECK_LIB(proj, proj_create_crs_to_crs, [
-AC_SEARCH_LIBS([proj_create_crs_to_crs], [proj], [
-  AC_CHECK_HEADER([proj.h], [], [
-    AC_MSG_ERROR([Proj4 header not found; try CPPFLAGS="-I<Proj4 include dir>"])
-  ])
-],[
-  AC_MSG_ERROR([Proj4 library not found; try LDFLAGS="-L<Proj4 lib dir>"])
-])
+# PROJ
+CIT_PROJ6_HEADER
+CIT_PROJ6_LIB
+
+AC_REQUIRE_CPP
+AC_LANG(C++)
+CIT_HDF5_HEADER
+CIT_HDF5_LIB
 
 # FORTRAN BINDINGS
 AM_CONDITIONAL([ENABLE_FORTRAN], [test "$enable_fortran" = yes])

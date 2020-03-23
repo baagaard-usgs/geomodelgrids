@@ -27,4 +27,26 @@ AC_DEFUN([CIT_PROJ4_LIB], [
 ])dnl CIT_PROJ4_LIB
 
 
+# ----------------------------------------------------------------------
+# CIT_PROJ6_HEADER
+# ----------------------------------------------------------------------
+AC_DEFUN([CIT_PROJ6_HEADER], [
+  AC_LANG(C)
+  AC_CHECK_HEADER([proj.h], [], [
+    AC_MSG_ERROR([Proj header (v6.x or later) not found; try CPPFLAGS="-I<Proj include dir>"])
+  ])dnl
+])dnl CIT_PROJ6_HEADER
+
+
+# ----------------------------------------------------------------------
+# CIT_PROJ6_LIB
+# ----------------------------------------------------------------------
+AC_DEFUN([CIT_PROJ6_LIB], [
+  AC_LANG(C)
+  AC_CHECK_LIB(proj, proj_create_crs_to_crs, [],[
+    AC_MSG_ERROR([Proj library (v6.x or later) not found; try LDFLAGS="-L<Proj lib dir>"])
+  ])dnl
+])dnl CIT_PROJ6_LIB
+
+
 dnl end of file
