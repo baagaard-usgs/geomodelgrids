@@ -19,10 +19,10 @@ AC_ARG_ENABLE([fortran],
 	[enable_fortran=yes],
 	[enable_fortran=no])
 
-# TESTING w/cppunit
+# TESTING
 AC_ARG_ENABLE([testing],
-	[  --enable-testing        Enable unit testing with cppunit (requires cppunit) [[default=no]]],
-	[enable_testing=yes],
+	[  --enable-testing        Enable Python and C++ (requires cppunit) unit testing [[default=no]]],
+	[if test "$enableval" = yes ; then enable_testing=yes; else enable_testing=no; fi],
 	[enable_testing=no])
 
 # SPATIAL w/spatialdata extension
@@ -71,19 +71,8 @@ fi
 # CPPUNIT
 AM_CONDITIONAL([ENABLE_TESTING], [test "$enable_testing" = yes])
 if test "$enable_testing" = "yes" ; then
-  AC_LANG(C++)
-  AC_CHECK_HEADER([cppunit/TestRunner.h], [], [
-    AC_MSG_ERROR([CppUnit header not found; try CPPFLAGS="-I<CppUnit include dir>"])
-  ])
-  AC_MSG_CHECKING([for CppUnit::TestRunner in -lcppunit])
-  AC_REQUIRE_CPP
-  AC_COMPILE_IFELSE(
-    [AC_LANG_PROGRAM([[#include <cppunit/TestRunner.h>]],
-	             [[CppUnit::TestRunner runner;]])],
-    [AC_MSG_RESULT(yes)],
-    [AC_MSG_RESULT(no)
-     AC_MSG_ERROR([CppUnit library not found; try LDFLAGS="-L<CppUnit lib dir>"])
-  ])
+  CIT_CPPUNIT_HEADER
+  CIT_CPPUNIT_LIB
 fi
 
 # SPATIALDATA
@@ -122,6 +111,12 @@ if test "$enable_spatial" = "yes" ; then
   AC_PROG_SWIG([2.0.4], [3.0.2])
 
 fi
+
+# VERSION
+CIG_PKG_GIT(GEOMODELGRIDS)
+AC_DEFINE_UNQUOTED([GEOMODELGRIDS_VERSION], ["$PACKAGE_VERSION"], [Define geomodelgrids version])
+
+
 
 # ----------------------------------------------------------------------
 AC_CONFIG_FILES([Makefile
