@@ -41,17 +41,17 @@ public:
     /// Initialize projection.
     void initialize(void);
 
-    /** Compute xy coordinates in geographic projection.
+    /** Transform coordinates from source to destination coordinate system.
      *
-     * @param[out] x X coordinate in geographic projection.
-     * @param[out] y Y coordinate in geographic projection.
-     * @param[in] longitude Longitude (degrees, WGS84).
-     * @param[in] latitude Latitude (degrees, WGS84).
+     * @param[out] destX X coordinate in destination (projection) coordinate system.
+     * @param[out] destY Y coordinate in destination (projection) coordinate system.
+     * @param[in] srcX X coordinate in source (geographic) coordinate system.
+     * @param[in] srcY Y coordinate in source (geographic) coordinate system.
      */
-    void project(double* x,
-                 double* y,
-                 const double longitude,
-                 const double latitude);
+    void project(double* destX,
+                 double* destY,
+                 const double srcX,
+                 const double srcY);
 
     // PRIVATE MEMBERS -------------------------------------------------------------------------------------------------
 private:

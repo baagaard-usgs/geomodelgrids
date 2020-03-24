@@ -130,6 +130,7 @@ AC_CONFIG_FILES([Makefile
 	tests/Makefile
 	tests/data/Makefile
 	tests/libtests/Makefile
+	tests/libtests/utils/Makefile
 	tests/libtests/serial/Makefile
 	docs/Makefile
 	models/Makefile

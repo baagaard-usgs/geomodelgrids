@@ -49,7 +49,7 @@ geomodelgrids::utils::Projection::initialize(void) {
     if (!_proj) {
         std::stringstream msg;
         msg << "Error creating projection from '" << _srcString << "' to '" << _destString << "'.\n"
-	    << proj_errno_string(proj_errno(_proj));
+            << proj_errno_string(proj_errno(_proj));
         throw std::runtime_error(msg.str());
     } // if
 } // initialize
@@ -58,17 +58,17 @@ geomodelgrids::utils::Projection::initialize(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Compute xy coordinates in geographic projection.
 void
-geomodelgrids::utils::Projection::project(double* x,
-                                          double* y,
-                                          const double longitude,
-                                          const double latitude) {
-    assert(x);
-    assert(y);
+geomodelgrids::utils::Projection::project(double* destX,
+                                          double* destY,
+                                          const double srcX,
+                                          const double srcY) {
+    assert(destX);
+    assert(destY);
 
-    PJ_COORD xySrc = proj_coord(latitude, longitude, 0.0, 0.0);
+    PJ_COORD xySrc = proj_coord(srcX, srcY, 0.0, 0.0);
     PJ_COORD xyDest = proj_trans(_proj, PJ_FWD, xySrc);
-    *x = xyDest.xyzt.x;
-    *y = xyDest.xyzt.y;
+    *destX = xyDest.xyzt.x;
+    *destY = xyDest.xyzt.y;
 } // project
 
 
