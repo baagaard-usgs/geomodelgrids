@@ -1,4 +1,4 @@
-FROM debian:stable as os-update
+FROM debian:testing as os-update
 MAINTAINER Brad Aagaard <baagaard@usgs.gov>
 
 RUN apt-get update \
@@ -72,6 +72,7 @@ RUN curl -O https://download.osgeo.org/proj/proj-6.3.1.tar.gz \
 WORKDIR $BUILD_DIR/proj-build
 RUN ../proj-${PROJ_VER}/configure --prefix=$DEPS_DIR SQLITE3_CFLAGS=-I/usr/include SQLITE3_LIBS="-L/usr/lib -lsqlite3" \
   && make -j$(nproc) && make install
+
 
 
 # ----------------------------------------

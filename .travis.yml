@@ -11,6 +11,8 @@ matrix:
   include:
     - os: linux
       env: BASE_IMAGE=baagaard/geomodelgrids-testenv-debian-stable-gcc8
+    - os: linux
+      env: BASE_IMAGE=baagaard/geomodelgrids-testenv-debian-testing-gcc9
 
 
 addons:
@@ -28,5 +30,5 @@ install:
   - docker build -t geomodelgrids-testenv --build-arg BASE_IMAGE=$BASE_IMAGE --target src -f docker/geomodelgrids-testenv .
 
 
-script: 
+script:
   - docker run geomodelgrids-testenv /bin/bash -c "make -j$(nproc) install && make -j$(nproc) check VERBOSE=1"
