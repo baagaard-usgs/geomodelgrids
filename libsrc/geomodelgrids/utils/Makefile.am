@@ -2,7 +2,7 @@ subpackage = utils
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
-	Projection.hh \
+	CRSTransformer.hh \
 	utilsfwd.hh
 
 noinst_HEADERS =

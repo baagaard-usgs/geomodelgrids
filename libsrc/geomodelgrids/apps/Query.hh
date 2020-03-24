@@ -29,6 +29,7 @@ public:
      *   --models=FILE_0,...,FILE_M
      *   --points=FILE_POINTS
      *   --output=FILE_OUTPUT
+     *   --points-coordsys=PROJ|EPSG|WKT
      *
      * @param argc[in] Number of arguments passed.
      * @param argv[in] Array of input arguments.
@@ -58,6 +59,7 @@ private:
     std::vector<std::string> _modelFilenames;
     std::vector<std::string> _valueNames;
     std::string _pointsFilename;
+    std::string _pointsCRS;
     std::string _outputFilename;
     double _squashMinElev;
     bool _squash;

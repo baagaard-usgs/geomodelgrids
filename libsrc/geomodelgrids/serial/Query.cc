@@ -65,7 +65,8 @@ geomodelgrids::serial::Query::~Query(void) {
 // Do setup for querying.
 void
 geomodelgrids::serial::Query::initialize(const std::vector<std::string>& modelFilenames,
-                                         const std::vector<std::string>& valueNames) {
+                                         const std::vector<std::string>& valueNames,
+                                         const std::string& inputCRSString) {
     const std::vector<std::string>& _valuesLowercase = _Query::toLower(valueNames);
 
     for (size_t i = 0; i < _models.size(); ++i) {
@@ -77,6 +78,7 @@ geomodelgrids::serial::Query::initialize(const std::vector<std::string>& modelFi
     _valuesIndex.resize(numModels);
     for (size_t i = 0; i < numModels; ++i) {
         _models[i] = new geomodelgrids::serial::Model();assert(_models[i]);
+        _models[i]->setInputCRS(inputCRSString);
         _models[i]->open(modelFilenames[i].c_str(), geomodelgrids::serial::Model::READ);
         _models[i]->loadMetadata();
 
@@ -86,7 +88,7 @@ geomodelgrids::serial::Query::initialize(const std::vector<std::string>& modelFi
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Turn on squashing and set minimum elevation for squashing.
+// Turn on squashing and set minimum z for squashing.
 void
 geomodelgrids::serial::Query::setSquashMinElev(const double value) {
     _squashMinElev = value;
@@ -98,23 +100,23 @@ geomodelgrids::serial::Query::setSquashMinElev(const double value) {
 // Query at point.
 void
 geomodelgrids::serial::Query::query(double* const values,
-                                    const double longitude,
-                                    const double latitude,
-                                    const double elevation) {
+                                    const double x,
+                                    const double y,
+                                    const double z) {
     assert(values);
 
     const size_t numQueryValues = _valuesLowercase.size();
     for (size_t i = 0; i < _models.size(); ++i) {
-        if (_models[i]->contains(longitude, latitude, elevation)) {
+        if (_models[i]->contains(x, y, z)) {
             assert(_models[i]);
 
-            double elevationSquash = elevation;
-            if (_squash && (elevation > _squashMinElev)) {
-                const double groundElev = _models[i]->queryElevation(longitude, latitude);
-                elevationSquash = elevation - groundElev;
+            double elevationSquash = z;
+            if (_squash && (z > _squashMinElev)) {
+                const double groundElev = _models[i]->queryElevation(x, y);
+                elevationSquash = z - groundElev;
             } // if
 
-            const double* modelValues = _models[i]->query(longitude, latitude, elevationSquash);
+            const double* modelValues = _models[i]->query(x, y, elevationSquash);
             values_map_type& modelMap = _valuesIndex[i];
             for (size_t ivalue = 0; ivalue < numQueryValues; ++ivalue) {
                 values[ivalue] = modelValues[modelMap[ivalue]];

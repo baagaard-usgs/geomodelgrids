@@ -3,7 +3,7 @@
 
 namespace geomodelgrids {
     namespace utils {
-	class Projection;
+	class CRSTransformer;
 	
         class TestDriver;
     } // utils

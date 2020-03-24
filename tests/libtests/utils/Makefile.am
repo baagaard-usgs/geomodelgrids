@@ -7,7 +7,7 @@ TESTS = test_utils
 check_PROGRAMS = test_utils
 
 test_utils_SOURCES = \
-	TestProjection.cc \
+	TestCRSTransformer.cc \
 	test_driver.cc
 
 noinst_HEADERS =

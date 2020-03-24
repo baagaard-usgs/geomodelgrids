@@ -195,7 +195,7 @@ geomodelgrids::apps::Info::_printCoordSys(geomodelgrids::serial::Model* const mo
 
     std::cout << _Info::indent(1) << "Coordinate system:\n";
 
-    std::cout << _Info::indent(2) << "Projection (WKT): " << model->getProjectionString() << "\n";
+    std::cout << _Info::indent(2) << "CRS (PROJ, EPSG, WKT): " << model->getCRSString() << "\n";
 
     const double* origin = model->getOrigin();
     std::cout << _Info::indent(2) << "Origin: x=" << origin[0] <<", y=" << origin[1] << "\n";

@@ -1,13 +1,13 @@
 #include <portinfo>
 
-#include "Projection.hh" // implementation of class methods
+#include "CRSTransformer.hh" // implementation of class methods
 
 #include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
-geomodelgrids::utils::Projection::Projection(void) :
+geomodelgrids::utils::CRSTransformer::CRSTransformer(void) :
     _srcString("EPSG:4326"), // latitude/longitude WGS84
     _destString("EPSG:3488"), // NAD83(HARN) California Albers
     _proj(NULL) {}
@@ -15,7 +15,7 @@ geomodelgrids::utils::Projection::Projection(void) :
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor
-geomodelgrids::utils::Projection::~Projection(void) {
+geomodelgrids::utils::CRSTransformer::~CRSTransformer(void) {
     if (_proj) {
         proj_destroy(_proj);_proj = NULL;
     } // if
@@ -25,7 +25,7 @@ geomodelgrids::utils::Projection::~Projection(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Set source coordinate system.
 void
-geomodelgrids::utils::Projection::setSrc(const char* value) {
+geomodelgrids::utils::CRSTransformer::setSrc(const char* value) {
     _srcString = value;
 } // setSrc
 
@@ -33,7 +33,7 @@ geomodelgrids::utils::Projection::setSrc(const char* value) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Set destination coordinate system.
 void
-geomodelgrids::utils::Projection::setDest(const char* value) {
+geomodelgrids::utils::CRSTransformer::setDest(const char* value) {
     _destString = value;
 } // setDest
 
@@ -41,7 +41,7 @@ geomodelgrids::utils::Projection::setDest(const char* value) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Initialize projection.
 void
-geomodelgrids::utils::Projection::initialize(void) {
+geomodelgrids::utils::CRSTransformer::initialize(void) {
     if (_proj) {
         proj_destroy(_proj);_proj = NULL;
     } // if
@@ -58,10 +58,10 @@ geomodelgrids::utils::Projection::initialize(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Compute xy coordinates in geographic projection.
 void
-geomodelgrids::utils::Projection::project(double* destX,
-                                          double* destY,
-                                          const double srcX,
-                                          const double srcY) {
+geomodelgrids::utils::CRSTransformer::transform(double* destX,
+                                                double* destY,
+                                                const double srcX,
+                                                const double srcY) {
     assert(destX);
     assert(destY);
 
@@ -69,7 +69,7 @@ geomodelgrids::utils::Projection::project(double* destX,
     PJ_COORD xyDest = proj_trans(_proj, PJ_FWD, xySrc);
     *destX = xyDest.xyzt.x;
     *destY = xyDest.xyzt.y;
-} // project
+} // transform
 
 
 // End of file

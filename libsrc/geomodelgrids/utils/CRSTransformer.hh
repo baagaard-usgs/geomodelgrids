@@ -10,17 +10,17 @@
 
 #include <string> // HASA std::string
 
-class geomodelgrids::utils::Projection {
-    friend class TestProjection; // Unit testing
+class geomodelgrids::utils::CRSTransformer {
+    friend class TestCRSTransformer; // Unit testing
 
     // PUBLIC METHODS --------------------------------------------------------------------------------------------------
 public:
 
     /// Default constructor.
-    Projection(void);
+    CRSTransformer(void);
 
     /// Destructor
-    ~Projection(void);
+    ~CRSTransformer(void);
 
     /** Set source coordinate system.
      *
@@ -48,10 +48,10 @@ public:
      * @param[in] srcX X coordinate in source (geographic) coordinate system.
      * @param[in] srcY Y coordinate in source (geographic) coordinate system.
      */
-    void project(double* destX,
-                 double* destY,
-                 const double srcX,
-                 const double srcY);
+    void transform(double* destX,
+                   double* destY,
+                   const double srcX,
+                   const double srcY);
 
     // PRIVATE MEMBERS -------------------------------------------------------------------------------------------------
 private:
@@ -60,7 +60,7 @@ private:
     std::string _destString;
     PJ* _proj;
 
-}; // Projection
+}; // CRSTransformer
 
 #endif // geomodelgrids_utils_projection_hh
 

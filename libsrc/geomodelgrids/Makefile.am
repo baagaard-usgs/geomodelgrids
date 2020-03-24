@@ -16,7 +16,7 @@ libgeomodelgrids_la_SOURCES = \
 	serial/Block.cc \
 	serial/HDF5.cc \
 	serial/Hyperslab.cc \
-	utils/Projection.cc
+	utils/CRSTransformer.cc
 
 libgeomodelgrids_la_LIBADD = -lhdf5
 

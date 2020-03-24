@@ -62,7 +62,7 @@ geomodelgrids::serial::TestModel::testConstructor(void) {
 
     CPPUNIT_ASSERT_MESSAGE("Checking value names", model._valueNames.empty());
     CPPUNIT_ASSERT_MESSAGE("Checking value units", model._valueUnits.empty());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking projection string", std::string(""), model._projectionString);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking projection string", std::string(""), model._modelCRSString);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking origin x", 0.0, model._origin[0]);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking origin y", 0.0, model._origin[1]);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking y azimuth", 0.0, model._yazimuth);
@@ -88,7 +88,7 @@ geomodelgrids::serial::TestModel::testAccessors(void) {
     const char* unitsPtr[numValues] = {"m", "m/s", "MPa"};
     const std::vector<std::string> valueNames(namesPtr, namesPtr+numValues);model._valueNames = valueNames;
     const std::vector<std::string> valueUnits(unitsPtr, unitsPtr+numValues);model._valueUnits = valueUnits;
-    const std::string projectionString("Projection String");model._projectionString = projectionString;
+    const std::string modelCRSString("CRSTransformer String");model._modelCRSString = modelCRSString;
     const double origin[2] = { 10.0, 20.0 };
     model._origin[0] = origin[0];
     model._origin[1] = origin[1];
@@ -123,7 +123,7 @@ geomodelgrids::serial::TestModel::testAccessors(void) {
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking names of values", valueUnits[i], valueUnitsT[i]);
     } // for
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking projection string", projectionString, model.getProjectionString());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking projection string", modelCRSString, model.getCRSString());
 
     const double* originT = model.getOrigin();
     CPPUNIT_ASSERT_MESSAGE("Checking origin pointer", originT);
@@ -162,13 +162,13 @@ geomodelgrids::serial::TestModel::testLoadMetadata(void) {
     const char* unitsPtr[numValues] = {"m", "m/s"};
     const std::vector<std::string> valueNames(namesPtr, namesPtr+numValues);
     const std::vector<std::string> valueUnits(unitsPtr, unitsPtr+numValues);
-    const std::string projectionString("GEOGCRS[\"WGS 84\",DATUM[\"World Geodetic System 1984\",ELLIPSOID[\"WGS 84\""
-                                       ",6378137,298.257223563,LENGTHUNIT[\"metre\",1]],ID[\"EPSG\",6326]],PRIMEM[\""
-                                       "Greenwich\",0,ANGLEUNIT[\"degree\",0.0174532925199433],ID[\"EPSG\",8901]],"
-                                       "CS[ellipsoidal,2],AXIS[\"longitude\",east,ORDER[1],ANGLEUNIT[\"degree\","
-                                       "0.0174532925199433,ID[\"EPSG\",9122]]],AXIS[\"latitude\",north,ORDER[2],"
-                                       "ANGLEUNIT[\"degree\",0.0174532925199433,ID[\"EPSG\",9122]]],"
-                                       "USAGE[SCOPE[\"unknown\"],AREA[\"World\"],BBOX[-90,-180,90,180]]]");
+    const std::string modelCRSString("GEOGCRS[\"WGS 84\",DATUM[\"World Geodetic System 1984\",ELLIPSOID[\"WGS 84\""
+                                     ",6378137,298.257223563,LENGTHUNIT[\"metre\",1]],ID[\"EPSG\",6326]],PRIMEM[\""
+                                     "Greenwich\",0,ANGLEUNIT[\"degree\",0.0174532925199433],ID[\"EPSG\",8901]],"
+                                     "CS[ellipsoidal,2],AXIS[\"longitude\",east,ORDER[1],ANGLEUNIT[\"degree\","
+                                     "0.0174532925199433,ID[\"EPSG\",9122]]],AXIS[\"latitude\",north,ORDER[2],"
+                                     "ANGLEUNIT[\"degree\",0.0174532925199433,ID[\"EPSG\",9122]]],"
+                                     "USAGE[SCOPE[\"unknown\"],AREA[\"World\"],BBOX[-90,-180,90,180]]]");
     const double origin[2] = { 100.0, 200.0 };
     const double yazimuth(330.0);
     const double dims[3] = { 60.0, 120.0, 45.0 };
@@ -197,7 +197,7 @@ geomodelgrids::serial::TestModel::testLoadMetadata(void) {
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking names of values", valueUnits[i], valueUnitsT[i]);
     } // for
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking projection string", projectionString, model.getProjectionString());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking projection string", modelCRSString, model.getCRSString());
 
     const double* originT = model.getOrigin();
     CPPUNIT_ASSERT_MESSAGE("Checking origin pointer", originT);

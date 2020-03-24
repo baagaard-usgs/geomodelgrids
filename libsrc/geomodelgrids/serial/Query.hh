@@ -25,9 +25,11 @@ public:
      *
      * @param[in] modelFilenames Array of model filenames (in query order).
      * @param[in] valueNames Array of names of values to return in query.
+     * @param[in] inputCRSString CRS as string (PROJ, EPSG, WKT) for input points.
      */
     void initialize(const std::vector<std::string>& modelFilenames,
-                    const std::vector<std::string>& valueNames);
+                    const std::vector<std::string>& valueNames,
+                    const std::string& inputCRSString);
 
     /** Turn on squashing and set minimum elevation for squashing.
      *
@@ -42,14 +44,14 @@ public:
      * Values array must be preallocated.
      *
      * @param[out] values Array of values returned in query.
-     * @param[in] longitude Longitude of point (degrees, WGS84 datum).
-     * @param[in] latitude Latitude of point (degrees, WGS84 datum).
-     * @param[in] elevation Elevation of point (m).
+     * @param[in] x X coordinate of point (in input CRS).
+     * @param[in] y Y coordinate of point (in input CRS).
+     * @param[in] z Z coordinate of point (in input CRS).
      */
     void query(double* const values,
-               const double longitude,
-               const double latitude,
-               const double elevation);
+               const double x,
+               const double y,
+               const double z);
 
     /// Cleanup after querying.
     void finalize(void);
