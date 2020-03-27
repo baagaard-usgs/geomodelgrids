@@ -14,8 +14,12 @@
 class geomodelgrids::serial::HDF5 {
     friend class TestHDF5; // Unit testing
 
-    // PUBLIC METHODS
-    // ------------------------------------------------------------------------------------------------------
+    // PUBLIC CONSTANTS ------------------------------------------------------------------------------------------------
+public:
+
+    static const hid_t H5_NULL;
+
+    // PUBLIC METHODS --------------------------------------------------------------------------------------------------
 public:
 
     /// Default constructor.
@@ -104,25 +108,21 @@ public:
                        const char* name,
                        std::vector<std::string>* values);
 
-    /** Read dataset chunk.
+    /** Read hyperslab (subset of values) from dataset.
      *
-     * Currently this method assumes the chunk size (slice along dim=0).
-     *
-     * @param parent Full path of parent group for dataset.
-     * @param name Name of dataset.
-     * @param data Data for chunk.
-     * @param dims Dimensions of chunk.
-     * @param ndims Number of dimensions of chunk.
-     * @param islice Index of data slice.
-     * @param datatype Type of data.
+     * @param[out values Values of hyperslab.
+     * @param[in] path Full path to dataset.
+     * @param[in] origin Origin of hyperslab in dataset.
+     * @param[in] dims Dimensions of hyperslab.
+     * @param[in] ndims Number of dimensions of hyperslab.
+     * @param[in] datatype Type of data.
      */
-    void readDatasetChunk(const char* parent,
-                          const char* name,
-                          char** const data,
-                          hsize_t** const dimsChunk,
-                          int* const ndims,
-                          const int chunk,
-                          hid_t datatype);
+    void readDatasetHyperslab(void* values,
+                              const char* path,
+                              hsize_t* const origin,
+                              hsize_t* const dims,
+                              int ndims,
+                              hid_t datatype);
 
     // PRIVATE MEMBERS ------------------------------------------------------
 private:

@@ -26,7 +26,7 @@ class geomodelgrids::serial::TestHDF5 : public CppUnit::TestFixture {
     CPPUNIT_TEST(testReadAttribute);
     CPPUNIT_TEST(testReadAttributeString);
     CPPUNIT_TEST(testReadAttributeStringArray);
-    CPPUNIT_TEST(testReadDatasetChunk);
+    CPPUNIT_TEST(testReadDatasetHyperslab);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -57,8 +57,8 @@ public:
     /// Test readAttributeStringArray().
     void testReadAttributeStringArray(void);
 
-    /// Test readDatasetChunk().
-    void testReadDatasetChunk(void);
+    /// Test readDatasetHyperslab().
+    void testReadDatasetHyperslab(void);
 
 }; // class TestHDF5
 CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::serial::TestHDF5);
@@ -213,95 +213,16 @@ geomodelgrids::serial::TestHDF5::testReadAttributeStringArray(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Test readDatasetChunk().
+// Test readDatasetHyperslab().
 void
-geomodelgrids::serial::TestHDF5::testReadDatasetChunk(void) {
+geomodelgrids::serial::TestHDF5::testReadDatasetHyperslab(void) {
+    HDF5 h5;
+    h5.open("../../data/three-blocks-flat.h5", H5F_ACC_RDONLY);
+
     CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Implement test.", false);
-} // testReadDatasetChunk
 
+    h5.close();
+} // testReadDatasetHyperslab
 
-#if 0
-// ---------------------------------------------------------------------------------------------------------------------
-// Test loadMetadata().
-void
-geomodelgrids::serial::TestHDF5::testLoadMetadata(void) {
-    const std::string title("Three Blocks Topo");
-    const std::string id("three-blocks-topo");
-    const std::string doi("this.is.a.doi");
-    const size_t numValues = 2;
-    const char* namesPtr[numValues] = {"one", "two" };
-    const char* unitsPtr[numValues] = {"m", "m/s"};
-    const std::vector<std::string> valueNames(namesPtr, namesPtr+numValues);
-    const std::vector<std::string> valueUnits(unitsPtr, unitsPtr+numValues);
-    const std::string modelCRSString("EPSG:3311");
-    const double origin[2] = { 200000.0, -400000.0 };
-    const double yazimuth(330.0);
-    const double dims[3] = { 60.0e+3, 120.0e+3, 45.0e+3 };
-    const double topoHorizRes = 5.0e+3;
-
-    const size_t numBlocks = 3;
-    const char* blockNamesPtr[numBlocks] = {"top", "middle", "bottom"};
-    const double blockZTop[numBlocks] = {0.0e+3, -5.0e+3, -25.0e+3 };
-    const std::vector<std::string> blockNames(blockNamesPtr, blockNamesPtr+numBlocks);
-
-    const double tolerance = 1.0e-6;
-
-    HDF5 model;
-    model.open("../../data/three-blocks-topo.h5", HDF5::READ);
-    model.loadMetadata();
-
-    const std::vector<std::string>& valueNamesT = model.getValueNames();
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking names of values size", valueNames.size(), valueNamesT.size());
-    for (size_t i = 0; i < valueNames.size(); ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking names of values", valueNames[i], valueNamesT[i]);
-    } // for
-
-    const std::vector<std::string>& valueUnitsT = model.getValueUnits();
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking names of values size", valueUnits.size(), valueUnitsT.size());
-    for (size_t i = 0; i < valueUnits.size(); ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking names of values", valueUnits[i], valueUnitsT[i]);
-    } // for
-
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking CRS string", modelCRSString, model.getCRSString());
-
-    const double* originT = model.getOrigin();
-    CPPUNIT_ASSERT_MESSAGE("Checking origin pointer", originT);
-    for (size_t i = 0; i < 2; ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking origin", origin[i], originT[i]);
-    } // for
-
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking yazimuth", yazimuth, model.getYAzimuth(), tolerance);
-
-    const double* dimsT = model.getDims();
-    CPPUNIT_ASSERT_MESSAGE("Checking dims pointer", dimsT);
-    for (size_t i = 0; i < 2; ++i) {
-        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking dims", dims[i], dimsT[i], tolerance);
-    } // for
-
-    const ModelInfo* info = model.getInfo();
-    CPPUNIT_ASSERT_MESSAGE("Checking model info pointer", info);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking model title", title, info->getTitle());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking model id", id, info->getId());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking model doi", doi, info->getDOI());
-
-    const Topography* topography = model.getTopography();
-    CPPUNIT_ASSERT_MESSAGE("Checking topography pointer", topography);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking horizontal resolution of topography",
-                                         topoHorizRes, topography->getResolutionHoriz(), tolerance);
-
-    const std::vector<Block*>& blocksT = model.getBlocks();
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking blocks size", numBlocks, blocksT.size());
-    for (size_t i = 0; i < numBlocks; ++i) {
-        CPPUNIT_ASSERT_MESSAGE("Checking block pointer", blocksT[i]);
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking block names", blockNames[i], blocksT[i]->getName());
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking block z_top", blockZTop[i], blocksT[i]->getZTop());
-
-    } // for
-
-    model.close();
-} // testLoadMetadata
-
-
-#endif
 
 // End of file
