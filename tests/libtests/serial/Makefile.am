@@ -8,6 +8,7 @@ check_PROGRAMS = test_serial
 
 test_serial_SOURCES = \
 	TestModelInfo.cc \
+	TestHDF5.cc \
 	TestBlock.cc \
 	TestTopography.cc \
 	TestModel.cc \
