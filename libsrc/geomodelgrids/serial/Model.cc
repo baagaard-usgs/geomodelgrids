@@ -114,7 +114,7 @@ geomodelgrids::serial::Model::loadMetadata(void) {
     _h5->readAttribute("/", "dim_y", H5T_NATIVE_DOUBLE, (void*)&_dims[1]);
     _h5->readAttribute("/", "dim_z", H5T_NATIVE_DOUBLE, (void*)&_dims[2]);
 
-    _modelCRSString = _h5->readAttribute("/", "projection");
+    _modelCRSString = _h5->readAttribute("/", "crs");
     _h5->readAttribute("/", "origin_x", H5T_NATIVE_DOUBLE, (void*)&_origin[0]);
     _h5->readAttribute("/", "origin_y", H5T_NATIVE_DOUBLE, (void*)&_origin[1]);
     _h5->readAttribute("/", "y_azimuth", H5T_NATIVE_DOUBLE, (void*)&_yazimuth);
@@ -143,12 +143,22 @@ geomodelgrids::serial::Model::loadMetadata(void) {
         _blocks[i]->loadMetadata(_h5);
     } // for
     std::sort(_blocks.begin(), _blocks.end(), Block::compare);
+} // loadMetadata
 
-    // Initialize projection
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Initialize.
+void
+geomodelgrids::serial::Model::initialize(void) {
+    // Initialize CRS transformation
     delete _crsTransformer;_crsTransformer = new geomodelgrids::utils::CRSTransformer();assert(_crsTransformer);
     _crsTransformer->setSrc(_inputCRSString.c_str());
     _crsTransformer->setDest(_modelCRSString.c_str());
     _crsTransformer->initialize();
+
+    if (_topography) {
+        _topography->openQuery(_h5);
+    } // if
 } // loadMetadata
 
 
@@ -193,7 +203,7 @@ geomodelgrids::serial::Model::getYAzimuth(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Get geographic projection for model.
+// Get CRS for model.
 const std::string&
 geomodelgrids::serial::Model::getCRSString(void) const {
     return _modelCRSString;
@@ -209,7 +219,7 @@ geomodelgrids::serial::Model::getInfo(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Get model description.
+// Get model topography.
 const geomodelgrids::serial::Topography*
 geomodelgrids::serial::Model::getTopography(void) const {
     return _topography;

@@ -14,7 +14,7 @@ regular grids.
 ## HDF5 Storage Scheme
 
 The model is stored in an HDF5 file. The elevation of the ground
-surface (topography) is stored in the `topograhy` dataset if it is not
+surface (topography) is stored in the `topography` dataset if it is not
 a flat surface at sea level. The grids are stored in the `blocks`
 group. Attributes are included at the root level and for each data set
 in order to yield a self-describing model. That is, no additional

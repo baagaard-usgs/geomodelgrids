@@ -62,27 +62,8 @@ geomodelgrids::serial::Topography::openQuery(geomodelgrids::serial::HDF5* const 
     size_t dims[ndims];
     dims[0] = 2;
     dims[1] = 2;
-    delete _hyperslab;_hyperslab = new geomodelgrids::serial::Hyperslab(h5, "topographyt", dims, ndims);
+    delete _hyperslab;_hyperslab = new geomodelgrids::serial::Hyperslab(h5, "topography", dims, ndims);
 } // openQuery
-
-
-// ---------------------------------------------------------------------------------------------------------------------
-// Query for values at a point using bilinear interpolation.
-double
-geomodelgrids::serial::Topography::query(const double x,
-                                         const double y) {
-    assert(x >= 0.0);
-    assert(y >= 0.0);
-
-    double index[2];
-    index[0] = x / _resolutionHoriz;assert(index[0] < double(_dims[0]));
-    index[1] = y / _resolutionHoriz;assert(index[1] < double(_dims[1]));
-
-    double elevation = 0.0;
-    _hyperslab->interpolate(&elevation, index);
-
-    return elevation;
-} // query
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -91,6 +72,26 @@ void
 geomodelgrids::serial::Topography::closeQuery(void) {
     delete _hyperslab;_hyperslab = NULL;
 } // closeQuery
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Query for values at a point using bilinear interpolation.
+double
+geomodelgrids::serial::Topography::query(const double x,
+                                         const double y) {
+    double index[2];
+    index[0] = x / _resolutionHoriz;
+    index[1] = y / _resolutionHoriz;
+
+    double elevation = 0.0;
+    if ((index[0] >= 0) && (index[0] < double(_dims[0]))
+        && (index[1] >= 0) && (index[1] < double(_dims[1]))) {
+        assert(_hyperslab);
+        _hyperslab->interpolate(&elevation, index);
+    } // if
+
+    return elevation;
+} // query
 
 
 // End of file

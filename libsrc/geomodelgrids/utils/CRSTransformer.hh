@@ -1,8 +1,8 @@
-/** Geographic projection.
+/** Transform from one georeferenced coordinate system to another.
  */
 
-#if !defined(geomodelgrids_utils_projection_hh)
-#define geomodelgrids_utils_projection_hh
+#if !defined(geomodelgrids_utils_crstransform_hh)
+#define geomodelgrids_utils_crstransform_hh
 
 #include "utilsfwd.hh" // forward declarations
 
@@ -38,15 +38,15 @@ public:
      */
     void setDest(const char* value);
 
-    /// Initialize projection.
+    /// Initialize transfomer.
     void initialize(void);
 
     /** Transform coordinates from source to destination coordinate system.
      *
-     * @param[out] destX X coordinate in destination (projection) coordinate system.
-     * @param[out] destY Y coordinate in destination (projection) coordinate system.
-     * @param[in] srcX X coordinate in source (geographic) coordinate system.
-     * @param[in] srcY Y coordinate in source (geographic) coordinate system.
+     * @param[out] destX X coordinate in destination coordinate system.
+     * @param[out] destY Y coordinate in destination coordinate system.
+     * @param[in] srcX X coordinate in source coordinate system.
+     * @param[in] srcY Y coordinate in source coordinate system.
      */
     void transform(double* destX,
                    double* destY,
@@ -62,6 +62,6 @@ private:
 
 }; // CRSTransformer
 
-#endif // geomodelgrids_utils_projection_hh
+#endif // geomodelgrids_utils_crstransform_hh
 
 // End of file

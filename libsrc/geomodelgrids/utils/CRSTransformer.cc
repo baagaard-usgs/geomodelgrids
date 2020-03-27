@@ -39,7 +39,7 @@ geomodelgrids::utils::CRSTransformer::setDest(const char* value) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Initialize projection.
+// Initialize CRS transformation.
 void
 geomodelgrids::utils::CRSTransformer::initialize(void) {
     if (_proj) {
@@ -48,7 +48,7 @@ geomodelgrids::utils::CRSTransformer::initialize(void) {
     _proj = proj_create_crs_to_crs(NULL, _srcString.c_str(), _destString.c_str(), NULL);
     if (!_proj) {
         std::stringstream msg;
-        msg << "Error creating projection from '" << _srcString << "' to '" << _destString << "'.\n"
+        msg << "Error creating CRS transformation from '" << _srcString << "' to '" << _destString << "'.\n"
             << proj_errno_string(proj_errno(_proj));
         throw std::runtime_error(msg.str());
     } // if
@@ -56,7 +56,7 @@ geomodelgrids::utils::CRSTransformer::initialize(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Compute xy coordinates in geographic projection.
+// Compute from src CRS to dest CRS.
 void
 geomodelgrids::utils::CRSTransformer::transform(double* destX,
                                                 double* destY,

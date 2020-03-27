@@ -89,7 +89,7 @@ geomodelgrids::serial::Hyperslab::Hyperslab(geomodelgrids::serial::HDF5* const h
     assert(ndimsAll >= 0);
     if (_ndims != size_t(ndimsAll)) {
         std::ostringstream msg;
-        msg << "Dimensions of hyperslab for dataset '" << path << "' have different rank than the dataset."
+        msg << "Dimensions of hyperslab for dataset '" << path << "' have different rank than the dataset. "
             << "Hyperslab has rank " << _ndims << ", but dataset has rank " << ndimsAll << ".";
         throw std::runtime_error(msg.str());
     } // if
@@ -173,8 +173,7 @@ geomodelgrids::serial::_Hyperslab::getSlab(const double indexFloat[]) {
     if (needsNewSlab) {
         // Get hyperslab with target point in the center.
         for (hsize_t i = 0; i < ndims; ++i) {
-            hsize_t index = hsize_t(std::floor(indexFloat[i])) - dims[i] / 2;
-            index = std::max(hsize_t(0), index);
+            hsize_t index = (indexFloat[i] > dims[i]) ? hsize_t(std::floor(indexFloat[i])) - dims[i] / 2 : 0;
             index = std::min(index, dimsAll[i]-dims[i]);
             origin[i] = index;
         } // for

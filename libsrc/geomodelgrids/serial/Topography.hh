@@ -38,6 +38,9 @@ public:
      */
     void openQuery(geomodelgrids::serial::HDF5* const h5);
 
+    // Cleanup after querying.
+    void closeQuery(void);
+
     /** Query for elevation (m) of ground surface at a point using bilinear interpolation.
      *
      * @param[in] x X coordinate of point in model coordinate system.
@@ -46,9 +49,6 @@ public:
      */
     double query(const double x,
                  const double y);
-
-    // Cleanup after querying.
-    void closeQuery(void);
 
     // PRIVATE MEMBERS -------------------------------------------------------------------------------------------------
 private:

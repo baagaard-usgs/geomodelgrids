@@ -22,7 +22,7 @@ class HDF5Storage():
         "version",
         "data_values",
         "data_units",
-        "projection",
+        "crs",
         "origin_x",
         "origin_y",
         "y_azimuth",

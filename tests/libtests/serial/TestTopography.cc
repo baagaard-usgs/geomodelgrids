@@ -81,7 +81,7 @@ geomodelgrids::serial::TestTopography::testLoadMetadata(void) {
     Topography topo;
     topo.loadMetadata(&h5);
 
-    const double resolutionHoriz(10.0);
+    const double resolutionHoriz(10.0e+3);
     const size_t dims[2] = { 4, 5 };
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking horizontal resolution", resolutionHoriz, topo.getResolutionHoriz());

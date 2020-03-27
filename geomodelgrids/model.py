@@ -208,7 +208,7 @@ class Model(ABC):
         self.references = string_to_list(config["geomodelgrids"]["references"], delimiter="|")
         self.doi = config["geomodelgrids"]["doi"]
         self.version = config["geomodelgrids"]["version"]
-        self.projection = config["coordsys"]["projection"]
+        self.crs = config["coordsys"]["crs"]
         self.origin_x = float(config["coordsys"]["origin_x"])
         self.origin_y = float(config["coordsys"]["origin_y"])
         self.y_azimuth = float(config["coordsys"]["y_azimuth"])
@@ -251,7 +251,7 @@ class Model(ABC):
         """
         self.storage.save_block(block, values)
 
-    #@abstractmethod
+    # @abstractmethod
     def query_topography(self, points):
         """Query EarthVision model for elevation of ground surface at points.
 
@@ -260,7 +260,7 @@ class Model(ABC):
                 Numpy array with coordinates of points in model coordinates.
         """
 
-    #@abstractmethod
+    # @abstractmethod
     def query_values(self, block):
         """Query EarthVision model for values at points.
 

@@ -53,6 +53,10 @@ public:
      */
     void loadMetadata(void);
 
+    /** Initialize.
+     */
+    void initialize(void);
+
     /** Get names of values in model.
      *
      * @returns Array of names of values in model.
@@ -71,7 +75,7 @@ public:
      */
     const double* getDims(void) const;
 
-    /** Get coordinates of model origin in geographic projection.
+    /** Get coordinates of model origin (model CRS).
      *
      * @returns Coordinates of model origin [x, y].
      */
