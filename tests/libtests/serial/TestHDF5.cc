@@ -216,10 +216,53 @@ geomodelgrids::serial::TestHDF5::testReadAttributeStringArray(void) {
 // Test readDatasetHyperslab().
 void
 geomodelgrids::serial::TestHDF5::testReadDatasetHyperslab(void) {
+    const char* dataset = "/blocks/top";
+
     HDF5 h5;
     h5.open("../../data/three-blocks-flat.h5", H5F_ACC_RDONLY);
 
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Implement test.", false);
+    double res_horiz = 0.0;
+    double res_vert = 0.0;
+    double z_top = 0.0;
+    h5.readAttribute(dataset, "resolution_horiz", H5T_NATIVE_DOUBLE, &res_horiz);
+    h5.readAttribute(dataset, "resolution_vert", H5T_NATIVE_DOUBLE, &res_vert);
+    h5.readAttribute(dataset, "z_top", H5T_NATIVE_DOUBLE, &z_top);
+
+    const int ndims = 4;
+    hsize_t origin[ndims] = { 3, 3, 1, 0 };
+    hsize_t dims[ndims] = { 2, 3, 1, 2 };
+    const int nvalues = 2*3*1*2;
+    double values[nvalues];
+    for (int i = 0; i < nvalues; ++i) {
+        values[i] = -4.0;
+    } // TEMPORARY
+    h5.readDatasetHyperslab((void*)values, dataset, origin, dims, ndims, H5T_NATIVE_DOUBLE);
+
+    const double tolerance = 1.0e-6;
+    for (int ix = 0, i = 0; ix < dims[0]; ++ix) {
+        const double x = res_horiz * (origin[0] + ix);
+        for (int iy = 0; iy < dims[1]; ++iy) {
+            const double y = res_horiz * (origin[1] + iy);
+            for (int iz = 0; iz < dims[2]; ++iz) {
+                const double z = z_top - res_vert * (origin[2] + iz);
+
+                { // Value 0
+                    std::ostringstream msg;
+                    msg << "Mismatch at hyperslab index ("<<ix<<","<<iy<<","<<iz<<",0).";
+                    const double valueE = 2.0e+3 + 1.0 * x + 0.4 * y - 0.5 * z;
+                    const double toleranceV = std::max(tolerance, tolerance*valueE);
+                    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[i++], toleranceV);
+                } // Value 0
+                { // Value 1
+                    std::ostringstream msg;
+                    msg << "Mismatch at hyperslab index ("<<ix<<","<<iy<<","<<iz<<",1).";
+                    const double valueE = -1.2e+3 + 2.1 * x - 0.9 * y + 0.3 * z;
+                    const double toleranceV = std::max(tolerance, tolerance*valueE);
+                    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[i++], toleranceV);
+                } // Value 1
+            } // for
+        } // for
+    } // for
 
     h5.close();
 } // testReadDatasetHyperslab

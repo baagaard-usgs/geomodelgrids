@@ -378,6 +378,7 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
 } // readAttribute
 
 
+#include <iostream>
 // ---------------------------------------------------------------------------------------------------------------------
 // Read dataset slice.
 void
@@ -432,10 +433,15 @@ geomodelgrids::serial::HDF5::readDatasetHyperslab(void* values,
             count[i] = 1;
         } // for
 
-        herr_t err = H5Sselect_hyperslab(h5access.dataspace, H5S_SELECT_SET, origin, stride, count, dims);
-        if (err < 0) { throw std::runtime_error("Could not read hyperslab."); }
-        err = H5Dread(h5access.dataset, datatype, H5S_ALL, h5access.dataspace, H5P_DEFAULT, values);
+        hid_t memspace = H5Screate_simple(ndims, dims, dims);
+        if (memspace < 0) { throw std::runtime_error("Could not create memory space."); }
 
+        herr_t err = H5Sselect_hyperslab(h5access.dataspace, H5S_SELECT_SET, origin, stride, count, dims);
+        if (err < 0) { throw std::runtime_error("Could not select hyperslab."); }
+        err = H5Dread(h5access.dataset, datatype, memspace, h5access.dataspace, H5P_DEFAULT, values);
+        if (err < 0) { throw std::runtime_error("Could not read hyperslab."); }
+
+        H5Sclose(memspace);memspace = H5_NULL;
     } catch (const std::exception& err) {
         std::ostringstream msg;
         msg << "Error occurred while reading dataset '"
