@@ -55,7 +55,7 @@ private:
     geomodelgrids::serial::HDF5* const _h5; ///< HDF5 data.
     const std::string _datasetPath; ///< Full path to dataset.
 
-    const hsize_t _ndims; ///< Number of dimensions in hyperslab.
+    const size_t _ndims; ///< Number of dimensions in hyperslab.
     hsize_t* _origin; ///< Origin of hyperslab relative to dataset.
     hsize_t* _dims; ///< Dimensions of hyperslab.
     hsize_t* _dimsAll; ///< Dimensions of entire dataset.

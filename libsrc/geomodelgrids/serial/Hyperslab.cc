@@ -92,12 +92,15 @@ geomodelgrids::serial::Hyperslab::Hyperslab(geomodelgrids::serial::HDF5* const h
         std::ostringstream msg;
         msg << "Dimensions of hyperslab for dataset '" << path << "' have different rank than the dataset. "
             << "Hyperslab has rank " << _ndims << ", but dataset has rank " << ndimsAll << ".";
-        throw std::runtime_error(msg.str());
+        throw std::length_error(msg.str());
     } // if
 
+    hsize_t totalSize = 1;
     for (size_t i = 0; i < ndims; ++i) {
         _dims[i] = std::min(dims[i], _dimsAll[i]);
+        totalSize *= _dims[i];
     } // for
+    _values = (totalSize > 0) ? new double[totalSize] : NULL;
 
     delete _hyperslab;_hyperslab = new geomodelgrids::serial::_Hyperslab(*this);
 } // constructor
@@ -137,7 +140,7 @@ geomodelgrids::serial::_Hyperslab::_Hyperslab(geomodelgrids::serial::Hyperslab& 
     } else {
         std::ostringstream msg;
         msg << "Expect ndims (" << hyperslab._ndims << ") to be 2 or 3 in geomodelgrids::serial::Hyperslab.";
-        throw std::logic_error(msg.str());
+        throw std::domain_error(msg.str());
     } // if/else
 } // constructor
 
@@ -156,22 +159,25 @@ geomodelgrids::serial::_Hyperslab::getSlab(const double indexFloat[]) {
     const hsize_t* dimsAll = _hyperslab._dimsAll;
 
     bool needsNewSlab = false;
+    const size_t spaceDim = ndims - 1; // last dimension is values
     if (origin) {
-        for (size_t i = 0; i < ndims; ++i) {
-            if (( indexFloat[0] - double(origin[i]) < 0.0) ||
-                ( indexFloat[0] >= double(origin[i]+dims[i])) ) {
+        for (size_t i = 0; i < spaceDim; ++i) {
+            if (( indexFloat[i] - double(origin[i]) < 0.0) ||
+                ( indexFloat[i] >= double(origin[i]+dims[i]-1)) ) {
                 needsNewSlab = true;
+                break;
             } // if
         } // for
     } else {
         origin = _hyperslab._origin = (ndims > 0) ? new hsize_t[ndims] : NULL;
+        std::fill(&origin[0], &origin[ndims], 0);
         needsNewSlab = true;
     } // if/else
 
     if (needsNewSlab) {
         // Get hyperslab with target point in the center.
-        for (size_t i = 0; i < ndims; ++i) {
-            hsize_t index = (indexFloat[i] > dims[i]) ? hsize_t(std::floor(indexFloat[i])) - dims[i] / 2 : 0;
+        for (size_t i = 0; i < spaceDim; ++i) {
+            hsize_t index = (indexFloat[i] >= dims[i]-1) ? hsize_t(std::floor(indexFloat[i] - (dims[i]-1)/ 2)) : 0;
             index = std::min(index, dimsAll[i]-dims[i]);
             origin[i] = index;
         } // for
@@ -198,23 +204,23 @@ geomodelgrids::serial::_Hyperslab::_interpolate2D(double* const values,
     assert(values);
     assert(indexFloat);
     assert(_hyperslab._values);
-    assert(_hyperslab._dimsAll);
     assert(_hyperslab._origin);
 
     const size_t spaceDim = 2;
 
     // Coordinates within hyperslab
     const double indexSlab[spaceDim] = {
-        indexFloat[0] - _hyperslab._origin[0]*_hyperslab._dimsAll[0],
-        indexFloat[1] - _hyperslab._origin[1]*_hyperslab._dimsAll[1],
+        indexFloat[0] - _hyperslab._origin[0],
+        indexFloat[1] - _hyperslab._origin[1],
     };
     assert(indexSlab[0] >= 0.0);
     assert(indexSlab[1] >= 0.0);
 
     // Coordinate of "lower" point (corner of cell with lowest indices containing target point).
+    const double tolerance = 1.0e-12;
     const double dfloor[spaceDim] = {
-        std::floor(indexSlab[0]),
-        std::floor(indexSlab[1]),
+        std::max(0.0, std::floor(indexSlab[0]-tolerance)),
+        std::max(0.0, std::floor(indexSlab[1]-tolerance)),
     };
 
     // Index of "lower" point
@@ -258,7 +264,7 @@ geomodelgrids::serial::_Hyperslab::_interpolate2D(double* const values,
         values[iValue] = 0;
         for (hsize_t iDim = 0; iDim < 2; ++iDim) {
             for (hsize_t jDim = 0; jDim < 2; ++jDim) {
-                values[iValue] += wts[iDim][jDim] * values[ii[iDim][jDim] + iValue];
+                values[iValue] += wts[iDim][jDim] * _hyperslab._values[ii[iDim][jDim] + iValue];
             } // for
         } // for
     } // for
@@ -280,19 +286,20 @@ geomodelgrids::serial::_Hyperslab::_interpolate3D(double* const values,
 
     // Coordinates within hyperslab
     const double indexSlab[spaceDim] = {
-        indexFloat[0] - _hyperslab._origin[0]*_hyperslab._dimsAll[0],
-        indexFloat[1] - _hyperslab._origin[1]*_hyperslab._dimsAll[1],
-        indexFloat[2] - _hyperslab._origin[2]*_hyperslab._dimsAll[2],
+        indexFloat[0] - _hyperslab._origin[0],
+        indexFloat[1] - _hyperslab._origin[1],
+        indexFloat[2] - _hyperslab._origin[2],
     };
-    assert(indexSlab[0] >= 0.0);
-    assert(indexSlab[1] >= 0.0);
-    assert(indexSlab[2] >= 0.0);
+    assert(indexSlab[0] >= 0.0 && indexSlab[0] <= _hyperslab._dims[0]-1);
+    assert(indexSlab[1] >= 0.0 && indexSlab[1] <= _hyperslab._dims[1]-1);
+    assert(indexSlab[2] >= 0.0 && indexSlab[2] <= _hyperslab._dims[2]-1);
 
     // Coordinate of "lower" point (corner of cell with lowest indices containing target point).
+    const double tolerance = 1.0e-12;
     const double dfloor[spaceDim] = {
-        std::floor(indexSlab[0]),
-        std::floor(indexSlab[1]),
-        std::floor(indexSlab[2]),
+        std::max(0.0, std::floor(indexSlab[0]-tolerance)),
+        std::max(0.0, std::floor(indexSlab[1]-tolerance)),
+        std::max(0.0, std::floor(indexSlab[2]-tolerance)),
     };
 
     // Index of "lower" point
@@ -359,8 +366,8 @@ geomodelgrids::serial::_Hyperslab::_interpolate3D(double* const values,
         values[iValue] = 0;
         for (hsize_t iDim = 0; iDim < 2; ++iDim) {
             for (hsize_t jDim = 0; jDim < 2; ++jDim) {
-                for (hsize_t kDim = 0; jDim < 2; ++jDim) {
-                    values[iValue] += wts[iDim][jDim][kDim] * values[ii[iDim][jDim][kDim] + iValue];
+                for (hsize_t kDim = 0; kDim < 2; ++kDim) {
+                    values[iValue] += wts[iDim][jDim][kDim] * _hyperslab._values[ii[iDim][jDim][kDim] + iValue];
                 } // for
             } // for
         } // for

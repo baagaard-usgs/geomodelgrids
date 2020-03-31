@@ -195,8 +195,8 @@ class OneBlockTopo(TestData):
         (nx, ny, nz) = x.shape
         nvalues = len(model["data_values"])
         data = numpy.zeros((nx, ny, nz, nvalues), dtype=numpy.float32)
-        data[:, :, :, 0] = 2.0 + 1.0 * x + 0.4 * y - 0.5 * z
-        data[:, :, :, 1] = -1.2 + 2.1 * x - 0.9 * y + 0.3 * z
+        data[:, :, :, 0] = 2.0e+3 + 1.0 * x + 0.4 * y - 0.5 * z
+        data[:, :, :, 1] = -1.2e+3 + 2.1 * x - 0.9 * y + 0.3 * z
         block["data"] = data
 
 
