@@ -119,8 +119,8 @@ public:
      */
     void readDatasetHyperslab(void* values,
                               const char* path,
-                              hsize_t* const origin,
-                              hsize_t* const dims,
+                              const hsize_t* const origin,
+                              const hsize_t* const dims,
                               int ndims,
                               hid_t datatype);
 

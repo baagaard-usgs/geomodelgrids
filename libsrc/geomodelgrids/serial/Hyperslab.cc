@@ -24,6 +24,7 @@ public:
      */
     _Hyperslab(Hyperslab& hyperslab);
 
+    /// Destructor.
     ~_Hyperslab(void);
 
     /** Get values for hyperslab containing target point.
@@ -63,7 +64,7 @@ private:
     void _interpolate3D(double* const values,
                         const double indexFloat[]);
 
-    geomodelgrids::serial::Hyperslab& _hyperslab;
+    geomodelgrids::serial::Hyperslab& _hyperslab; ///< Reference to hyperslab.
     interpolate_fn_type _interpolate; ///< Function for interpolation.
 
 }; // _Hyperslab
@@ -72,11 +73,11 @@ private:
 // Default constructor.
 geomodelgrids::serial::Hyperslab::Hyperslab(geomodelgrids::serial::HDF5* const h5,
                                             const char* path,
-                                            size_t dims[],
+                                            const hsize_t dims[],
                                             const size_t ndims) :
     _h5(h5),
     _datasetPath(path),
-    _ndims(ndims+1),
+    _ndims(ndims),
     _origin(NULL),
     _dims(_ndims > 0 ? new hsize_t[_ndims] : NULL),
     _dimsAll(NULL),
@@ -95,11 +96,8 @@ geomodelgrids::serial::Hyperslab::Hyperslab(geomodelgrids::serial::HDF5* const h
     } // if
 
     for (size_t i = 0; i < ndims; ++i) {
-        _dims[i] = dims[i];
+        _dims[i] = std::min(dims[i], _dimsAll[i]);
     } // for
-    _dims[ndims] = _dimsAll[ndims];
-
-    // :TODO: Limit dims to be smaller than dimsAll.
 
     delete _hyperslab;_hyperslab = new geomodelgrids::serial::_Hyperslab(*this);
 } // constructor
@@ -132,9 +130,9 @@ geomodelgrids::serial::Hyperslab::interpolate(double* const values,
 // Constructor.
 geomodelgrids::serial::_Hyperslab::_Hyperslab(geomodelgrids::serial::Hyperslab& hyperslab) :
     _hyperslab(hyperslab) {
-    if (3 == hyperslab._ndims) {
+    if (3 == hyperslab._ndims-1) {
         _interpolate = &geomodelgrids::serial::_Hyperslab::_interpolate3D;
-    } else if (2 == hyperslab._ndims) {
+    } else if (2 == hyperslab._ndims-1) {
         _interpolate = &geomodelgrids::serial::_Hyperslab::_interpolate2D;
     } else {
         std::ostringstream msg;
@@ -152,33 +150,34 @@ geomodelgrids::serial::_Hyperslab::~_Hyperslab(void) {}
 // Get values for hyperslab containing target point.
 void
 geomodelgrids::serial::_Hyperslab::getSlab(const double indexFloat[]) {
-    const hsize_t ndims = _hyperslab._ndims;
+    const size_t ndims = _hyperslab._ndims;
     hsize_t* origin = _hyperslab._origin;
     const hsize_t* dims = _hyperslab._dims;
     const hsize_t* dimsAll = _hyperslab._dimsAll;
 
-    bool needsNewSlab = true;
+    bool needsNewSlab = false;
     if (origin) {
-        for (hsize_t i = 0; i < ndims; ++i) {
+        for (size_t i = 0; i < ndims; ++i) {
             if (( indexFloat[0] - double(origin[i]) < 0.0) ||
                 ( indexFloat[0] >= double(origin[i]+dims[i])) ) {
                 needsNewSlab = true;
             } // if
         } // for
     } else {
-        _hyperslab._origin = (ndims > 0) ? new hsize_t[ndims] : NULL;
-        origin = _hyperslab._origin;
+        origin = _hyperslab._origin = (ndims > 0) ? new hsize_t[ndims] : NULL;
+        needsNewSlab = true;
     } // if/else
 
     if (needsNewSlab) {
         // Get hyperslab with target point in the center.
-        for (hsize_t i = 0; i < ndims; ++i) {
+        for (size_t i = 0; i < ndims; ++i) {
             hsize_t index = (indexFloat[i] > dims[i]) ? hsize_t(std::floor(indexFloat[i])) - dims[i] / 2 : 0;
             index = std::min(index, dimsAll[i]-dims[i]);
             origin[i] = index;
         } // for
 
-        // _hyperslab._h5->readDatasetHyperslab(&_hyperslab.values, _hyperslab._path, origin, dims, datatype);
+        _hyperslab._h5->readDatasetHyperslab(_hyperslab._values, _hyperslab._datasetPath.c_str(), origin, dims, ndims,
+                                             H5T_NATIVE_DOUBLE);
     } // if
 } // getSlab
 
@@ -264,7 +263,7 @@ geomodelgrids::serial::_Hyperslab::_interpolate2D(double* const values,
         } // for
     } // for
 
-} // interpolate3D
+} // interpolate2D
 
 
 // ---------------------------------------------------------------------------------------------------------------------

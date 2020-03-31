@@ -172,10 +172,13 @@ class OneBlockTopo(TestData):
 
     topography = {
         "resolution_horiz": 10.0e+3,
-        "chunk_size": (2, 2),
+        "chunk_size": (2, 2, 1),
     }
     x, y = TestData.create_groundsurf_xy(model, topography)
-    topography["elevation"] = 1.5e+2 + 0.2 * x - 0.1 * y + 0.05 * x * y
+    (nx, ny) = x.shape
+    elevation = numpy.zeros((nx, ny, 1), dtype=numpy.float32)
+    elevation[:, :, 0] = 1.5e+2 + 0.2 * x - 0.1 * y + 0.05 * x * y
+    topography["elevation"] = elevation
 
     blocks = [
         {
@@ -289,10 +292,13 @@ class ThreeBlocksTopo(TestData):
 
     topography = {
         "resolution_horiz": 5.0e+3,
-        "chunk_size": (4, 4),
+        "chunk_size": (4, 4, 1),
     }
     x, y = TestData.create_groundsurf_xy(model, topography)
-    topography["elevation"] = 1.5e+2 + 0.2 * x - 0.1 * y + 0.05 * x * y
+    (nx, ny) = x.shape
+    elevation = numpy.zeros((nx, ny, 1), dtype=numpy.float32)
+    elevation[:, :, 0] = 1.5e+2 + 0.2 * x - 0.1 * y + 0.05 * x * y
+    topography["elevation"] = elevation
 
     blocks = [
         {

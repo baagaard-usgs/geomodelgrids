@@ -104,8 +104,8 @@ geomodelgrids::serial::TestBlock::testLoadMetadata(void) {
     Block block(blockName.c_str());
     block.loadMetadata(&h5);
 
-    const double resolutionHoriz(10.0);
-    const double resolutionVert(5.0);
+    const double resolutionHoriz(10.0e+3);
+    const double resolutionVert(5.0e+3);
     const double zTop(0.0);
     const size_t dims[3] = { 4, 5, 2 };
     const size_t numValues(2);

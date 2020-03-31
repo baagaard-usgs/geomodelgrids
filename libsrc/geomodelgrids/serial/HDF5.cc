@@ -384,8 +384,8 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
 void
 geomodelgrids::serial::HDF5::readDatasetHyperslab(void* values,
                                                   const char* path,
-                                                  hsize_t* const origin,
-                                                  hsize_t* const dims,
+                                                  const hsize_t* const origin,
+                                                  const hsize_t* const dims,
                                                   const int ndims,
                                                   hid_t datatype) {
     assert(values);

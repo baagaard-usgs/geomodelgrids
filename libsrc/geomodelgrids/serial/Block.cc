@@ -121,7 +121,7 @@ geomodelgrids::serial::Block::getNumValues(void) const {
 void
 geomodelgrids::serial::Block::openQuery(geomodelgrids::serial::HDF5* const h5) {
     const size_t ndims = 3;
-    size_t dims[ndims];
+    hsize_t dims[ndims];
     dims[0] = 2;
     dims[1] = 2;
     dims[2] = _dims[2];

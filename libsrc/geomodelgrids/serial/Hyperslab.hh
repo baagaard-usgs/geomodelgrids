@@ -35,7 +35,7 @@ public:
      */
     Hyperslab(geomodelgrids::serial::HDF5* const h5,
               const char* path,
-              size_t dims[],
+              const hsize_t dims[],
               const size_t ndims);
 
     /// Destructor
@@ -55,11 +55,11 @@ private:
     geomodelgrids::serial::HDF5* const _h5; ///< HDF5 data.
     const std::string _datasetPath; ///< Full path to dataset.
 
-    const hsize_t _ndims; ///< Number of dimensions in hyperslab (including values).
+    const hsize_t _ndims; ///< Number of dimensions in hyperslab.
     hsize_t* _origin; ///< Origin of hyperslab relative to dataset.
-    hsize_t* _dims; ///< Dimensions of hyperslab (including values).
+    hsize_t* _dims; ///< Dimensions of hyperslab.
     hsize_t* _dimsAll; ///< Dimensions of entire dataset.
-    double* _values; ///< Hyperslab values; dimensions given by _dims.
+    double* _values; ///< Hyperslab values.
 
     geomodelgrids::serial::_Hyperslab* _hyperslab; ///< Helper object.
 }; // Hyperslab

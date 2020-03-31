@@ -38,7 +38,7 @@ geomodelgrids::serial::Topography::loadMetadata(geomodelgrids::serial::HDF5* con
     hsize_t* hdims = NULL;
     int ndims = 0;
     h5->getDatasetDims(&hdims, &ndims, "topography");
-    assert(2 == ndims);
+    assert(3 == ndims);
     for (int i = 0; i < 2; ++i) {
         _dims[i] = hdims[i];
     } // for
@@ -58,10 +58,11 @@ geomodelgrids::serial::Topography::getResolutionHoriz(void) const {
 // Prepare for querying.
 void
 geomodelgrids::serial::Topography::openQuery(geomodelgrids::serial::HDF5* const h5) {
-    const size_t ndims = 2;
-    size_t dims[ndims];
+    const size_t ndims = 3;
+    hsize_t dims[ndims];
     dims[0] = 2;
     dims[1] = 2;
+    dims[2] = 1;
     delete _hyperslab;_hyperslab = new geomodelgrids::serial::Hyperslab(h5, "topography", dims, ndims);
 } // openQuery
 
