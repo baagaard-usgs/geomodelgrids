@@ -309,6 +309,7 @@ geomodelgrids::serial::TestModel::testContains(void) {
     Model model;
     model.open("../../data/three-blocks-topo.h5", Model::READ);
     model.loadMetadata();
+    model.initialize();
 
     const std::string inputCRS("EPSG:4326"); // WGS84
     const unsigned int numPoints = 12;

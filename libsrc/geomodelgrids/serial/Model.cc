@@ -301,6 +301,8 @@ geomodelgrids::serial::Model::_toModelXYZ(double* xModel,
                                           const double z) const {
     assert(xModel);
     assert(yModel);
+    assert(_crsTransformer);
+
     double xModelCRS = 0.0;
     double yModelCRS = 0.0;
     _crsTransformer->transform(&xModelCRS, &yModelCRS, x, y);
@@ -313,6 +315,7 @@ geomodelgrids::serial::Model::_toModelXYZ(double* xModel,
     *yModel = xRel*sinAz + yRel*cosAz;
 
     if (z) {
+        assert(zModel);
         double zGroundSurf = 0.0;
         if (_topography) {
             zGroundSurf = _topography->query(*xModel, *yModel);
