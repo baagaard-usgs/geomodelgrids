@@ -213,8 +213,8 @@ geomodelgrids::serial::_Hyperslab::_interpolate2D(double* const values,
         indexFloat[0] - _hyperslab._origin[0],
         indexFloat[1] - _hyperslab._origin[1],
     };
-    assert(indexSlab[0] >= 0.0);
-    assert(indexSlab[1] >= 0.0);
+    assert(indexSlab[0] >= 0.0 && indexSlab[0] <= _hyperslab._dims[0]-1);
+    assert(indexSlab[1] >= 0.0 && indexSlab[1] <= _hyperslab._dims[1]-1);
 
     // Coordinate of "lower" point (corner of cell with lowest indices containing target point).
     const double tolerance = 1.0e-12;

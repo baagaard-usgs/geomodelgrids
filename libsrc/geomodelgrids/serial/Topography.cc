@@ -60,8 +60,8 @@ void
 geomodelgrids::serial::Topography::openQuery(geomodelgrids::serial::HDF5* const h5) {
     const size_t ndims = 3;
     hsize_t dims[ndims];
-    dims[0] = 2;
-    dims[1] = 2;
+    dims[0] = 32;
+    dims[1] = 32;
     dims[2] = 1;
     delete _hyperslab;_hyperslab = new geomodelgrids::serial::Hyperslab(h5, "topography", dims, ndims);
 } // openQuery
