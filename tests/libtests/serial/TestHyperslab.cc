@@ -211,7 +211,7 @@ geomodelgrids::serial::TestHyperslab::testInterpolate2D(void) {
 
         const double x = resolution * index[i*spaceDim + 0];
         const double y = resolution * index[i*spaceDim + 1];
-        const double elevationE = 1.5e+2 + 0.2 * x - 0.1 * y + 0.05 * x * y;
+        const double elevationE = 1.5e+2 + 0.2 * x - 0.1 * y + 0.05e-3 * x * y;
 
         std::ostringstream msg;
         msg << "Mismatch in elevation for index (" << index[i*spaceDim+0] << ", " << index[i*spaceDim+1] << ").";

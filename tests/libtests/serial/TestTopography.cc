@@ -118,7 +118,7 @@ geomodelgrids::serial::TestTopography::testQuery(void) {
         const double y = xy[i*spaceDim+1];
         const double elevation = topo.query(x, y);
 
-        const double elevationE = 1.5e+2 + 0.2 * x - 0.1 * y + 0.05 * x * y;
+        const double elevationE = 1.5e+2 + 0.2 * x - 0.1 * y + 0.05e-3 * x * y;
 
         std::ostringstream msg;
         msg << "Mismatch in elevation at (" << x << ", " << y << ").";

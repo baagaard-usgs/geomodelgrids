@@ -25,7 +25,8 @@ class geomodelgrids::serial::TestModel : public CppUnit::TestFixture {
     CPPUNIT_TEST(testAccessors);
     CPPUNIT_TEST(testLoadMetadata);
     CPPUNIT_TEST(testInitialize);
-    CPPUNIT_TEST(testToModelXYZ);
+    CPPUNIT_TEST(testToModelXYZFlat);
+    CPPUNIT_TEST(testToModelXYZTopo);
     CPPUNIT_TEST(testContains);
     CPPUNIT_TEST(testQueryElevation);
     CPPUNIT_TEST(testQuery);
@@ -47,8 +48,11 @@ public:
     /// Test initialize().
     void testInitialize(void);
 
-    /// Test _toModelXYZ().
-    void testToModelXYZ(void);
+    /// Test _toModelXYZ() with flat ground surface.
+    void testToModelXYZFlat(void);
+
+    /// Test _toModelXYZ() with topography.
+    void testToModelXYZTopo(void);
 
     /// Test contains().
     void testContains(void);
@@ -260,17 +264,17 @@ geomodelgrids::serial::TestModel::testInitialize(void) {
 
 
 // ----------------------------------------------------------------------
-// Test _toModelXYZ().
+// Test _toModelXYZ() with flat ground surface.
 void
-geomodelgrids::serial::TestModel::testToModelXYZ(void) {
+geomodelgrids::serial::TestModel::testToModelXYZFlat(void) {
     Model model;
-    model.open("../../data/three-blocks-topo.h5", Model::READ);
+    model.open("../../data/three-blocks-flat.h5", Model::READ);
     model.loadMetadata();
     model.initialize();
 
     const std::string inputCRS("EPSG:4326"); // WGS84
-    const unsigned int numPoints = 5;
-    const unsigned int spaceDim = 3;
+    const size_t numPoints = 5;
+    const size_t spaceDim = 3;
     const double lle[numPoints*spaceDim] = {
         34.0, -116.5, 10.0,
         34.5, -117.8, 12.0,
@@ -286,12 +290,12 @@ geomodelgrids::serial::TestModel::testToModelXYZ(void) {
         -199841.70552931, 579964.1840423, 32500.0,
     };
 
-    for (unsigned int iPt = 0; iPt < numPoints; ++iPt) {
+    for (size_t iPt = 0; iPt < numPoints; ++iPt) {
         double xyz[spaceDim];
         model._toModelXYZ(&xyz[0], &xyz[1], &xyz[2], lle[iPt*spaceDim+0], lle[iPt*spaceDim+1], lle[iPt*spaceDim+2]);
         for (size_t iDim = 0; iDim < spaceDim; ++iDim) {
             std::ostringstream msg;
-            msg << "Mismatch for point (" << lle[iPt+spaceDim+0] << ", " << lle[iPt*spaceDim+1]
+            msg << "Mismatch for point (" << lle[iPt*spaceDim+0] << ", " << lle[iPt*spaceDim+1]
                 << ", " << lle[iPt*spaceDim+2] << ") for component " << iDim << ".";
             const double valueE = xyzE[iPt*spaceDim+iDim];
             const double tolerance = 1.0e-6;
@@ -299,7 +303,51 @@ geomodelgrids::serial::TestModel::testToModelXYZ(void) {
             CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, xyz[iDim], valueTolerance);
         } // for
     } // for
-} // testToModelXYZ
+} // testToModelXYZFlat
+
+
+// ----------------------------------------------------------------------
+// Test _toModelXYZ() with topography.
+void
+geomodelgrids::serial::TestModel::testToModelXYZTopo(void) {
+    Model model;
+    model.open("../../data/three-blocks-topo.h5", Model::READ);
+    model.loadMetadata();
+    model.initialize();
+
+    const std::string inputCRS("EPSG:4326"); // WGS84
+    const size_t numPoints = 5;
+    const size_t spaceDim = 3;
+    const double lle[numPoints*spaceDim] = {
+        34.7, -117.8, 10.0,
+        34.5, -117.8, 12.0,
+        34.6, -117.5, -3.0e+3,
+        35.0, -117.5, -45.0e+3,
+        34.7, -118.0, -12.5e+3,
+    };
+    double xyzE[numPoints*spaceDim] = {
+        18157.12318227833, 28596.959586967772, 28176.78110685589,
+        7507.081226836308, 9120.43657294684, 41200.69283177594,
+        36985.200422215414, 5700.435626422162, 30231.010879699552,
+        58165.78933216298, 44727.815689240764, 0.0,
+        2098.6043330640623, 37400.00293473315, 31964.34087669759,
+    };
+
+    for (size_t iPt = 0; iPt < numPoints; ++iPt) {
+        double xyz[spaceDim];
+        model._toModelXYZ(&xyz[0], &xyz[1], &xyz[2], lle[iPt*spaceDim+0], lle[iPt*spaceDim+1], lle[iPt*spaceDim+2]);
+
+        for (size_t iDim = 0; iDim < spaceDim; ++iDim) {
+            std::ostringstream msg;
+            msg << "Mismatch for point (" << lle[iPt*spaceDim+0] << ", " << lle[iPt*spaceDim+1]
+                << ", " << lle[iPt*spaceDim+2] << ") for component " << iDim << ".";
+            const double valueE = xyzE[iPt*spaceDim+iDim];
+            const double tolerance = 1.0e-6;
+            const double valueTolerance = std::max(tolerance, tolerance*valueE);
+            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, xyz[iDim], valueTolerance);
+        } // for
+    } // for
+} // testToModelXYZTopo
 
 
 // ----------------------------------------------------------------------
@@ -312,9 +360,23 @@ geomodelgrids::serial::TestModel::testContains(void) {
     model.initialize();
 
     const std::string inputCRS("EPSG:4326"); // WGS84
-    const unsigned int numPoints = 12;
-    const unsigned int spaceDim = 3;
+    const size_t numPoints = 10;
+    const size_t spaceDim = 3;
     const double lle[numPoints*spaceDim] = {
+        34.7, -117.8, 10.0,
+        34.7, -117.8, 9.9e+5,
+
+        35.0, -117.6, -45.0e+3,
+        35.0, -117.6, -45.1e+3,
+
+        35.1, -117.8, -3.0e+3,
+        34.3, -117.8, -3.0e+3,
+
+        35.0, -117.5, -3.0e+3,
+        35.0, -113.0, -3.0e+3,
+
+        35.0, -118.2, -3.0e+3,
+        42.0, -117.8, -3.0e+3,
     };
     const bool containsE[numPoints] = {
         true, false,
@@ -322,13 +384,12 @@ geomodelgrids::serial::TestModel::testContains(void) {
         true, false,
         true, false,
         true, false,
-        true, false,
     };
 
-    for (unsigned int iPt = 0; iPt < numPoints; ++iPt) {
+    for (size_t iPt = 0; iPt < numPoints; ++iPt) {
         const bool flag = model.contains(lle[iPt*spaceDim+0], lle[iPt*spaceDim+1], lle[iPt*spaceDim+2]);
         std::ostringstream msg;
-        msg << "Mismatch for point (" << lle[iPt+spaceDim+0] << ", " << lle[iPt*spaceDim+1]
+        msg << "Mismatch for point (" << lle[iPt*spaceDim+0] << ", " << lle[iPt*spaceDim+1]
             << ", " << lle[iPt*spaceDim+2] << ").";
         CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.str().c_str(), containsE[iPt], flag);
     } // for
@@ -339,7 +400,38 @@ geomodelgrids::serial::TestModel::testContains(void) {
 // Test queryElevation().
 void
 geomodelgrids::serial::TestModel::testQueryElevation(void) {
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Implement testQueryElevation().", false);
+    Model model;
+    model.open("../../data/three-blocks-topo.h5", Model::READ);
+    model.loadMetadata();
+    model.initialize();
+
+    const std::string inputCRS("EPSG:4326"); // WGS84
+    const size_t numPoints = 5;
+    const size_t spaceDim = 2;
+    const double latlon[numPoints*spaceDim] = {
+        34.7, -117.8,
+        34.5, -117.8,
+        34.6, -117.5,
+        35.0, -117.5,
+        34.7, -118.0,
+    };
+    double elevationE[numPoints] = {
+        26883.65457072,
+        4162.76549694,
+        17518.58422866,
+        137391.81153092,
+        754.11098391,
+    };
+
+    for (size_t iPt = 0; iPt < numPoints; ++iPt) {
+        const double elevation = model.queryElevation(latlon[iPt*spaceDim+0], latlon[iPt*spaceDim+1]);
+
+        std::ostringstream msg;
+        msg << "Mismatch for point (" << latlon[iPt*spaceDim+0] << ", " << latlon[iPt*spaceDim+1] << ").";
+        const double tolerance = 1.0e-6;
+        const double valueTolerance = std::max(tolerance, tolerance*elevationE[iPt]);
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), elevationE[iPt], elevation, valueTolerance);
+    } // for
 } // testQueryElevation
 
 
