@@ -273,21 +273,31 @@ geomodelgrids::serial::TestModel::testToModelXYZFlat(void) {
     model.initialize();
 
     const std::string inputCRS("EPSG:4326"); // WGS84
-    const size_t numPoints = 5;
+    const size_t numPoints = 10;
     const size_t spaceDim = 3;
     const double lle[numPoints*spaceDim] = {
-        34.0, -116.5, 10.0,
-        34.5, -117.8, 12.0,
-        35.5, -118.0, -3.0e+3,
-        37.0, -122.0, -45.0e+3,
-        38.0, -123.0, -12.5e+3,
+        34.7, -117.8, 10.0,
+        34.7, -117.8, 1.0e+5,
+        35.0, -117.6, -45.0e+3,
+        35.0, -117.6, -45.1e+3,
+        35.1, -117.8, -3.0e+3,
+        34.3, -117.8, -3.0e+3,
+        35.0, -117.5, -15.0e+3,
+        35.0, -113.0, -15.0e+3,
+        35.0, -118.2, -25.0e+3,
+        42.0, -117.8, -25.0e+3,
     };
     const double xyzE[numPoints*spaceDim] = {
-        86658.20218683, -96450.21492572, 45010.0,
-        7507.08122684, 9120.43657295, 45012.0,
-        44881.53106401, 115249.73721748, 42000.0,
-        -182675.75205696, 439051.94016524, 0.0,
-        -199841.70552931, 579964.1840423, 32500.0,
+        18157.12318227833, 28596.959586967772, 10.0,
+        18157.12318227833, 28596.959586967772, 1.0e+5,
+        50151.20052049957, 49082.89449952264, -45.0e+3,
+        50151.20052049957, 49082.89449952264, -45.1e+3,
+        39462.97248734834, 67560.54921972206, -3.0e+3,
+        -3140.884913047946, -10352.290242932186, -3.0e+3,
+        58165.78933216298, 44727.815689240764, -15.0e+3,
+        423435.75147573586, -142427.04508685, -15.0e+3,
+        2160.5375531014906, 75390.66860725963, -25.0e+3,
+        407214.2075496664, 740094.5564182514, -25.0e+3
     };
 
     for (size_t iPt = 0; iPt < numPoints; ++iPt) {
@@ -320,17 +330,17 @@ geomodelgrids::serial::TestModel::testToModelXYZTopo(void) {
     const size_t spaceDim = 3;
     const double lle[numPoints*spaceDim] = {
         34.7, -117.8, 10.0,
-        34.5, -117.8, 12.0,
-        34.6, -117.5, -3.0e+3,
-        35.0, -117.5, -45.0e+3,
-        34.7, -118.0, -12.5e+3,
+        35.0, -117.6, -45.0e+3,
+        35.1, -117.8, -3.0e+3,
+        35.0, -117.5, -15.0e+3,
+        35.0, -118.2, -25.0e+3,
     };
     double xyzE[numPoints*spaceDim] = {
-        18157.12318227833, 28596.959586967772, 28176.78110685589,
-        7507.081226836308, 9120.43657294684, 41200.69283177594,
-        36985.200422215414, 5700.435626422162, 30231.010879699552,
-        58165.78933216298, 44727.815689240764, 0.0,
-        2098.6043330640623, 37400.00293473315, 31964.34087669759,
+        18157.12318227833, 28596.959586967772, -16823.21889314411,
+        50151.20052049957, 49082.89449952264, -45000.0,
+        39462.97248734834, 67560.54921972206, -34476.23642569123,
+        58165.78933216298, 44727.815689240764, -37598.351928912365,
+        2160.5375531014906, 75390.66860725963, -25514.106792584822,
     };
 
     for (size_t iPt = 0; iPt < numPoints; ++iPt) {
@@ -439,7 +449,58 @@ geomodelgrids::serial::TestModel::testQueryElevation(void) {
 // Test query().
 void
 geomodelgrids::serial::TestModel::testQuery(void) {
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Implement testQuery().", false);
+    Model model;
+    model.open("../../data/three-blocks-topo.h5", Model::READ);
+    model.loadMetadata();
+    model.initialize();
+
+    const std::string inputCRS("EPSG:4326"); // WGS84
+    const size_t numPoints = 5;
+    const size_t spaceDim = 3;
+    const double lle[numPoints*spaceDim] = {
+        34.7, -117.8, 10.0,
+        35.0, -117.6, -45.0e+3,
+        35.1, -117.8, -3.0e+3,
+        35.0, -117.5, -15.0e+3,
+        35.0, -118.2, -25.0e+3,
+    };
+    double xyzE[numPoints*spaceDim] = {
+        18157.12318227833, 28596.959586967772, -16823.21889314411,
+        50151.20052049957, 49082.89449952264, -45000.0,
+        39462.97248734834, 67560.54921972206, -34476.23642569123,
+        58165.78933216298, 44727.815689240764, -37598.351928912365,
+        2160.5375531014906, 75390.66860725963, -25514.106792584822,
+    };
+
+    for (size_t iPt = 0; iPt < numPoints; ++iPt) {
+        const double* values = model.query(lle[iPt*spaceDim+0], lle[iPt*spaceDim+1], lle[iPt*spaceDim+2]);
+
+        const double x = xyzE[iPt*spaceDim+0];
+        const double y = xyzE[iPt*spaceDim+1];
+        const double z = xyzE[iPt*spaceDim+2];
+
+        { // Value 0
+            const double valueE = 2.0e+3 + 1.0 * x + 0.4 * y - 0.5 * z;
+
+            std::ostringstream msg;
+            msg << "Mismatch for point (" << lle[iPt*spaceDim+0] << ", " << lle[iPt*spaceDim+1]
+                << ", " << lle[iPt*spaceDim+2] << ") for value 0.";
+            const double tolerance = 1.0e-6;
+            const double valueTolerance = std::max(tolerance, tolerance*valueE);
+            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[0], valueTolerance);
+        } // Value 0
+
+        { // Value 1
+            const double valueE = -1.2e+3 + 2.1 * x - 0.9 * y + 0.3 * z;
+
+            std::ostringstream msg;
+            msg << "Mismatch for point (" << lle[iPt*spaceDim+0] << ", " << lle[iPt*spaceDim+1]
+                << ", " << lle[iPt*spaceDim+2] << ") for value 1.";
+            const double tolerance = 1.0e-6;
+            const double valueTolerance = std::max(tolerance, tolerance*valueE);
+            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[0], valueTolerance);
+        } // Value 1
+    } // for
 } // testQuery
 
 

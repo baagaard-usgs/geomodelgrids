@@ -159,7 +159,11 @@ geomodelgrids::serial::Model::initialize(void) {
     if (_topography) {
         _topography->openQuery(_h5);
     } // if
-} // loadMetadata
+    size_t numBlocks = _blocks.size();
+    for (size_t i = 0; i < numBlocks; ++i) {
+        _blocks[i]->openQuery(_h5);
+    } // for
+} // initialize
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -248,7 +252,7 @@ geomodelgrids::serial::Model::contains(const double x,
     bool inModel = false;
     if (( xModel >= 0.0) && ( xModel <= _dims[0]) &&
         ( yModel >= 0.0) && ( yModel <= _dims[1]) &&
-        ( zModel >= 0.0) && ( zModel <= _dims[2]) ) {
+        ( zModel <= 0.0) && ( zModel >= -_dims[2]) ) {
         inModel = true;
     } // if
 
@@ -321,7 +325,7 @@ geomodelgrids::serial::Model::_toModelXYZ(double* xModel,
             zGroundSurf = _topography->query(*xModel, *yModel);
         } // if
         const double zBottom = -_dims[2];
-        *zModel = -zBottom / (zGroundSurf - zBottom) * (z - zBottom);
+        *zModel = zBottom * (zGroundSurf - z) / (zGroundSurf - zBottom);
     } // if
 } // _toModelXYZ
 

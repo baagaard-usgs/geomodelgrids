@@ -120,11 +120,12 @@ geomodelgrids::serial::Block::getNumValues(void) const {
 // Prepare for querying.
 void
 geomodelgrids::serial::Block::openQuery(geomodelgrids::serial::HDF5* const h5) {
-    const size_t ndims = 3;
+    const size_t ndims = 4;
     hsize_t dims[ndims];
     dims[0] = 2;
     dims[1] = 2;
     dims[2] = _dims[2];
+    dims[3] = _numValues;
     const std::string blockPath(std::string("/blocks/") + _name);
     delete _hyperslab;_hyperslab = new geomodelgrids::serial::Hyperslab(h5, blockPath.c_str(), dims, ndims);
 
@@ -132,6 +133,7 @@ geomodelgrids::serial::Block::openQuery(geomodelgrids::serial::HDF5* const h5) {
 } // openQuery
 
 
+#include <iostream>
 // ---------------------------------------------------------------------------------------------------------------------
 // Query for values at a point using bilinear interpolation.
 const double*
@@ -147,7 +149,9 @@ geomodelgrids::serial::Block::query(const double x,
     double index[3];
     index[0] = x / _resolutionHoriz;assert(index[0] < double(_dims[0]));
     index[1] = y / _resolutionHoriz;assert(index[1] < double(_dims[1]));
-    index[2] = -z / _resolutionVert;assert(index[2] < double(_dims[2]));
+    index[2] = (_zTop - z)/ _resolutionVert;assert(index[2] < double(_dims[2]));
+    std::cout << "x: " << x <<", y: " << y << ", z: " << z << std::endl;
+    std::cout << "index: " << index[0] <<", " << index[1] << ", " << index[2] << std::endl;
     _hyperslab->interpolate(_values, index);
 
     return _values;
