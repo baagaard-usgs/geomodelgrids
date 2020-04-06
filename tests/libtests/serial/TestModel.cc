@@ -458,18 +458,18 @@ geomodelgrids::serial::TestModel::testQuery(void) {
     const size_t numPoints = 5;
     const size_t spaceDim = 3;
     const double lle[numPoints*spaceDim] = {
-        34.7, -117.8, 10.0,
+        34.7, -117.8, 26867.680454533336,
         35.0, -117.6, -45.0e+3,
-        35.1, -117.8, -3.0e+3,
-        35.0, -117.5, -15.0e+3,
-        35.0, -118.2, -25.0e+3,
+        35.1, -117.8, 122620.64106666666,
+        35.0, -117.5, 72541.38995555555,
+        35.0, -118.2, -27551.479865333335,
     };
     double xyzE[numPoints*spaceDim] = {
-        18157.12318227833, 28596.959586967772, -16823.21889314411,
-        50151.20052049957, 49082.89449952264, -45000.0,
-        39462.97248734834, 67560.54921972206, -34476.23642569123,
-        58165.78933216298, 44727.815689240764, -37598.351928912365,
-        2160.5375531014906, 75390.66860725963, -25514.106792584822,
+        18157.12318227833, 28596.959586967772, -10.0,
+        50151.20052049957, 49082.89449952264, -45.0e+3,
+        39462.97248734834, 67560.54921972206, -3.0e+3,
+        58165.78933216298, 44727.815689240764, -16.0e+3,
+        2160.5375531014906, 75390.66860725963, -28.0e+3,
     };
 
     for (size_t iPt = 0; iPt < numPoints; ++iPt) {
@@ -498,7 +498,7 @@ geomodelgrids::serial::TestModel::testQuery(void) {
                 << ", " << lle[iPt*spaceDim+2] << ") for value 1.";
             const double tolerance = 1.0e-6;
             const double valueTolerance = std::max(tolerance, tolerance*valueE);
-            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[0], valueTolerance);
+            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[1], valueTolerance);
         } // Value 1
     } // for
 } // testQuery

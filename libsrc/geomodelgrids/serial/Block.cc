@@ -96,7 +96,7 @@ geomodelgrids::serial::Block::getZTop(void) const {
 // Get elevation of bottom of block in topological space.
 double
 geomodelgrids::serial::Block::getZBottom(void) const {
-    return _zTop - _resolutionVert*_dims[2];
+    return _zTop - _resolutionVert * (_dims[2] - 1);
 } // getZBottom
 
 
@@ -133,7 +133,6 @@ geomodelgrids::serial::Block::openQuery(geomodelgrids::serial::HDF5* const h5) {
 } // openQuery
 
 
-#include <iostream>
 // ---------------------------------------------------------------------------------------------------------------------
 // Query for values at a point using bilinear interpolation.
 const double*
@@ -150,8 +149,6 @@ geomodelgrids::serial::Block::query(const double x,
     index[0] = x / _resolutionHoriz;assert(index[0] < double(_dims[0]));
     index[1] = y / _resolutionHoriz;assert(index[1] < double(_dims[1]));
     index[2] = (_zTop - z)/ _resolutionVert;assert(index[2] < double(_dims[2]));
-    std::cout << "x: " << x <<", y: " << y << ", z: " << z << std::endl;
-    std::cout << "index: " << index[0] <<", " << index[1] << ", " << index[2] << std::endl;
     _hyperslab->interpolate(_values, index);
 
     return _values;
