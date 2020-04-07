@@ -127,15 +127,53 @@ geomodelgrids::serial::TestBlock::testLoadMetadata(void) {
 // Test query().
 void
 geomodelgrids::serial::TestBlock::testQuery(void) {
+    const size_t numPoints = 5;
+    const size_t spaceDim = 3;
+    double xyz[numPoints*spaceDim] = {
+        18.1e+3, 8.3e+3, -10.0,
+        5.2e+3, 7.1e+3, -5.0e+3,
+        0.2e+3, 23.2e+3, -3.0e+3,
+        28.0e+3, 12.9e+3, -1.6e+3,
+        9.3e+3, 0.5e+3, -2.8e+3,
+    };
+
     geomodelgrids::serial::HDF5 h5;
     h5.open("../../data/one-block-flat.h5", H5F_ACC_RDONLY);
 
     const std::string blockName("block");
     Block block(blockName.c_str());
     block.loadMetadata(&h5);
-    // block.query(x, y, z, h5);
+    block.openQuery(&h5);
 
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Implement testQuery().", false);
+    for (size_t iPt = 0; iPt < numPoints; ++iPt) {
+        const double* values = block.query(xyz[iPt*spaceDim+0], xyz[iPt*spaceDim+1], xyz[iPt*spaceDim+2]);
+
+        const double x = xyz[iPt*spaceDim+0];
+        const double y = xyz[iPt*spaceDim+1];
+        const double z = xyz[iPt*spaceDim+2];
+
+        { // Value 0
+            const double valueE = 2.0e+3 + 1.0 * x + 0.4 * y - 0.5 * z;
+
+            std::ostringstream msg;
+            msg << "Mismatch for point (" << xyz[iPt*spaceDim+0] << ", " << xyz[iPt*spaceDim+1]
+                << ", " << xyz[iPt*spaceDim+2] << ") for value 0.";
+            const double tolerance = 1.0e-6;
+            const double valueTolerance = std::max(tolerance, tolerance*valueE);
+            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[0], valueTolerance);
+        } // Value 0
+
+        { // Value 1
+            const double valueE = -1.2e+3 + 2.1 * x - 0.9 * y + 0.3 * z;
+
+            std::ostringstream msg;
+            msg << "Mismatch for point (" << xyz[iPt*spaceDim+0] << ", " << xyz[iPt*spaceDim+1]
+                << ", " << xyz[iPt*spaceDim+2] << ") for value 1.";
+            const double tolerance = 1.0e-6;
+            const double valueTolerance = std::max(tolerance, tolerance*valueE);
+            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[1], valueTolerance);
+        } // Value 1
+    } // for
 } // testQuery
 
 
