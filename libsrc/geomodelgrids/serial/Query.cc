@@ -6,6 +6,7 @@
 #include "geomodelgrids/serial/ModelInfo.hh" // USES ModelInfo
 #include "geomodelgrids/serial/Block.hh" // USES Block
 #include "geomodelgrids/serial/Topography.hh" // USES Topography
+#include "geomodelgrids/utils/constants.hh" // USES NODATA_VALUE
 
 #include <getopt.h> // USES getopt_long()
 #include <algorithm> // USES std::transform
@@ -110,12 +111,13 @@ geomodelgrids::serial::Query::setSquashing(const bool value) {
 double
 geomodelgrids::serial::Query::queryElevation(const double x,
                                              const double y) {
-    double elevation = 0.0;
+    double elevation = NODATA_VALUE;
 
     for (size_t i = 0; i < _models.size(); ++i) {
         assert(_models[i]);
-        elevation = _models[i]->queryElevation(x, y);
-        if (_models[i]->contains(x, y, elevation)) {
+        const double elevationTmp = _models[i]->queryElevation(x, y);
+        if (_models[i]->contains(x, y, elevationTmp)) {
+            elevation = elevationTmp;
             break;
         } // if
     } // for
@@ -134,7 +136,7 @@ geomodelgrids::serial::Query::query(double* const values,
     assert(values);
 
     const size_t numQueryValues = _valuesLowercase.size();
-    std::fill(values, values+numQueryValues, -9999);
+    std::fill(values, values+numQueryValues, NODATA_VALUE);
     int err = 1;
     for (size_t i = 0; i < _models.size(); ++i) {
         assert(_models[i]);

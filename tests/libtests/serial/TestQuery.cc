@@ -5,6 +5,7 @@
 #include <portinfo>
 
 #include "geomodelgrids/serial/Query.hh" // USES Query
+#include "geomodelgrids/utils/constants.hh" // USES NODATA_VALUE
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -139,7 +140,7 @@ geomodelgrids::serial::TestQuery::testQueryElevation(void) {
         35.0, -117.5,
         34.7, -118.0,
         50.0, -100.0, // outside models
-        37.4, -122.3, // one flat
+        37.45, -121.81, // one flat
     };
     double elevationE[numPoints] = {
         26883.65457072,
@@ -147,7 +148,7 @@ geomodelgrids::serial::TestQuery::testQueryElevation(void) {
         17518.58422866,
         137391.81153092,
         754.11098391,
-        0.0,
+        NODATA_VALUE,
         0.0,
     };
 
