@@ -39,6 +39,21 @@ public:
      */
     void setSquashMinElev(const double value);
 
+    /** Turn squashing on/off.
+     *
+     * @param[in] value True if squashing is on, false otherwise.
+     */
+    void setSquashing(const bool value);
+
+    /** Query for elevation of ground surface at point.
+     *
+     * @param[in] x X coordinate of point (in input CRS).
+     * @param[in] y Y coordinate of point (in input CRS).
+     * @returns Elevation (m) of ground surface at point.
+     */
+    double queryElevation(const double x,
+                          const double y);
+
     /** Query model for values at a point.
      *
      * Values array must be preallocated.
@@ -47,11 +62,12 @@ public:
      * @param[in] x X coordinate of point (in input CRS).
      * @param[in] y Y coordinate of point (in input CRS).
      * @param[in] z Z coordinate of point (in input CRS).
+     * @returns 0 on success, 1 on error.
      */
-    void query(double* const values,
-               const double x,
-               const double y,
-               const double z);
+    int query(double* const values,
+              const double x,
+              const double y,
+              const double z);
 
     /// Cleanup after querying.
     void finalize(void);

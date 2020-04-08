@@ -81,6 +81,7 @@ geomodelgrids::serial::Query::initialize(const std::vector<std::string>& modelFi
         _models[i]->setInputCRS(inputCRSString);
         _models[i]->open(modelFilenames[i].c_str(), geomodelgrids::serial::Model::READ);
         _models[i]->loadMetadata();
+        _models[i]->initialize();
 
         _valuesIndex[i] = _Query::createModelValuesIndex(*_models[i], _valuesLowercase);
     } // for
@@ -97,8 +98,35 @@ geomodelgrids::serial::Query::setSquashMinElev(const double value) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Query at point.
+// Turn squashing on/off.
 void
+geomodelgrids::serial::Query::setSquashing(const bool value) {
+    _squash = value;
+} // setSquashing
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Query for elevation of ground surface at point.
+double
+geomodelgrids::serial::Query::queryElevation(const double x,
+                                             const double y) {
+    double elevation = 0.0;
+
+    for (size_t i = 0; i < _models.size(); ++i) {
+        assert(_models[i]);
+        elevation = _models[i]->queryElevation(x, y);
+        if (_models[i]->contains(x, y, elevation)) {
+            break;
+        } // if
+    } // for
+
+    return elevation;
+} // query
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Query at point.
+int
 geomodelgrids::serial::Query::query(double* const values,
                                     const double x,
                                     const double y,
@@ -106,15 +134,17 @@ geomodelgrids::serial::Query::query(double* const values,
     assert(values);
 
     const size_t numQueryValues = _valuesLowercase.size();
+    std::fill(values, values+numQueryValues, -9999);
+    int err = 1;
     for (size_t i = 0; i < _models.size(); ++i) {
+        assert(_models[i]);
         if (_models[i]->contains(x, y, z)) {
-            assert(_models[i]);
-
             double elevationSquash = z;
             if (_squash && (z > _squashMinElev)) {
                 const double groundElev = _models[i]->queryElevation(x, y);
                 elevationSquash = z - groundElev;
             } // if
+            err = 0;
 
             const double* modelValues = _models[i]->query(x, y, elevationSquash);
             values_map_type& modelMap = _valuesIndex[i];
@@ -123,6 +153,8 @@ geomodelgrids::serial::Query::query(double* const values,
             } // for
         } // if
     } // for
+
+    return err;
 } // query
 
 
@@ -143,8 +175,9 @@ geomodelgrids::serial::_Query::toLower(const std::vector<std::string>& strings) 
     const size_t numStrings = strings.size();
     std::vector<std::string> stringsLower(numStrings);
     for (size_t i = 0; i < numStrings; ++i) {
-        stringsLower[i].reserve(strings[i].size());
+        stringsLower[i].resize(strings[i].size());
         std::transform(strings[i].begin(), strings[i].end(), stringsLower[i].begin(), _Query::tolower);
+        assert(strings[i].size() == stringsLower[i].size());
     } // for
     return stringsLower;
 } // toLower
