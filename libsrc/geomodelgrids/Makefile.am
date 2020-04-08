@@ -18,6 +18,9 @@ libgeomodelgrids_la_SOURCES = \
 	serial/Hyperslab.cc \
 	utils/CRSTransformer.cc
 
+pkginclude_HEADERS = \
+	geomodelgrids_serial.hh
+
 libgeomodelgrids_la_LIBADD = -lhdf5
 
 
