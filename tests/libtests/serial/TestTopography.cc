@@ -4,10 +4,14 @@
 
 #include <portinfo>
 
+#include "ModelPoints.hh"
+
 #include "geomodelgrids/serial/Topography.hh" // USES Topography
 #include "geomodelgrids/serial/HDF5.hh" // USES HDF5
 
 #include <cppunit/extensions/HelperMacros.h>
+
+#include <cmath> // USES fabs()
 
 namespace geomodelgrids {
     namespace serial {
@@ -118,11 +122,11 @@ geomodelgrids::serial::TestTopography::testQuery(void) {
         const double y = xy[i*spaceDim+1];
         const double elevation = topo.query(x, y);
 
-        const double elevationE = 1.5e+2 + 0.2 * x - 0.1 * y + 0.05e-3 * x * y;
+        const double elevationE = ModelPoints::computeElevation(x, y);
 
         std::ostringstream msg;
         msg << "Mismatch in elevation at (" << x << ", " << y << ").";
-        const double toleranceV = std::max(tolerance, tolerance*elevationE);
+        const double toleranceV = std::max(tolerance, tolerance*fabs(elevationE));
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), elevationE, elevation, toleranceV);
     } // for
     topo.closeQuery();

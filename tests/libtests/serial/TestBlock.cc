@@ -4,10 +4,14 @@
 
 #include <portinfo>
 
+#include "ModelPoints.hh" // USES ModelPoints
+
 #include "geomodelgrids/serial/Block.hh" // USES Block
 #include "geomodelgrids/serial/HDF5.hh" // USES HDF5
 
 #include <cppunit/extensions/HelperMacros.h>
+
+#include <cmath> // USES fabs()
 
 namespace geomodelgrids {
     namespace serial {
@@ -127,15 +131,11 @@ geomodelgrids::serial::TestBlock::testLoadMetadata(void) {
 // Test query().
 void
 geomodelgrids::serial::TestBlock::testQuery(void) {
-    const size_t numPoints = 5;
+    OneBlockFlatPoints points;
+    const size_t numPoints = points.getNumPoints();
     const size_t spaceDim = 3;
-    double xyz[numPoints*spaceDim] = {
-        18.1e+3, 8.3e+3, -10.0,
-        5.2e+3, 7.1e+3, -5.0e+3,
-        0.2e+3, 23.2e+3, -3.0e+3,
-        28.0e+3, 12.9e+3, -1.6e+3,
-        9.3e+3, 0.5e+3, -2.8e+3,
-    };
+    const double* pointsXYZ = points.getXYZ();
+    const double* pointsLLE = points.getLatLonElev();
 
     geomodelgrids::serial::HDF5 h5;
     h5.open("../../data/one-block-flat.h5", H5F_ACC_RDONLY);
@@ -146,33 +146,33 @@ geomodelgrids::serial::TestBlock::testQuery(void) {
     block.openQuery(&h5);
 
     for (size_t iPt = 0; iPt < numPoints; ++iPt) {
-        const double* values = block.query(xyz[iPt*spaceDim+0], xyz[iPt*spaceDim+1], xyz[iPt*spaceDim+2]);
+        const double* values = block.query(pointsXYZ[iPt*spaceDim+0], pointsXYZ[iPt*spaceDim+1], pointsXYZ[iPt*spaceDim+2]);
 
-        const double x = xyz[iPt*spaceDim+0];
-        const double y = xyz[iPt*spaceDim+1];
-        const double z = xyz[iPt*spaceDim+2];
+        const double x = pointsXYZ[iPt*spaceDim+0];
+        const double y = pointsXYZ[iPt*spaceDim+1];
+        const double z = pointsXYZ[iPt*spaceDim+2];
 
-        { // Value 0
-            const double valueE = 2.0e+3 + 1.0 * x + 0.4 * y - 0.5 * z;
+        { // Value 'one'
+            const double valueE = points.computeValueOne(x, y, z);
 
             std::ostringstream msg;
-            msg << "Mismatch for point (" << xyz[iPt*spaceDim+0] << ", " << xyz[iPt*spaceDim+1]
-                << ", " << xyz[iPt*spaceDim+2] << ") for value 0.";
+            msg << "Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                << ", " << pointsLLE[iPt*spaceDim+2] << ") for value 'one'.";
             const double tolerance = 1.0e-6;
-            const double valueTolerance = std::max(tolerance, tolerance*valueE);
+            const double valueTolerance = std::max(tolerance, tolerance*fabs(valueE));
             CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[0], valueTolerance);
-        } // Value 0
+        } // Value 'one'
 
-        { // Value 1
-            const double valueE = -1.2e+3 + 2.1 * x - 0.9 * y + 0.3 * z;
+        { // Value 'two'
+            const double valueE = points.computeValueTwo(x, y, z);
 
             std::ostringstream msg;
-            msg << "Mismatch for point (" << xyz[iPt*spaceDim+0] << ", " << xyz[iPt*spaceDim+1]
-                << ", " << xyz[iPt*spaceDim+2] << ") for value 1.";
+            msg << "Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                << ", " << pointsLLE[iPt*spaceDim+2] << ") for value 1.";
             const double tolerance = 1.0e-6;
-            const double valueTolerance = std::max(tolerance, tolerance*valueE);
+            const double valueTolerance = std::max(tolerance, tolerance*fabs(valueE));
             CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[1], valueTolerance);
-        } // Value 1
+        } // Value 'two'
     } // for
 } // testQuery
 

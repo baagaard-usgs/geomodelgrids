@@ -4,9 +4,13 @@
 
 #include <portinfo>
 
+#include "ModelPoints.hh" // USES ModelPoints
+
 #include "geomodelgrids/serial/HDF5.hh" // USES HDF5
 
 #include <cppunit/extensions/HelperMacros.h>
+
+#include <cmath> // USES fabs()
 
 namespace geomodelgrids {
     namespace serial {
@@ -249,15 +253,15 @@ geomodelgrids::serial::TestHDF5::testReadDatasetHyperslab(void) {
                 { // Value 0
                     std::ostringstream msg;
                     msg << "Mismatch at hyperslab index ("<<ix<<","<<iy<<","<<iz<<",0).";
-                    const double valueE = 2.0e+3 + 1.0 * x + 0.4 * y - 0.5 * z;
-                    const double toleranceV = std::max(tolerance, tolerance*valueE);
+                    const double valueE = ModelPoints::computeValueOne(x, y, z);
+                    const double toleranceV = std::max(tolerance, tolerance*fabs(valueE));
                     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[i++], toleranceV);
                 } // Value 0
                 { // Value 1
                     std::ostringstream msg;
                     msg << "Mismatch at hyperslab index ("<<ix<<","<<iy<<","<<iz<<",1).";
-                    const double valueE = -1.2e+3 + 2.1 * x - 0.9 * y + 0.3 * z;
-                    const double toleranceV = std::max(tolerance, tolerance*valueE);
+                    const double valueE = ModelPoints::computeValueTwo(x, y, z);
+                    const double toleranceV = std::max(tolerance, tolerance*fabs(valueE));
                     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[i++], toleranceV);
                 } // Value 1
             } // for

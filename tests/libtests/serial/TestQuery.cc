@@ -4,10 +4,14 @@
 
 #include <portinfo>
 
+#include "ModelPoints.hh"
+
 #include "geomodelgrids/serial/Query.hh" // USES Query
 #include "geomodelgrids/utils/constants.hh" // USES NODATA_VALUE
 
 #include <cppunit/extensions/HelperMacros.h>
+
+#include <cmath>
 
 namespace geomodelgrids {
     namespace serial {
@@ -130,41 +134,68 @@ geomodelgrids::serial::TestQuery::testQueryElevation(void) {
     };
     std::vector<std::string> filenames(filenamesArray, filenamesArray+numModels);
 
-    const std::string crs("EPSG:4326"); // WGS84
-    const size_t numPoints = 7;
-    const size_t spaceDim = 2;
-    const double latlon[numPoints*spaceDim] = {
-        34.7, -117.8, // three blocks
-        34.5, -117.8,
-        34.6, -117.5,
-        35.0, -117.5,
-        34.7, -118.0,
-        50.0, -100.0, // outside models
-        37.45, -121.81, // one flat
-    };
-    double elevationE[numPoints] = {
-        26883.65457072,
-        4162.76549694,
-        17518.58422866,
-        137391.81153092,
-        754.11098391,
-        NODATA_VALUE,
-        0.0,
-    };
+    OneBlockFlatPoints pointsOne;
+    const std::string& crs = pointsOne.getCRSLonLatElev();
+    const size_t spaceDim = 3;
 
     Query query;
     std::vector<std::string> valueNames;
     query.initialize(filenames, valueNames, crs);
 
-    for (size_t iPt = 0; iPt < numPoints; ++iPt) {
-        const double elevation = query.queryElevation(latlon[iPt*spaceDim+0], latlon[iPt*spaceDim+1]);
+    { // One Block Flat
+        const size_t numPoints = pointsOne.getNumPoints();
+        const double* pointsLLE = pointsOne.getLatLonElev();
 
-        std::ostringstream msg;
-        msg << "Mismatch for point (" << latlon[iPt*spaceDim+0] << ", " << latlon[iPt*spaceDim+1] << ").";
-        const double tolerance = 1.0e-6;
-        const double valueTolerance = std::max(tolerance, tolerance*elevationE[iPt]);
-        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), elevationE[iPt], elevation, valueTolerance);
-    } // for
+        for (size_t iPt = 0; iPt < numPoints; ++iPt) {
+            const double elevationE = 0.0;
+            const double elevation = query.queryElevation(pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1]);
+
+            std::ostringstream msg;
+            msg << "Mismatch for point in one-block-flat ("
+                << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").";
+            const double tolerance = 1.0e-6;
+            const double valueTolerance = std::max(tolerance, tolerance*fabs(elevationE));
+            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), elevationE, elevation, valueTolerance);
+        } // for
+    } // One Block Flat
+
+    { // Three Blocks Topo
+        ThreeBlocksTopoPoints pointsThree;
+        const size_t numPoints = pointsThree.getNumPoints();
+        const double* pointsLLE = pointsThree.getLatLonElev();
+        const double* pointsXYZ = pointsThree.getXYZ();
+
+        for (size_t iPt = 0; iPt < numPoints; ++iPt) {
+            const double elevationE = pointsThree.computeElevation(pointsXYZ[iPt*spaceDim+0], pointsXYZ[iPt*spaceDim+1]);
+            const double elevation = query.queryElevation(pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1]);
+
+            std::ostringstream msg;
+            msg << "Mismatch for point in three-blocks-topo ("
+                << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").";
+            const double tolerance = 1.0e-6;
+            const double valueTolerance = std::max(tolerance, tolerance*fabs(elevationE));
+            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), elevationE, elevation, valueTolerance);
+        } // for
+    } // Three Blocks Topo
+
+    { // Outside domains
+        OutsideDomainPoints pointsOutside;
+        const size_t numPoints = pointsOutside.getNumPoints();
+        const double* pointsLLE = pointsOutside.getLatLonElev();
+
+        // Skip first 2 points with z causing point to be outside domain.
+        for (size_t iPt = 2; iPt < numPoints; ++iPt) {
+            const double elevationE = NODATA_VALUE;
+            const double elevation = query.queryElevation(pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1]);
+
+            std::ostringstream msg;
+            msg << "Mismatch for point outside domains ("
+                << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").";
+            const double tolerance = 1.0e-6;
+            const double valueTolerance = std::max(tolerance, tolerance*fabs(elevationE));
+            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), elevationE, elevation, valueTolerance);
+        } // for
+    } // Outside domains
 } // testQueryElevation
 
 
@@ -172,7 +203,103 @@ geomodelgrids::serial::TestQuery::testQueryElevation(void) {
 // Test query() for model with flat ground surface.
 void
 geomodelgrids::serial::TestQuery::testQueryFlat(void) {
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Implement test.", false);
+    const size_t numModels = 2;
+    const char* const filenamesArray[numModels] = {
+        "../../data/one-block-flat.h5",
+        "../../data/three-blocks-flat.h5",
+    };
+    std::vector<std::string> filenames(filenamesArray, filenamesArray+numModels);
+
+    const size_t numValues = 2;
+    const char* const valueNamesArray[numValues] = { "two", "one" };
+    std::vector<std::string> valueNames(valueNamesArray, valueNamesArray+numValues);
+
+    OneBlockFlatPoints pointsOne;
+    const std::string& crs = pointsOne.getCRSLonLatElev();
+    const size_t spaceDim = 3;
+
+    Query query;
+    query.initialize(filenames, valueNames, crs);
+
+    { // One Block Flat
+        const size_t numPoints = pointsOne.getNumPoints();
+        const double* pointsLLE = pointsOne.getLatLonElev();
+        const double* pointsXYZ = pointsOne.getXYZ();
+
+        for (size_t iPt = 0; iPt < numPoints; ++iPt) {
+            double values[numValues];
+            query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+
+            const double x = pointsXYZ[iPt*spaceDim+0];
+            const double y = pointsXYZ[iPt*spaceDim+1];
+            const double z = pointsXYZ[iPt*spaceDim+2];
+            double valuesE[numValues];
+            valuesE[0] = pointsOne.computeValueTwo(x, y, z);
+            valuesE[1] = pointsOne.computeValueOne(x, y, z);
+
+            for (size_t iValue = 0; iValue < numValues; ++iValue) {
+                std::ostringstream msg;
+                msg << "Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in one-block-flat.";
+                const double tolerance = 1.0e-6;
+                const double toleranceV = std::max(tolerance, tolerance*fabs(valuesE[iValue]));
+                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valuesE[iValue], values[iValue],
+                                                     toleranceV);
+            } // for
+        } // for
+    } // One Block Flat
+
+    { // Three Block Flat
+        ThreeBlocksFlatPoints pointsThree;
+        const size_t numPoints = pointsThree.getNumPoints();
+        const double* pointsLLE = pointsThree.getLatLonElev();
+        const double* pointsXYZ = pointsThree.getXYZ();
+
+        for (size_t iPt = 0; iPt < numPoints; ++iPt) {
+            double values[numValues];
+            query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+
+            const double x = pointsXYZ[iPt*spaceDim+0];
+            const double y = pointsXYZ[iPt*spaceDim+1];
+            const double z = pointsXYZ[iPt*spaceDim+2];
+            double valuesE[numValues];
+            valuesE[0] = pointsThree.computeValueTwo(x, y, z);
+            valuesE[1] = pointsThree.computeValueOne(x, y, z);
+
+            for (size_t iValue = 0; iValue < numValues; ++iValue) {
+                std::ostringstream msg;
+                msg << "Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue]
+                    << "' in three-blocks-flat.";
+                const double tolerance = 1.0e-6;
+                const double toleranceV = std::max(tolerance, tolerance*fabs(valuesE[iValue]));
+                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valuesE[iValue], values[iValue],
+                                                     toleranceV);
+            } // for
+        } // for
+    } // Three Block Flat
+
+    { // Outside domain
+        OutsideDomainPoints pointsOutisde;
+        const size_t numPoints = pointsOutisde.getNumPoints();
+        const double* pointsLLE = pointsOutisde.getLatLonElev();
+
+        for (size_t iPt = 0; iPt < numPoints; ++iPt) {
+            double values[numValues];
+            query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+
+            for (size_t iValue = 0; iValue < numValues; ++iValue) {
+                std::ostringstream msg;
+                msg << "Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in one-block-flat.";
+                const double tolerance = 1.0e-6;
+                const double toleranceV = std::max(tolerance, tolerance*fabs(NODATA_VALUE));
+                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), NODATA_VALUE, values[iValue],
+                                                     toleranceV);
+            } // for
+        } // for
+    } // Outside domain
+
 } // testQueryFlat
 
 
@@ -180,63 +307,102 @@ geomodelgrids::serial::TestQuery::testQueryFlat(void) {
 // Test query() for model with topography.
 void
 geomodelgrids::serial::TestQuery::testQueryTopo(void) {
-#if 1
+    const size_t numModels = 2;
+    const char* const filenamesArray[numModels] = {
+        "../../data/one-block-topo.h5",
+        "../../data/three-blocks-topo.h5",
+    };
+    std::vector<std::string> filenames(filenamesArray, filenamesArray+numModels);
 
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Implement test.", false);
-#else
-    Query model;
-    model.open("../../data/three-blocks-topo.h5", Query::READ);
-    model.loadMetadata();
-    model.initialize();
+    const size_t numValues = 2;
+    const char* const valueNamesArray[numValues] = { "two", "one" };
+    std::vector<std::string> valueNames(valueNamesArray, valueNamesArray+numValues);
 
-    const std::string inputCRS("EPSG:4326"); // WGS84
-    const size_t numPoints = 5;
+    OneBlockTopoPoints pointsOne;
+    const std::string& crs = pointsOne.getCRSLonLatElev();
     const size_t spaceDim = 3;
-    const double lle[numPoints*spaceDim] = {
-        34.7, -117.8, 26867.680454533336,
-        35.0, -117.6, -45.0e+3,
-        35.1, -117.8, 122620.64106666666,
-        35.0, -117.5, 72541.38995555555,
-        35.0, -118.2, -27551.479865333335,
-    };
-    double xyzE[numPoints*spaceDim] = {
-        18157.12318227833, 28596.959586967772, -10.0,
-        50151.20052049957, 49082.89449952264, -45.0e+3,
-        39462.97248734834, 67560.54921972206, -3.0e+3,
-        58165.78933216298, 44727.815689240764, -16.0e+3,
-        2160.5375531014906, 75390.66860725963, -28.0e+3,
-    };
 
-    for (size_t iPt = 0; iPt < numPoints; ++iPt) {
-        const double* values = model.query(lle[iPt*spaceDim+0], lle[iPt*spaceDim+1], lle[iPt*spaceDim+2]);
+    Query query;
+    query.initialize(filenames, valueNames, crs);
 
-        const double x = xyzE[iPt*spaceDim+0];
-        const double y = xyzE[iPt*spaceDim+1];
-        const double z = xyzE[iPt*spaceDim+2];
+    { // One Block Topo
+        const size_t numPoints = pointsOne.getNumPoints();
+        const double* pointsLLE = pointsOne.getLatLonElev();
+        const double* pointsXYZ = pointsOne.getXYZ();
 
-        { // Value 0
-            const double valueE = 2.0e+3 + 1.0 * x + 0.4 * y - 0.5 * z;
+        for (size_t iPt = 0; iPt < numPoints; ++iPt) {
+            double values[numValues];
+            query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
 
-            std::ostringstream msg;
-            msg << "Mismatch for point (" << lle[iPt*spaceDim+0] << ", " << lle[iPt*spaceDim+1]
-                << ", " << lle[iPt*spaceDim+2] << ") for value 0.";
-            const double tolerance = 1.0e-6;
-            const double valueTolerance = std::max(tolerance, tolerance*valueE);
-            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[0], valueTolerance);
-        } // Value 0
+            const double x = pointsXYZ[iPt*spaceDim+0];
+            const double y = pointsXYZ[iPt*spaceDim+1];
+            const double z = pointsXYZ[iPt*spaceDim+2];
+            double valuesE[numValues];
+            valuesE[0] = pointsOne.computeValueTwo(x, y, z);
+            valuesE[1] = pointsOne.computeValueOne(x, y, z);
 
-        { // Value 1
-            const double valueE = -1.2e+3 + 2.1 * x - 0.9 * y + 0.3 * z;
+            for (size_t iValue = 0; iValue < numValues; ++iValue) {
+                std::ostringstream msg;
+                msg << "Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in one-block-topo.";
+                const double tolerance = 1.0e-6;
+                const double toleranceV = std::max(tolerance, tolerance*fabs(valuesE[iValue]));
+                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valuesE[iValue], values[iValue],
+                                                     toleranceV);
+            } // for
+        } // for
+    } // One Block Topo
 
-            std::ostringstream msg;
-            msg << "Mismatch for point (" << lle[iPt*spaceDim+0] << ", " << lle[iPt*spaceDim+1]
-                << ", " << lle[iPt*spaceDim+2] << ") for value 1.";
-            const double tolerance = 1.0e-6;
-            const double valueTolerance = std::max(tolerance, tolerance*valueE);
-            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[1], valueTolerance);
-        } // Value 1
-    } // for
-#endif
+    { // Three Block Topo
+        ThreeBlocksTopoPoints pointsThree;
+        const size_t numPoints = pointsThree.getNumPoints();
+        const double* pointsLLE = pointsThree.getLatLonElev();
+        const double* pointsXYZ = pointsThree.getXYZ();
+
+        for (size_t iPt = 0; iPt < numPoints; ++iPt) {
+            double values[numValues];
+            query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+
+            const double x = pointsXYZ[iPt*spaceDim+0];
+            const double y = pointsXYZ[iPt*spaceDim+1];
+            const double z = pointsXYZ[iPt*spaceDim+2];
+            double valuesE[numValues];
+            valuesE[0] = pointsThree.computeValueTwo(x, y, z);
+            valuesE[1] = pointsThree.computeValueOne(x, y, z);
+
+            for (size_t iValue = 0; iValue < numValues; ++iValue) {
+                std::ostringstream msg;
+                msg << "Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue]
+                    << "' in three-blocks-topo.";
+                const double tolerance = 1.0e-6;
+                const double toleranceV = std::max(tolerance, tolerance*fabs(valuesE[iValue]));
+                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valuesE[iValue], values[iValue],
+                                                     toleranceV);
+            } // for
+        } // for
+    } // Three Block Topo
+
+    { // Outside domain
+        OutsideDomainPoints pointsOutisde;
+        const size_t numPoints = pointsOutisde.getNumPoints();
+        const double* pointsLLE = pointsOutisde.getLatLonElev();
+
+        for (size_t iPt = 0; iPt < numPoints; ++iPt) {
+            double values[numValues];
+            query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+
+            for (size_t iValue = 0; iValue < numValues; ++iValue) {
+                std::ostringstream msg;
+                msg << "Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in one-block-flat.";
+                const double tolerance = 1.0e-6;
+                const double toleranceV = std::max(tolerance, tolerance*fabs(NODATA_VALUE));
+                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), NODATA_VALUE, values[iValue],
+                                                     toleranceV);
+            } // for
+        } // for
+    } // Outside domain
 
 } // testQueryTopo
 

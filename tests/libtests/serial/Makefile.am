@@ -14,6 +14,7 @@ test_serial_SOURCES = \
 	TestTopography.cc \
 	TestModel.cc \
 	TestQuery.cc \
+	ModelPoints.cc \
 	test_driver.cc
 
 noinst_HEADERS =

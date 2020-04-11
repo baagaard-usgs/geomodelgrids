@@ -4,11 +4,15 @@
 
 #include <portinfo>
 
+#include "ModelPoints.hh"
+
 #include "geomodelgrids/serial/Hyperslab.hh" // Test subject
 
 #include "geomodelgrids/serial/HDF5.hh" // HASA HDF5
 
 #include <cppunit/extensions/HelperMacros.h>
+
+#include <cmath> // USES fabs()
 
 namespace geomodelgrids {
     namespace serial {
@@ -211,11 +215,11 @@ geomodelgrids::serial::TestHyperslab::testInterpolate2D(void) {
 
         const double x = resolution * index[i*spaceDim + 0];
         const double y = resolution * index[i*spaceDim + 1];
-        const double elevationE = 1.5e+2 + 0.2 * x - 0.1 * y + 0.05e-3 * x * y;
+        const double elevationE = ModelPoints::computeElevation(x, y);
 
         std::ostringstream msg;
         msg << "Mismatch in elevation for index (" << index[i*spaceDim+0] << ", " << index[i*spaceDim+1] << ").";
-        const double toleranceV = std::max(tolerance, tolerance*elevationE);
+        const double toleranceV = std::max(tolerance, tolerance*fabs(elevationE));
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), elevationE, elevation, toleranceV);
     } // for
 } // testInterplate2D
@@ -260,20 +264,20 @@ geomodelgrids::serial::TestHyperslab::testInterpolate3D(void) {
         const double z = zTop - resVert * index[i*spaceDim + 2];
 
         { // Value 0
-            const double valueE = 2.0e+3 + 1.0 * x + 0.4 * y - 0.5 * z;
+            const double valueE = ModelPoints::computeValueOne(x, y, z);
             std::ostringstream msg;
-            msg << "Mismatch in value 0 for index (" << index[i*spaceDim+0] << ", " << index[i*spaceDim+1]
+            msg << "Mismatch in value 'one' for index (" << index[i*spaceDim+0] << ", " << index[i*spaceDim+1]
                 << ", " << index[i*spaceDim+2] << ").";
-            const double toleranceV = std::max(tolerance, tolerance*valueE);
+            const double toleranceV = std::max(tolerance, tolerance*fabs(valueE));
             CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[0], toleranceV);
         } // Value 0
 
         { // Value 1
-            const double valueE = -1.2e+3 + 2.1 * x - 0.9 * y + 0.3 * z;
+            const double valueE = ModelPoints::computeValueTwo(x, y, z);
             std::ostringstream msg;
-            msg << "Mismatch in value 1 for index (" << index[i*spaceDim+0] << ", " << index[i*spaceDim+1]
+            msg << "Mismatch in value 'two' for index (" << index[i*spaceDim+0] << ", " << index[i*spaceDim+1]
                 << ", " << index[i*spaceDim+2] << ").";
-            const double toleranceV = std::max(tolerance, tolerance*valueE);
+            const double toleranceV = std::max(tolerance, tolerance*fabs(valueE));
             CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[1], toleranceV);
         } // Value 1
     } // for
