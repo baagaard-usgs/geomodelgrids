@@ -143,6 +143,7 @@ public:
                         const double z);
 
     // PRIVATE MEMBERS -------------------------------------------------------------------------------------------------
+private:
 
     /** Convert xyz in input CRS to xyz in model CRS.
      *

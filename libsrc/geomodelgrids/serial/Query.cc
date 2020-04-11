@@ -150,8 +150,8 @@ geomodelgrids::serial::Query::query(double* const values,
 
             const double* modelValues = _models[i]->query(x, y, elevationSquash);
             values_map_type& modelMap = _valuesIndex[i];
-            for (size_t ivalue = 0; ivalue < numQueryValues; ++ivalue) {
-                values[ivalue] = modelValues[modelMap[ivalue]];
+            for (size_t iValue = 0; iValue < numQueryValues; ++iValue) {
+                values[iValue] = modelValues[modelMap[iValue]];
             } // for
         } // if
     } // for
