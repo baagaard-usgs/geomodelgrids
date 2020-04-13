@@ -228,7 +228,8 @@ geomodelgrids::serial::TestQuery::testQueryFlat(void) {
 
         for (size_t iPt = 0; iPt < numPoints; ++iPt) {
             double values[numValues];
-            query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+            const int err = query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+            CPPUNIT_ASSERT_MESSAGE("Mismatch in err value in one-block-flat", !err);
 
             const double x = pointsXYZ[iPt*spaceDim+0];
             const double y = pointsXYZ[iPt*spaceDim+1];
@@ -257,7 +258,8 @@ geomodelgrids::serial::TestQuery::testQueryFlat(void) {
 
         for (size_t iPt = 0; iPt < numPoints; ++iPt) {
             double values[numValues];
-            query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+            const int err = query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+            CPPUNIT_ASSERT_MESSAGE("Mismatch in err value in three-blocks-flat", !err);
 
             const double x = pointsXYZ[iPt*spaceDim+0];
             const double y = pointsXYZ[iPt*spaceDim+1];
@@ -286,12 +288,13 @@ geomodelgrids::serial::TestQuery::testQueryFlat(void) {
 
         for (size_t iPt = 0; iPt < numPoints; ++iPt) {
             double values[numValues];
-            query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+            const int err = query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+            CPPUNIT_ASSERT_MESSAGE("Mismatch in err value in outside-domain", err);
 
             for (size_t iValue = 0; iValue < numValues; ++iValue) {
                 std::ostringstream msg;
                 msg << "Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
-                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in one-block-flat.";
+                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in outside-domain.";
                 const double tolerance = 1.0e-6;
                 const double toleranceV = std::max(tolerance, tolerance*fabs(NODATA_VALUE));
                 CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), NODATA_VALUE, values[iValue],
@@ -332,7 +335,8 @@ geomodelgrids::serial::TestQuery::testQueryTopo(void) {
 
         for (size_t iPt = 0; iPt < numPoints; ++iPt) {
             double values[numValues];
-            query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+            const int err = query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+            CPPUNIT_ASSERT_MESSAGE("Mismatch in err value in one-block-topo.", !err);
 
             const double x = pointsXYZ[iPt*spaceDim+0];
             const double y = pointsXYZ[iPt*spaceDim+1];
@@ -361,7 +365,8 @@ geomodelgrids::serial::TestQuery::testQueryTopo(void) {
 
         for (size_t iPt = 0; iPt < numPoints; ++iPt) {
             double values[numValues];
-            query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+            const int err = query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+            CPPUNIT_ASSERT_MESSAGE("Mismatch in err value in three-blocks-topo.", !err);
 
             const double x = pointsXYZ[iPt*spaceDim+0];
             const double y = pointsXYZ[iPt*spaceDim+1];
@@ -390,12 +395,13 @@ geomodelgrids::serial::TestQuery::testQueryTopo(void) {
 
         for (size_t iPt = 0; iPt < numPoints; ++iPt) {
             double values[numValues];
-            query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+            const int err = query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+            CPPUNIT_ASSERT_MESSAGE("Mismatch in err value in outside-domain.", err);
 
             for (size_t iValue = 0; iValue < numValues; ++iValue) {
                 std::ostringstream msg;
                 msg << "Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
-                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in one-block-flat.";
+                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in outside-domain.";
                 const double tolerance = 1.0e-6;
                 const double toleranceV = std::max(tolerance, tolerance*fabs(NODATA_VALUE));
                 CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), NODATA_VALUE, values[iValue],
@@ -438,7 +444,8 @@ geomodelgrids::serial::TestQuery::testQuerySquash(void) {
 
         for (size_t iPt = 0; iPt < numPoints; ++iPt) {
             double values[numValues];
-            query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+            const int err = query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+            CPPUNIT_ASSERT_MESSAGE("Mismatch in err value in one-block-topo.", !err);
 
             const double x = pointsXYZ[iPt*spaceDim+0];
             const double y = pointsXYZ[iPt*spaceDim+1];
@@ -468,7 +475,8 @@ geomodelgrids::serial::TestQuery::testQuerySquash(void) {
 
         for (size_t iPt = 0; iPt < numPoints; ++iPt) {
             double values[numValues];
-            query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+            const int err = query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+            CPPUNIT_ASSERT_MESSAGE("Mismatch in err value in three-blocks-topo.", !err);
 
             const double x = pointsXYZ[iPt*spaceDim+0];
             const double y = pointsXYZ[iPt*spaceDim+1];
@@ -498,12 +506,13 @@ geomodelgrids::serial::TestQuery::testQuerySquash(void) {
 
         for (size_t iPt = 0; iPt < numPoints; ++iPt) {
             double values[numValues];
-            query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+            const int err = query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+            CPPUNIT_ASSERT_MESSAGE("Mismatch in err value in outside-domain.", err);
 
             for (size_t iValue = 0; iValue < numValues; ++iValue) {
                 std::ostringstream msg;
                 msg << "Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
-                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in one-block-flat.";
+                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in outside-domain.";
                 const double tolerance = 1.0e-6;
                 const double toleranceV = std::max(tolerance, tolerance*fabs(NODATA_VALUE));
                 CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), NODATA_VALUE, values[iValue],
