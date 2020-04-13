@@ -68,7 +68,7 @@ void
 geomodelgrids::serial::Query::initialize(const std::vector<std::string>& modelFilenames,
                                          const std::vector<std::string>& valueNames,
                                          const std::string& inputCRSString) {
-    const std::vector<std::string>& _valuesLowercase = _Query::toLower(valueNames);
+    _valuesLowercase = _Query::toLower(valueNames);
 
     for (size_t i = 0; i < _models.size(); ++i) {
         delete _models[i];_models[i] = NULL;
