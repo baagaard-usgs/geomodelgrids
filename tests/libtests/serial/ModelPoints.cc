@@ -161,7 +161,7 @@ geomodelgrids::serial::_ModelPoints::toXYZ(double* const coordsDest,
 geomodelgrids::serial::OneBlockFlatPoints::OneBlockFlatPoints(void) :
     ModelPoints(5) {
     const size_t numPoints = 5;assert(_numPoints == numPoints);
-    const double pointsLLE[numPoints*3] = {
+    static const double pointsLLE[numPoints*3] = {
         37.455, -121.941, 0.0,
         37.479, -121.734, -5.0e+3,
         37.381, -121.581, -3.0e+3,
@@ -185,7 +185,7 @@ geomodelgrids::serial::OneBlockFlatPoints::OneBlockFlatPoints(void) :
 geomodelgrids::serial::OneBlockTopoPoints::OneBlockTopoPoints(void) :
     ModelPoints(5) {
     const size_t numPoints = 5;assert(_numPoints == numPoints);
-    const double pointsLLE[numPoints*3] = {
+    static const double pointsLLE[numPoints*3] = {
         37.455, -121.941, 8.0,
         37.479, -121.734, -5.0e+3,
         37.381, -121.581, -3.0e+3,
@@ -206,10 +206,49 @@ geomodelgrids::serial::OneBlockTopoPoints::OneBlockTopoPoints(void) :
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
+geomodelgrids::serial::OneBlockSquashPoints::OneBlockSquashPoints(const double squashMinElev) :
+    ModelPoints(5) {
+    const size_t numPoints = 5;assert(_numPoints == numPoints);
+    static const double pointsLLE[numPoints*3] = {
+        37.455, -121.941, -8.0,
+        37.479, -121.734, -5.0e+3,
+        37.381, -121.581, -3.0e+3,
+        37.283, -121.959, -1.5e+3,
+        37.262, -121.684, -4.0e+3,
+    };_pointsLLE = pointsLLE;
+    _modelCRS = "EPSG:26910";
+
+    _ModelPoints::Domain domain;
+    domain.yAzimuth = 90.0;
+    domain.originX = 590000.0;
+    domain.originY = 4150000.0;
+    domain.zBottom = -5.0e+3;
+    domain.hasTopography = true;
+
+    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
+
+    // Adjust elevation before recomputing model coordinates (x, y, z).
+    double pointsLLESquash[numPoints*3];
+    for (size_t i = 0; i < numPoints; ++i) {
+        const double x = _pointsXYZ[i*3+0];
+        const double y = _pointsXYZ[i*3+1];
+        const double elevOrig = _pointsLLE[i*3+2];
+        const double elevGround = computeElevation(x, y);
+
+        pointsLLESquash[i*3+0] = pointsLLE[i*3+0];
+        pointsLLESquash[i*3+1] = pointsLLE[i*3+1];
+        pointsLLESquash[i*3+2] = (elevOrig > squashMinElev) ? elevOrig + elevGround : elevOrig;
+    } // for
+    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLESquash, numPoints, domain);
+} // Constructor
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Constructor.
 geomodelgrids::serial::ThreeBlocksFlatPoints::ThreeBlocksFlatPoints(void) :
     ModelPoints(6) {
     const size_t numPoints = 6;assert(_numPoints == numPoints);
-    const double pointsLLE[numPoints*3] = {
+    static const double pointsLLE[numPoints*3] = {
         35.3, -118.2, 0.0,
         35.5, -117.9, -45.0e+3,
         35.0, -118.1, -3.0e+3,
@@ -234,7 +273,7 @@ geomodelgrids::serial::ThreeBlocksFlatPoints::ThreeBlocksFlatPoints(void) :
 geomodelgrids::serial::ThreeBlocksTopoPoints::ThreeBlocksTopoPoints(void) :
     ModelPoints(6) {
     const size_t numPoints = 6;assert(_numPoints == numPoints);
-    const double pointsLLE[numPoints*3] = {
+    static const double pointsLLE[numPoints*3] = {
         35.3, -118.2, 10.0,
         35.5, -117.9, -45.0e+3,
         35.0, -118.1, -3.0e+3,
@@ -256,10 +295,50 @@ geomodelgrids::serial::ThreeBlocksTopoPoints::ThreeBlocksTopoPoints(void) :
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
+geomodelgrids::serial::ThreeBlocksSquashPoints::ThreeBlocksSquashPoints(const double squashMinElev) :
+    ModelPoints(6) {
+    const size_t numPoints = 6;assert(_numPoints == numPoints);
+    static const double pointsLLE[numPoints*3] = {
+        35.3, -118.2, -10.0,
+        35.5, -117.9, -45.0e+3,
+        35.0, -118.1, -3.0e+3,
+        35.1, -117.7, -15.0e+3,
+        34.7, -117.9, -25.0e+3,
+        34.7, -117.5, -43.0,
+    };_pointsLLE = pointsLLE;
+    _modelCRS = "EPSG:3311";
+
+    _ModelPoints::Domain domain;
+    domain.yAzimuth = 330.0;
+    domain.originX = 200000.0;
+    domain.originY = -400000.0;
+    domain.zBottom = -45.0e+3;
+    domain.hasTopography = true;
+
+    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
+
+    // Adjust elevation before recomputing model coordinates (x, y, z).
+    double pointsLLESquash[numPoints*3];
+    for (size_t i = 0; i < numPoints; ++i) {
+        const double x = _pointsXYZ[i*3+0];
+        const double y = _pointsXYZ[i*3+1];
+        const double elevOrig = _pointsLLE[i*3+2];
+        const double elevGround = computeElevation(x, y);
+
+        pointsLLESquash[i*3+0] = pointsLLE[i*3+0];
+        pointsLLESquash[i*3+1] = pointsLLE[i*3+1];
+        pointsLLESquash[i*3+2] = (elevOrig > squashMinElev) ? elevOrig + elevGround : elevOrig;
+    } // for
+    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLESquash, numPoints, domain);
+} // Constructor
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Constructor.
 geomodelgrids::serial::OutsideDomainPoints::OutsideDomainPoints(void) :
     ModelPoints(5) {
     const size_t numPoints = 5;assert(_numPoints == numPoints);
-    const double pointsLLE[numPoints*3] = {
+    static const double pointsLLE[numPoints*3] = {
         34.7, -117.8, 1.0e+4,
         35.0, -117.6, -45.1e+3,
         34.3, -117.8, -3.0e+3,

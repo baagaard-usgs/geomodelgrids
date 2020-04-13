@@ -403,7 +403,6 @@ geomodelgrids::serial::TestQuery::testQueryTopo(void) {
             } // for
         } // for
     } // Outside domain
-
 } // testQueryTopo
 
 
@@ -411,7 +410,107 @@ geomodelgrids::serial::TestQuery::testQueryTopo(void) {
 // Test query() for model with topography using squashing.
 void
 geomodelgrids::serial::TestQuery::testQuerySquash(void) {
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Implement test.", false);
+    const double squashMinElev = -4.999e+3;
+
+    const size_t numModels = 2;
+    const char* const filenamesArray[numModels] = {
+        "../../data/one-block-topo.h5",
+        "../../data/three-blocks-topo.h5",
+    };
+    std::vector<std::string> filenames(filenamesArray, filenamesArray+numModels);
+
+    const size_t numValues = 2;
+    const char* const valueNamesArray[numValues] = { "two", "one" };
+    std::vector<std::string> valueNames(valueNamesArray, valueNamesArray+numValues);
+
+    OneBlockSquashPoints pointsOne(squashMinElev);
+    const std::string& crs = pointsOne.getCRSLonLatElev();
+    const size_t spaceDim = 3;
+
+    Query query;
+    query.setSquashMinElev(squashMinElev);
+    query.initialize(filenames, valueNames, crs);
+
+    { // One Block Squash
+        const size_t numPoints = pointsOne.getNumPoints();
+        const double* pointsLLE = pointsOne.getLatLonElev();
+        const double* pointsXYZ = pointsOne.getXYZ();
+
+        for (size_t iPt = 0; iPt < numPoints; ++iPt) {
+            double values[numValues];
+            query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+
+            const double x = pointsXYZ[iPt*spaceDim+0];
+            const double y = pointsXYZ[iPt*spaceDim+1];
+            const double z = pointsXYZ[iPt*spaceDim+2];
+
+            double valuesE[numValues];
+            valuesE[0] = pointsOne.computeValueTwo(x, y, z);
+            valuesE[1] = pointsOne.computeValueOne(x, y, z);
+
+            for (size_t iValue = 0; iValue < numValues; ++iValue) {
+                std::ostringstream msg;
+                msg << "Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in one-block-topo.";
+                const double tolerance = 1.0e-6;
+                const double toleranceV = std::max(tolerance, tolerance*fabs(valuesE[iValue]));
+                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valuesE[iValue], values[iValue],
+                                                     toleranceV);
+            } // for
+        } // for
+    } // One Block Squash
+
+    { // Three Block Squash
+        ThreeBlocksSquashPoints pointsThree(squashMinElev);
+        const size_t numPoints = pointsThree.getNumPoints();
+        const double* pointsLLE = pointsThree.getLatLonElev();
+        const double* pointsXYZ = pointsThree.getXYZ();
+
+        for (size_t iPt = 0; iPt < numPoints; ++iPt) {
+            double values[numValues];
+            query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+
+            const double x = pointsXYZ[iPt*spaceDim+0];
+            const double y = pointsXYZ[iPt*spaceDim+1];
+            const double z = pointsXYZ[iPt*spaceDim+2];
+
+            double valuesE[numValues];
+            valuesE[0] = pointsThree.computeValueTwo(x, y, z);
+            valuesE[1] = pointsThree.computeValueOne(x, y, z);
+
+            for (size_t iValue = 0; iValue < numValues; ++iValue) {
+                std::ostringstream msg;
+                msg << "Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue]
+                    << "' in three-blocks-topo.";
+                const double tolerance = 1.0e-6;
+                const double toleranceV = std::max(tolerance, tolerance*fabs(valuesE[iValue]));
+                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valuesE[iValue], values[iValue],
+                                                     toleranceV);
+            } // for
+        } // for
+    } // Three Block Squash
+
+    { // Outside domain
+        OutsideDomainPoints pointsOutisde;
+        const size_t numPoints = pointsOutisde.getNumPoints();
+        const double* pointsLLE = pointsOutisde.getLatLonElev();
+
+        for (size_t iPt = 0; iPt < numPoints; ++iPt) {
+            double values[numValues];
+            query.query(values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+
+            for (size_t iValue = 0; iValue < numValues; ++iValue) {
+                std::ostringstream msg;
+                msg << "Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in one-block-flat.";
+                const double tolerance = 1.0e-6;
+                const double toleranceV = std::max(tolerance, tolerance*fabs(NODATA_VALUE));
+                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), NODATA_VALUE, values[iValue],
+                                                     toleranceV);
+            } // for
+        } // for
+    } // Outside domain
 } // TestQuerySquash
 
 

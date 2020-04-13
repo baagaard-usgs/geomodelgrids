@@ -144,7 +144,7 @@ geomodelgrids::serial::Query::query(double* const values,
             double elevationSquash = z;
             if (_squash && (z > _squashMinElev)) {
                 const double groundElev = _models[i]->queryElevation(x, y);
-                elevationSquash = z - groundElev;
+                elevationSquash = z + groundElev;
             } // if
             err = 0;
 

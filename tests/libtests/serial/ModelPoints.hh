@@ -11,8 +11,10 @@ namespace geomodelgrids {
         class ModelPoints;
         class OneBlockFlatPoints;
         class OneBlockTopoPoints;
+        class OneBlockSquashPoints;
         class ThreeBlocksFlatPoints;
         class ThreeBlocksTopoPoints;
+        class ThreeBlocksSquashPoints;
         class OutsideDomainPoints;
     } // serial
 } // geomodelgrids
@@ -108,7 +110,13 @@ public:
     OneBlockTopoPoints(void);
 }; // OneBlockTopoPoints
 
-class geomodelgrids::serial::ThreeBlocksFlatPoints : public geomodelgrids::serial::ModelPoints {
+class geomodelgrids::serial::OneBlockSquashPoints : public ModelPoints {
+public:
+
+    OneBlockSquashPoints(const double squashMinElev);
+}; // OneBlockSquashPoints
+
+class geomodelgrids::serial::ThreeBlocksFlatPoints : public ModelPoints {
 public:
 
     ThreeBlocksFlatPoints(void);
@@ -119,6 +127,12 @@ public:
 
     ThreeBlocksTopoPoints(void);
 }; // ThreeBlocksTopoPoints
+
+class geomodelgrids::serial::ThreeBlocksSquashPoints : public ModelPoints {
+public:
+
+    ThreeBlocksSquashPoints(const double squashMinElev);
+}; // ThreeBlocksSquashPoints
 
 class geomodelgrids::serial::OutsideDomainPoints : public ModelPoints {
 public:
