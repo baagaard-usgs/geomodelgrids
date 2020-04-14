@@ -122,7 +122,7 @@ geomodelgrids::serial::TestTopography::testQuery(void) {
         const double y = xy[i*spaceDim+1];
         const double elevation = topo.query(x, y);
 
-        const double elevationE = ModelPoints::computeElevation(x, y);
+        const double elevationE = geomodelgrids::testdata::ModelPoints::computeElevation(x, y);
 
         std::ostringstream msg;
         msg << "Mismatch in elevation at (" << x << ", " << y << ").";

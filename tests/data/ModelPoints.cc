@@ -8,12 +8,12 @@
 #include <cassert> // USES assert()
 
 namespace geomodelgrids {
-    namespace serial {
+    namespace testdata {
         class _ModelPoints;
-    } // serial
+    } // testdata
 } // geomodelgrids
 
-class geomodelgrids::serial::_ModelPoints {
+class geomodelgrids::testdata::_ModelPoints {
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -37,7 +37,7 @@ public:
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
-geomodelgrids::serial::ModelPoints::ModelPoints(const size_t numPoints) :
+geomodelgrids::testdata::ModelPoints::ModelPoints(const size_t numPoints) :
     _numPoints(numPoints),
     _pointsLLE(NULL),
     _pointsXYZ(new double[numPoints*3]),
@@ -49,7 +49,7 @@ geomodelgrids::serial::ModelPoints::ModelPoints(const size_t numPoints) :
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor.
-geomodelgrids::serial::ModelPoints::~ModelPoints(void) {
+geomodelgrids::testdata::ModelPoints::~ModelPoints(void) {
     delete[] _pointsXYZ;_pointsXYZ = NULL;
 } // destructor
 
@@ -57,7 +57,7 @@ geomodelgrids::serial::ModelPoints::~ModelPoints(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Get number of points.
 size_t
-geomodelgrids::serial::ModelPoints::getNumPoints(void) const {
+geomodelgrids::testdata::ModelPoints::getNumPoints(void) const {
     return _numPoints;
 } // getNumPoints
 
@@ -65,7 +65,7 @@ geomodelgrids::serial::ModelPoints::getNumPoints(void) const {
 // ---------------------------------------------------------------------------------------------------------------------
 // Get CRS for longitude, latitude, and elevation=.
 const char*
-geomodelgrids::serial::ModelPoints::getCRSLonLatElev(void) const {
+geomodelgrids::testdata::ModelPoints::getCRSLonLatElev(void) const {
     return _inCRS;
 } // getCRSLonLatElev
 
@@ -73,7 +73,7 @@ geomodelgrids::serial::ModelPoints::getCRSLonLatElev(void) const {
 // ---------------------------------------------------------------------------------------------------------------------
 // Get geographic coordinates of sample points.
 const double*
-geomodelgrids::serial::ModelPoints::getLatLonElev(void) const {
+geomodelgrids::testdata::ModelPoints::getLatLonElev(void) const {
     return _pointsLLE;
 } // getLatLonElev
 
@@ -84,7 +84,7 @@ geomodelgrids::serial::ModelPoints::getLatLonElev(void) const {
  * @returns Coordinates (x, y, z) of sample points.
  */
 const double*
-geomodelgrids::serial::ModelPoints::getXYZ(void) const {
+geomodelgrids::testdata::ModelPoints::getXYZ(void) const {
     return _pointsXYZ;
 } // getXYZ
 
@@ -92,8 +92,8 @@ geomodelgrids::serial::ModelPoints::getXYZ(void) const {
 // ---------------------------------------------------------------------------------------------------------------------
 // Compute elevation of ground surface at point.
 double
-geomodelgrids::serial::ModelPoints::computeElevation(const double x,
-                                                     const double y) {
+geomodelgrids::testdata::ModelPoints::computeElevation(const double x,
+                                                       const double y) {
     return 1.5e+2 + 2.0e-5 * x - 1.2e-5 * y + 5.0e-10 * x * y;
 } // computeTopography
 
@@ -101,9 +101,9 @@ geomodelgrids::serial::ModelPoints::computeElevation(const double x,
 // ---------------------------------------------------------------------------------------------------------------------
 // Compute value 'one' at point.
 double
-geomodelgrids::serial::ModelPoints::computeValueOne(const double x,
-                                                    const double y,
-                                                    const double z) {
+geomodelgrids::testdata::ModelPoints::computeValueOne(const double x,
+                                                      const double y,
+                                                      const double z) {
     return 2.0e+3 + 1.0 * x + 0.4 * y - 0.5 * z;
 } // computeValueOne
 
@@ -111,9 +111,9 @@ geomodelgrids::serial::ModelPoints::computeValueOne(const double x,
 // ---------------------------------------------------------------------------------------------------------------------
 // Compute value 'two' at point.
 double
-geomodelgrids::serial::ModelPoints::computeValueTwo(const double x,
-                                                    const double y,
-                                                    const double z) {
+geomodelgrids::testdata::ModelPoints::computeValueTwo(const double x,
+                                                      const double y,
+                                                      const double z) {
     return -1.2e+3 + 2.1 * x - 0.9 * y + 0.3 * z;
 } // computeValueTwo
 
@@ -121,12 +121,12 @@ geomodelgrids::serial::ModelPoints::computeValueTwo(const double x,
 #include <iostream>
 // ---------------------------------------------------------------------------------------------------------------------
 void
-geomodelgrids::serial::_ModelPoints::toXYZ(double* const coordsDest,
-                                           const char* destString,
-                                           const char* srcString,
-                                           const double* coordsSrc,
-                                           const size_t numPoints,
-                                           const Domain& domain) {
+geomodelgrids::testdata::_ModelPoints::toXYZ(double* const coordsDest,
+                                             const char* destString,
+                                             const char* srcString,
+                                             const double* coordsSrc,
+                                             const size_t numPoints,
+                                             const Domain& domain) {
     assert(coordsDest);
     assert(destString);
     assert(srcString);
@@ -158,7 +158,7 @@ geomodelgrids::serial::_ModelPoints::toXYZ(double* const coordsDest,
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
-geomodelgrids::serial::OneBlockFlatPoints::OneBlockFlatPoints(void) :
+geomodelgrids::testdata::OneBlockFlatPoints::OneBlockFlatPoints(void) :
     ModelPoints(5) {
     const size_t numPoints = 5;assert(_numPoints == numPoints);
     static const double pointsLLE[numPoints*3] = {
@@ -182,7 +182,7 @@ geomodelgrids::serial::OneBlockFlatPoints::OneBlockFlatPoints(void) :
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
-geomodelgrids::serial::OneBlockTopoPoints::OneBlockTopoPoints(void) :
+geomodelgrids::testdata::OneBlockTopoPoints::OneBlockTopoPoints(void) :
     ModelPoints(5) {
     const size_t numPoints = 5;assert(_numPoints == numPoints);
     static const double pointsLLE[numPoints*3] = {
@@ -206,7 +206,7 @@ geomodelgrids::serial::OneBlockTopoPoints::OneBlockTopoPoints(void) :
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
-geomodelgrids::serial::OneBlockSquashPoints::OneBlockSquashPoints(const double squashMinElev) :
+geomodelgrids::testdata::OneBlockSquashPoints::OneBlockSquashPoints(const double squashMinElev) :
     ModelPoints(5) {
     const size_t numPoints = 5;assert(_numPoints == numPoints);
     static const double pointsLLE[numPoints*3] = {
@@ -245,7 +245,7 @@ geomodelgrids::serial::OneBlockSquashPoints::OneBlockSquashPoints(const double s
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
-geomodelgrids::serial::ThreeBlocksFlatPoints::ThreeBlocksFlatPoints(void) :
+geomodelgrids::testdata::ThreeBlocksFlatPoints::ThreeBlocksFlatPoints(void) :
     ModelPoints(6) {
     const size_t numPoints = 6;assert(_numPoints == numPoints);
     static const double pointsLLE[numPoints*3] = {
@@ -270,7 +270,7 @@ geomodelgrids::serial::ThreeBlocksFlatPoints::ThreeBlocksFlatPoints(void) :
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
-geomodelgrids::serial::ThreeBlocksTopoPoints::ThreeBlocksTopoPoints(void) :
+geomodelgrids::testdata::ThreeBlocksTopoPoints::ThreeBlocksTopoPoints(void) :
     ModelPoints(6) {
     const size_t numPoints = 6;assert(_numPoints == numPoints);
     static const double pointsLLE[numPoints*3] = {
@@ -295,7 +295,7 @@ geomodelgrids::serial::ThreeBlocksTopoPoints::ThreeBlocksTopoPoints(void) :
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
-geomodelgrids::serial::ThreeBlocksSquashPoints::ThreeBlocksSquashPoints(const double squashMinElev) :
+geomodelgrids::testdata::ThreeBlocksSquashPoints::ThreeBlocksSquashPoints(const double squashMinElev) :
     ModelPoints(6) {
     const size_t numPoints = 6;assert(_numPoints == numPoints);
     static const double pointsLLE[numPoints*3] = {
@@ -335,7 +335,7 @@ geomodelgrids::serial::ThreeBlocksSquashPoints::ThreeBlocksSquashPoints(const do
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
-geomodelgrids::serial::OutsideDomainPoints::OutsideDomainPoints(void) :
+geomodelgrids::testdata::OutsideDomainPoints::OutsideDomainPoints(void) :
     ModelPoints(5) {
     const size_t numPoints = 5;assert(_numPoints == numPoints);
     static const double pointsLLE[numPoints*3] = {

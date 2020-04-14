@@ -39,11 +39,6 @@ geomodelgrids::apps::Query::run(int argc,
         return 0;
     } // if
 
-    if (0 == _modelFilenames.size()) {
-        std::cout << "WARNING: No models provided. Exiting." << std::endl;
-        return 0;
-    } // if
-
     geomodelgrids::serial::Query query;
     query.initialize(_modelFilenames, _valueNames, _pointsCRS);
     if (_squash) {
@@ -54,17 +49,18 @@ geomodelgrids::apps::Query::run(int argc,
     std::ofstream sout(_outputFilename);
     const size_t numQueryValues = _valueNames.size();
     std::vector<double> values(numQueryValues);
+    sout << std::scientific << std::setprecision(6);
     while (!sin.eof() && sin.good()) {
         double srcX, srcY, srcZ;
         sin >> srcX >> srcY >> srcZ;
 
         query.query(&values[0], srcX, srcY, srcZ);
 
-        sout << srcX
-             << srcY
-             << srcZ;
+        sout << std::setw(14) << srcX
+             << std::setw(14) << srcY
+             << std::setw(14) << srcZ;
         for (size_t i = 0; i < numQueryValues; ++i) {
-            sout << values[i];
+            sout << std::setw(14) << values[i];
         } // for
         sout << "\n";
     } // while
@@ -134,27 +130,20 @@ geomodelgrids::apps::Query::_parseArgs(int argc,
             } // while
             break;
         } // 'm'
-        case '?':
-            break;
-        default: {
+        case '?': {
             std::ostringstream msg;
-            msg << "Error passing command line arguments:";
+            msg << "Error passing command line arguments:\n";
             for (int i = 0; i < argc; ++i) {
-                msg << "    " << argv[i] << "\n";
+                msg << argv[i] << " ";
             } // for
-            msg << "Unknown option '" << c << "'";
             throw std::logic_error(msg.str().c_str());
-        } // default
+        } // ?
         } // switch
     } // while
 
     if (!_showHelp) { // Verify required arguments were provided.
         bool optionsOkay = true;
         std::ostringstream msg;
-        if (_valueNames.empty()) {
-            msg << "    - Missing names of values. Use --values=VALUE_0,...,VALUE_N\n";
-            optionsOkay = false;
-        } // if
         if (_pointsFilename.empty()) {
             msg << "    - Missing filename for list of points. Use --points=FILE_POINTS\n";
             optionsOkay = false;
@@ -173,9 +162,7 @@ geomodelgrids::apps::Query::_parseArgs(int argc,
         } // if
 
         if (!optionsOkay) {
-            std::cerr << "Missing required command line arguments:\n"
-                      << msg.str() << std::endl;
-            exit(-1);
+            throw std::runtime_error(std::string("Missing required command line arguments:\n")+ msg.str());
         } // if
     } // if
 } // _parseArgs

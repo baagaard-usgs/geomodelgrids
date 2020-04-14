@@ -276,7 +276,7 @@ geomodelgrids::serial::TestModel::testToModelXYZFlat(void) {
     model.loadMetadata();
     model.initialize();
 
-    ThreeBlocksFlatPoints points;
+    geomodelgrids::testdata::ThreeBlocksFlatPoints points;
     const size_t numPoints = points.getNumPoints();
     const size_t spaceDim = 3;
     const double* pointsLLE = points.getLatLonElev();
@@ -308,7 +308,7 @@ geomodelgrids::serial::TestModel::testToModelXYZTopo(void) {
     model.loadMetadata();
     model.initialize();
 
-    ThreeBlocksTopoPoints points;
+    geomodelgrids::testdata::ThreeBlocksTopoPoints points;
     const size_t numPoints = points.getNumPoints();
     const size_t spaceDim = 3;
     const double* pointsLLE = points.getLatLonElev();
@@ -342,7 +342,7 @@ geomodelgrids::serial::TestModel::testContains(void) {
     model.initialize();
 
     { // inside domain
-        ThreeBlocksTopoPoints points;
+        geomodelgrids::testdata::ThreeBlocksTopoPoints points;
         const size_t numPoints = points.getNumPoints();
         const size_t spaceDim = 3;
         const double* pointsLLE = points.getLatLonElev();
@@ -357,7 +357,7 @@ geomodelgrids::serial::TestModel::testContains(void) {
     } // inside domain
 
     { // outside domain
-        OutsideDomainPoints points;
+        geomodelgrids::testdata::OutsideDomainPoints points;
         const size_t numPoints = points.getNumPoints();
         const size_t spaceDim = 3;
         const double* pointsLLE = points.getLatLonElev();
@@ -382,7 +382,7 @@ geomodelgrids::serial::TestModel::testQueryElevation(void) {
     model.loadMetadata();
     model.initialize();
 
-    ThreeBlocksTopoPoints points;
+    geomodelgrids::testdata::ThreeBlocksTopoPoints points;
     const size_t numPoints = points.getNumPoints();
     const size_t spaceDim = 3;
     const double* pointsLLE = points.getLatLonElev();
@@ -410,7 +410,7 @@ geomodelgrids::serial::TestModel::testQuery(void) {
     model.loadMetadata();
     model.initialize();
 
-    ThreeBlocksTopoPoints points;
+    geomodelgrids::testdata::ThreeBlocksTopoPoints points;
     const size_t numPoints = points.getNumPoints();
     const size_t spaceDim = 3;
     const double* pointsLLE = points.getLatLonElev();

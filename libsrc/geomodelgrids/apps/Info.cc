@@ -9,10 +9,11 @@
 
 #include <getopt.h> // USES getopt_long()
 #include <iomanip>
+#include <iostream> // USES std::cout
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream, std::istringstream
 
-// -------------
+// ---------------------------------------------------------------------------------------------------------------------
 namespace geomodelgrids {
     namespace apps {
         namespace _Info {
@@ -26,7 +27,7 @@ namespace geomodelgrids {
     } // apps
 } // geomodelgrids
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Constructor
 geomodelgrids::apps::Info::Info() :
     _showHelp(false),
@@ -120,25 +121,32 @@ geomodelgrids::apps::Info::_parseArgs(int argc,
         case 'm': {
             _modelFilenames.clear();
             std::istringstream tokenStream(optarg);
-            std::string token;
-            while (std::getline(tokenStream, token, ',')) {
-                _modelFilenames.push_back(token);
-            } // while
+            if (tokenStream.str().find(",") != std::string::npos) {
+                std::string token;
+                while (std::getline(tokenStream, token, ',')) {
+                    _modelFilenames.push_back(token);
+                } // while
+            } else {
+                _modelFilenames.push_back(optarg);
+            } // if/else
             break;
         } // 'm'
-        case '?':
-            break;
-        default: {
+        case '?': {
             std::ostringstream msg;
-            msg << "Error passing command line arguments:";
+            msg << "Error passing command line arguments:\n";
             for (int i = 0; i < argc; ++i) {
-                msg << "    " << argv[i] << "\n";
+                msg << argv[i] << " ";
             } // for
-            msg << "Unknown option '" << c << "'";
             throw std::logic_error(msg.str().c_str());
-        } // default
+        } // ?
         } // switch
     } // while
+    if (!_showHelp && (0 == _modelFilenames.size())) {
+        throw std::runtime_error("Missing required command line argument --models=FILE_0,...,FILE_M.");
+    } // if
+    if (!_showHelp && !_showAll && !_showDescription && !_showCoordSys && !_showValues && !_showBlocks) {
+        _showHelp = true;
+    } // if
 } // _parseArgs
 
 

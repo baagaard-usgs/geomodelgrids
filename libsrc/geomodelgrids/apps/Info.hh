@@ -4,11 +4,8 @@
 
 #include "appsfwd.hh" // forward declarations
 
-#include "geomodelgrids/serial/HDF5.hh" // USES HDF5
+#include "geomodelgrids/serial/serialfwd.hh" // USES Model
 
-#include <cassert> // USES assert()
-#include <iostream> // USES std::std::cout
-#include <getopt.h> // USES getopt_long()
 #include <vector> // USES std::std::vector
 #include <string> // USES std::string
 

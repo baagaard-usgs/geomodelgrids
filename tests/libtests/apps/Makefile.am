@@ -1,18 +1,13 @@
-subpackage = serial
+subpackage = apps
 include $(top_srcdir)/subpackage.am
 include $(top_srcdir)/check.am
 
-TESTS = test_serial
+TESTS = test_apps
 
-check_PROGRAMS = test_serial
+check_PROGRAMS = test_apps
 
-test_serial_SOURCES = \
-	TestModelInfo.cc \
-	TestHDF5.cc \
-	TestHyperslab.cc \
-	TestBlock.cc \
-	TestTopography.cc \
-	TestModel.cc \
+test_apps_SOURCES = \
+	TestInfo.cc \
 	TestQuery.cc \
 	$(top_srcdir)/tests/data/ModelPoints.cc \
 	test_driver.cc
@@ -21,8 +16,8 @@ noinst_HEADERS =
 
 AM_CPPFLAGS += -I$(top_srcdir)/tests/data
 
-test_serial_LDFLAGS = $(AM_LDFLAGS)
-test_serial_LDADD = \
+test_apps_LDFLAGS = $(AM_LDFLAGS)
+test_apps_LDADD = \
 	-lcppunit -ldl \
 	$(top_builddir)/libsrc/geomodelgrids/libgeomodelgrids.la \
 	-lhdf5

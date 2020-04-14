@@ -2,6 +2,10 @@ EXTRA_DIST = \
 	generate.py
 
 
+noinst_HEADERS = ModelPoints.hh
+
+noinst_SOURCES = ModelPoints.cc
+
 dist_noinst_DATA = \
 	one-block-flat.h5 \
 	one-block-topo.h5 \

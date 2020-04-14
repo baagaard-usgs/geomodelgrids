@@ -215,7 +215,7 @@ geomodelgrids::serial::TestHyperslab::testInterpolate2D(void) {
 
         const double x = resolution * index[i*spaceDim + 0];
         const double y = resolution * index[i*spaceDim + 1];
-        const double elevationE = ModelPoints::computeElevation(x, y);
+        const double elevationE = geomodelgrids::testdata::ModelPoints::computeElevation(x, y);
 
         std::ostringstream msg;
         msg << "Mismatch in elevation for index (" << index[i*spaceDim+0] << ", " << index[i*spaceDim+1] << ").";
@@ -264,7 +264,7 @@ geomodelgrids::serial::TestHyperslab::testInterpolate3D(void) {
         const double z = zTop - resVert * index[i*spaceDim + 2];
 
         { // Value 0
-            const double valueE = ModelPoints::computeValueOne(x, y, z);
+            const double valueE = geomodelgrids::testdata::ModelPoints::computeValueOne(x, y, z);
             std::ostringstream msg;
             msg << "Mismatch in value 'one' for index (" << index[i*spaceDim+0] << ", " << index[i*spaceDim+1]
                 << ", " << index[i*spaceDim+2] << ").";
@@ -273,7 +273,7 @@ geomodelgrids::serial::TestHyperslab::testInterpolate3D(void) {
         } // Value 0
 
         { // Value 1
-            const double valueE = ModelPoints::computeValueTwo(x, y, z);
+            const double valueE = geomodelgrids::testdata::ModelPoints::computeValueTwo(x, y, z);
             std::ostringstream msg;
             msg << "Mismatch in value 'two' for index (" << index[i*spaceDim+0] << ", " << index[i*spaceDim+1]
                 << ", " << index[i*spaceDim+2] << ").";

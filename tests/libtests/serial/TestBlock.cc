@@ -131,7 +131,7 @@ geomodelgrids::serial::TestBlock::testLoadMetadata(void) {
 // Test query().
 void
 geomodelgrids::serial::TestBlock::testQuery(void) {
-    OneBlockFlatPoints points;
+    geomodelgrids::testdata::OneBlockFlatPoints points;
     const size_t numPoints = points.getNumPoints();
     const size_t spaceDim = 3;
     const double* pointsXYZ = points.getXYZ();

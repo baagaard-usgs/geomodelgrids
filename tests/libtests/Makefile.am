@@ -1,5 +1,6 @@
 SUBDIRS = \
 	utils \
-	serial
+	serial \
+	apps
 
 # End of file

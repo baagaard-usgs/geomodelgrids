@@ -134,7 +134,7 @@ geomodelgrids::serial::TestQuery::testQueryElevation(void) {
     };
     std::vector<std::string> filenames(filenamesArray, filenamesArray+numModels);
 
-    OneBlockFlatPoints pointsOne;
+    geomodelgrids::testdata::OneBlockFlatPoints pointsOne;
     const std::string& crs = pointsOne.getCRSLonLatElev();
     const size_t spaceDim = 3;
 
@@ -160,7 +160,7 @@ geomodelgrids::serial::TestQuery::testQueryElevation(void) {
     } // One Block Flat
 
     { // Three Blocks Topo
-        ThreeBlocksTopoPoints pointsThree;
+        geomodelgrids::testdata::ThreeBlocksTopoPoints pointsThree;
         const size_t numPoints = pointsThree.getNumPoints();
         const double* pointsLLE = pointsThree.getLatLonElev();
         const double* pointsXYZ = pointsThree.getXYZ();
@@ -179,7 +179,7 @@ geomodelgrids::serial::TestQuery::testQueryElevation(void) {
     } // Three Blocks Topo
 
     { // Outside domains
-        OutsideDomainPoints pointsOutside;
+        geomodelgrids::testdata::OutsideDomainPoints pointsOutside;
         const size_t numPoints = pointsOutside.getNumPoints();
         const double* pointsLLE = pointsOutside.getLatLonElev();
 
@@ -214,7 +214,7 @@ geomodelgrids::serial::TestQuery::testQueryFlat(void) {
     const char* const valueNamesArray[numValues] = { "two", "one" };
     std::vector<std::string> valueNames(valueNamesArray, valueNamesArray+numValues);
 
-    OneBlockFlatPoints pointsOne;
+    geomodelgrids::testdata::OneBlockFlatPoints pointsOne;
     const std::string& crs = pointsOne.getCRSLonLatElev();
     const size_t spaceDim = 3;
 
@@ -251,7 +251,7 @@ geomodelgrids::serial::TestQuery::testQueryFlat(void) {
     } // One Block Flat
 
     { // Three Block Flat
-        ThreeBlocksFlatPoints pointsThree;
+        geomodelgrids::testdata::ThreeBlocksFlatPoints pointsThree;
         const size_t numPoints = pointsThree.getNumPoints();
         const double* pointsLLE = pointsThree.getLatLonElev();
         const double* pointsXYZ = pointsThree.getXYZ();
@@ -282,7 +282,7 @@ geomodelgrids::serial::TestQuery::testQueryFlat(void) {
     } // Three Block Flat
 
     { // Outside domain
-        OutsideDomainPoints pointsOutisde;
+        geomodelgrids::testdata::OutsideDomainPoints pointsOutisde;
         const size_t numPoints = pointsOutisde.getNumPoints();
         const double* pointsLLE = pointsOutisde.getLatLonElev();
 
@@ -321,7 +321,7 @@ geomodelgrids::serial::TestQuery::testQueryTopo(void) {
     const char* const valueNamesArray[numValues] = { "two", "one" };
     std::vector<std::string> valueNames(valueNamesArray, valueNamesArray+numValues);
 
-    OneBlockTopoPoints pointsOne;
+    geomodelgrids::testdata::OneBlockTopoPoints pointsOne;
     const std::string& crs = pointsOne.getCRSLonLatElev();
     const size_t spaceDim = 3;
 
@@ -358,7 +358,7 @@ geomodelgrids::serial::TestQuery::testQueryTopo(void) {
     } // One Block Topo
 
     { // Three Block Topo
-        ThreeBlocksTopoPoints pointsThree;
+        geomodelgrids::testdata::ThreeBlocksTopoPoints pointsThree;
         const size_t numPoints = pointsThree.getNumPoints();
         const double* pointsLLE = pointsThree.getLatLonElev();
         const double* pointsXYZ = pointsThree.getXYZ();
@@ -389,7 +389,7 @@ geomodelgrids::serial::TestQuery::testQueryTopo(void) {
     } // Three Block Topo
 
     { // Outside domain
-        OutsideDomainPoints pointsOutisde;
+        geomodelgrids::testdata::OutsideDomainPoints pointsOutisde;
         const size_t numPoints = pointsOutisde.getNumPoints();
         const double* pointsLLE = pointsOutisde.getLatLonElev();
 
@@ -429,7 +429,7 @@ geomodelgrids::serial::TestQuery::testQuerySquash(void) {
     const char* const valueNamesArray[numValues] = { "two", "one" };
     std::vector<std::string> valueNames(valueNamesArray, valueNamesArray+numValues);
 
-    OneBlockSquashPoints pointsOne(squashMinElev);
+    geomodelgrids::testdata::OneBlockSquashPoints pointsOne(squashMinElev);
     const std::string& crs = pointsOne.getCRSLonLatElev();
     const size_t spaceDim = 3;
 
@@ -468,7 +468,7 @@ geomodelgrids::serial::TestQuery::testQuerySquash(void) {
     } // One Block Squash
 
     { // Three Block Squash
-        ThreeBlocksSquashPoints pointsThree(squashMinElev);
+        geomodelgrids::testdata::ThreeBlocksSquashPoints pointsThree(squashMinElev);
         const size_t numPoints = pointsThree.getNumPoints();
         const double* pointsLLE = pointsThree.getLatLonElev();
         const double* pointsXYZ = pointsThree.getXYZ();
@@ -500,7 +500,7 @@ geomodelgrids::serial::TestQuery::testQuerySquash(void) {
     } // Three Block Squash
 
     { // Outside domain
-        OutsideDomainPoints pointsOutisde;
+        geomodelgrids::testdata::OutsideDomainPoints pointsOutisde;
         const size_t numPoints = pointsOutisde.getNumPoints();
         const double* pointsLLE = pointsOutisde.getLatLonElev();
 

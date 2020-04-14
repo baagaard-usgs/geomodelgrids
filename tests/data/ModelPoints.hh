@@ -1,4 +1,4 @@
-/** Points sampling the models in the tests/data directory.
+/** Points sampling the models in the tests/testdata directory.
  */
 
 #if !defined(geomodelgrids_serial_modelpoints_hh)
@@ -7,7 +7,7 @@
 #include <cstddef> // USES size_t
 
 namespace geomodelgrids {
-    namespace serial {
+    namespace testdata {
         class ModelPoints;
         class OneBlockFlatPoints;
         class OneBlockTopoPoints;
@@ -16,10 +16,10 @@ namespace geomodelgrids {
         class ThreeBlocksTopoPoints;
         class ThreeBlocksSquashPoints;
         class OutsideDomainPoints;
-    } // serial
+    } // testdata
 } // geomodelgrids
 
-class geomodelgrids::serial::ModelPoints {
+class geomodelgrids::testdata::ModelPoints {
     // PUBLIC METHODS --------------------------------------------------------------------------------------------------
 public:
 
@@ -98,43 +98,43 @@ protected:
 
 }; // ModelPoints
 
-class geomodelgrids::serial::OneBlockFlatPoints : public ModelPoints {
+class geomodelgrids::testdata::OneBlockFlatPoints : public ModelPoints {
 public:
 
     OneBlockFlatPoints(void);
 }; // OneBlockFlatPoints
 
-class geomodelgrids::serial::OneBlockTopoPoints : public ModelPoints {
+class geomodelgrids::testdata::OneBlockTopoPoints : public ModelPoints {
 public:
 
     OneBlockTopoPoints(void);
 }; // OneBlockTopoPoints
 
-class geomodelgrids::serial::OneBlockSquashPoints : public ModelPoints {
+class geomodelgrids::testdata::OneBlockSquashPoints : public ModelPoints {
 public:
 
     OneBlockSquashPoints(const double squashMinElev);
 }; // OneBlockSquashPoints
 
-class geomodelgrids::serial::ThreeBlocksFlatPoints : public ModelPoints {
+class geomodelgrids::testdata::ThreeBlocksFlatPoints : public ModelPoints {
 public:
 
     ThreeBlocksFlatPoints(void);
 }; // ThreeBlocksFlatPoints
 
-class geomodelgrids::serial::ThreeBlocksTopoPoints : public ModelPoints {
+class geomodelgrids::testdata::ThreeBlocksTopoPoints : public ModelPoints {
 public:
 
     ThreeBlocksTopoPoints(void);
 }; // ThreeBlocksTopoPoints
 
-class geomodelgrids::serial::ThreeBlocksSquashPoints : public ModelPoints {
+class geomodelgrids::testdata::ThreeBlocksSquashPoints : public ModelPoints {
 public:
 
     ThreeBlocksSquashPoints(const double squashMinElev);
 }; // ThreeBlocksSquashPoints
 
-class geomodelgrids::serial::OutsideDomainPoints : public ModelPoints {
+class geomodelgrids::testdata::OutsideDomainPoints : public ModelPoints {
 public:
 
     OutsideDomainPoints(void);

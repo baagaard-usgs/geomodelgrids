@@ -253,14 +253,14 @@ geomodelgrids::serial::TestHDF5::testReadDatasetHyperslab(void) {
                 { // Value 0
                     std::ostringstream msg;
                     msg << "Mismatch at hyperslab index ("<<ix<<","<<iy<<","<<iz<<",0).";
-                    const double valueE = ModelPoints::computeValueOne(x, y, z);
+                    const double valueE = geomodelgrids::testdata::ModelPoints::computeValueOne(x, y, z);
                     const double toleranceV = std::max(tolerance, tolerance*fabs(valueE));
                     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[i++], toleranceV);
                 } // Value 0
                 { // Value 1
                     std::ostringstream msg;
                     msg << "Mismatch at hyperslab index ("<<ix<<","<<iy<<","<<iz<<",1).";
-                    const double valueE = ModelPoints::computeValueTwo(x, y, z);
+                    const double valueE = geomodelgrids::testdata::ModelPoints::computeValueTwo(x, y, z);
                     const double toleranceV = std::max(tolerance, tolerance*fabs(valueE));
                     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[i++], toleranceV);
                 } // Value 1
