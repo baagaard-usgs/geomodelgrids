@@ -148,10 +148,6 @@ geomodelgrids::apps::Query::_parseArgs(int argc,
             msg << "    - Missing filename for list of points. Use --points=FILE_POINTS\n";
             optionsOkay = false;
         } // if
-        if (_pointsCRS.empty()) {
-            msg << "    - Missing coordinate system for input points. Use --points-coordsys=PROJ|EPSG|WKT\n";
-            optionsOkay = false;
-        } // if
         if (_outputFilename.empty()) {
             msg << "    - Missing filename for output. Use --output=FILE_OUTPUT\n";
             optionsOkay = false;

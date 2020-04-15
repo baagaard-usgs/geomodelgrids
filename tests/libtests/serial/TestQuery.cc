@@ -83,6 +83,9 @@ geomodelgrids::serial::TestQuery::testAccessors(void) {
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in squashing flag.", true, query._squash);
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Mismatch in minimum squashing elevation.", minElev, query._squashMinElev,
                                          1.0e-6);
+
+    query.setSquashing(false);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in squashing flag.", false, query._squash);
 } // testAccessors
 
 
@@ -119,7 +122,13 @@ geomodelgrids::serial::TestQuery::testInitialize(void) {
 
     } // for
 
+    CPPUNIT_ASSERT_NO_THROW(query.initialize(filenames, valueNames, crs));
     query.finalize();
+
+    // Bad value
+    const char* const valueNamesArrayBad[numValues] = { "two", "blah" };
+    std::vector<std::string> valueNamesBad(valueNamesArrayBad, valueNamesArrayBad+numValues);
+    CPPUNIT_ASSERT_THROW(query.initialize(filenames, valueNamesBad, crs), std::invalid_argument);
 } // testInitialize
 
 

@@ -71,7 +71,7 @@ geomodelgrids::serial::Model::open(const char* filename,
         std::ostringstream msg;
         msg << "Unknown mode '" << mode << "' opening HDF5 file '" << filename << "'.";
         assert(0);
-        throw std::runtime_error(msg.str());
+        throw std::logic_error(msg.str());
     } // switch
 
     _h5->open(filename, h5Mode);
@@ -82,6 +82,16 @@ geomodelgrids::serial::Model::open(const char* filename,
 // Close Model file.
 void
 geomodelgrids::serial::Model::close(void) {
+    if (_topography) {
+        _topography->closeQuery();
+    } // if
+    size_t numBlocks = _blocks.size();
+    for (size_t i = 0; i < numBlocks; ++i) {
+        if (_blocks[i]) {
+            _blocks[i]->closeQuery();
+        } // if
+    } // for
+
     if (_h5) {
         _h5->close();
         delete _h5;_h5 = NULL;

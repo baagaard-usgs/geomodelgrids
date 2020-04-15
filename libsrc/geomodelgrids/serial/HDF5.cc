@@ -186,11 +186,6 @@ geomodelgrids::serial::HDF5::getDatasetDims(hsize_t** dims,
             << path << "':\n"
             << err.what();
         throw std::runtime_error(msg.str());
-    } catch (...) {
-        std::ostringstream msg;
-        msg << "Unknown error occurred while reading dataset '"
-            << path << "'.";
-        throw std::runtime_error(msg.str());
     } // try/catch
 } // getDatasetDims
 
@@ -232,11 +227,6 @@ geomodelgrids::serial::HDF5::getGroupDatasets(std::vector<std::string>* names,
         msg << "Error occurred while getting names of datasets for group '"
             << path << "':\n"
             << err.what();
-        throw std::runtime_error(msg.str());
-    } catch (...) {
-        std::ostringstream msg;
-        msg << "Unknown error occurred while getting names of datasets for group '"
-            << path << "'.";
         throw std::runtime_error(msg.str());
     } // try/catch
 } // getGroupDatasets
@@ -447,11 +437,6 @@ geomodelgrids::serial::HDF5::readDatasetHyperslab(void* values,
         msg << "Error occurred while reading dataset '"
             << path << "':\n"
             << err.what();
-        throw std::runtime_error(msg.str());
-    } catch (...) {
-        std::ostringstream msg;
-        msg << "Unknown error occurred while reading dataset '"
-            << path << "'.";
         throw std::runtime_error(msg.str());
     } // try/catch
 } // readDatasetHyperslab

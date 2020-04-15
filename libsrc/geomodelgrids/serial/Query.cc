@@ -214,6 +214,7 @@ geomodelgrids::serial::_Query::createModelValuesIndex(const geomodelgrids::seria
             for (size_t j = 0; j < modelNames.size(); ++j) {
                 msg << "    " << modelNames[j] << "\n";
             } // for
+            throw std::invalid_argument(msg.str());
         } // if/else
     } // for
 

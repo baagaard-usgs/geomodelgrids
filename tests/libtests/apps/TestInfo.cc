@@ -21,6 +21,7 @@ class geomodelgrids::apps::TestInfo : public CppUnit::TestFixture {
     CPPUNIT_TEST_SUITE(TestInfo);
 
     CPPUNIT_TEST(testConstructor);
+    CPPUNIT_TEST(testParseArgsNone);
     CPPUNIT_TEST(testParseArgsHelp);
     CPPUNIT_TEST(testParseArgsMissing);
     CPPUNIT_TEST(testParseArgsWrong);
@@ -31,6 +32,7 @@ class geomodelgrids::apps::TestInfo : public CppUnit::TestFixture {
     CPPUNIT_TEST(testParseArgsAll);
     CPPUNIT_TEST(testParseArgsMany);
     CPPUNIT_TEST(testPrintHelp);
+    CPPUNIT_TEST(testRunHelp);
     CPPUNIT_TEST(testRunOneBlockFlat);
     CPPUNIT_TEST(testRunThreeBlocksTopo);
     CPPUNIT_TEST(testRunTwoModels);
@@ -45,6 +47,9 @@ public:
 
     /// Test constructor.
     void testConstructor(void);
+
+    /// Test _parseArgs() with no arguments.
+    void testParseArgsNone(void);
 
     /// Test _parseArgs() with --help.
     void testParseArgsHelp(void);
@@ -75,6 +80,9 @@ public:
 
     /// Test _printHelp().
     void testPrintHelp(void);
+
+    /// Test run() wth help flag.
+    void testRunHelp(void);
 
     /// Test run() wth one-block-flat.
     void testRunOneBlockFlat(void);
@@ -111,6 +119,19 @@ geomodelgrids::apps::TestInfo::testConstructor(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Test _parseArgs() with no arguments.
+void
+geomodelgrids::apps::TestInfo::testParseArgsNone(void) {
+    const int nargs = 1;
+    const char* const args[nargs] = { "test" };
+
+    Info info;
+    info._parseArgs(nargs, const_cast<char**>(args));
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in help.", info._showHelp);
+} // testParseArgsNone
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Test _parseArgs() with --help.
 void
 geomodelgrids::apps::TestInfo::testParseArgsHelp(void) {
@@ -119,7 +140,7 @@ geomodelgrids::apps::TestInfo::testParseArgsHelp(void) {
 
     Info info;
     info._parseArgs(nargs, const_cast<char**>(args));
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in help for --help.", info._showHelp);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in help.", info._showHelp);
 } // testParseArgsHelp
 
 
@@ -127,8 +148,8 @@ geomodelgrids::apps::TestInfo::testParseArgsHelp(void) {
 // Test _parseArgs() with missing required arguments.
 void
 geomodelgrids::apps::TestInfo::testParseArgsMissing(void) {
-    const int nargs = 1;
-    const char* const args[nargs] = { "test" };
+    const int nargs = 2;
+    const char* const args[nargs] = { "test", "--blocks" };
 
     Info info;
     CPPUNIT_ASSERT_THROW(info._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
@@ -156,11 +177,11 @@ geomodelgrids::apps::TestInfo::testParseArgsDescription(void) {
 
     Info info;
     info._parseArgs(nargs, const_cast<char**>(args));
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in description for --description.", info._showDescription);
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in coordsys for --description.", !info._showCoordSys);
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in values for --description.", !info._showValues);
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in blocks for --description.", !info._showBlocks);
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in all for --description.", !info._showAll);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in description.", info._showDescription);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in coordsys.", !info._showCoordSys);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in values.", !info._showValues);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in blocks.", !info._showBlocks);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in all.", !info._showAll);
 } // testParseArgsDescription
 
 
@@ -173,11 +194,11 @@ geomodelgrids::apps::TestInfo::testParseArgsCoordSys(void) {
 
     Info info;
     info._parseArgs(nargs, const_cast<char**>(args));
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in description for --coordsys.", !info._showDescription);
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in coordsys for --coordsys.", info._showCoordSys);
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in values for --coordsys.", !info._showValues);
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in blocks for --coordsys.", !info._showBlocks);
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in all for --coordsys.", !info._showAll);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in description.", !info._showDescription);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in coordsys.", info._showCoordSys);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in values.", !info._showValues);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in blocks.", !info._showBlocks);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in all.", !info._showAll);
 } // testParseArgsCoordSys
 
 
@@ -190,11 +211,11 @@ geomodelgrids::apps::TestInfo::testParseArgsValues(void) {
 
     Info info;
     info._parseArgs(nargs, const_cast<char**>(args));
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in description for --values.", !info._showDescription);
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in coordsys for --values.", !info._showCoordSys);
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in values for --values.", info._showValues);
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in blocks for --values.", !info._showBlocks);
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in all for --values.", !info._showAll);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in description.", !info._showDescription);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in coordsys.", !info._showCoordSys);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in values.", info._showValues);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in blocks.", !info._showBlocks);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in all.", !info._showAll);
 } // testParseArgsValues
 
 
@@ -207,11 +228,11 @@ geomodelgrids::apps::TestInfo::testParseArgsBlocks(void) {
 
     Info info;
     info._parseArgs(nargs, const_cast<char**>(args));
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in description for --blocks.", !info._showDescription);
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in coordsys for --blocks.", !info._showCoordSys);
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in values for --blocks.", !info._showValues);
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in blocks for --blocks.", info._showBlocks);
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in all for --blocks.", !info._showAll);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in description.", !info._showDescription);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in coordsys.", !info._showCoordSys);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in values.", !info._showValues);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in blocks.", info._showBlocks);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in all.", !info._showAll);
 } // testParseArgsBlocks
 
 
@@ -269,6 +290,27 @@ geomodelgrids::apps::TestInfo::testPrintHelp(void) {
     std::cout.rdbuf(coutOrig);
     CPPUNIT_ASSERT_EQUAL(size_t(474), coutHelp.str().length());
 } // testPrintHelp
+
+
+// ----------------------------------------------------------------------
+// Test run() with help.
+void
+geomodelgrids::apps::TestInfo::testRunHelp(void) {
+    std::streambuf* coutOrig = std::cout.rdbuf();
+    std::ostringstream coutHelp;
+    std::cout.rdbuf(coutHelp.rdbuf() );
+
+    Info info;
+    const int nargs = 2;
+    const char* const args[nargs] = {
+        "test",
+        "--help",
+    };
+    info.run(nargs, const_cast<char**>(args));
+
+    std::cout.rdbuf(coutOrig);
+    CPPUNIT_ASSERT_EQUAL(size_t(474), coutHelp.str().length());
+} // testRunHelp
 
 
 // ----------------------------------------------------------------------

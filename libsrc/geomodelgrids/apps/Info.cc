@@ -55,11 +55,6 @@ geomodelgrids::apps::Info::run(int argc,
         return 0;
     } // if
 
-    if (0 == _modelFilenames.size()) {
-        std::cout << "WARNING: No models provided. Exiting." << std::endl;
-        return 0;
-    } // if
-
     geomodelgrids::serial::Model model;
     const size_t numModels = _modelFilenames.size();
     for (size_t i = 0; i < numModels; ++i) {
@@ -141,11 +136,11 @@ geomodelgrids::apps::Info::_parseArgs(int argc,
         } // ?
         } // switch
     } // while
-    if (!_showHelp && (0 == _modelFilenames.size())) {
-        throw std::runtime_error("Missing required command line argument --models=FILE_0,...,FILE_M.");
-    } // if
     if (!_showHelp && !_showAll && !_showDescription && !_showCoordSys && !_showValues && !_showBlocks) {
         _showHelp = true;
+    } // if
+    if (!_showHelp && (0 == _modelFilenames.size())) {
+        throw std::runtime_error("Missing required command line argument --models=FILE_0,...,FILE_M.");
     } // if
 } // _parseArgs
 

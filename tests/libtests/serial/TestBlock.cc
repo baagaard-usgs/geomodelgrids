@@ -174,6 +174,8 @@ geomodelgrids::serial::TestBlock::testQuery(void) {
             CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[1], valueTolerance);
         } // Value 'two'
     } // for
+
+    block.closeQuery();
 } // testQuery
 
 

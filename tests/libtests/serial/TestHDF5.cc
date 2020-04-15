@@ -37,6 +37,12 @@ class geomodelgrids::serial::TestHDF5 : public CppUnit::TestFixture {
     // PUBLIC METHODS ///////////////////////////////////////////////////////
 public:
 
+    /// Setup test.
+    void setUp(void);
+
+    /// Clean up test.
+    void tearDown(void);
+
     /// Test constructor.
     void testConstructor(void);
 
@@ -64,8 +70,32 @@ public:
     /// Test readDatasetHyperslab().
     void testReadDatasetHyperslab(void);
 
+private:
+
+    H5E_auto2_t _errFunc;
+    void* _errData;
+
 }; // class TestHDF5
 CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::serial::TestHDF5);
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Setup test.
+void
+geomodelgrids::serial::TestHDF5::setUp(void) {
+    // Temporarily turn off HDF5 error handler.
+    H5Eget_auto(H5E_DEFAULT, &_errFunc, &_errData);
+    H5Eset_auto(H5E_DEFAULT, NULL, NULL);
+} // setUp
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Clean up after test.
+void
+geomodelgrids::serial::TestHDF5::tearDown(void) {
+    // Restore default HDF5 error handler.
+    H5Eset_auto(H5E_DEFAULT, _errFunc, _errData);
+} // tearDown
+
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Test constructor.
@@ -92,8 +122,10 @@ geomodelgrids::serial::TestHDF5::testOpenClose(void) {
     h5.close();CPPUNIT_ASSERT(!h5.isOpen());
 
     h5.open("../../data/one-block-flat.h5", H5F_ACC_RDWR);CPPUNIT_ASSERT(h5.isOpen());
-    CPPUNIT_ASSERT_THROW(h5.open("abc", H5F_ACC_RDONLY), std::runtime_error);
+    CPPUNIT_ASSERT_THROW(h5.open("../../data/one-block-flat.h5", H5F_ACC_RDONLY), std::runtime_error); // already open
     h5.close();CPPUNIT_ASSERT(!h5.isOpen());
+
+    CPPUNIT_ASSERT_THROW(h5.open("abc", H5F_ACC_RDONLY), std::runtime_error); // file doesn't exist
 } // testOpenClose
 
 
@@ -131,6 +163,8 @@ geomodelgrids::serial::TestHDF5::testGetDatasetDims(void) {
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in dataset dim.", dimsE[i], dims[i]);
     } // for
 
+    CPPUNIT_ASSERT_THROW(h5.getDatasetDims(&dims, &ndims, "blah"), std::runtime_error);
+
     h5.close();
 } // testGetDatasetDims
 
@@ -160,6 +194,8 @@ geomodelgrids::serial::TestHDF5::testGetGroupDatasets(void) {
         CPPUNIT_ASSERT_MESSAGE(msg.str().c_str(), found);
     } // for
 
+    CPPUNIT_ASSERT_THROW(h5.getGroupDatasets(&datasetNames, "blah"), std::runtime_error);
+
     h5.close();
 } // testGetGroupDatasets
 
@@ -177,6 +213,9 @@ geomodelgrids::serial::TestHDF5::testReadAttribute(void) {
     h5.readAttribute("/blocks/bottom", "resolution_horiz", H5T_NATIVE_DOUBLE, (void*)&resolution);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(resolutionE, resolution, tolerance*resolutionE);
 
+    CPPUNIT_ASSERT_THROW(h5.readAttribute("/blocks/bottom", "blah", H5T_NATIVE_DOUBLE, (void*)&resolution),
+                         std::runtime_error);
+
     h5.close();
 } // testReadAttribute
 
@@ -191,6 +230,8 @@ geomodelgrids::serial::TestHDF5::testReadAttributeString(void) {
     const std::string versionE = "1.0.0";
     const std::string version = h5.readAttribute("/", "version");
     CPPUNIT_ASSERT_EQUAL(versionE, version);
+
+    CPPUNIT_ASSERT_THROW(h5.readAttribute("/", "blah"), std::runtime_error);
 
     h5.close();
 } // testReadAttributeString
@@ -211,6 +252,8 @@ geomodelgrids::serial::TestHDF5::testReadAttributeStringArray(void) {
     for (size_t i = 0; i < numKeywords; ++i) {
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in keyword.", std::string(keywordsE[i]), keywords[i]);
     } // for
+
+    CPPUNIT_ASSERT_THROW(h5.readAttribute("/", "blah", &keywords), std::runtime_error);
 
     h5.close();
 } // testReadAttributeStringArray
@@ -237,9 +280,6 @@ geomodelgrids::serial::TestHDF5::testReadDatasetHyperslab(void) {
     hsize_t dims[ndims] = { 2, 3, 1, 2 };
     const int nvalues = 2*3*1*2;
     double values[nvalues];
-    for (int i = 0; i < nvalues; ++i) {
-        values[i] = -4.0;
-    } // TEMPORARY
     h5.readDatasetHyperslab((void*)values, dataset, origin, dims, ndims, H5T_NATIVE_DOUBLE);
 
     const double tolerance = 1.0e-6;
@@ -267,6 +307,15 @@ geomodelgrids::serial::TestHDF5::testReadDatasetHyperslab(void) {
             } // for
         } // for
     } // for
+
+    // Bad number of dimensions
+    CPPUNIT_ASSERT_THROW(h5.readDatasetHyperslab((void*)values, dataset, origin, dims, 1, H5T_NATIVE_DOUBLE),
+                         std::runtime_error);
+
+    // Bad dimensions
+    origin[ndims-1] = 99999;
+    CPPUNIT_ASSERT_THROW(h5.readDatasetHyperslab((void*)values, dataset, origin, dims, ndims, H5T_NATIVE_DOUBLE),
+                         std::runtime_error);
 
     h5.close();
 } // testReadDatasetHyperslab

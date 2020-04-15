@@ -27,6 +27,7 @@ class geomodelgrids::serial::TestModel : public CppUnit::TestFixture {
 
     CPPUNIT_TEST(testConstructor);
     CPPUNIT_TEST(testAccessors);
+    CPPUNIT_TEST(testOpenClose);
     CPPUNIT_TEST(testLoadMetadata);
     CPPUNIT_TEST(testInitialize);
     CPPUNIT_TEST(testToModelXYZFlat);
@@ -45,6 +46,9 @@ public:
 
     /// Test getters.
     void testAccessors(void);
+
+    /// Test open() and close().
+    void testOpenClose(void);
 
     /// Test loadMetadata().
     void testLoadMetadata(void);
@@ -167,6 +171,26 @@ geomodelgrids::serial::TestModel::testAccessors(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Test open() and close().
+void
+geomodelgrids::serial::TestModel::testOpenClose(void) {
+    Model model;
+
+    model.open("../../data/three-blocks-topo.h5", Model::READ);
+    CPPUNIT_ASSERT_MESSAGE("Open with read access failed.", model._h5);
+    model.close();
+
+    model.open("../../data/three-blocks-topo.h5", Model::READ_WRITE);
+    CPPUNIT_ASSERT_MESSAGE("Open with read/write access failed.", model._h5);
+    model.close();
+
+    model.open("../../data/tmp.h5", Model::READ_WRITE_TRUNCATE);
+    CPPUNIT_ASSERT_MESSAGE("Open with read/write access and truncate failed.", model._h5);
+    model.close();
+} // testOpenClose
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Test loadMetadata().
 void
 geomodelgrids::serial::TestModel::testLoadMetadata(void) {
@@ -192,6 +216,8 @@ geomodelgrids::serial::TestModel::testLoadMetadata(void) {
     const double tolerance = 1.0e-6;
 
     Model model;
+    CPPUNIT_ASSERT_THROW(model.loadMetadata(), std::logic_error); // Model not open
+
     model.open("../../data/three-blocks-topo.h5", Model::READ);
     model.loadMetadata();
 
@@ -242,6 +268,7 @@ geomodelgrids::serial::TestModel::testLoadMetadata(void) {
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking block z_top", blockZTop[i], blocksT[i]->getZTop());
 
     } // for
+    CPPUNIT_ASSERT_NO_THROW(model.loadMetadata());
 
     model.close();
 } // testLoadMetadata
