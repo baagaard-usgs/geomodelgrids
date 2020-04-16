@@ -32,4 +32,4 @@ install:
 
 script:
   - ci_env=`bash <(curl -s https://codecov.io/env)`
-  - docker run $ci_env geomodelgrids-testenv /bin/bash -c "make -j$(nproc) install && make -j$(nproc) check VERBOSE=1" && bash <(curl -s https://codecov.io/bash)
+  - docker run $ci_env geomodelgrids-testenv /bin/bash -c "make -j$(nproc) install && make -j$(nproc) check VERBOSE=1 && make coverage-libsrc && cd ../src && bash <(curl -s https://codecov.io/bash) -X gcov -f ../build/coverage.info -F libsrc -y ci-config/codecov.yml"

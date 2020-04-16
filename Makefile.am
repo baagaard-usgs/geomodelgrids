@@ -31,8 +31,11 @@ EXTRA_DIST = \
 
 coverage-libsrc:
 	lcov --directory libsrc --capture --output-file coverage.info
-	lcov --remove coverage.info '/usr/*' '/Library/*' "v1" "*/utils/TestDriver.*" -o coverage_pkg.info
-	genhtml -o coverage coverage_pkg.info
+	lcov --remove coverage.info '/usr/*' '/Library/*' "v1" "*/utils/TestDriver.*" -o coverage.info
+	lcov --list coverage.info
+
+coverage-html: coverage-libsrc
+	genhtml -o coverage coverage.info
 
 coverage-clean:
 	$(RM) `find . -name "*.gcda"`
