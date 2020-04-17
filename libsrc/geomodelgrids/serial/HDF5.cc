@@ -403,6 +403,7 @@ geomodelgrids::serial::HDF5::readDatasetHyperslab(void* values,
             std::ostringstream msg;
             msg << "Rank of hyperslab origin and dimension (" << ndims
                 << ") does not match rank of dataset (" << ndimsAll << ").";
+            delete[] dimsAll;dimsAll = NULL;
             throw std::length_error(msg.str());
         } // if
         for (int i = 0; i < ndimsAll; ++i) {
@@ -411,9 +412,11 @@ geomodelgrids::serial::HDF5::readDatasetHyperslab(void* values,
                 msg << "Hyperslab extent in dimension " << i
                     << " (origin:" << origin[i] << ", dim: " << dims[i] << ") "
                     << "exceeds dataset dimension " << dimsAll[i] << ".";
+                delete[] dimsAll;dimsAll = NULL;
                 throw std::length_error(msg.str());
             } // if
         } // for
+        delete[] dimsAll;dimsAll = NULL;
 
         // Stride and count are 1 for contiguous slab.
         hsize_t* stride = (ndimsAll > 0) ? new hsize_t[ndimsAll] : NULL;
@@ -427,6 +430,8 @@ geomodelgrids::serial::HDF5::readDatasetHyperslab(void* values,
         if (memspace < 0) { throw std::runtime_error("Could not create memory space."); }
 
         herr_t err = H5Sselect_hyperslab(h5access.dataspace, H5S_SELECT_SET, origin, stride, count, dims);
+        delete[] stride;stride = NULL;
+        delete[] count;count = NULL;
         if (err < 0) { throw std::runtime_error("Could not select hyperslab."); }
         err = H5Dread(h5access.dataset, datatype, memspace, h5access.dataspace, H5P_DEFAULT, values);
         if (err < 0) { throw std::runtime_error("Could not read hyperslab."); }

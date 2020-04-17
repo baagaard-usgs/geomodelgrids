@@ -92,6 +92,8 @@ geomodelgrids::serial::Hyperslab::Hyperslab(geomodelgrids::serial::HDF5* const h
         std::ostringstream msg;
         msg << "Dimensions of hyperslab for dataset '" << path << "' have different rank than the dataset. "
             << "Hyperslab has rank " << _ndims << ", but dataset has rank " << ndimsAll << ".";
+        delete[] _dims;_dims = NULL;
+        delete[] _dimsAll;_dimsAll = NULL;
         throw std::length_error(msg.str());
     } // if
 
@@ -272,6 +274,7 @@ geomodelgrids::serial::_Hyperslab::_interpolate2D(double* const values,
 } // interpolate2D
 
 
+#include <iostream>
 // ---------------------------------------------------------------------------------------------------------------------
 void
 geomodelgrids::serial::_Hyperslab::_interpolate3D(double* const values,

@@ -310,7 +310,7 @@ geomodelgrids::serial::TestModel::testToModelXYZFlat(void) {
     const double* pointsXYZ = points.getXYZ();
 
     for (size_t iPt = 0; iPt < numPoints; ++iPt) {
-        double xyz[spaceDim];
+        double xyz[spaceDim] = { 0.0, 0.0, 0.0 };
         model._toModelXYZ(&xyz[0], &xyz[1], &xyz[2],
                           pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
         for (size_t iDim = 0; iDim < spaceDim; ++iDim) {
@@ -342,7 +342,7 @@ geomodelgrids::serial::TestModel::testToModelXYZTopo(void) {
     const double* pointsXYZ = points.getXYZ();
 
     for (size_t iPt = 0; iPt < numPoints; ++iPt) {
-        double xyz[spaceDim];
+        double xyz[spaceDim] = { 0.0, 0.0, 0.0 };
         model._toModelXYZ(&xyz[0], &xyz[1], &xyz[2],
                           pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
 

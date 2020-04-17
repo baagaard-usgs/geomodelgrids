@@ -39,6 +39,7 @@ geomodelgrids::serial::Block::~Block(void) {
 void
 geomodelgrids::serial::Block::loadMetadata(geomodelgrids::serial::HDF5* const h5) {
     assert(h5);
+    delete[] _values;_values = NULL;
 
     const std::string blockpath = std::string("blocks/") + _name;
 
@@ -55,7 +56,6 @@ geomodelgrids::serial::Block::loadMetadata(geomodelgrids::serial::HDF5* const h5
     } // for
 
     _numValues = hdims[3];
-    delete[] _values;_values = NULL;
     delete[] hdims;hdims = NULL;
 } // loadMetadata
 
@@ -116,6 +116,7 @@ geomodelgrids::serial::Block::getNumValues(void) const {
 } // getNumValues
 
 
+#include <iostream>
 // ---------------------------------------------------------------------------------------------------------------------
 // Prepare for querying.
 void
@@ -129,7 +130,7 @@ geomodelgrids::serial::Block::openQuery(geomodelgrids::serial::HDF5* const h5) {
     const std::string blockPath(std::string("/blocks/") + _name);
     delete _hyperslab;_hyperslab = new geomodelgrids::serial::Hyperslab(h5, blockPath.c_str(), dims, ndims);
 
-    delete[] _values;_values = (_numValues > 0) ? new double(_numValues) : NULL;
+    delete[] _values;_values = (_numValues > 0) ? new double[_numValues] : NULL;
 } // openQuery
 
 

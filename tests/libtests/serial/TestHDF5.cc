@@ -162,6 +162,7 @@ geomodelgrids::serial::TestHDF5::testGetDatasetDims(void) {
     for (int i = 0; i < ndimsE; ++i) {
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in dataset dim.", dimsE[i], dims[i]);
     } // for
+    delete[] dims;dims = NULL;
 
     CPPUNIT_ASSERT_THROW(h5.getDatasetDims(&dims, &ndims, "blah"), std::runtime_error);
 
