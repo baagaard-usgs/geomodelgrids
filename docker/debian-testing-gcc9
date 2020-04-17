@@ -25,6 +25,7 @@ RUN apt-get update \
 	libsqlite3-0 \
 	libsqlite3-dev \
 	valgrind \
+	lcov \
 	vim-common \
 	vim-runtime \
 	vim-nox

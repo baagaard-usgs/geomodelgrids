@@ -29,4 +29,12 @@ EXTRA_DIST = \
 	docker/geomodelgrids-testenv
 
 
+coverage-libsrc:
+	lcov --directory libsrc --capture --output-file coverage.info
+	lcov --remove coverage.info '/usr/*' '/Library/*' "v1" "*/utils/TestDriver.*" -o coverage_pkg.info
+	genhtml -o coverage coverage_pkg.info
+
+coverage-clean:
+	$(RM) `find . -name "*.gcda"`
+
 # End of file
