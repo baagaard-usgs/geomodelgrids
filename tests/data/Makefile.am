@@ -1,10 +1,8 @@
 EXTRA_DIST = \
-	generate.py
+	generate.py \
+	ModelPoints.hh \
+	ModelPoints.cc
 
-
-noinst_HEADERS = ModelPoints.hh
-
-noinst_SOURCES = ModelPoints.cc
 
 dist_noinst_DATA = \
 	one-block-flat.h5 \

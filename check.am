@@ -1,4 +1,4 @@
-AM_CPPFLAGS = -I$(top_srcdir)/libsrc
+AM_CPPFLAGS = -I$(top_srcdir)/libsrc $(HDF5_INCLUDES) $(PROJ_INCLUDES) $(CPPUNIT_INCLUDES)
 
 
 check-local: check-TESTS

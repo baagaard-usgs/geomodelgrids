@@ -14,13 +14,17 @@ test_apps_SOURCES = \
 
 noinst_HEADERS =
 
-AM_CPPFLAGS += -I$(top_srcdir)/tests/data
+test_apps_CPPFLAGS = \
+	$(AM_CPPFLAGS) \
+	-I$(top_srcdir)/tests/data
 
 test_apps_LDFLAGS = $(AM_LDFLAGS)
 test_apps_LDADD = \
 	-lcppunit -ldl \
 	$(top_builddir)/libsrc/geomodelgrids/libgeomodelgrids.la \
-	-lhdf5
+	-lhdf5 \
+	-lproj
+
 
 
 # End of file

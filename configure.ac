@@ -32,7 +32,53 @@ AC_ARG_ENABLE([spatial],
 	[enable_spatial=no])
 
 # ----------------------------------------------------------------------
+# Dependency locations
+# ----------------------------------------------------------------------
+# CPPUNIT
+AC_ARG_WITH([cppunit-incdir],
+    [AC_HELP_STRING([--with-cppunit-incdir],
+        [location of cppunit header files @<:@default=no@:>@])],
+	[with_cppunit_incdir=$withval],
+	[with_cppunit_incdir=no])
+AC_SUBST(with_cppunit_incdir)
+AC_ARG_WITH([cppunit-libdir],
+    [AC_HELP_STRING([--with-cppunit-libdir],
+        [location of cppunit library @<:@default=no@:>@])],
+	[with_cppunit_libdir=$withval],
+	[with_cppunit_libdir=no])
+AC_SUBST(with_cppunit_libdir)
 
+# PROJ
+AC_ARG_WITH([proj-incdir],
+    [AC_HELP_STRING([--with-proj-incdir],
+        [location of proj header files @<:@default=no@:>@])],
+	[with_proj_incdir=$withval],
+	[with_proj_incdir=no])
+AC_SUBST(with_proj_incdir)
+AC_ARG_WITH([proj-libdir],
+    [AC_HELP_STRING([--with-proj-libdir],
+        [location of proj library @<:@default=no@:>@])],
+	[with_proj_libdir=$withval],
+	[with_proj_libdir=no])
+AC_SUBST(with_proj_libdir)
+
+# HDF5
+AC_ARG_WITH([hdf5-incdir],
+    [AC_HELP_STRING([--with-hdf5-incdir],
+        [location of hdf5 header files @<:@default=no@:>@])],
+	[with_hdf5_incdir=$withval],
+	[with_hdf5_incdir=no])
+AC_SUBST(with_hdf5_incdir)
+AC_ARG_WITH([hdf5-libdir],
+    [AC_HELP_STRING([--with-hdf5-libdir],
+        [location of hdf5 library @<:@default=no@:>@])],
+	[with_hdf5_libdir=$withval],
+	[with_hdf5_libdir=no])
+AC_SUBST(with_hdf5_libdir)
+
+# ----------------------------------------------------------------------
+# BASIC TOOLS
+# ----------------------------------------------------------------------
 AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_LIBTOOL
@@ -46,15 +92,32 @@ fi
 AM_CONDITIONAL([NO_UNDEFINED], [test "$allow_undefined_flag" = unsupported])
 AC_SUBST(AM_LDFLAGS)
 
+
+# ----------------------------------------------------------------------
+# CHECK FOR DEPENDENCIES
 # ----------------------------------------------------------------------
 # PROJ
+if test "$with_proj_incdir" != no; then
+  PROJ_INCLUDES="-I$with_proj_incdir"
+fi
+if test "$with_proj_libdir" != no; then
+  PROJ_LDFLAGS="-L$with_proj_libdir"
+fi
 CIT_PROJ6_HEADER
 CIT_PROJ6_LIB
+AC_SUBST(PROJ_INCLUDES)
+AC_SUBST(PROJ_LDFLAGS)
 
-AC_REQUIRE_CPP
-AC_LANG(C++)
+if test "$with_hdf5_incdir" != no; then
+  HDF5_INCLUDES="-I$with_hdf5_incdir"
+fi
+if test "$with_hdf5_libdir" != no; then
+  HDF5_LDFLAGS="-L$with_hdf5_libdir"
+fi
 CIT_HDF5_HEADER
 CIT_HDF5_LIB
+AC_SUBST(HDF5_INCLUDES)
+AC_SUBST(HDF5_LDFLAGS)
 
 # FORTRAN BINDINGS
 AM_CONDITIONAL([ENABLE_FORTRAN], [test "$enable_fortran" = yes])
@@ -71,9 +134,17 @@ if test "$enable_testing" = "yes" ; then
   # Require C++-11
   AX_CXX_COMPILE_STDCXX(11)
 
+  if test "$with_cppunit_incdir" != no; then
+    CPPUNIT_INCLUDES="-I$with_cppunit_incdir"
+  fi
+  if test "$with_cppunit_libdir" != no; then
+    CPPUNIT_LDFLAGS="-L$with_cppunit_libdir"
+  fi
   CIT_CPPUNIT_HEADER
   CIT_CPPUNIT_LIB
 fi
+AC_SUBST(CPPUNIT_INCLUDES)
+AC_SUBST(CPPUNIT_LDFLAGS)
 
 # SPATIALDATA
 AM_CONDITIONAL([ENABLE_SPATIAL], [test "$enable_spatial" = yes])

@@ -21,18 +21,20 @@ libgeomodelgrids_la_SOURCES = \
 pkginclude_HEADERS = \
 	geomodelgrids_serial.hh
 
-libgeomodelgrids_la_LIBADD = -lhdf5
-
+libgeomodelgrids_la_LIBADD = -lhdf5 -lproj
+libgeomodelgrids_la_LDFLAGS = $(HDF5_LDFLAGS) $(PROJ_LDFLAGS)
+libgeomodelgrids_la_CPPFLAGS = -I$(top_srcdir)/libsrc $(HDF5_INCLUDES) $(PROJ_INCLUDES)
 
 if ENABLE_TESTING
 libgeomodelgrids_la_SOURCES += \
 	utils/TestDriver.cc
 
+libgeomodelgrids_la_CPPFLAGS += $(CPPUNIT_INCLUDES)
+libgeomodelgrids_la_LDFLAGS += $(CPPUNIT_LDFLAGS)
 libgeomodelgrids_la_LIBADD += -lcppunit
 endif
 
 
-AM_CPPFLAGS = -I$(top_srcdir)/libsrc
 
 
 # End of file

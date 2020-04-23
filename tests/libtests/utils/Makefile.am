@@ -12,6 +12,7 @@ test_utils_SOURCES = \
 
 noinst_HEADERS =
 
+test_utils_CPPFLAGS = $(AM_CPPFLAGS)
 test_utils_LDFLAGS = $(AM_LDFLAGS)
 test_utils_LDADD = \
 	-lcppunit -ldl \

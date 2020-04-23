@@ -19,13 +19,17 @@ test_serial_SOURCES = \
 
 noinst_HEADERS =
 
-AM_CPPFLAGS += -I$(top_srcdir)/tests/data
+test_serial_CPPFLAGS = \
+	$(AM_CPPFLAGS) \
+	-I$(top_srcdir)/tests/data
 
 test_serial_LDFLAGS = $(AM_LDFLAGS)
 test_serial_LDADD = \
 	-lcppunit -ldl \
 	$(top_builddir)/libsrc/geomodelgrids/libgeomodelgrids.la \
-	-lhdf5
+	-lhdf5 \
+	-lproj
+
 
 
 # End of file
