@@ -1,16 +1,11 @@
-/**
- * C++ application to print model metadata to stdout.
- */
+/// C++ application to print model metadata to stdout.
 #if !defined(geomodelgrids_apps_info_hh)
 #define geomodelgrids_apps_info_hh
 
 #include "appsfwd.hh" // forward declarations
 
-#include "geomodelgrids/serial/HDF5.hh" // USES HDF5
+#include "geomodelgrids/serial/serialfwd.hh" // USES Model
 
-#include <cassert> // USES assert()
-#include <iostream> // USES std::std::cout
-#include <getopt.h> // USES getopt_long()
 #include <vector> // USES std::std::vector
 #include <string> // USES std::string
 

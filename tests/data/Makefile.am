@@ -1,5 +1,7 @@
 EXTRA_DIST = \
-	generate.py
+	generate.py \
+	ModelPoints.hh \
+	ModelPoints.cc
 
 
 dist_noinst_DATA = \

@@ -54,6 +54,12 @@ public:
      */
     double getZTop(void) const;
 
+    /** Get elevation of bottom of block in topological space.
+     *
+     * @returns Elevation (m) of bottom of block.
+     */
+    double getZBottom(void) const;
+
     /** Get number of values along each grid dimension.
      *
      * @returns Number of points along grid in each dimension [x, y, z].
@@ -66,6 +72,12 @@ public:
      */
     size_t getNumValues(void) const;
 
+    /** Prepare for querying.
+     *
+     * @param[in] h5 HDF5 with model.
+     */
+    void openQuery(geomodelgrids::serial::HDF5* const h5);
+
     /** Query for values at a point using bilinear interpolation.
      *
      * @param[in] x X coordinate of point in model coordinate system.
@@ -76,6 +88,9 @@ public:
     const double* query(const double x,
                         const double y,
                         const double z);
+
+    // Cleanup after querying.
+    void closeQuery(void);
 
     /** Compare order of blocks by z_top (descending order).
      *
@@ -91,6 +106,7 @@ public:
 private:
 
     std::string _name; ///< Name of block.
+    geomodelgrids::serial::Hyperslab* _hyperslab; ///< Hyperslab of data in model.
     double _resolutionHoriz; ///< Horizontal resolution (m).
     double _resolutionVert; ///< Vertical resolution (m).
     double _zTop; ///< Elevation (m) of top of block.

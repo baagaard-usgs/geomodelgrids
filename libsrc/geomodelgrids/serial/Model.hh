@@ -6,6 +6,7 @@
 
 // Include directives ---------------------------------------------------
 #include "serialfwd.hh" // forward declarations
+#include "geomodelgrids/utils/utilsfwd.hh" // HOLDSA CRSTransformer
 
 #include <vector> // HASA std::std::vector
 #include <string> // HASA std::string
@@ -31,6 +32,12 @@ public:
     /// Destructor
     ~Model(void);
 
+    /** Set CRS of query input points.
+     *
+     * @param[in] value CRS of input points as string (PROJ, EPSG, WKT).
+     */
+    void setInputCRS(const std::string& value);
+
     /** Open Model.
      *
      * @param[in] filename Name of Model file
@@ -45,6 +52,10 @@ public:
     /** Load metadata.
      */
     void loadMetadata(void);
+
+    /** Initialize.
+     */
+    void initialize(void);
 
     /** Get names of values in model.
      *
@@ -64,7 +75,7 @@ public:
      */
     const double* getDims(void) const;
 
-    /** Get coordinates of model origin in geographic projection.
+    /** Get coordinates of model origin (model CRS).
      *
      * @returns Coordinates of model origin [x, y].
      */
@@ -76,11 +87,11 @@ public:
      */
     const double getYAzimuth(void) const;
 
-    /** Get geographic projection for model.
+    /** Get coordinate system of model.
      *
-     * @returns Geographic projection in WKT.
+     * @returns CRS of model as string (PROJ, EPSG, or WKT).
      */
-    const std::string& getProjectionString(void) const;
+    const std::string& getCRSString(void) const;
 
     /** Get model description information.
      *
@@ -102,41 +113,72 @@ public:
 
     /** Does model contain given point?
      *
-     * @param[in] longitude Longitude (degrees, WGS84) of point.
-     * @param[in] latitude (degrees, WGS84) of point.
-     * @param[in] Elevation (m) of point.
+     * @param[in] x X coordinate of point (in input CRS).
+     * @param[in] y Y coordinate of point (in input CRS).
+     * @param[in] z Z coordinate of point (in input CRS).
      * @returns True if model contains given point, false otherwise.
      */
-    bool contains(const double longitude,
-                  const double latitude,
-                  const double elevation) const;
+    bool contains(const double x,
+                  const double y,
+                  const double z) const;
 
     /** Query for elevation of ground surface at point using bilinear interpolation.
      *
-     * @param[in] longitude Longitude (degrees, WGS84) of point.
-     * @param[in] latitude (degrees, WGS84) of point.
+     * @param[in] x X coordinate of point (in input CRS).
+     * @param[in] y Y coordinate of point (in input CRS).
      * @returns Elevation (m) of ground surface at point.
      */
-    double queryElevation(const double longitude,
-                          const double latitude) const;
+    double queryElevation(const double x,
+                          const double y);
 
     /** Query for model values at point using bilinear interpolation.
      *
-     * @param[in] longitude Longitude (degrees, WGS84) of point.
-     * @param[in] latitude (degrees, WGS84) of point.
-     * @param[in] Elevation (m) of point.
+     * @param[in] x X coordinate of point (in input CRS).
+     * @param[in] y Y coordinate of point (in input CRS).
+     * @param[in] z Z coordinate of point (in input CRS).
      * @returns Array of model values at point.
      */
-    const double* query(const double longitude,
-                        const double latitude,
-                        const double elevation) const;
+    const double* query(const double x,
+                        const double y,
+                        const double z);
 
-    // PRIVATE MEMBERS ------------------------------------------------------
+    // PRIVATE MEMBERS -------------------------------------------------------------------------------------------------
+private:
+
+    /** Convert xyz in input CRS to xyz in model CRS.
+     *
+     * @param[out] xModel Model x coordinate of point.
+     * @param[out] yModel Model y coordinate of point.
+     * @param[out] zModel Model z coordinate of point.
+     * @param[in] x X coordinate of point (in input CRS).
+     * @param[in] y Y coordinate of point (in input CRS).
+     * @param[in] z Z coordinate of point (in input CRS).
+     */
+    void _toModelXYZ(double* xModel,
+                     double* yModel,
+                     double* zModel,
+                     const double x,
+                     const double y,
+                     const double z) const;
+
+    /** Find block containing point.
+     *
+     * @param[in] x Model x coordinate of point.
+     * @param[in] y Model y coordinate of point.
+     * @param[in] z Model z coordinate of point.
+     * @returns Block containing point.
+     */
+    geomodelgrids::serial::Block* _findBlock(const double x,
+                                             const double y,
+                                             const double z) const;
+
+    // PRIVATE METHODS -------------------------------------------------------------------------------------------------
 private:
 
     std::vector<std::string> _valueNames; ///< Names of values in model.
     std::vector<std::string> _valueUnits; ///< Units of values in model.
-    std::string _projectionString; ///< Projection as string.
+    std::string _modelCRSString; ///< Model CRS as string (PROJ, EPSG, or WKT).
+    std::string _inputCRSString; ///< CRS as string (PROJ, EPSG, WKT for input points).
     double _origin[2]; ///< x and y coordinates of model origin.
     double _yazimuth; ///< Azimuth of y coordinate axis.
     double _dims[3]; ///< Dimensions of model along coordinate axes.
@@ -144,7 +186,7 @@ private:
     geomodelgrids::serial::HDF5* _h5; ///< Model file.
     geomodelgrids::serial::ModelInfo* _info; ///< Model description information.
     geomodelgrids::serial::Topography* _topography; ///< Model topography.
-    // geomodelgrids::utils::Projection* _projection; ///< Geographic projection of model.
+    geomodelgrids::utils::CRSTransformer* _crsTransformer; ///< Coordinate system transformer.
     std::vector<geomodelgrids::serial::Block*> _blocks; ///< Model blocks.
 
 }; // Model

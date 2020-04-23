@@ -1,0 +1,35 @@
+# Travis-CI configuration
+
+sudo: true
+services:
+    - docker
+
+language: cpp
+
+# :TODO: @brad Add osx build (need homebrew packages)..
+matrix:
+  include:
+    - os: linux
+      env: BASE_IMAGE=baagaard/geomodelgrids-testenv-debian-stable-gcc8
+    - os: linux
+      env: BASE_IMAGE=baagaard/geomodelgrids-testenv-debian-testing-gcc9
+
+
+addons:
+  apt:
+    packages:
+      - docker-ce
+
+
+# Limit number of commits in cloning (but keep enough so that 'git describe' works)
+git:
+  depth: 100
+
+
+install:
+  - docker build -t geomodelgrids-testenv --build-arg BASE_IMAGE=$BASE_IMAGE --target src -f docker/geomodelgrids-testenv .
+
+
+script:
+  - ci_env=`bash <(curl -s https://codecov.io/env)`
+  - docker run $ci_env geomodelgrids-testenv /bin/bash -c "make -j$(nproc) install && make -j$(nproc) check VERBOSE=1 && make coverage-libsrc && cd ../src && bash <(curl -s https://codecov.io/bash) -X gcov -f ../build/coverage.info -F libsrc -y ci-config/codecov.yml"

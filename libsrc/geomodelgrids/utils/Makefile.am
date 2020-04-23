@@ -2,6 +2,8 @@ subpackage = utils
 include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
+	CRSTransformer.hh \
+	constants.hh \
 	utilsfwd.hh
 
 noinst_HEADERS =

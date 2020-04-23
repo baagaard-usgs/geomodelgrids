@@ -19,10 +19,10 @@ AC_ARG_ENABLE([fortran],
 	[enable_fortran=yes],
 	[enable_fortran=no])
 
-# TESTING w/cppunit
+# TESTING
 AC_ARG_ENABLE([testing],
-	[  --enable-testing        Enable unit testing with cppunit (requires cppunit) [[default=no]]],
-	[enable_testing=yes],
+	[  --enable-testing        Enable Python and C++ (requires cppunit) unit testing [[default=no]]],
+	[if test "$enableval" = yes ; then enable_testing=yes; else enable_testing=no; fi],
 	[enable_testing=no])
 
 # SPATIAL w/spatialdata extension
@@ -32,7 +32,53 @@ AC_ARG_ENABLE([spatial],
 	[enable_spatial=no])
 
 # ----------------------------------------------------------------------
+# Dependency locations
+# ----------------------------------------------------------------------
+# CPPUNIT
+AC_ARG_WITH([cppunit-incdir],
+    [AC_HELP_STRING([--with-cppunit-incdir],
+        [location of cppunit header files @<:@default=no@:>@])],
+	[with_cppunit_incdir=$withval],
+	[with_cppunit_incdir=no])
+AC_SUBST(with_cppunit_incdir)
+AC_ARG_WITH([cppunit-libdir],
+    [AC_HELP_STRING([--with-cppunit-libdir],
+        [location of cppunit library @<:@default=no@:>@])],
+	[with_cppunit_libdir=$withval],
+	[with_cppunit_libdir=no])
+AC_SUBST(with_cppunit_libdir)
 
+# PROJ
+AC_ARG_WITH([proj-incdir],
+    [AC_HELP_STRING([--with-proj-incdir],
+        [location of proj header files @<:@default=no@:>@])],
+	[with_proj_incdir=$withval],
+	[with_proj_incdir=no])
+AC_SUBST(with_proj_incdir)
+AC_ARG_WITH([proj-libdir],
+    [AC_HELP_STRING([--with-proj-libdir],
+        [location of proj library @<:@default=no@:>@])],
+	[with_proj_libdir=$withval],
+	[with_proj_libdir=no])
+AC_SUBST(with_proj_libdir)
+
+# HDF5
+AC_ARG_WITH([hdf5-incdir],
+    [AC_HELP_STRING([--with-hdf5-incdir],
+        [location of hdf5 header files @<:@default=no@:>@])],
+	[with_hdf5_incdir=$withval],
+	[with_hdf5_incdir=no])
+AC_SUBST(with_hdf5_incdir)
+AC_ARG_WITH([hdf5-libdir],
+    [AC_HELP_STRING([--with-hdf5-libdir],
+        [location of hdf5 library @<:@default=no@:>@])],
+	[with_hdf5_libdir=$withval],
+	[with_hdf5_libdir=no])
+AC_SUBST(with_hdf5_libdir)
+
+# ----------------------------------------------------------------------
+# BASIC TOOLS
+# ----------------------------------------------------------------------
 AC_PROG_CXX
 AC_PROG_CC
 AC_PROG_LIBTOOL
@@ -46,15 +92,32 @@ fi
 AM_CONDITIONAL([NO_UNDEFINED], [test "$allow_undefined_flag" = unsupported])
 AC_SUBST(AM_LDFLAGS)
 
+
 # ----------------------------------------------------------------------
-# PROJ4
-AC_CHECK_LIB(proj, pj_init_plus, [
-  AC_CHECK_HEADER([proj_api.h], [], [
-    AC_MSG_ERROR([Proj4 header not found; try CPPFLAGS="-I<Proj4 include dir>"])
-  ])
-],[
-  AC_MSG_ERROR([Proj4 library not found; try LDFLAGS="-L<Proj4 lib dir>"])
-])
+# CHECK FOR DEPENDENCIES
+# ----------------------------------------------------------------------
+# PROJ
+if test "$with_proj_incdir" != no; then
+  PROJ_INCLUDES="-I$with_proj_incdir"
+fi
+if test "$with_proj_libdir" != no; then
+  PROJ_LDFLAGS="-L$with_proj_libdir"
+fi
+CIT_PROJ6_HEADER
+CIT_PROJ6_LIB
+AC_SUBST(PROJ_INCLUDES)
+AC_SUBST(PROJ_LDFLAGS)
+
+if test "$with_hdf5_incdir" != no; then
+  HDF5_INCLUDES="-I$with_hdf5_incdir"
+fi
+if test "$with_hdf5_libdir" != no; then
+  HDF5_LDFLAGS="-L$with_hdf5_libdir"
+fi
+CIT_HDF5_HEADER
+CIT_HDF5_LIB
+AC_SUBST(HDF5_INCLUDES)
+AC_SUBST(HDF5_LDFLAGS)
 
 # FORTRAN BINDINGS
 AM_CONDITIONAL([ENABLE_FORTRAN], [test "$enable_fortran" = yes])
@@ -68,20 +131,20 @@ fi
 # CPPUNIT
 AM_CONDITIONAL([ENABLE_TESTING], [test "$enable_testing" = yes])
 if test "$enable_testing" = "yes" ; then
-  AC_LANG(C++)
-  AC_CHECK_HEADER([cppunit/TestRunner.h], [], [
-    AC_MSG_ERROR([CppUnit header not found; try CPPFLAGS="-I<CppUnit include dir>"])
-  ])
-  AC_MSG_CHECKING([for CppUnit::TestRunner in -lcppunit])
-  AC_REQUIRE_CPP
-  AC_COMPILE_IFELSE(
-    [AC_LANG_PROGRAM([[#include <cppunit/TestRunner.h>]],
-	             [[CppUnit::TestRunner runner;]])],
-    [AC_MSG_RESULT(yes)],
-    [AC_MSG_RESULT(no)
-     AC_MSG_ERROR([CppUnit library not found; try LDFLAGS="-L<CppUnit lib dir>"])
-  ])
+  # Require C++-11
+  AX_CXX_COMPILE_STDCXX(11)
+
+  if test "$with_cppunit_incdir" != no; then
+    CPPUNIT_INCLUDES="-I$with_cppunit_incdir"
+  fi
+  if test "$with_cppunit_libdir" != no; then
+    CPPUNIT_LDFLAGS="-L$with_cppunit_libdir"
+  fi
+  CIT_CPPUNIT_HEADER
+  CIT_CPPUNIT_LIB
 fi
+AC_SUBST(CPPUNIT_INCLUDES)
+AC_SUBST(CPPUNIT_LDFLAGS)
 
 # SPATIALDATA
 AM_CONDITIONAL([ENABLE_SPATIAL], [test "$enable_spatial" = yes])
@@ -120,6 +183,12 @@ if test "$enable_spatial" = "yes" ; then
 
 fi
 
+# VERSION
+CIG_PKG_GIT(GEOMODELGRIDS)
+AC_DEFINE_UNQUOTED([GEOMODELGRIDS_VERSION], ["$PACKAGE_VERSION"], [Define geomodelgrids version])
+
+
+
 # ----------------------------------------------------------------------
 AC_CONFIG_FILES([Makefile
 	libsrc/Makefile
@@ -132,7 +201,11 @@ AC_CONFIG_FILES([Makefile
 	tests/Makefile
 	tests/data/Makefile
 	tests/libtests/Makefile
+	tests/libtests/utils/Makefile
 	tests/libtests/serial/Makefile
+	tests/libtests/apps/Makefile
+	docs/Makefile
+	models/Makefile
 	])
 
 AC_OUTPUT

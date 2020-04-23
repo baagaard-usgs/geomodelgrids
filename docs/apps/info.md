@@ -1,6 +1,6 @@
-# The geogrid_info command
+# The geogrids_info command
 
-The `geogrid_info` command line program is used to print information
+The `geogrids_info` command line program is used to print information
 about a model to stdout.
 
 ## Synopsis
@@ -8,7 +8,7 @@ about a model to stdout.
 Optional command line arguments are in square brackets.
 
 ```
-geogrid_info [--help] [--description] [--coordsys] [--values] [--blocks] [--all] --models=FILE_0,...,FILE_M
+geogrids_info [--help] [--description] [--coordsys] [--values] [--blocks] [--all] --models=FILE_0,...,FILE_M
 ```
 
 ### Required arguments

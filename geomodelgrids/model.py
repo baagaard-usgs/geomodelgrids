@@ -29,6 +29,7 @@ class Block():
                     z_top: Elevation of top of block (m)
                     z_bot: Elevation of bottom of block (m)
                     z_top_offset: Vertical offset of top set of points below top of block (m)
+                    chunk_size: Size of dataset chunk (should be about 10Kb - 1Mb)
         """
         self.name = name
         self.resolution_horiz = float(config["resolution_horiz"])
@@ -36,6 +37,7 @@ class Block():
         self.z_top = float(config["z_top"])
         self.z_bot = float(config["z_bot"])
         self.z_top_offset = float(config["z_top_offset"])
+        self.chunk_size = map(int, config["chunk_size"])
 
     def get_dims(self, domain):
         """Get number of points in block along each dimension.
@@ -126,10 +128,12 @@ class Topography():
              Keys:
                  use_topography: Model uses topography
                  resolution_horiz: Horizontal resolution in m
+                 chunk_size: Size of dataset chunk (should be about 10Kb - 1Mb)
         """
         self.elevation = None
         self.enabled = bool(config["use_topography"])
         self.resolution_horiz = float(config["resolution_horiz"]) if self.enabled else None
+        self.chunk_size = map(int, config["chunk_size"]) if self.enabled else None
 
     def set_elevation(self, elev):
         """Set topography values.
@@ -204,7 +208,7 @@ class Model(ABC):
         self.references = string_to_list(config["geomodelgrids"]["references"], delimiter="|")
         self.doi = config["geomodelgrids"]["doi"]
         self.version = config["geomodelgrids"]["version"]
-        self.projection = config["coordsys"]["projection"]
+        self.crs = config["coordsys"]["crs"]
         self.origin_x = float(config["coordsys"]["origin_x"])
         self.origin_y = float(config["coordsys"]["origin_y"])
         self.y_azimuth = float(config["coordsys"]["y_azimuth"])
@@ -247,7 +251,7 @@ class Model(ABC):
         """
         self.storage.save_block(block, values)
 
-    #@abstractmethod
+    # @abstractmethod
     def query_topography(self, points):
         """Query EarthVision model for elevation of ground surface at points.
 
@@ -256,7 +260,7 @@ class Model(ABC):
                 Numpy array with coordinates of points in model coordinates.
         """
 
-    #@abstractmethod
+    # @abstractmethod
     def query_values(self, block):
         """Query EarthVision model for values at points.
 

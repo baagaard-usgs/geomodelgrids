@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-import numpy
 import h5py
+import numpy
 
 
 class TestData:
@@ -21,7 +21,7 @@ class TestData:
         ("version", unicode),
         ("data_values", unicode),
         ("data_units", unicode),
-        ("projection", unicode),
+        ("crs", unicode),
         ("origin_x", float),
         ("origin_y", float),
         ("y_azimuth", float),
@@ -56,7 +56,8 @@ class TestData:
 
         # Topography
         if not self.topography is None:
-            topo_dataset = h5.create_dataset("topography", data=self.topography["elevation"])
+            topo_dataset = h5.create_dataset("topography", data=self.topography["elevation"],
+                                             chunks=self.topography["chunk_size"])
             attrs = topo_dataset.attrs
             for attr_name, map_fn in self.TOPOGRAPHY_ATTRS:
                 attrs[attr_name] = self._hdf5_type(self.topography[attr_name], map_fn)
@@ -65,7 +66,8 @@ class TestData:
         h5.create_group("blocks")
         blocks_group = h5["blocks"]
         for block in self.blocks:
-            block_dataset = blocks_group.create_dataset(block["name"], data=block["data"])
+            block_dataset = blocks_group.create_dataset(block["name"], data=block["data"],
+                                                        chunks=block["chunk_size"])
             attrs = block_dataset.attrs
             for attr_name, map_fn in self.BLOCK_ATTRS:
                 attrs[attr_name] = self._hdf5_type(block[attr_name], map_fn)
@@ -111,13 +113,13 @@ class OneBlockFlat(TestData):
         "version": "1.0.0",
         "data_values": ["one", "two"],
         "data_units": ["m", "m/s"],
-        "projection": 'GEOGCRS["WGS 84",DATUM["World Geodetic System 1984",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ID["EPSG",6326]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8901]],CS[ellipsoidal,2],AXIS["longitude",east,ORDER[1],ANGLEUNIT["degree",0.0174532925199433,ID["EPSG",9122]]],AXIS["latitude",north,ORDER[2],ANGLEUNIT["degree",0.0174532925199433,ID["EPSG",9122]]],USAGE[SCOPE["unknown"],AREA["World"],BBOX[-90,-180,90,180]]]',
-        "origin_x": 100.0,
-        "origin_y": 200.0,
+        "crs": 'EPSG:26910',
+        "origin_x": 590000.0,
+        "origin_y": 4150000.0,
         "y_azimuth": 90.0,
-        "dim_x": 30.0,
-        "dim_y": 40.0,
-        "dim_z": 5.0,
+        "dim_x": 30.0e+3,
+        "dim_y": 40.0e+3,
+        "dim_z": 5.0e+3,
     }
 
     topography = None
@@ -125,10 +127,11 @@ class OneBlockFlat(TestData):
     blocks = [
         {
             "name": "block",
-            "resolution_horiz": 10.0,
-            "resolution_vert": 5.0,
-            "z_top": 0.0,
-            "dim_z": 5.0,
+            "resolution_horiz": 10.0e+3,
+            "resolution_vert": 5.0e+3,
+            "z_top": 0.0e+3,
+            "dim_z": 5.0e+3,
+            "chunk_size": (1, 1, 2, 2),
         }
     ]
     for block in blocks:
@@ -136,8 +139,8 @@ class OneBlockFlat(TestData):
         (nx, ny, nz) = x.shape
         nvalues = len(model["data_values"])
         data = numpy.zeros((nx, ny, nz, nvalues), dtype=numpy.float32)
-        data[:, :, :, 0] = 2.0 + 1.0 * x + 0.4 * y - 0.5 * z
-        data[:, :, :, 1] = -1.2 + 2.1 * x - 0.9 * y + 0.3 * z
+        data[:, :, :, 0] = 2.0e+3 + 1.0 * x + 0.4 * y - 0.5 * z
+        data[:, :, :, 1] = -1.2e+3 + 2.1 * x - 0.9 * y + 0.3 * z
         block["data"] = data
 
 
@@ -158,28 +161,33 @@ class OneBlockTopo(TestData):
         "version": "2.0.0",
         "data_values": ["one", "two"],
         "data_units": ["m", "m/s"],
-        "projection": 'GEOGCRS["WGS 84",DATUM["World Geodetic System 1984",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ID["EPSG",6326]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8901]],CS[ellipsoidal,2],AXIS["longitude",east,ORDER[1],ANGLEUNIT["degree",0.0174532925199433,ID["EPSG",9122]]],AXIS["latitude",north,ORDER[2],ANGLEUNIT["degree",0.0174532925199433,ID["EPSG",9122]]],USAGE[SCOPE["unknown"],AREA["World"],BBOX[-90,-180,90,180]]]',
-        "origin_x": 100.0,
-        "origin_y": 200.0,
+        "crs": 'EPSG:26910',
+        "origin_x": 590000.0,
+        "origin_y": 4150000.0,
         "y_azimuth": 90.0,
-        "dim_x": 30.0,
-        "dim_y": 40.0,
-        "dim_z": 5.0,
+        "dim_x": 30.0e+3,
+        "dim_y": 40.0e+3,
+        "dim_z": 5.0e+3,
     }
 
     topography = {
-        "resolution_horiz": 10.0,
-        }
+        "resolution_horiz": 10.0e+3,
+        "chunk_size": (2, 2, 1),
+    }
     x, y = TestData.create_groundsurf_xy(model, topography)
-    topography["elevation"] = 1.5 + 0.2*x -0.1*y + 0.05*x*y
+    (nx, ny) = x.shape
+    elevation = numpy.zeros((nx, ny, 1), dtype=numpy.float32)
+    elevation[:, :, 0] = 1.5e+2 + 2.0e-5 * x - 1.2e-5 * y + 5.0e-10 * x * y
+    topography["elevation"] = elevation
 
     blocks = [
         {
             "name": "block",
-            "resolution_horiz": 10.0,
-            "resolution_vert": 5.0,
+            "resolution_horiz": 10.0e+3,
+            "resolution_vert": 5.0e+3,
             "z_top": 0.0,
-            "dim_z": 5.0,
+            "dim_z": 5.0e+3,
+            "chunk_size": (1, 1, 2, 2),
         }
     ]
     for block in blocks:
@@ -187,8 +195,8 @@ class OneBlockTopo(TestData):
         (nx, ny, nz) = x.shape
         nvalues = len(model["data_values"])
         data = numpy.zeros((nx, ny, nz, nvalues), dtype=numpy.float32)
-        data[:, :, :, 0] = 2.0 + 1.0 * x + 0.4 * y - 0.5 * z
-        data[:, :, :, 1] = -1.2 + 2.1 * x - 0.9 * y + 0.3 * z
+        data[:, :, :, 0] = 2.0e+3 + 1.0 * x + 0.4 * y - 0.5 * z
+        data[:, :, :, 1] = -1.2e+3 + 2.1 * x - 0.9 * y + 0.3 * z
         block["data"] = data
 
 
@@ -209,13 +217,13 @@ class ThreeBlocksFlat(TestData):
         "version": "1.0.0",
         "data_values": ["one", "two"],
         "data_units": ["m", "m/s"],
-        "projection": 'GEOGCRS["WGS 84",DATUM["World Geodetic System 1984",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ID["EPSG",6326]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8901]],CS[ellipsoidal,2],AXIS["longitude",east,ORDER[1],ANGLEUNIT["degree",0.0174532925199433,ID["EPSG",9122]]],AXIS["latitude",north,ORDER[2],ANGLEUNIT["degree",0.0174532925199433,ID["EPSG",9122]]],USAGE[SCOPE["unknown"],AREA["World"],BBOX[-90,-180,90,180]]]',
-        "origin_x": 100.0,
-        "origin_y": 200.0,
+        "crs": 'EPSG:3311',
+        "origin_x": 200000.0,
+        "origin_y": -400000.0,
         "y_azimuth": 330.0,
-        "dim_x": 60.0,
-        "dim_y": 120.0,
-        "dim_z": 45.0,
+        "dim_x": 60.0e+3,
+        "dim_y": 120.0e+3,
+        "dim_z": 45.0e+3,
     }
 
     topography = None
@@ -223,24 +231,27 @@ class ThreeBlocksFlat(TestData):
     blocks = [
         {
             "name": "top",
-            "resolution_horiz": 10.0,
-            "resolution_vert": 5.0,
+            "resolution_horiz": 10.0e+3,
+            "resolution_vert": 5.0e+3,
             "z_top": 0.0,
-            "dim_z": 5.0,
+            "dim_z": 5.0e+3,
+            "chunk_size": (4, 4, 2, 2),
         },
         {
             "name": "middle",
-            "resolution_horiz": 20.0,
-            "resolution_vert": 10.0,
-            "z_top": -5.0,
-            "dim_z": 20.0,
+            "resolution_horiz": 20.0e+3,
+            "resolution_vert": 10.0e+3,
+            "z_top": -5.0e+3,
+            "dim_z": 20.0e+3,
+            "chunk_size": (2, 2, 3, 2),
         },
         {
             "name": "bottom",
-            "resolution_horiz": 30.0,
-            "resolution_vert": 10.0,
-            "z_top": -25.0,
-            "dim_z": 20.0,
+            "resolution_horiz": 30.0e+3,
+            "resolution_vert": 10.0e+3,
+            "z_top": -25.0e+3,
+            "dim_z": 20.0e+3,
+            "chunk_size": (1, 1, 3, 2),
         },
     ]
     for block in blocks:
@@ -248,8 +259,8 @@ class ThreeBlocksFlat(TestData):
         (nx, ny, nz) = x.shape
         nvalues = len(model["data_values"])
         data = numpy.zeros((nx, ny, nz, nvalues), dtype=numpy.float32)
-        data[:, :, :, 0] = 2.0 + 1.0 * x + 0.4 * y - 0.5 * z
-        data[:, :, :, 1] = -1.2 + 2.1 * x - 0.9 * y + 0.3 * z
+        data[:, :, :, 0] = 2.0e+3 + 1.0 * x + 0.4 * y - 0.5 * z
+        data[:, :, :, 1] = -1.2e+3 + 2.1 * x - 0.9 * y + 0.3 * z
         block["data"] = data
 
 
@@ -270,42 +281,49 @@ class ThreeBlocksTopo(TestData):
         "version": "1.0.0",
         "data_values": ["one", "two"],
         "data_units": ["m", "m/s"],
-        "projection": 'GEOGCRS["WGS 84",DATUM["World Geodetic System 1984",ELLIPSOID["WGS 84",6378137,298.257223563,LENGTHUNIT["metre",1]],ID["EPSG",6326]],PRIMEM["Greenwich",0,ANGLEUNIT["degree",0.0174532925199433],ID["EPSG",8901]],CS[ellipsoidal,2],AXIS["longitude",east,ORDER[1],ANGLEUNIT["degree",0.0174532925199433,ID["EPSG",9122]]],AXIS["latitude",north,ORDER[2],ANGLEUNIT["degree",0.0174532925199433,ID["EPSG",9122]]],USAGE[SCOPE["unknown"],AREA["World"],BBOX[-90,-180,90,180]]]',
-        "origin_x": 100.0,
-        "origin_y": 200.0,
+        "crs": 'EPSG:3311',
+        "origin_x": 200000.0,
+        "origin_y": -400000.0,
         "y_azimuth": 330.0,
-        "dim_x": 60.0,
-        "dim_y": 120.0,
-        "dim_z": 45.0,
+        "dim_x": 60.0e+3,
+        "dim_y": 120.0e+3,
+        "dim_z": 45.0e+3,
     }
 
     topography = {
-        "resolution_horiz": 5.0,
-        }
+        "resolution_horiz": 5.0e+3,
+        "chunk_size": (4, 4, 1),
+    }
     x, y = TestData.create_groundsurf_xy(model, topography)
-    topography["elevation"] = 1.5 + 0.2*x -0.1*y + 0.05*x*y
+    (nx, ny) = x.shape
+    elevation = numpy.zeros((nx, ny, 1), dtype=numpy.float32)
+    elevation[:, :, 0] = 1.5e+2 + 2.0e-5 * x - 1.2e-5 * y + 5.0e-10 * x * y
+    topography["elevation"] = elevation
 
     blocks = [
         {
             "name": "top",
-            "resolution_horiz": 10.0,
-            "resolution_vert": 5.0,
-            "z_top": 0.0,
-            "dim_z": 5.0,
+            "resolution_horiz": 10.0e+3,
+            "resolution_vert": 5.0e+3,
+            "z_top": 0.0e+3,
+            "dim_z": 5.0e+3,
+            "chunk_size": (4, 4, 2, 2),
         },
         {
             "name": "middle",
-            "resolution_horiz": 20.0,
-            "resolution_vert": 10.0,
-            "z_top": -5.0,
-            "dim_z": 20.0,
+            "resolution_horiz": 20.0e+3,
+            "resolution_vert": 10.0e+3,
+            "z_top": -5.0e+3,
+            "dim_z": 20.0e+3,
+            "chunk_size": (2, 2, 3, 2),
         },
         {
             "name": "bottom",
-            "resolution_horiz": 30.0,
-            "resolution_vert": 10.0,
-            "z_top": -25.0,
-            "dim_z": 20.0,
+            "resolution_horiz": 30.0e+3,
+            "resolution_vert": 10.0e+3,
+            "z_top": -25.0e+3,
+            "dim_z": 20.0e+3,
+            "chunk_size": (1, 1, 3, 2),
         },
     ]
     for block in blocks:
@@ -313,8 +331,8 @@ class ThreeBlocksTopo(TestData):
         (nx, ny, nz) = x.shape
         nvalues = len(model["data_values"])
         data = numpy.zeros((nx, ny, nz, nvalues), dtype=numpy.float32)
-        data[:, :, :, 0] = 2.0 + 1.0 * x + 0.4 * y - 0.5 * z
-        data[:, :, :, 1] = -1.2 + 2.1 * x - 0.9 * y + 0.3 * z
+        data[:, :, :, 0] = 2.0e+3 + 1.0 * x + 0.4 * y - 0.5 * z
+        data[:, :, :, 1] = -1.2e+3 + 2.1 * x - 0.9 * y + 0.3 * z
         block["data"] = data
 
 

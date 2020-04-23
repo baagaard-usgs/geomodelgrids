@@ -6,12 +6,10 @@ SUBDIRS = \
 	bin
 
 if ENABLE_TESTING
-	SUBDIRS += \
-		tests
+  SUBDIRS += tests
 endif
 
 DIST_SUBDIRS = $(SUBDIRS) \
-	developer \
 	docs \
 	models
 
@@ -24,7 +22,22 @@ EXTRA_DIST = \
 	LICENSE.md \
 	MANIFEST \
 	setup.py \
-	code.json
+	code.json \
+	developer/autopep8.cfg \
+	developer/uncrustify.cfg \
+	docker/debian-stable-gcc8 \
+	docker/geomodelgrids-testenv
 
+
+coverage-libsrc:
+	lcov --directory libsrc --capture --output-file coverage.info
+	lcov --remove coverage.info '/usr/*' '/Library/*' "v1" "*/utils/TestDriver.*" -o coverage.info
+	lcov --list coverage.info
+
+coverage-html: coverage-libsrc
+	genhtml -o coverage coverage.info
+
+coverage-clean:
+	$(RM) `find . -name "*.gcda"`
 
 # End of file

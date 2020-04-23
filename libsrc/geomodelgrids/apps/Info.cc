@@ -1,7 +1,3 @@
-/**
- * C++
- */
-
 #include <portinfo>
 
 #include "Info.hh" // implementation of class methods
@@ -13,10 +9,11 @@
 
 #include <getopt.h> // USES getopt_long()
 #include <iomanip>
+#include <iostream> // USES std::cout
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream, std::istringstream
 
-// -------------
+// ---------------------------------------------------------------------------------------------------------------------
 namespace geomodelgrids {
     namespace apps {
         namespace _Info {
@@ -30,7 +27,7 @@ namespace geomodelgrids {
     } // apps
 } // geomodelgrids
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Constructor
 geomodelgrids::apps::Info::Info() :
     _showHelp(false),
@@ -55,11 +52,6 @@ geomodelgrids::apps::Info::run(int argc,
 
     if (_showHelp) {
         _printHelp();
-        return 0;
-    } // if
-
-    if (0 == _modelFilenames.size()) {
-        std::cout << "WARNING: No models provided. Exiting." << std::endl;
         return 0;
     } // if
 
@@ -124,25 +116,32 @@ geomodelgrids::apps::Info::_parseArgs(int argc,
         case 'm': {
             _modelFilenames.clear();
             std::istringstream tokenStream(optarg);
-            std::string token;
-            while (std::getline(tokenStream, token, ',')) {
-                _modelFilenames.push_back(token);
-            } // while
+            if (tokenStream.str().find(",") != std::string::npos) {
+                std::string token;
+                while (std::getline(tokenStream, token, ',')) {
+                    _modelFilenames.push_back(token);
+                } // while
+            } else {
+                _modelFilenames.push_back(optarg);
+            } // if/else
             break;
         } // 'm'
-        case '?':
-            break;
-        default: {
+        case '?': {
             std::ostringstream msg;
-            msg << "Error passing command line arguments:";
+            msg << "Error passing command line arguments:\n";
             for (int i = 0; i < argc; ++i) {
-                msg << "    " << argv[i] << "\n";
+                msg << argv[i] << " ";
             } // for
-            msg << "Unknown option '" << c << "'";
             throw std::logic_error(msg.str().c_str());
-        } // default
+        } // ?
         } // switch
     } // while
+    if (!_showHelp && !_showAll && !_showDescription && !_showCoordSys && !_showValues && !_showBlocks) {
+        _showHelp = true;
+    } // if
+    if (!_showHelp && (0 == _modelFilenames.size())) {
+        throw std::runtime_error("Missing required command line argument --models=FILE_0,...,FILE_M.");
+    } // if
 } // _parseArgs
 
 
@@ -150,7 +149,7 @@ geomodelgrids::apps::Info::_parseArgs(int argc,
 // Print help information.
 void
 geomodelgrids::apps::Info::_printHelp(void) {
-    std::cout << "Usage: geogrid_info "
+    std::cout << "Usage: geogrids_info "
               << "[--help] [--description] [--coordsys] [--values] [--blocks] [--all] --models=FILE_0,...,FILE_M\n\n"
               << "    --help    Print help information to stdout and exit.\n"
               << "    --description    Print model description.\n"
@@ -199,7 +198,7 @@ geomodelgrids::apps::Info::_printCoordSys(geomodelgrids::serial::Model* const mo
 
     std::cout << _Info::indent(1) << "Coordinate system:\n";
 
-    std::cout << _Info::indent(2) << "Projection (WKT): " << model->getProjectionString() << "\n";
+    std::cout << _Info::indent(2) << "CRS (PROJ, EPSG, WKT): " << model->getCRSString() << "\n";
 
     const double* origin = model->getOrigin();
     std::cout << _Info::indent(2) << "Origin: x=" << origin[0] <<", y=" << origin[1] << "\n";

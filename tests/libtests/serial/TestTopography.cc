@@ -4,10 +4,14 @@
 
 #include <portinfo>
 
+#include "ModelPoints.hh"
+
 #include "geomodelgrids/serial/Topography.hh" // USES Topography
 #include "geomodelgrids/serial/HDF5.hh" // USES HDF5
 
 #include <cppunit/extensions/HelperMacros.h>
+
+#include <cmath> // USES fabs()
 
 namespace geomodelgrids {
     namespace serial {
@@ -81,7 +85,7 @@ geomodelgrids::serial::TestTopography::testLoadMetadata(void) {
     Topography topo;
     topo.loadMetadata(&h5);
 
-    const double resolutionHoriz(10.0);
+    const double resolutionHoriz(10.0e+3);
     const size_t dims[2] = { 4, 5 };
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking horizontal resolution", resolutionHoriz, topo.getResolutionHoriz());
@@ -95,14 +99,37 @@ geomodelgrids::serial::TestTopography::testLoadMetadata(void) {
 // Test query().
 void
 geomodelgrids::serial::TestTopography::testQuery(void) {
+    const size_t npoints = 5;
+    const size_t spaceDim = 2;
+    const double xy[npoints*spaceDim] = {
+        2.0e+3, 1.2e+3,
+        22.0e+3, 0.0e+3,
+        0.2e+3, 34.0e+3,
+        17.0e+3, 25.0e+3,
+        29.0e+3, 40.0e+3,
+    };
+
     geomodelgrids::serial::HDF5 h5;
     h5.open("../../data/one-block-topo.h5", H5F_ACC_RDONLY);
 
     Topography topo;
     topo.loadMetadata(&h5);
-    // topo.query(x, y, z, h5);
 
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Implement testQuery().", false);
+    topo.openQuery(&h5);
+    for (size_t i = 0; i < npoints; ++i) {
+        const double tolerance = 1.0e-6;
+        const double x = xy[i*spaceDim+0];
+        const double y = xy[i*spaceDim+1];
+        const double elevation = topo.query(x, y);
+
+        const double elevationE = geomodelgrids::testdata::ModelPoints::computeElevation(x, y);
+
+        std::ostringstream msg;
+        msg << "Mismatch in elevation at (" << x << ", " << y << ").";
+        const double toleranceV = std::max(tolerance, tolerance*fabs(elevationE));
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), elevationE, elevation, toleranceV);
+    } // for
+    topo.closeQuery();
 } // testQuery
 
 

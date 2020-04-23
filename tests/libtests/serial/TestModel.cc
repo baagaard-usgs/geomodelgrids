@@ -4,12 +4,16 @@
 
 #include <portinfo>
 
+#include "ModelPoints.hh" // USES ModelPoints
+
 #include "geomodelgrids/serial/Model.hh" // USES Model
 #include "geomodelgrids/serial/ModelInfo.hh" // USES ModelInfo
 #include "geomodelgrids/serial/Topography.hh" // USES Topography
 #include "geomodelgrids/serial/Block.hh" // USES Block
 
 #include <cppunit/extensions/HelperMacros.h>
+
+#include <cmath> // USES fabs()
 
 namespace geomodelgrids {
     namespace serial {
@@ -23,7 +27,11 @@ class geomodelgrids::serial::TestModel : public CppUnit::TestFixture {
 
     CPPUNIT_TEST(testConstructor);
     CPPUNIT_TEST(testAccessors);
+    CPPUNIT_TEST(testOpenClose);
     CPPUNIT_TEST(testLoadMetadata);
+    CPPUNIT_TEST(testInitialize);
+    CPPUNIT_TEST(testToModelXYZFlat);
+    CPPUNIT_TEST(testToModelXYZTopo);
     CPPUNIT_TEST(testContains);
     CPPUNIT_TEST(testQueryElevation);
     CPPUNIT_TEST(testQuery);
@@ -39,8 +47,20 @@ public:
     /// Test getters.
     void testAccessors(void);
 
+    /// Test open() and close().
+    void testOpenClose(void);
+
     /// Test loadMetadata().
     void testLoadMetadata(void);
+
+    /// Test initialize().
+    void testInitialize(void);
+
+    /// Test _toModelXYZ() with flat ground surface.
+    void testToModelXYZFlat(void);
+
+    /// Test _toModelXYZ() with topography.
+    void testToModelXYZTopo(void);
 
     /// Test contains().
     void testContains(void);
@@ -62,7 +82,7 @@ geomodelgrids::serial::TestModel::testConstructor(void) {
 
     CPPUNIT_ASSERT_MESSAGE("Checking value names", model._valueNames.empty());
     CPPUNIT_ASSERT_MESSAGE("Checking value units", model._valueUnits.empty());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking projection string", std::string(""), model._projectionString);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking CRS string", std::string(""), model._modelCRSString);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking origin x", 0.0, model._origin[0]);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking origin y", 0.0, model._origin[1]);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking y azimuth", 0.0, model._yazimuth);
@@ -72,7 +92,7 @@ geomodelgrids::serial::TestModel::testConstructor(void) {
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking h5", (HDF5*)NULL, model._h5);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking info", (ModelInfo*)NULL, model._info);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking topography", (Topography*)NULL, model._topography);
-    // CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking projection", (HDF5*)NULL, model._h5);
+    // CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking CRS", (HDF5*)NULL, model._h5);
     CPPUNIT_ASSERT_MESSAGE("Checking blocks", model._blocks.empty());
 } // testConstructor
 
@@ -88,7 +108,7 @@ geomodelgrids::serial::TestModel::testAccessors(void) {
     const char* unitsPtr[numValues] = {"m", "m/s", "MPa"};
     const std::vector<std::string> valueNames(namesPtr, namesPtr+numValues);model._valueNames = valueNames;
     const std::vector<std::string> valueUnits(unitsPtr, unitsPtr+numValues);model._valueUnits = valueUnits;
-    const std::string projectionString("Projection String");model._projectionString = projectionString;
+    const std::string modelCRSString("CRSTransformer String");model._modelCRSString = modelCRSString;
     const double origin[2] = { 10.0, 20.0 };
     model._origin[0] = origin[0];
     model._origin[1] = origin[1];
@@ -123,7 +143,7 @@ geomodelgrids::serial::TestModel::testAccessors(void) {
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking names of values", valueUnits[i], valueUnitsT[i]);
     } // for
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking projection string", projectionString, model.getProjectionString());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking CRS string", modelCRSString, model.getCRSString());
 
     const double* originT = model.getOrigin();
     CPPUNIT_ASSERT_MESSAGE("Checking origin pointer", originT);
@@ -150,7 +170,27 @@ geomodelgrids::serial::TestModel::testAccessors(void) {
 } // testAccessors
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+// Test open() and close().
+void
+geomodelgrids::serial::TestModel::testOpenClose(void) {
+    Model model;
+
+    model.open("../../data/three-blocks-topo.h5", Model::READ);
+    CPPUNIT_ASSERT_MESSAGE("Open with read access failed.", model._h5);
+    model.close();
+
+    model.open("../../data/three-blocks-topo.h5", Model::READ_WRITE);
+    CPPUNIT_ASSERT_MESSAGE("Open with read/write access failed.", model._h5);
+    model.close();
+
+    model.open("../../data/tmp.h5", Model::READ_WRITE_TRUNCATE);
+    CPPUNIT_ASSERT_MESSAGE("Open with read/write access and truncate failed.", model._h5);
+    model.close();
+} // testOpenClose
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Test loadMetadata().
 void
 geomodelgrids::serial::TestModel::testLoadMetadata(void) {
@@ -162,26 +202,22 @@ geomodelgrids::serial::TestModel::testLoadMetadata(void) {
     const char* unitsPtr[numValues] = {"m", "m/s"};
     const std::vector<std::string> valueNames(namesPtr, namesPtr+numValues);
     const std::vector<std::string> valueUnits(unitsPtr, unitsPtr+numValues);
-    const std::string projectionString("GEOGCRS[\"WGS 84\",DATUM[\"World Geodetic System 1984\",ELLIPSOID[\"WGS 84\""
-                                       ",6378137,298.257223563,LENGTHUNIT[\"metre\",1]],ID[\"EPSG\",6326]],PRIMEM[\""
-                                       "Greenwich\",0,ANGLEUNIT[\"degree\",0.0174532925199433],ID[\"EPSG\",8901]],"
-                                       "CS[ellipsoidal,2],AXIS[\"longitude\",east,ORDER[1],ANGLEUNIT[\"degree\","
-                                       "0.0174532925199433,ID[\"EPSG\",9122]]],AXIS[\"latitude\",north,ORDER[2],"
-                                       "ANGLEUNIT[\"degree\",0.0174532925199433,ID[\"EPSG\",9122]]],"
-                                       "USAGE[SCOPE[\"unknown\"],AREA[\"World\"],BBOX[-90,-180,90,180]]]");
-    const double origin[2] = { 100.0, 200.0 };
+    const std::string modelCRSString("EPSG:3311");
+    const double origin[2] = { 200000.0, -400000.0 };
     const double yazimuth(330.0);
-    const double dims[3] = { 60.0, 120.0, 45.0 };
-    const double topoHorizRes = 5.0;
+    const double dims[3] = { 60.0e+3, 120.0e+3, 45.0e+3 };
+    const double topoHorizRes = 5.0e+3;
 
     const size_t numBlocks = 3;
     const char* blockNamesPtr[numBlocks] = {"top", "middle", "bottom"};
-    const double blockZTop[numBlocks] = {0.0, -5.0, -25.0 };
+    const double blockZTop[numBlocks] = {0.0e+3, -5.0e+3, -25.0e+3 };
     const std::vector<std::string> blockNames(blockNamesPtr, blockNamesPtr+numBlocks);
 
     const double tolerance = 1.0e-6;
 
     Model model;
+    CPPUNIT_ASSERT_THROW(model.loadMetadata(), std::logic_error); // Model not open
+
     model.open("../../data/three-blocks-topo.h5", Model::READ);
     model.loadMetadata();
 
@@ -197,7 +233,7 @@ geomodelgrids::serial::TestModel::testLoadMetadata(void) {
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking names of values", valueUnits[i], valueUnitsT[i]);
     } // for
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking projection string", projectionString, model.getProjectionString());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking CRS string", modelCRSString, model.getCRSString());
 
     const double* originT = model.getOrigin();
     CPPUNIT_ASSERT_MESSAGE("Checking origin pointer", originT);
@@ -232,16 +268,135 @@ geomodelgrids::serial::TestModel::testLoadMetadata(void) {
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking block z_top", blockZTop[i], blocksT[i]->getZTop());
 
     } // for
+    CPPUNIT_ASSERT_NO_THROW(model.loadMetadata());
 
     model.close();
 } // testLoadMetadata
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Test initialize().
+void
+geomodelgrids::serial::TestModel::testInitialize(void) {
+    Model model;
+    model.open("../../data/three-blocks-topo.h5", Model::READ);
+    model.loadMetadata();
+    model.initialize();
+
+    CPPUNIT_ASSERT_MESSAGE("CRS transformer not created.", model._crsTransformer);
+
+    Topography* const topography = model._topography;
+    if (topography) {
+        CPPUNIT_ASSERT_NO_THROW(topography->query(0.0, 0.0));
+    } // if
+
+    model.close();
+} // testInitialize
+
+
+// ----------------------------------------------------------------------
+// Test _toModelXYZ() with flat ground surface.
+void
+geomodelgrids::serial::TestModel::testToModelXYZFlat(void) {
+    Model model;
+    model.open("../../data/three-blocks-flat.h5", Model::READ);
+    model.loadMetadata();
+    model.initialize();
+
+    geomodelgrids::testdata::ThreeBlocksFlatPoints points;
+    const size_t numPoints = points.getNumPoints();
+    const size_t spaceDim = 3;
+    const double* pointsLLE = points.getLatLonElev();
+    const double* pointsXYZ = points.getXYZ();
+
+    for (size_t iPt = 0; iPt < numPoints; ++iPt) {
+        double xyz[spaceDim] = { 0.0, 0.0, 0.0 };
+        model._toModelXYZ(&xyz[0], &xyz[1], &xyz[2],
+                          pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+        for (size_t iDim = 0; iDim < spaceDim; ++iDim) {
+            std::ostringstream msg;
+            msg << "Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                << ", " << pointsLLE[iPt*spaceDim+2] << ") for component " << iDim << ".";
+            const double valueE = pointsXYZ[iPt*spaceDim+iDim];
+            const double tolerance = 1.0e-6;
+            const double valueTolerance = std::max(tolerance, tolerance*fabs(valueE));
+            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, xyz[iDim], valueTolerance);
+        } // for
+    } // for
+} // testToModelXYZFlat
+
+
+// ----------------------------------------------------------------------
+// Test _toModelXYZ() with topography.
+void
+geomodelgrids::serial::TestModel::testToModelXYZTopo(void) {
+    Model model;
+    model.open("../../data/three-blocks-topo.h5", Model::READ);
+    model.loadMetadata();
+    model.initialize();
+
+    geomodelgrids::testdata::ThreeBlocksTopoPoints points;
+    const size_t numPoints = points.getNumPoints();
+    const size_t spaceDim = 3;
+    const double* pointsLLE = points.getLatLonElev();
+    const double* pointsXYZ = points.getXYZ();
+
+    for (size_t iPt = 0; iPt < numPoints; ++iPt) {
+        double xyz[spaceDim] = { 0.0, 0.0, 0.0 };
+        model._toModelXYZ(&xyz[0], &xyz[1], &xyz[2],
+                          pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+
+        for (size_t iDim = 0; iDim < spaceDim; ++iDim) {
+            std::ostringstream msg;
+            msg << "Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                << ", " << pointsLLE[iPt*spaceDim+2] << ") for component " << iDim << ".";
+            const double valueE = pointsXYZ[iPt*spaceDim+iDim];
+            const double tolerance = 1.0e-6;
+            const double valueTolerance = std::max(tolerance, tolerance*fabs(valueE));
+            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, xyz[iDim], valueTolerance);
+        } // for
+    } // for
+} // testToModelXYZTopo
 
 
 // ----------------------------------------------------------------------
 // Test contains().
 void
 geomodelgrids::serial::TestModel::testContains(void) {
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Implement testContains().", false);
+    Model model;
+    model.open("../../data/three-blocks-topo.h5", Model::READ);
+    model.loadMetadata();
+    model.initialize();
+
+    { // inside domain
+        geomodelgrids::testdata::ThreeBlocksTopoPoints points;
+        const size_t numPoints = points.getNumPoints();
+        const size_t spaceDim = 3;
+        const double* pointsLLE = points.getLatLonElev();
+
+        for (size_t iPt = 0; iPt < numPoints; ++iPt) {
+            const bool flag = model.contains(pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+            std::ostringstream msg;
+            msg << "Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                << ", " << pointsLLE[iPt*spaceDim+2] << ").";
+            CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.str().c_str(), true, flag);
+        } // for
+    } // inside domain
+
+    { // outside domain
+        geomodelgrids::testdata::OutsideDomainPoints points;
+        const size_t numPoints = points.getNumPoints();
+        const size_t spaceDim = 3;
+        const double* pointsLLE = points.getLatLonElev();
+
+        for (size_t iPt = 0; iPt < numPoints; ++iPt) {
+            const bool flag = model.contains(pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+            std::ostringstream msg;
+            msg << "Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                << ", " << pointsLLE[iPt*spaceDim+2] << ").";
+            CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.str().c_str(), false, flag);
+        } // for
+    } // outside domain
 } // testContains
 
 
@@ -249,7 +404,27 @@ geomodelgrids::serial::TestModel::testContains(void) {
 // Test queryElevation().
 void
 geomodelgrids::serial::TestModel::testQueryElevation(void) {
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Implement testQueryElevation().", false);
+    Model model;
+    model.open("../../data/three-blocks-topo.h5", Model::READ);
+    model.loadMetadata();
+    model.initialize();
+
+    geomodelgrids::testdata::ThreeBlocksTopoPoints points;
+    const size_t numPoints = points.getNumPoints();
+    const size_t spaceDim = 3;
+    const double* pointsLLE = points.getLatLonElev();
+    const double* pointsXYZ = points.getXYZ();
+
+    for (size_t iPt = 0; iPt < numPoints; ++iPt) {
+        const double elevation = model.queryElevation(pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1]);
+        const double elevationE = points.computeElevation(pointsXYZ[iPt*spaceDim+0], pointsXYZ[iPt*spaceDim+1]);
+
+        std::ostringstream msg;
+        msg << "Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").";
+        const double tolerance = 1.0e-6;
+        const double valueTolerance = std::max(tolerance, tolerance*fabs(elevationE));
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), elevationE, elevation, valueTolerance);
+    } // for
 } // testQueryElevation
 
 
@@ -257,7 +432,46 @@ geomodelgrids::serial::TestModel::testQueryElevation(void) {
 // Test query().
 void
 geomodelgrids::serial::TestModel::testQuery(void) {
-    CPPUNIT_ASSERT_MESSAGE(":TODO: @brad Implement testQuery().", false);
+    Model model;
+    model.open("../../data/three-blocks-topo.h5", Model::READ);
+    model.loadMetadata();
+    model.initialize();
+
+    geomodelgrids::testdata::ThreeBlocksTopoPoints points;
+    const size_t numPoints = points.getNumPoints();
+    const size_t spaceDim = 3;
+    const double* pointsLLE = points.getLatLonElev();
+    const double* pointsXYZ = points.getXYZ();
+
+    for (size_t iPt = 0; iPt < numPoints; ++iPt) {
+        const double* values = model.query(pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+
+        const double x = pointsXYZ[iPt*spaceDim+0];
+        const double y = pointsXYZ[iPt*spaceDim+1];
+        const double z = pointsXYZ[iPt*spaceDim+2];
+
+        { // Value 0
+            const double valueE = points.computeValueOne(x, y, z);
+
+            std::ostringstream msg;
+            msg << "Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                << ", " << pointsLLE[iPt*spaceDim+2] << ") for value 0.";
+            const double tolerance = 1.0e-6;
+            const double valueTolerance = std::max(tolerance, tolerance*fabs(valueE));
+            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[0], valueTolerance);
+        } // Value 0
+
+        { // Value 1
+            const double valueE = points.computeValueTwo(x, y, z);
+
+            std::ostringstream msg;
+            msg << "Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                << ", " << pointsLLE[iPt*spaceDim+2] << ") for value 1.";
+            const double tolerance = 1.0e-6;
+            const double valueTolerance = std::max(tolerance, tolerance*fabs(valueE));
+            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[1], valueTolerance);
+        } // Value 1
+    } // for
 } // testQuery
 
 
