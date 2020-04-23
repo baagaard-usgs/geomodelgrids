@@ -30,7 +30,7 @@ RUN apt-get update \
 	vim-runtime \
 	vim-nox
     
-COPY certs/ /usr/local/share/ca-certificates
+COPY docker/certs/ /usr/local/share/ca-certificates
 RUN update-ca-certificates
 
 ENV PYTHON_VERSION 3
@@ -74,7 +74,6 @@ RUN curl -O https://download.osgeo.org/proj/proj-6.3.1.tar.gz \
 WORKDIR $BUILD_DIR/proj-build
 RUN ../proj-${PROJ_VER}/configure --prefix=$DEPS_DIR SQLITE3_CFLAGS=-I/usr/include SQLITE3_LIBS="-L/usr/lib -lsqlite3" \
   && make -j$(nproc) && make install
-
 
 
 # ----------------------------------------
