@@ -29,15 +29,25 @@ EXTRA_DIST = \
 	docker/geomodelgrids-testenv
 
 
-coverage-libsrc:
-	lcov --directory libsrc --capture --output-file coverage.info
-	lcov --remove coverage.info '/usr/*' '/Library/*' "v1" "*/utils/TestDriver.*" -o coverage.info
-	lcov --list coverage.info
+.PHONY: coverage-libtests coverage-html clean-coverage
 
-coverage-html: coverage-libsrc
-	genhtml -o coverage coverage.info
+if ENABLE_TEST_COVERAGE
+coverage-libtests:
+	$(LCOV) --directory libsrc --capture --output-file coverage-libtests.info
+	$(LCOV) --remove coverage-libtests.info '/usr/*' '/Library/*' "v1" "*/utils/TestDriver.*" -o coverage-libtests.info
+	$(LCOV) --list coverage-libtests.info
 
-coverage-clean:
+coverage-html: coverage-libtests coverage-pytests
+	genhtml -o coverage-libtests coverage-libtests.info
+
+clean-coverage:
 	$(RM) `find . -name "*.gcda"`
+	$(RM) `find . -name ".coverage"`
+
+else
+coverage-libtests coverage-pytests coverage-html clean-coverage:
+	$(warning Test coverage not enabled. Ignoring test coverage targets)
+endif
+
 
 # End of file

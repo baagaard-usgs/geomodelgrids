@@ -1,19 +1,45 @@
 # Travis-CI configuration
 
-sudo: true
 services:
     - docker
 
 language: cpp
 
 # :TODO: @brad Add osx build (need homebrew packages)..
-matrix:
+jobs:
   include:
-    - os: linux
-      env: BASE_IMAGE=baagaard/geomodelgrids-testenv-debian-stable-gcc8
-    - os: linux
-      env: BASE_IMAGE=baagaard/geomodelgrids-testenv-debian-testing-gcc9
+    - name: debian-stable-gcc8
+      os: linux
+      env: BASE_IMAGE=baagaard/geomodelgrids-testenv-debian-stable-gcc8 TEST_COVERAGE=yes PYTHON_COVERAGE=python3-coverage
+    - name: debian-testing-gcc9
+      os: linux
+      env: BASE_IMAGE=baagaard/geomodelgrids-testenv-debian-testing-gcc9 TEST_COVERAGE=yes PYTHON_COVERAGE=python3-coverage
+    - name: ubuntu-18.04
+      os: linux
+      env: BASE_IMAGE=baagaard/geomodelgrids-testenv-ubuntu-18.04 TEST_COVERAGE=yes PYTHON_COVERAGE=python3-coverage
+    - name: ubuntu-19.04
+      os: linux
+      env: BASE_IMAGE=baagaard/geomodelgrids-testenv-ubuntu-19.10 TEST_COVERAGE=yes PYTHON_COVERAGE=python3-coverage
+    - name: ubuntu-20.04
+      os: linux
+      env: BASE_IMAGE=baagaard/geomodelgrids-testenv-ubuntu-20.04 TEST_COVERAGE=yes PYTHON_COVERAGE=python3-coverage
+    - name: fedora-30
+      os: linux
+      env: BASE_IMAGE=baagaard/geomodelgrids-testenv-fedora-30 TEST_COVERAGE=yes PYTHON_COVERAGE=coverage3
+    - name: fedora-31
+      os: linux
+      env: BASE_IMAGE=baagaard/geomodelgrids-testenv-fedora-31 TEST_COVERAGE=yes PYTHON_COVERAGE=coverage3
+    - name: fedora:32
+      os: linux
+      env: BASE_IMAGE=baagaard/geomodelgrids-testenv-fedora-32 TEST_COVERAGE=yes PYTHON_COVERAGE=coverage3
+    - name: centos-8
+      os: linux
+      env: BASE_IMAGE=baagaard/geomodelgrids-testenv-centos-8
 
+# Permissions problem with BUILD_DIR.
+#    - name: fedora-33
+#      os: linux
+#      env: BASE_IMAGE=baagaard/geomodelgrids-testenv-fedora-33 TEST_COVERAGE=yes PYTHON_COVERAGE=coverage3
 
 addons:
   apt:
@@ -27,9 +53,9 @@ git:
 
 
 install:
-  - docker build -t geomodelgrids-testenv --build-arg BASE_IMAGE=$BASE_IMAGE --target src -f docker/geomodelgrids-testenv .
+  - docker build -t geomodelgrids-testenv --build-arg BASE_IMAGE=$BASE_IMAGE --build-arg TEST_COVERAGE=$TEST_COVERAGE --build-arg PYTHON_COVERAGE=$PYTHON_COVERAGE --target src -f docker/geomodelgrids-testenv .
 
 
 script:
   - ci_env=`bash <(curl -s https://codecov.io/env)`
-  - docker run $ci_env geomodelgrids-testenv /bin/bash -c "make -j$(nproc) install && make -j$(nproc) check VERBOSE=1 && make coverage-libsrc && cd ../src && bash <(curl -s https://codecov.io/bash) -X gcov -f ../build/coverage.info -F libsrc -y ci-config/codecov.yml"
+  - docker run $ci_env geomodelgrids-testenv ../src/ci-config/run_test_coverage.sh

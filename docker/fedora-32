@@ -1,0 +1,87 @@
+FROM fedora:32 as os-update
+LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
+
+RUN dnf install -y \
+    gcc \
+    gcc-c++ \
+    make \
+    file \
+    automake \
+    autoconf \
+    libtool \
+    curl \
+    python3 \
+    python3-devel \
+    python3-libs \
+    python3-numpy \
+    python3-setuptools \
+    python3-six \
+    python3-coverage \
+    python3-Cython \
+    zlib \
+    zlib-devel \
+    openssl \
+    openssl-libs \
+    unzip \
+    git \
+    ca-certificates \
+    cppunit \
+    cppunit-devel \
+    hdf5 \
+    hdf5-devel \
+    python3-h5py \
+    sqlite \
+    sqlite-libs \
+    sqlite-devel \
+    proj \
+    proj-devel \
+    proj-datumgrid \
+    lcov \
+    valgrind \
+    vim \
+    vim-common
+
+
+COPY docker/certs/ /usr/share/pki/ca-trust-source/anchors
+RUN update-ca-trust enable
+
+
+ENV PYTHON_VERSION 3
+ENV HDF5_INCDIR /usr/include
+ENV HDF5_LIBDIR /usr/lib64
+
+# ----------------------------------------
+from os-update as build-deps
+
+# Install dependencies to /opt/geomodelgrids/dependencies
+# Build dependencies in /home/installer/src
+
+# Create 'geomodelgrids-user' user
+ENV GEOMODELGRIDS_USER geomodelgrids-user
+RUN useradd --create-home --shell /bin/bash $GEOMODELGRIDS_USER
+
+ENV PREFIX_DIR /opt/geomodelgrids
+WORKDIR $PREFIX_DIR
+RUN chown -R $GEOMODELGRIDS_USER $PREFIX_DIR \
+  && chgrp -R $GEOMODELGRIDS_USER $PREFIX_DIR
+
+ENV BUILD_DIR /home/installer
+WORKDIR $BUILD_DIR
+RUN chown $GEOMODELGRIDS_USER $BUILD_DIR \
+  && chgrp $GEOMODELGRIDS_USER $BUILD_DIR
+
+USER $GEOMODELGRIDS_USER
+
+# ----------------------------------------
+from build-deps as clean
+
+USER root
+RUN rm -fr $BUILD_DIR && unset BUILD_DIR
+RUN dnf clean all
+
+# Setup user and environment
+USER $GEOMODELGRIDS_USER
+WORKDIR /home/$GEOMODELGRIDS_USER
+
+
+CMD /bin/bash

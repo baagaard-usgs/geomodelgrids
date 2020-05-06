@@ -9,7 +9,7 @@ check_PROGRAMS = test_apps
 test_apps_SOURCES = \
 	TestInfo.cc \
 	TestQuery.cc \
-	$(top_srcdir)/tests/data/ModelPoints.cc \
+	../../data/ModelPoints.cc \
 	test_driver.cc
 
 noinst_HEADERS =
