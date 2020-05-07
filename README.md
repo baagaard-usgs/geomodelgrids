@@ -1,6 +1,7 @@
 # GeoModelGrids
 
 [![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/baagaard-usgs/geomodelgrids/blob/master/LICENSE)
+[![Build Status](https://travis-ci.org/baagaard-usgs/geomodelgrids.svg?branch=master)](https://travis-ci.org/baagaard-usgs/geomodelgrids)
 [![codecov](https://codecov.io/gh/baagaard-usgs/geomodelgrids/branch/master/graph/badge.svg)](https://codecov.io/gh/baagaard-usgs/geomodelgrids)
 
 

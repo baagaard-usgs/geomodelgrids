@@ -1,0 +1,143 @@
+FROM centos:8 as os-update
+LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
+
+RUN dnf install -y \
+        gcc \
+	gcc-c++ \
+	make \
+        file \
+        automake \
+        autoconf \
+        libtool \
+        curl \
+	openssl \
+	openssl-devel \
+        zlib-devel \
+	unzip \
+        git \
+	ca-certificates \
+	python3 \
+	python3-devel \
+	python3-six \
+	python3-numpy \
+	python3-setuptools \
+	sqlite \
+	sqlite-devel \
+	valgrind \
+	vim-common \
+	vim-minimal
+    
+
+COPY docker/certs/ /usr/share/pki/ca-trust-source/anchors
+RUN update-ca-trust enable
+
+ENV PYTHON_VERSION 3.6
+
+# ------------------------------------------------------------------------------
+from os-update as build-deps
+# ------------------------------------------------------------------------------
+# Install dependencies to /opt/geomodelgrids/dependencies
+# Build dependencies in /home/installer
+
+# Create 'geomodelgrids-user' user
+ENV GEOMODELGRIDS_USER geomodelgrids-user
+RUN useradd --create-home --shell /bin/bash $GEOMODELGRIDS_USER
+
+ENV PREFIX_DIR /opt/geomodelgrids
+ENV DEPS_DIR ${PREFIX_DIR}/dependencies
+WORKDIR $DEPS_DIR
+RUN mkdir -p $DEPS_DIR/lib/python$PYTHON_VERSION/site-packages \
+  && mkdir -p $DEPS_DIR/lib64/python$PYTHON_VERSION/site-packages \
+  && chown -R $GEOMODELGRIDS_USER $PREFIX_DIR \
+  && chgrp -R $GEOMODELGRIDS_USER $PREFIX_DIR
+  
+ENV BUILD_DIR /home/installer
+WORKDIR $BUILD_DIR
+RUN chown $GEOMODELGRIDS_USER $BUILD_DIR \
+  && chgrp $GEOMODELGRIDS_USER $BUILD_DIR
+
+USER $GEOMODELGRIDS_USER
+ENV PATH $PATH:$DEPS_DIR/bin
+ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$DEPS_DIR/lib:$DEPS_DIR/lib64
+ENV PYTHONPATH $PYTHONPATH:$DEPS_DIR/lib/python$PYTHON_VERSION/site-packages:$DEPS_DIR/lib64/python$PYTHON_VERSION/site-packages
+
+# ------------------------------------------------------------------------------
+# CPPUNIT
+# ------------------------------------------------------------------------------
+WORKDIR $BUILD_DIR
+ENV CPPUNIT_VER 1.15.1
+RUN curl -O https://dev-www.libreoffice.org/src/cppunit-1.15.1.tar.gz \
+    && tar -xf cppunit-${CPPUNIT_VER}.tar.gz \
+    && mkdir $BUILD_DIR/cppunit-build
+
+WORKDIR $BUILD_DIR/cppunit-build
+RUN ../cppunit-${CPPUNIT_VER}/configure --prefix=$DEPS_DIR \
+  && make -j$(nproc) && make install
+
+# ------------------------------------------------------------------------------
+# HDF5
+# ------------------------------------------------------------------------------
+ENV HDF5_INCDIR ${DEPS_DIR}/include
+ENV HDF5_LIBDIR ${DEPS_DIR}/lib
+WORKDIR $BUILD_DIR
+ENV HDF5_VER 1.10.6
+RUN curl -O https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.10/hdf5-1.10.6/src/hdf5-1.10.6.tar.gz \
+    && tar -xf hdf5-${HDF5_VER}.tar.gz \
+    && mkdir $BUILD_DIR/hdf5-build
+
+WORKDIR $BUILD_DIR/hdf5-build
+RUN ../hdf5-${HDF5_VER}/configure --prefix=$DEPS_DIR --enable-shared --disable-static \
+  && make -j$(nproc) && make install
+
+# ------------------------------------------------------------------------------
+# proj
+# ------------------------------------------------------------------------------
+WORKDIR $BUILD_DIR
+ENV PROJ_VER 6.3.1
+RUN curl -O https://download.osgeo.org/proj/proj-6.3.1.tar.gz \
+    && curl -O https://download.osgeo.org/proj/proj-datumgrid-1.8.zip \
+    && tar -xf proj-${PROJ_VER}.tar.gz \
+    && unzip -o ${BUILD_DIR}/proj-datumgrid-1.8.zip -d ${BUILD_DIR}/proj-${PROJ_VER}/data/ \
+    && mkdir $BUILD_DIR/proj-build
+
+WORKDIR $BUILD_DIR/proj-build
+RUN ../proj-${PROJ_VER}/configure --prefix=$DEPS_DIR SQLITE3_CFLAGS=-I/usr/include SQLITE3_LIBS="-L/usr/lib -lsqlite3" \
+  && make -j$(nproc) && make install
+
+# ------------------------------------------------------------------------------
+# Cython
+# ------------------------------------------------------------------------------
+WORKDIR $BUILD_DIR
+ENV CYTHON_VER 0.29.17
+RUN curl -O https://files.pythonhosted.org/packages/99/36/a3dc962cc6d08749aa4b9d85af08b6e354d09c5468a3e0edc610f44c856b/Cython-0.29.17.tar.gz \
+    && tar -xf Cython-${CYTHON_VER}.tar.gz \
+    && cd Cython-${CYTHON_VER} \
+    && python3 setup.py install --prefix=$DEPS_DIR
+
+# ------------------------------------------------------------------------------
+# h5py
+# ------------------------------------------------------------------------------
+WORKDIR $BUILD_DIR
+ENV H5PY_VER 2.10.0
+RUN curl -O https://files.pythonhosted.org/packages/5f/97/a58afbcf40e8abecededd9512978b4e4915374e5b80049af082f49cebe9a/h5py-2.10.0.tar.gz \
+    && tar -xf h5py-${H5PY_VER}.tar.gz \
+    && cd h5py-${H5PY_VER} \
+    && python3 setup.py configure --hdf5=${DEPS_DIR} \
+    && python3 setup.py build \
+    && python3 setup.py install --prefix=${DEPS_DIR}
+
+
+# ------------------------------------------------------------------------------
+from build-deps as clean
+# ------------------------------------------------------------------------------
+
+USER root
+RUN rm -fr $BUILD_DIR && unset BUILD_DIR
+RUN dnf clean all
+
+# Setup user and environment
+USER $GEOMODELGRIDS_USER
+WORKDIR /home/$GEOMODELGRIDS_USER
+
+
+CMD /bin/bash

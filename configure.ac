@@ -25,11 +25,24 @@ AC_ARG_ENABLE([testing],
 	[if test "$enableval" = yes ; then enable_testing=yes; else enable_testing=no; fi],
 	[enable_testing=no])
 
+# TEST COVERAGE w/locv and python-coverage
+AC_ARG_ENABLE([test-coverage],
+	[  --enable-test-coverage  Enable test coverage with lcov and python-coverage [[default=no]]],
+	[if test "$enableval" = yes ; then enable_test_coverage=yes; else enable_test_coverage=no; fi],
+	[enable_test_coverage=no])
+AC_ARG_WITH([python-coverage],
+    [AC_HELP_STRING([--with-python-coverage],
+        [set executable for python-coverage @<:@default=coverage2@:>@])],
+	[python_coverage=$withval],
+	[python_coverage="coverage2"])
+AC_SUBST(python_coverage)
+
 # SPATIAL w/spatialdata extension
 AC_ARG_ENABLE([spatial],
 	[  --enable-spatial        Enable use of spatialdata package (requires spatialdata) [[default=no]]],
 	[enable_spatial=yes],
 	[enable_spatial=no])
+
 
 # ----------------------------------------------------------------------
 # Dependency locations
@@ -181,6 +194,19 @@ if test "$enable_spatial" = "yes" ; then
   CIT_NUMPY_INCDIR
   AC_PROG_SWIG([2.0.4], [3.0.2])
 
+fi
+
+# TEST COVERAGE
+AM_CONDITIONAL([ENABLE_TEST_COVERAGE], [test "$enable_test_coverage" = yes])
+if test "$enable_test_coverage" = "yes" ; then
+  AC_PATH_PROG(LCOV, lcov)
+  if test -z "$LCOV"; then
+    AC_MSG_FAILURE([cannot find 'lcov' program for C++ test coverage.])
+  fi
+  AC_PATH_PROG(PYTHON_COVERAGE, $python_coverage)
+  if test -z "$PYTHON_COVERAGE"; then
+    AC_MSG_FAILURE([cannot find '$python_coverage' program for Python test coverage.])
+  fi
 fi
 
 # VERSION
