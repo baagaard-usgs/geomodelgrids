@@ -25,6 +25,19 @@ test_apps_LDADD = \
 	-lhdf5 \
 	-lproj
 
+noinst_tmp = \
+		error.log \
+		one-block-flat.in \
+		one-block-flat.out \
+		two-blocks-topo.in \
+		two-blocks-topo.out \
+		three-blocks-topo.in \
+		three-blocks-topo.out \
+		two-models.in \
+		two-models.out
+
+
+CLEANFILES = $(noinst_tmp)
 
 
 # End of file

@@ -3,6 +3,7 @@
 #include "Query.hh" // implementation of class methods
 
 #include "geomodelgrids/serial/Query.hh" // USES Query
+#include "geomodelgrids/utils/ErrorHandler.hh" // USES ErrorHandler
 
 #include <getopt.h> // USES getopt_long()
 #include <iomanip>
@@ -17,6 +18,7 @@ geomodelgrids::apps::Query::Query() :
     _pointsFilename(""),
     _pointsCRS("EPSG:4326"),
     _outputFilename(""),
+    _logFilename(""),
     _squashMinElev(0.0),
     _squash(false),
     _showHelp(false) {}
@@ -40,6 +42,11 @@ geomodelgrids::apps::Query::run(int argc,
     } // if
 
     geomodelgrids::serial::Query query;
+    if (!_logFilename.empty()) {
+        geomodelgrids::utils::ErrorHandler& errorHandler = query.getErrorHandler();
+        errorHandler.setLogFilename(_logFilename.c_str());
+        errorHandler.setLoggingOn(true);
+    } // if
     query.initialize(_modelFilenames, _valueNames, _pointsCRS);
     if (_squash) {
         query.setSquashMinElev(_squashMinElev);
@@ -76,20 +83,21 @@ geomodelgrids::apps::Query::run(int argc,
 void
 geomodelgrids::apps::Query::_parseArgs(int argc,
                                        char* argv[]) {
-    static struct option options[8] = {
+    static struct option options[9] = {
         {"help", no_argument, NULL, 'h'},
         {"values", required_argument, NULL, 'v'},
         {"squash-min-elev", required_argument, NULL, 's'},
         {"points", required_argument, NULL, 'p'},
         {"points-coordsys", required_argument, NULL, 'c'},
         {"output", required_argument, NULL, 'o'},
+        {"log", required_argument, NULL, 'l'},
         {"models", required_argument, NULL, 'm'},
         {0, 0, 0, 0}
     };
 
     while (true) {
         // extern char* optarg;
-        const char c = getopt_long(argc, argv, "hv:s:p:c:o:m:", options, NULL);
+        const char c = getopt_long(argc, argv, "hv:s:p:c:o:l:m:", options, NULL);
         if (-1 == c) { break; }
         switch (c) {
         case 'h':
@@ -121,6 +129,10 @@ geomodelgrids::apps::Query::_parseArgs(int argc,
             _outputFilename = optarg;
             break;
         } // 'o'
+        case 'l': {
+            _logFilename = optarg;
+            break;
+        } // 'l'
         case 'm': {
             _modelFilenames.clear();
             std::istringstream tokenStream(optarg);
@@ -170,7 +182,7 @@ void
 geomodelgrids::apps::Query::_printHelp(void) {
     std::cout << "Usage: geogrids_query "
               << "[--help] [--values=VALUE_0,...,VALUE_N] [--squash-min-elev=ELEV] --models=FILE_0,...,FILE_M "
-              << "--points=FILE_POINTS [--points-coordsys=PROJ|EPSG|WKT] --output=FILE_OUTPUT\n\n"
+              << "--points=FILE_POINTS [--points-coordsys=PROJ|EPSG|WKT] [--log=FILE_LOG] --output=FILE_OUTPUT\n\n"
               << "    --help                           Print help information to stdout and exit.\n"
               << "    --values=VALUE_0,...,VALUE_N     Values to return in query.\n"
               << "    --squash-min-elev=ELEV           Vertical coordinates is interpreted as -depth instead of "
@@ -178,6 +190,7 @@ geomodelgrids::apps::Query::_printHelp(void) {
               << "    --models=FILE_0,...,FILE_M       Models to query (in order).\n"
               << "    --points=FILE_POINTS             Read input points from FILE_POINTS.\n"
               << "    --points-coordsys=PROJ|EPSG|WKT  Coordinate system of intput points (default=EPSG:4326).\n"
+              << "    --log=FILE_LOG                   Write logging information to FILE_LOG."
               << "    --output=FILE_OUTPUT             Write values to FILE_OUTPUT."
               << std::endl;
 } // _printHelp

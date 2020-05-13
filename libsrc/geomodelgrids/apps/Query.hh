@@ -29,6 +29,7 @@ public:
      *   --models=FILE_0,...,FILE_M
      *   --points=FILE_POINTS
      *   --output=FILE_OUTPUT
+     *   --log=FILE_LOG
      *   --points-coordsys=PROJ|EPSG|WKT
      *
      * @param argc[in] Number of arguments passed.
@@ -61,6 +62,7 @@ private:
     std::string _pointsFilename;
     std::string _pointsCRS;
     std::string _outputFilename;
+    std::string _logFilename;
     double _squashMinElev;
     bool _squash;
     bool _showHelp;
