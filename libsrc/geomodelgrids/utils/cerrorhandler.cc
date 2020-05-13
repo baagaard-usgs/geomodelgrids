@@ -35,11 +35,11 @@ geomodelgrids_cerrorhandler_getLogFilename(void* handle) {
 // Turn logging on/off.
 void
 geomodelgrids_cerrorhandler_setLoggingOn(void* handle,
-                                         const bool value) {
+                                         const int value) {
     if (!handle) { return; }
 
     geomodelgrids::utils::ErrorHandler* errorHandler = (geomodelgrids::utils::ErrorHandler*) handle;
-    errorHandler->setLoggingOn(value);
+    errorHandler->setLoggingOn(bool(value));
 } // setLoggingOn
 
 
@@ -56,12 +56,12 @@ geomodelgrids_cerrorhandler_resetStatus(void* handle) {
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get status.
-GeomodelgridsStatusEnum
+enum GeomodelgridsStatusEnum
 geomodelgrids_cerrorhandler_getStatus(void* handle) {
     if (!handle) { return GEOMODELGRIDS_OK; }
 
     geomodelgrids::utils::ErrorHandler* errorHandler = (geomodelgrids::utils::ErrorHandler*) handle;
-    GeomodelgridsStatusEnum status = GEOMODELGRIDS_OK;
+    enum GeomodelgridsStatusEnum status = GEOMODELGRIDS_OK;
     switch (errorHandler->getStatus()) {
     case geomodelgrids::utils::ErrorHandler::OK:
         status = GEOMODELGRIDS_OK;

@@ -3,7 +3,8 @@ ACLOCAL_AMFLAGS = -I m4
 SUBDIRS = \
 	libsrc \
 	geomodelgrids \
-	bin
+	bin \
+	examples
 
 if ENABLE_TESTING
   SUBDIRS += tests

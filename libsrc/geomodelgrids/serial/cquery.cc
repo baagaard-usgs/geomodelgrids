@@ -109,7 +109,7 @@ geomodelgrids_squery_setSquashMinElev(void* handle,
 // Turn squashing on/off.
 int
 geomodelgrids_squery_setSquashing(void* handle,
-                                  const bool value) {
+                                  const int value) {
     geomodelgrids::serial::Query* query = (geomodelgrids::serial::Query*) handle;
     if (!handle) {
         std::cerr << "NULL handle for query object in call to geomodelgrids_squery_setSquashing().";
@@ -117,7 +117,7 @@ geomodelgrids_squery_setSquashing(void* handle,
     } // if
 
     assert(query);
-    query->setSquashing(value);
+    query->setSquashing(bool(value));
 
     return query->getErrorHandler().getStatus();
 } // setSquashing
