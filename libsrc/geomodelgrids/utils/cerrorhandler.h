@@ -37,7 +37,7 @@ const char* const geomodelgrids_cerrorhandler_getLogFilename(void* handle);
  * @param value True to turn on logging, false to turn logging off
  */
 void geomodelgrids_cerrorhandler_setLoggingOn(void* handle,
-                                              const bool value);
+                                              const int value);
 
 /** Reset error status and clear any error message.
  *
@@ -51,7 +51,7 @@ void geomodelgrids_cerrorhandler_resetStatus(void* handle);
  *
  * @returns Status of errors
  */
-GeomodelgridsStatusEnum geomodelgrids_cerrorhandler_getStatus(void* handle);
+enum GeomodelgridsStatusEnum geomodelgrids_cerrorhandler_getStatus(void* handle);
 
 /** Get warning/error message.
  *

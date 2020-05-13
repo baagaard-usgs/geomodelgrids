@@ -3,6 +3,8 @@
 #if !defined(geomodelgrids_serial_cquery_h)
 #define geomodelgrids_serial_cquery_h
 
+#define GEOMODELGRIDS_NODATA_VALUE -1.0e+20
+
 /** Create query object.
  *
  * @returns Pointer to Query object (NULL on failure).
@@ -57,7 +59,7 @@ int geomodelgrids_squery_setSquashMinElev(void* handle,
  * @param[in] value True if squashing is on, false otherwise.
  */
 int geomodelgrids_squery_setSquashing(void* handle,
-                                      const bool value);
+                                      const int value);
 
 /** Query for elevation of ground surface at point.
  *

@@ -1,0 +1,10 @@
+bin_PROGRAMS = \
+	query
+
+AM_CPPFLAGS = -I$(top_srcdir)/libsrc
+
+query_SOURCES = query.c
+query_LDADD = $(top_builddir)/libsrc/geomodelgrids/libgeomodelgrids.la
+
+
+# End of file 
