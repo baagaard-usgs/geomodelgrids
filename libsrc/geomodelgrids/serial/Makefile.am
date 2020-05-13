@@ -6,6 +6,7 @@ subpkginclude_HEADERS = \
 	Model.hh \
 	Query.hh \
 	HDF5.hh \
+	cquery.h \
 	serialfwd.hh
 
 noinst_HEADERS =

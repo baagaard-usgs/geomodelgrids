@@ -14,6 +14,7 @@ test_serial_SOURCES = \
 	TestTopography.cc \
 	TestModel.cc \
 	TestQuery.cc \
+	TestCQuery.cc \
 	../../data/ModelPoints.cc \
 	test_driver.cc
 

@@ -37,7 +37,7 @@ coverage-libtests:
 	$(LCOV) --remove coverage-libtests.info '/usr/*' '/Library/*' "v1" "*/utils/TestDriver.*" -o coverage-libtests.info
 	$(LCOV) --list coverage-libtests.info
 
-coverage-html: coverage-libtests coverage-pytests
+coverage-html: coverage-libtests
 	genhtml -o coverage-libtests coverage-libtests.info
 
 clean-coverage:
