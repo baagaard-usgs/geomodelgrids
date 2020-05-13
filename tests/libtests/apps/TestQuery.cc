@@ -221,7 +221,7 @@ geomodelgrids::apps::TestQuery::testParseArgsMinimal(void) {
 // Test _parseArgs() with all arguments.
 void
 geomodelgrids::apps::TestQuery::testParseArgsAll(void) {
-    const int nargs = 7;
+    const int nargs = 8;
     const char* const args[nargs] = {
         "test",
         "--models=A",
@@ -230,6 +230,7 @@ geomodelgrids::apps::TestQuery::testParseArgsAll(void) {
         "--points-coordsys=EPSG:26910",
         "--squash-min-elev=-2.0e+3",
         "--values=one,two,three",
+        "--log=error.log",
     };
     const size_t numValues = 3;
     const char* const valueNamesE[numValues] = { "one", "two", "three" };
@@ -246,6 +247,7 @@ geomodelgrids::apps::TestQuery::testParseArgsAll(void) {
     for (size_t i = 0; i < numValues; ++i) {
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in value name.", std::string(valueNamesE[i]), query._valueNames[i]);
     } // for
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in log.", std::string("error.log"), query._logFilename);
     CPPUNIT_ASSERT_MESSAGE("Mismatch in help.", !query._showHelp);
 } // testParseArgsAll
 
@@ -261,7 +263,7 @@ geomodelgrids::apps::TestQuery::testPrintHelp(void) {
     Query query;
     query._printHelp();
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(768), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(860), coutHelp.str().length());
 } // testPrintHelp
 
 
@@ -282,7 +284,7 @@ geomodelgrids::apps::TestQuery::testRunHelp(void) {
     query.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(768), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(860), coutHelp.str().length());
 } // testRunHelp
 
 
@@ -290,7 +292,7 @@ geomodelgrids::apps::TestQuery::testRunHelp(void) {
 // Test run() with one-block-flat.
 void
 geomodelgrids::apps::TestQuery::testRunOneBlockFlat(void) {
-    const int nargs = 6;
+    const int nargs = 7;
     const char* const args[nargs] = {
         "test",
         "--models=../../data/one-block-flat.h5",
@@ -298,6 +300,7 @@ geomodelgrids::apps::TestQuery::testRunOneBlockFlat(void) {
         "--output=one-block-flat.out",
         "--points-coordsys=EPSG:4326",
         "--values=two,one",
+        "--log=error.log",
     };
     geomodelgrids::testdata::OneBlockFlatPoints pointsOne;
     std::ofstream sout("one-block-flat.in");CPPUNIT_ASSERT(sout.is_open() && sout.good());
@@ -310,6 +313,8 @@ geomodelgrids::apps::TestQuery::testRunOneBlockFlat(void) {
     std::ifstream sin("one-block-flat.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
     _TestQuery::checkQuery(sin, pointsOne);
     sin.close();
+
+    std::ifstream slog("error.log");CPPUNIT_ASSERT(slog.is_open() && slog.good());
 } // testRunOneBlockFlat
 
 
