@@ -3,6 +3,7 @@ include $(top_srcdir)/subpackage.am
 
 subpkginclude_HEADERS = \
 	CRSTransformer.hh \
+	ErrorHandler.hh \
 	constants.hh \
 	utilsfwd.hh
 
