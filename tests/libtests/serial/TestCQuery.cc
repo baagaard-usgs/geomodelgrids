@@ -81,11 +81,15 @@ geomodelgrids::serial::TestCQuery::testCreateDestroy(void) {
 void
 geomodelgrids::serial::TestCQuery::testAccessors(void) {
     void* handle = geomodelgrids_squery_create();CPPUNIT_ASSERT(handle);
+    geomodelgrids::serial::Query* query = (geomodelgrids::serial::Query*) handle;CPPUNIT_ASSERT(query);
+
+    void* errorHandler = geomodelgrids_squery_getErrorHandler(handle);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in error handler.", (geomodelgrids::utils::ErrorHandler*)errorHandler,
+                                 query->_errorHandler);
 
     const double minElev(-2.0e+3);
     int err = geomodelgrids_squery_setSquashMinElev(handle, minElev);CPPUNIT_ASSERT(!err);
 
-    geomodelgrids::serial::Query* query = (geomodelgrids::serial::Query*) handle;CPPUNIT_ASSERT(query);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in squashing flag.", true, query->_squash);
     CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Mismatch in minimum squashing elevation.", minElev, query->_squashMinElev,
                                          1.0e-6);
