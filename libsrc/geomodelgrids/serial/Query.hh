@@ -4,12 +4,15 @@
 
 #include "serialfwd.hh" // forward declarations
 
+#include "geomodelgrids/utils/utilsfwd.hh" // HOLDSA ErrorHandler
+
 #include <vector> // USES std::vector
 #include <map> // USES std::map
 #include <string> // USES std::string
 
 class geomodelgrids::serial::Query {
     friend class TestQuery; // unit testing
+    friend class TestCQuery; // unit testing
     friend class _Query; // Helper class
 
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
@@ -20,6 +23,12 @@ public:
 
     /// Destructor
     ~Query(void);
+
+    /** Get error handler.
+     *
+     * @returns Error handler.
+     */
+    geomodelgrids::utils::ErrorHandler& getErrorHandler(void);
 
     /** Do setup for querying.
      *
@@ -87,6 +96,7 @@ private:
     std::vector<std::string> _valuesLowercase;
     std::vector<values_map_type> _valuesIndex;
     double _squashMinElev;
+    geomodelgrids::utils::ErrorHandler* _errorHandler;
     bool _squash;
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////

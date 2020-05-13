@@ -6,6 +6,7 @@
 #include "geomodelgrids/serial/ModelInfo.hh" // USES ModelInfo
 #include "geomodelgrids/serial/Block.hh" // USES Block
 #include "geomodelgrids/serial/Topography.hh" // USES Topography
+#include "geomodelgrids/utils/ErrorHandler.hh" // USES ErrorHandler
 #include "geomodelgrids/utils/constants.hh" // USES NODATA_VALUE
 
 #include <getopt.h> // USES getopt_long()
@@ -50,6 +51,7 @@ public:
 // Constructor
 geomodelgrids::serial::Query::Query() :
     _squashMinElev(0.0),
+    _errorHandler(new geomodelgrids::utils::ErrorHandler),
     _squash(false) {}
 
 
@@ -59,7 +61,17 @@ geomodelgrids::serial::Query::~Query(void) {
     for (size_t i = 0; i < _models.size(); ++i) {
         delete _models[i];_models[i] = NULL;
     } // for
+    delete _errorHandler;_errorHandler = NULL;
 } // destructor
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get error handler.
+geomodelgrids::utils::ErrorHandler&
+geomodelgrids::serial::Query::getErrorHandler(void) {
+    assert(_errorHandler);
+    return *_errorHandler;
+} // getErrorHandler
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -112,7 +124,6 @@ double
 geomodelgrids::serial::Query::queryElevation(const double x,
                                              const double y) {
     double elevation = NODATA_VALUE;
-
     for (size_t i = 0; i < _models.size(); ++i) {
         assert(_models[i]);
         const double elevationTmp = _models[i]->queryElevation(x, y);
@@ -137,7 +148,7 @@ geomodelgrids::serial::Query::query(double* const values,
 
     const size_t numQueryValues = _valuesLowercase.size();
     std::fill(values, values+numQueryValues, NODATA_VALUE);
-    int err = 1;
+    bool found = false;
     for (size_t i = 0; i < _models.size(); ++i) {
         assert(_models[i]);
         if (_models[i]->contains(x, y, z)) {
@@ -146,7 +157,7 @@ geomodelgrids::serial::Query::query(double* const values,
                 const double groundElev = _models[i]->queryElevation(x, y);
                 elevationSquash = z + groundElev;
             } // if
-            err = 0;
+            found = true;
 
             const double* modelValues = _models[i]->query(x, y, elevationSquash);
             values_map_type& modelMap = _valuesIndex[i];
@@ -156,7 +167,7 @@ geomodelgrids::serial::Query::query(double* const values,
         } // if
     } // for
 
-    return err;
+    return found ? geomodelgrids::utils::ErrorHandler::OK : geomodelgrids::utils::ErrorHandler::WARNING;
 } // query
 
 
@@ -210,7 +221,7 @@ geomodelgrids::serial::_Query::createModelValuesIndex(const geomodelgrids::seria
             std::ostringstream msg;
             const geomodelgrids::serial::ModelInfo* info = model.getInfo();assert(info);
             msg << "Model '" << info->getTitle() << "' does not contain requested value '"
-                << modelNames[i] << "'. Available values:\n";
+                << queryNamesLower[i] << "'. Available values:\n";
             for (size_t j = 0; j < modelNames.size(); ++j) {
                 msg << "    " << modelNames[j] << "\n";
             } // for
