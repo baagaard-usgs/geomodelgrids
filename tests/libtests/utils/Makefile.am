@@ -22,4 +22,10 @@ test_utils_LDADD = \
 	-lhdf5
 
 
+noinst_tmp = \
+	error.log
+
+
+CLEANFILES = $(noinst_tmp)
+
 # End of file
