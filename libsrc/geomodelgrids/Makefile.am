@@ -18,7 +18,8 @@ libgeomodelgrids_la_SOURCES = \
 	serial/HDF5.cc \
 	serial/Hyperslab.cc \
 	utils/CRSTransformer.cc \
-	utils/ErrorHandler.cc
+	utils/ErrorHandler.cc \
+	utils/cerrorhandler.cc
 
 pkginclude_HEADERS = \
 	geomodelgrids_serial.hh

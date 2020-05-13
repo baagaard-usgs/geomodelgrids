@@ -28,9 +28,24 @@ geomodelgrids_squery_create(void) {
 void
 geomodelgrids_squery_destroy(void** handle) {
     geomodelgrids::serial::Query** query = (geomodelgrids::serial::Query**) handle;
-    assert(query);
-    delete *query;*query = NULL;
+    if (query) {
+        delete *query;*query = NULL;
+    } // if
 } // destroy
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get error handler.
+void*
+geomodelgrids_squery_getErrorHandler(void* handle) {
+    geomodelgrids::serial::Query* query = (geomodelgrids::serial::Query*) handle;
+    geomodelgrids::utils::ErrorHandler* errorHandler = NULL;
+    if (query) {
+        errorHandler = &query->getErrorHandler();
+    } // if
+
+    return errorHandler;
+} // getErrorHandler
 
 
 // ---------------------------------------------------------------------------------------------------------------------

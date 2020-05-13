@@ -15,6 +15,12 @@ void* geomodelgrids_squery_create(void);
  */
 void geomodelgrids_squery_destroy(void** handle);
 
+/** Get error handler.
+ *
+ * @param[in] handle Query object.
+ */
+void* geomodelgrids_squery_getErrorHandler(void* handle);
+
 /** Do setup for querying.
  *
  * @param[inout] handle Handle to query object.

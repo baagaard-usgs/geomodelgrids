@@ -9,6 +9,7 @@ check_PROGRAMS = test_utils
 test_utils_SOURCES = \
 	TestCRSTransformer.cc \
 	TestErrorHandler.cc \
+	TestCErrorHandler.cc \
 	test_driver.cc
 
 noinst_HEADERS =

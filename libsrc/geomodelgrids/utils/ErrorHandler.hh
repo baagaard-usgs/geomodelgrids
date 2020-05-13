@@ -11,6 +11,7 @@
 
 class geomodelgrids::utils::ErrorHandler {
     friend class TestErrorHandler;
+    friend class TestCErrorHandler;
 
 public:
 
