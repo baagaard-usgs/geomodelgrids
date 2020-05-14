@@ -2,9 +2,12 @@ ACLOCAL_AMFLAGS = -I m4
 
 SUBDIRS = \
 	libsrc \
-	geomodelgrids \
 	bin \
 	examples
+
+if ENABLE_PYTHON
+  SUBDIRS += geomodelgrids
+endif
 
 if ENABLE_TESTING
   SUBDIRS += tests

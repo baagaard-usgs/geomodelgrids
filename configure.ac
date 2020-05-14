@@ -13,17 +13,19 @@ AC_CONFIG_MACRO_DIR([m4])
 AM_INIT_AUTOMAKE([foreign subdir-objects tar-pax])
 
 # ----------------------------------------------------------------------
-# Fortran
-AC_ARG_ENABLE([fortran],
-	[  --enable-fortran        Enable building Fortran bindings [[default=no]]],
-	[enable_fortran=yes],
-	[enable_fortran=no])
+# Python
+AC_ARG_ENABLE([python],
+	[  --enable-python        Enable building Python modules [[default=no]]],
+	[if test "$enableval" = yes ; then enable_python=yes; else enable_python=no; fi],
+	[enable_python=no])
+AM_CONDITIONAL([ENABLE_PYTHON], [test "$enable_python" = yes])
 
 # TESTING
 AC_ARG_ENABLE([testing],
 	[  --enable-testing        Enable Python and C++ (requires cppunit) unit testing [[default=no]]],
 	[if test "$enableval" = yes ; then enable_testing=yes; else enable_testing=no; fi],
 	[enable_testing=no])
+AM_CONDITIONAL([ENABLE_TESTING], [test "$enable_testing" = yes])
 
 # TEST COVERAGE w/locv and python-coverage
 AC_ARG_ENABLE([test-coverage],
@@ -132,17 +134,22 @@ CIT_HDF5_LIB
 AC_SUBST(HDF5_INCLUDES)
 AC_SUBST(HDF5_LDFLAGS)
 
-# FORTRAN BINDINGS
-AM_CONDITIONAL([ENABLE_FORTRAN], [test "$enable_fortran" = yes])
-if test "$enable_fortran" = "yes" ; then
-  AC_PROG_FC
-  F77 = FC
-  AC_FC_WRAPPERS
-  AC_FC_LIBRARY_LDFLAGS
+# Python
+if test "$enable_python" = "yes" ; then
+  # PYTHON
+  m4_define_default([_AM_PYTHON_INTERPRETER_LIST],[python3 python3.6 python3.7 python3.8 python2 python2.7])
+  AM_PATH_PYTHON([2.7])
+  CIT_PYTHON_SYSCONFIG
+
+  # NUMPY
+  CIT_NUMPY_PYTHON_MODULE
+  CIT_NUMPY_INCDIR
+
+  # H5PY
+  CIT_PYTHON_MODULE([h5py],[2.0.0])
 fi
 
 # CPPUNIT
-AM_CONDITIONAL([ENABLE_TESTING], [test "$enable_testing" = yes])
 if test "$enable_testing" = "yes" ; then
   # Require C++-11
   AX_CXX_COMPILE_STDCXX(11)
@@ -188,10 +195,10 @@ if test "$enable_spatial" = "yes" ; then
   # PYTHON
   AM_PATH_PYTHON([3.6])
   CIT_PYTHON_SYSCONFIG
-
-  # SWIG
   CIT_NUMPY_PYTHON_MODULE
   CIT_NUMPY_INCDIR
+
+  # SWIG
   AC_PROG_SWIG([2.0.4], [3.0.2])
 
 fi
