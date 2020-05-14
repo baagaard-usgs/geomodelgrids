@@ -27,7 +27,7 @@ ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${HDF5_LIBDIR}:${PREFIX_DIR}/lib:${PREFIX
 ENV PYTHONPATH ${PYTHONPATH}:${PREFIX_DIR}/lib/python${PYTHON_VERSION}/site-packages:${PREFIX_DIR}/lib64/python${PYTHON_VERSION}/site-packages
 
 WORKDIR ${BUILD_DIR}
-RUN ${SRC_DIR}/configure --prefix=${PREFIX_DIR} --enable-testing --enable-test-coverage=${TEST_COVERAGE} --with-python-coverage=${PYTHON_COVERAGE} CPPFLAGS="-I/opt/geomodelgrids/dependencies/include -I${HDF5_INCDIR}" LDFLAGS="-L/opt/geomodelgrids/dependencies/lib -L${HDF5_LIBDIR} --coverage"  CFLAGS="-g -O --coverage" CXXFLAGS="-g -O --coverage"
+RUN ${SRC_DIR}/configure --prefix=${PREFIX_DIR} --enable-python --enable-testing --enable-test-coverage=${TEST_COVERAGE} --with-python-coverage=${PYTHON_COVERAGE} CPPFLAGS="-I/opt/geomodelgrids/dependencies/include -I${HDF5_INCDIR}" LDFLAGS="-L/opt/geomodelgrids/dependencies/lib -L${HDF5_LIBDIR} --coverage"  CFLAGS="-g -O --coverage" CXXFLAGS="-g -O --coverage"
 
 
 # TESTING ----------
