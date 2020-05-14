@@ -32,6 +32,14 @@ public:
      */
     double getResolutionHoriz(void) const;
 
+    /** Set hyperslab size.
+     *
+     * @param[in] dims Dimensions of hyperslab.
+     * @param[in] ndims Number of dimensions.
+     */
+    void setHyperslabDims(const size_t dims[],
+                          const size_t ndims);
+
     /** Prepare for querying.
      *
      * @param[in] h5 HDF5 with model.
@@ -56,6 +64,7 @@ private:
     geomodelgrids::serial::Hyperslab* _hyperslab; ///< Hyperslab of data in model.
     double _resolutionHoriz; ///< Horizontal resolution (m).
     size_t _dims[2]; ///< Number of points along grid in each x and y dimension [x, y].
+    size_t _hyperslabDims[3]; ///< Dimensions of hyperslab.
 
 }; // Topography
 

@@ -17,6 +17,10 @@ geomodelgrids::serial::Topography::Topography(void) :
     _resolutionHoriz(0.0) {
     _dims[0] = 0;
     _dims[1] = 0;
+
+    _hyperslabDims[0] = 128;
+    _hyperslabDims[1] = 128;
+    _hyperslabDims[2] = 1;
 } // constructor
 
 
@@ -52,6 +56,26 @@ double
 geomodelgrids::serial::Topography::getResolutionHoriz(void) const {
     return _resolutionHoriz;
 } // getResolutionHoriz
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set hyperslab size.
+void
+geomodelgrids::serial::Topography::setHyperslabDims(const size_t dims[],
+                                                    const size_t ndimsIn) {
+    const size_t ndims = 2; // 3rd dimension is 1.
+    if (2 != ndimsIn) {
+        std::ostringstream msg;
+        msg << "Expected array of length " << ndims << " for hyperslab dimension, got array of length "
+            << ndimsIn << ".";
+        throw std::length_error(msg.str().c_str());
+    } // if
+    assert(dims);
+
+    for (int i = 0; i < ndims; ++i) {
+        _hyperslabDims[i] = dims[i];
+    } // for
+} // setHyperslabDims
 
 
 // ---------------------------------------------------------------------------------------------------------------------

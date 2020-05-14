@@ -25,6 +25,7 @@ class geomodelgrids::serial::TestBlock : public CppUnit::TestFixture {
 
     CPPUNIT_TEST(testConstructor);
     CPPUNIT_TEST(testAccessors);
+    CPPUNIT_TEST(testSetHyperslabDims);
     CPPUNIT_TEST(testLoadMetadata);
     CPPUNIT_TEST(testQuery);
 
@@ -39,6 +40,9 @@ public:
     /// Test getters.
     void testAccessors(void);
 
+    /// Test setHyperslabDims.
+    void testSetHyperslabDims(void);
+
     /// Test loadMetadata().
     void testLoadMetadata(void);
 
@@ -48,7 +52,7 @@ public:
 }; // class TestBlock
 CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::serial::TestBlock);
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Test constructor.
 void
 geomodelgrids::serial::TestBlock::testConstructor(void) {
@@ -67,7 +71,7 @@ geomodelgrids::serial::TestBlock::testConstructor(void) {
 } // testConstructor
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Test getters.
 void
 geomodelgrids::serial::TestBlock::testAccessors(void) {
@@ -97,7 +101,34 @@ geomodelgrids::serial::TestBlock::testAccessors(void) {
 } // testAccessors
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+// Test setHyperslabDims.
+void
+geomodelgrids::serial::TestBlock::testSetHyperslabDims(void) {
+    const std::string blockName("myblock");
+    Block block(blockName.c_str());
+
+    const size_t ndims = 4;
+    const size_t dimsDefault[ndims] = { 64, 64, 0, 0 };
+    for (size_t i = 0; i < ndims; ++i) {
+        std::ostringstream msg;
+        msg << "Mismath in default hyperslab dim " << i << ".";
+        CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.str().c_str(), dimsDefault[i], block._hyperslabDims[i]);
+    } // for
+
+    const size_t dims[ndims] = { 12, 12, 4, 0 };
+    block.setHyperslabDims(dims, ndims-1);
+    for (size_t i = 0; i < ndims; ++i) {
+        std::ostringstream msg;
+        msg << "Mismath in user hyperslab dim " << i << ".";
+        CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.str().c_str(), dims[i], block._hyperslabDims[i]);
+    } // for
+
+    CPPUNIT_ASSERT_THROW(block.setHyperslabDims(dims, 5), std::length_error);
+} // testSetHyperslabDims
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Test loadMetadata().
 void
 geomodelgrids::serial::TestBlock::testLoadMetadata(void) {
@@ -127,7 +158,7 @@ geomodelgrids::serial::TestBlock::testLoadMetadata(void) {
 } // testLoadMetadata
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Test query().
 void
 geomodelgrids::serial::TestBlock::testQuery(void) {

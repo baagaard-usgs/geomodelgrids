@@ -72,6 +72,14 @@ public:
      */
     size_t getNumValues(void) const;
 
+    /** Set hyperslab size.
+     *
+     * @param[in] dims Dimensions of hyperslab.
+     * @param[in] ndims Number of dimensions.
+     */
+    void setHyperslabDims(const size_t dims[],
+                          const size_t ndims);
+
     /** Prepare for querying.
      *
      * @param[in] h5 HDF5 with model.
@@ -113,6 +121,7 @@ private:
     double* _values;
     size_t _numValues; ///< Number of values stored at each grid point.
     size_t _dims[3]; ///< Number of points along grid in each coordinate dimension [x, y, z].
+    size_t _hyperslabDims[4]; ///< Dimensions of hyperslab.
 
 }; // Block
 

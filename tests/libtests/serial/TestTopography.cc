@@ -25,6 +25,7 @@ class geomodelgrids::serial::TestTopography : public CppUnit::TestFixture {
 
     CPPUNIT_TEST(testConstructor);
     CPPUNIT_TEST(testAccessors);
+    CPPUNIT_TEST(testSetHyperslabDims);
     CPPUNIT_TEST(testLoadMetadata);
     CPPUNIT_TEST(testQuery);
 
@@ -39,6 +40,9 @@ public:
     /// Test getters.
     void testAccessors(void);
 
+    /// Test setHyperslabDims.
+    void testSetHyperslabDims(void);
+
     /// Test loadMetadata().
     void testLoadMetadata(void);
 
@@ -48,7 +52,7 @@ public:
 }; // class TestTopography
 CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::serial::TestTopography);
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Test constructor.
 void
 geomodelgrids::serial::TestTopography::testConstructor(void) {
@@ -60,7 +64,7 @@ geomodelgrids::serial::TestTopography::testConstructor(void) {
 } // testConstructor
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Test getters.
 void
 geomodelgrids::serial::TestTopography::testAccessors(void) {
@@ -75,7 +79,33 @@ geomodelgrids::serial::TestTopography::testAccessors(void) {
 } // testAccessors
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
+// Test setHyperslabDims.
+void
+geomodelgrids::serial::TestTopography::testSetHyperslabDims(void) {
+    Topography topo;
+
+    const size_t ndims = 3;
+    const size_t dimsDefault[ndims] = { 128, 128, 1 };
+    for (size_t i = 0; i < ndims; ++i) {
+        std::ostringstream msg;
+        msg << "Mismath in default hyperslab dim " << i << ".";
+        CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.str().c_str(), dimsDefault[i], topo._hyperslabDims[i]);
+    } // for
+
+    const size_t dims[ndims] = { 12, 12, 1 };
+    topo.setHyperslabDims(dims, ndims-1);
+    for (size_t i = 0; i < ndims; ++i) {
+        std::ostringstream msg;
+        msg << "Mismath in user hyperslab dim " << i << ".";
+        CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.str().c_str(), dims[i], topo._hyperslabDims[i]);
+    } // for
+
+    CPPUNIT_ASSERT_THROW(topo.setHyperslabDims(dims, 5), std::length_error);
+} // testSetHyperslabDims
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Test loadMetadata().
 void
 geomodelgrids::serial::TestTopography::testLoadMetadata(void) {
@@ -95,7 +125,7 @@ geomodelgrids::serial::TestTopography::testLoadMetadata(void) {
 } // testLoadMetadata
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Test query().
 void
 geomodelgrids::serial::TestTopography::testQuery(void) {
