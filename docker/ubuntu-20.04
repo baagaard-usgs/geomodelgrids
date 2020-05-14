@@ -22,6 +22,7 @@ RUN apt-get update \
       ca-certificates \
       libcppunit-dev \
       libhdf5-dev \
+      python3-h5py \
       sqlite3 \
       libsqlite3-0 \
       libsqlite3-dev \
