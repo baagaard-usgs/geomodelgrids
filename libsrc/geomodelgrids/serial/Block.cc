@@ -6,6 +6,7 @@
 #include "geomodelgrids/serial/Hyperslab.hh" // USES Hyperslab
 
 #include <cstring> // USES strlen()
+#include <algorithm> // USES std::max()
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
@@ -23,6 +24,12 @@ geomodelgrids::serial::Block::Block(const char* name) :
     _dims[0] = 0;
     _dims[1] = 0;
     _dims[2] = 0;
+
+    _hyperslabDims[0] = 64;
+    _hyperslabDims[1] = 64;
+    _hyperslabDims[2] = 0;
+    _hyperslabDims[3] = 0;
+
 } // constructor
 
 
@@ -54,6 +61,13 @@ geomodelgrids::serial::Block::loadMetadata(geomodelgrids::serial::HDF5* const h5
     for (int i = 0; i < 3; ++i) {
         _dims[i] = hdims[i];
     } // for
+
+    if (0 == _hyperslabDims[2]) {
+        _hyperslabDims[2] = hdims[2];
+    } // if
+    if (0 == _hyperslabDims[3]) {
+        _hyperslabDims[3] = hdims[3];
+    } // if
 
     _numValues = hdims[3];
     delete[] hdims;hdims = NULL;
@@ -116,17 +130,35 @@ geomodelgrids::serial::Block::getNumValues(void) const {
 } // getNumValues
 
 
-#include <iostream>
+// ---------------------------------------------------------------------------------------------------------------------
+// Set hyperslab size.
+void
+geomodelgrids::serial::Block::setHyperslabDims(const size_t dims[],
+                                               const size_t ndimsIn) {
+    const size_t ndims = 3; // 4th dimension is number of values.
+    if (3 != ndimsIn) {
+        std::ostringstream msg;
+        msg << "Expected array of length " << ndims << " for hyperslab dimension, got array of length "
+            << ndimsIn << ".";
+        throw std::length_error(msg.str().c_str());
+    } // if
+    assert(dims);
+
+    for (int i = 0; i < ndims; ++i) {
+        _hyperslabDims[i] = dims[i];
+    } // for
+} // setHyperslabDims
+
+
 // ---------------------------------------------------------------------------------------------------------------------
 // Prepare for querying.
 void
 geomodelgrids::serial::Block::openQuery(geomodelgrids::serial::HDF5* const h5) {
     const size_t ndims = 4;
     hsize_t dims[ndims];
-    dims[0] = 64;
-    dims[1] = 64;
-    dims[2] = _dims[2];
-    dims[3] = _numValues;
+    for (size_t i = 0; i < ndims; ++i) {
+        dims[i] = _hyperslabDims[i];
+    } // for
     const std::string blockPath(std::string("/blocks/") + _name);
     delete _hyperslab;_hyperslab = new geomodelgrids::serial::Hyperslab(h5, blockPath.c_str(), dims, ndims);
 
