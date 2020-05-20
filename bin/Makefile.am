@@ -2,8 +2,10 @@ bin_PROGRAMS = \
 	geomodelgrids_info \
 	geomodelgrids_query
 
+if ENABLE_PYTHON
 bin_SCRIPTS = \
 	geomodelgrids_rasterize
+endif
 
 AM_CPPFLAGS = -I$(top_srcdir)/libsrc
 
