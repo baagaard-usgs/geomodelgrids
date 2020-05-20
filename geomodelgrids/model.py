@@ -29,7 +29,7 @@ class Block():
                     z_top: Elevation of top of block (m)
                     z_bot: Elevation of bottom of block (m)
                     z_top_offset: Vertical offset of top set of points below top of block (m)
-                    chunk_size: Size of dataset chunk (should be about 10Kb - 1Mb)
+                    chunk_size: Dimensions of dataset chunk (should be about 10Kb - 1Mb)
         """
         self.name = name
         self.resolution_horiz = float(config["resolution_horiz"])
@@ -37,7 +37,7 @@ class Block():
         self.z_top = float(config["z_top"])
         self.z_bot = float(config["z_bot"])
         self.z_top_offset = float(config["z_top_offset"])
-        self.chunk_size = map(int, config["chunk_size"])
+        self.chunk_size = tuple(map(int, string_to_list(config["chunk_size"])))
 
     def get_dims(self, domain):
         """Get number of points in block along each dimension.
@@ -128,12 +128,12 @@ class Topography():
              Keys:
                  use_topography: Model uses topography
                  resolution_horiz: Horizontal resolution in m
-                 chunk_size: Size of dataset chunk (should be about 10Kb - 1Mb)
+                 chunk_size: Dimensions of dataset chunk (should be about 10Kb - 1Mb)
         """
         self.elevation = None
         self.enabled = bool(config["use_topography"])
         self.resolution_horiz = float(config["resolution_horiz"]) if self.enabled else None
-        self.chunk_size = map(int, config["chunk_size"]) if self.enabled else None
+        self.chunk_size = tuple(map(int, string_to_list(config["chunk_size"]))) if self.enabled else None
 
     def set_elevation(self, elev):
         """Set topography values.

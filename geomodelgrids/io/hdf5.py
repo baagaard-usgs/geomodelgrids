@@ -2,6 +2,7 @@
 """
 
 import h5py
+import numpy
 
 
 class HDF5Storage():
@@ -58,7 +59,11 @@ class HDF5Storage():
         h5 = h5py.File(self.filename, "a")
         attrs = h5.attrs
         for attr in self.MODEL_ATTRS:
-            attrs[attr] = getattr(domain, attr)
+            value = getattr(domain, attr)
+            if isinstance(value, list) and isinstance(value[0], str):
+                attrs[attr] = [numpy.string_(v) for v in value]
+            else:
+                attrs[attr] = value
         h5.close()
 
     def save_topography(self, topography):
