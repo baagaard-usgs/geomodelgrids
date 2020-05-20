@@ -20,6 +20,7 @@ RUN apt-get update \
 	unzip \
         git \
 	ca-certificates \
+	hdf5-tools \
 	libhdf5-dev \
         libcppunit-dev \
 	sqlite3 \
@@ -34,7 +35,7 @@ RUN apt-get update \
 COPY docker/certs/ /usr/local/share/ca-certificates
 RUN update-ca-certificates
 
-ENV PYTHON_VERSION 3
+ENV PYTHON_VERSION 3.7
 ENV HDF5_INCDIR /usr/include/hdf5/serial
 ENV HDF5_LIBDIR /usr/lib/x86_64-linux-gnu/hdf5/serial
 

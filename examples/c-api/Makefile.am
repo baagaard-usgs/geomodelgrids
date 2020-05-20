@@ -1,4 +1,4 @@
-bin_PROGRAMS = \
+noinst_PROGRAMS = \
 	query
 
 AM_CPPFLAGS = -I$(top_srcdir)/libsrc
