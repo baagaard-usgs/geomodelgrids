@@ -359,7 +359,7 @@ geomodelgrids::apps::TestInfo::testRunThreeBlocksTopo(void) {
     info.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(1509), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(1546), coutHelp.str().length());
 } // testRunThreeBlocksTopo
 
 

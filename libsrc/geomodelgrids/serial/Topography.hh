@@ -32,6 +32,12 @@ public:
      */
     double getResolutionHoriz(void) const;
 
+    /** Get number of values along each grid dimension.
+     *
+     * @returns Number of points along grid in each dimension [x, y].
+     */
+    const size_t* getDims(void) const;
+
     /** Set hyperslab size.
      *
      * @param[in] dims Dimensions of hyperslab.

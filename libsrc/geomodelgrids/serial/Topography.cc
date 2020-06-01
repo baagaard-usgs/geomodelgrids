@@ -59,6 +59,14 @@ geomodelgrids::serial::Topography::getResolutionHoriz(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Get number of values along each grid dimension.
+const size_t*
+geomodelgrids::serial::Topography::getDims(void) const {
+    return _dims;
+} // getDims
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Set hyperslab size.
 void
 geomodelgrids::serial::Topography::setHyperslabDims(const size_t dims[],
