@@ -53,6 +53,9 @@ class TestData:
         attrs = h5.attrs
         for attr_name, map_fn in self.MODEL_ATTRS:
             attrs[attr_name] = self._hdf5_type(self.model[attr_name], map_fn)
+        # Create fixed-length string attributes
+        attrs["keywords"] = [numpy.string_(v) for v in self.model["keywords"]]
+        attrs["creator_institution"] = numpy.string_(self.model["creator_institution"])
 
         # Topography
         if not self.topography is None:

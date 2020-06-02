@@ -285,18 +285,21 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
         char* buffer = NULL;
         if (0 == H5Tis_variable_str(h5access.datatype)) { // Fixed length strings
             const hsize_t stringLength = H5Tget_size(h5access.datatype);
-            buffer = new char[stringLength];assert(buffer);
-        } // if
+            buffer = new char[stringLength+1];assert(buffer);
+            buffer[stringLength] = '\0';
 
-        herr_t err = H5Aread(h5access.attribute, h5access.datatype, &buffer);
-        if (err < 0) { throw std::runtime_error("Could not read"); }
-        value = buffer;
+            herr_t err = H5Aread(h5access.attribute, h5access.datatype, buffer);
+            if (err < 0) { throw std::runtime_error("Could not read"); }
+            value = buffer;
 
-        if (H5Tis_variable_str(h5access.datatype) > 0) { // Variable length strings
-            herr_t err = H5Dvlen_reclaim(h5access.datatype, h5access.dataspace, H5P_DEFAULT, &buffer);
-            if (err < 0) { throw std::runtime_error("Could not reclaim variable length string for"); }
-        } else {
             delete[] buffer;buffer = NULL;
+        } else {
+            herr_t err = H5Aread(h5access.attribute, h5access.datatype, &buffer);
+            if (err < 0) { throw std::runtime_error("Could not read"); }
+            value = buffer;
+
+            err = H5Dvlen_reclaim(h5access.datatype, h5access.dataspace, H5P_DEFAULT, &buffer);
+            if (err < 0) { throw std::runtime_error("Could not reclaim variable length string for"); }
         } // if/else
 
     } catch (std::exception& err) {
@@ -338,26 +341,39 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
         char** buffer = new char*[numStrings];
         if (0 == H5Tis_variable_str(h5access.datatype)) { // Fixed length strings
             hsize_t stringLength = H5Tget_size(h5access.datatype);
-            for (size_t i = 0; i < numStrings; ++i) {
-                buffer[i] = new char[stringLength];assert(buffer[i]);
+            buffer[0] = new char[numStrings * stringLength];assert(buffer[0]);
+            for (size_t i = 1; i < numStrings; ++i) {
+                buffer[i] = buffer[0] + i*stringLength;
             } // for
-        } // if
 
-        herr_t err = H5Aread(h5access.attribute, h5access.datatype, buffer);
-        if (err < 0) { throw std::runtime_error("Could not read"); }
+            herr_t err = H5Aread(h5access.attribute, h5access.datatype, buffer[0]);
+            if (err < 0) { throw std::runtime_error("Could not read"); }
 
-        values->resize(numStrings);
-        for (size_t i = 0; i < values->size(); ++i) {
-            (*values)[i] = buffer[i];
-        } // for
-        if (0 == H5Tis_variable_str(h5access.datatype)) { // Fixed length strings
-            for (size_t i = 0; i < numStrings; ++i) {
-                delete[] buffer[i];buffer[i] = NULL;
+            values->resize(numStrings);
+            for (size_t i = 0; i < values->size(); ++i) {
+                char* tmp = new char[stringLength+1];
+                for (hsize_t p = 0; p < stringLength; ++p) {
+                    tmp[p] = buffer[i][p];
+                } // for
+                tmp[stringLength] = '\0';
+                (*values)[i] = tmp;
+                delete[] tmp;tmp = NULL;
             } // for
+
+            delete[] buffer[0];buffer[0] = NULL;
         } else {
-            herr_t err = H5Dvlen_reclaim(h5access.datatype, h5access.dataspace, H5P_DEFAULT, buffer);
+            herr_t err = H5Aread(h5access.attribute, h5access.datatype, buffer);
+            if (err < 0) { throw std::runtime_error("Could not read"); }
+
+            values->resize(numStrings);
+            for (size_t i = 0; i < values->size(); ++i) {
+                (*values)[i] = buffer[i];
+            } // for
+
+            err = H5Dvlen_reclaim(h5access.datatype, h5access.dataspace, H5P_DEFAULT, buffer);
             if (err < 0) { throw std::runtime_error("Could not reclaim variable length string for"); }
         } // if/else
+
         delete[] buffer;buffer = NULL;
 
     } catch (std::exception& err) {

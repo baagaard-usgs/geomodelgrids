@@ -71,11 +71,15 @@ geomodelgrids::serial::TestTopography::testAccessors(void) {
     Topography topo;
 
     const double resolutionHoriz(8.0);topo._resolutionHoriz = resolutionHoriz;
-    const size_t dims[2] = { 5, 6 };
-    topo._dims[0] = dims[0];
-    topo._dims[1] = dims[1];
+    const size_t dimsE[2] = { 5, 6 };
+    topo._dims[0] = dimsE[0];
+    topo._dims[1] = dimsE[1];
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking horizontal resolution", resolutionHoriz, topo.getResolutionHoriz());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch horizontal resolution", resolutionHoriz, topo.getResolutionHoriz());
+
+    const size_t* const dims = topo.getDims();
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in x dimension.", dimsE[0], dims[0]);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in y dimension.", dimsE[1], dims[1]);
 } // testAccessors
 
 

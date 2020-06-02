@@ -234,6 +234,8 @@ geomodelgrids::apps::Info::_printBlocks(geomodelgrids::serial::Model* const mode
     std::cout << _Info::indent(1) << "Topography:\n";
     const geomodelgrids::serial::Topography* topography = model->getTopography();
     if (topography) {
+        const size_t* dims = topography->getDims();
+        std::cout << _Info::indent(2) << "Number of points: x=" << dims[0] << ", y=" << dims[1] << "\n";
         std::cout << _Info::indent(2) << "Horizontal resolution (m): " << topography->getResolutionHoriz() << "\n";
     } else {
         std::cout << _Info::indent(2) << "None\n";
