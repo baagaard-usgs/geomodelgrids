@@ -72,15 +72,15 @@ class Block():
         x1 = numpy.linspace(0.0, self.resolution_horiz * (num_x - 1), num_x)
         y1 = numpy.linspace(0.0, self.resolution_horiz * (num_y - 1), num_y)
         z1 = numpy.linspace(0.0, self.resolution_vert * (num_z - 1), num_z)
-        x, y, z = numpy.meshgrid(x1, y1, z1)
+        x, y, z = numpy.meshgrid(x1, y1, z1, indexing="ij")
 
         domain_top = 0.0
         domain_bot = -domain.dim_z
         if domain.topography is not None:
             topo_geo = self.get_block_elevation(domain.topography)
             for iz in range(z.shape[-1]):
-                z[:, :, iz] = domain_bot + (topo_geo - domain_bot) / (domain_top -
-                                                                      domain_bot) * (self.z_top - z[:, :, iz] - domain_bot)
+                z[:, :, iz] = domain_bot + (topo_geo - domain_bot) / \
+                  (domain_top - domain_bot) * (self.z_top - z[:, :, iz] - domain_bot)
 
             # Move top points down
             z[:, :, 0] += self.z_top_offset
@@ -104,7 +104,7 @@ class Block():
                 Model domain.
 
         Returns:
-            3D array (Nx*Ny*Nz,3) of point locations in block.
+            2D array (Nx*Ny*Nz,3) of point locations in block.
         """
         TOLERANCE = 0.01
         num_skip = int(0.01 + self.resolution_horiz / topography.resolution_horiz)
@@ -112,7 +112,7 @@ class Block():
             raise ValueError("Block resolution ({}) must be a integer multiple of the topography resolution ({})".format(
                 self.resolution_horiz, topography.resolution_horiz))
 
-        return topography.elevation[::num_skip, ::num_skip]
+        return topography.elevation[::num_skip, ::num_skip, 0].squeeze()
 
 
 class Topography():
@@ -166,7 +166,7 @@ class Topography():
 
         x1 = numpy.linspace(0.0, dx * (num_x - 1), num_x)
         y1 = numpy.linspace(0.0, dx * (num_y - 1), num_y)
-        x, y = numpy.meshgrid(x1, y1)
+        x, y = numpy.meshgrid(x1, y1, indexing="ij")
         z = numpy.zeros(x.shape)
 
         xyz_geo = numpy.stack((x, y, z), axis=2)
@@ -251,7 +251,7 @@ class Model(ABC):
         """
         self.storage.save_block(block, values)
 
-    # @abstractmethod
+    @abstractmethod
     def query_topography(self, points):
         """Query EarthVision model for elevation of ground surface at points.
 
@@ -260,7 +260,7 @@ class Model(ABC):
                 Numpy array with coordinates of points in model coordinates.
         """
 
-    # @abstractmethod
+    @abstractmethod
     def query_values(self, block):
         """Query EarthVision model for values at points.
 
