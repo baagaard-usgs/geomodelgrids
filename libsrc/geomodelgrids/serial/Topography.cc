@@ -4,6 +4,7 @@
 
 #include "geomodelgrids/serial/HDF5.hh" // USES HDF5
 #include "geomodelgrids/serial/Hyperslab.hh" // USES Hyperslab
+#include "geomodelgrids/utils/constants.hh" // USES NODATA_VALUE
 
 #include <cstring> // USES strlen()
 #include <stdexcept> // USES std::runtime_error
@@ -116,9 +117,9 @@ geomodelgrids::serial::Topography::query(const double x,
     index[0] = x / _resolutionHoriz;
     index[1] = y / _resolutionHoriz;
 
-    double elevation = 0.0;
-    if ((index[0] >= 0) && (index[0] < double(_dims[0]))
-        && (index[1] >= 0) && (index[1] < double(_dims[1]))) {
+    double elevation = geomodelgrids::NODATA_VALUE;
+    if ((index[0] >= 0) && (index[0] <= double(_dims[0]-1))
+        && (index[1] >= 0) && (index[1] <= double(_dims[1]-1))) {
         assert(_hyperslab);
         _hyperslab->interpolate(&elevation, index);
     } // if
