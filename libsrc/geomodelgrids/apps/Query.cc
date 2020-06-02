@@ -57,10 +57,13 @@ geomodelgrids::apps::Query::run(int argc,
     const size_t numQueryValues = _valueNames.size();
     std::vector<double> values(numQueryValues);
     sout << std::scientific << std::setprecision(6);
-    while (!sin.eof() && sin.good()) {
+    while (true) {
         double srcX, srcY, srcZ;
         sin >> srcX >> srcY >> srcZ;
-
+	if (sin.eof() || !sin.good()) {
+	  break;
+	} // if
+	
         query.query(&values[0], srcX, srcY, srcZ);
 
         sout << std::setw(14) << srcX
