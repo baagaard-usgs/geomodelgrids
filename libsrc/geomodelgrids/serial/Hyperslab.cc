@@ -3,6 +3,7 @@
 #include "Hyperslab.hh" // implementation of class methods
 
 #include "geomodelgrids/serial/HDF5.hh" // USES HDF5
+#include "geomodelgrids/utils/constants.hh" // USES NODATA_VALUE
 
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
@@ -274,7 +275,6 @@ geomodelgrids::serial::_Hyperslab::_interpolate2D(double* const values,
 } // interpolate2D
 
 
-#include <iostream>
 // ---------------------------------------------------------------------------------------------------------------------
 void
 geomodelgrids::serial::_Hyperslab::_interpolate3D(double* const values,
@@ -367,13 +367,21 @@ geomodelgrids::serial::_Hyperslab::_interpolate3D(double* const values,
     const hsize_t numValues = _hyperslab._dims[spaceDim];
     for (hsize_t iValue = 0; iValue < numValues; ++iValue) {
         values[iValue] = 0;
+        bool hasNoDataValue = false;
         for (hsize_t iDim = 0; iDim < 2; ++iDim) {
             for (hsize_t jDim = 0; jDim < 2; ++jDim) {
                 for (hsize_t kDim = 0; kDim < 2; ++kDim) {
+                    if (_hyperslab._values[ii[iDim][jDim][kDim] + iValue] == geomodelgrids::NODATA_VALUE) {
+                        hasNoDataValue = true;
+                    } // if
                     values[iValue] += wts[iDim][jDim][kDim] * _hyperslab._values[ii[iDim][jDim][kDim] + iValue];
                 } // for
             } // for
         } // for
+        if (hasNoDataValue) {
+            // Set value to NODATA_VALUE if any values used in interpolation are NODATA_VALUE.
+            values[iValue] = geomodelgrids::NODATA_VALUE;
+        } // if
     } // for
 
 } // _interpolate3D
