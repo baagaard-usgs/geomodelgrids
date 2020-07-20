@@ -1,120 +1,214 @@
-// //
-// // Typography
-// //
-//
-// $body-font-family: -apple-system, BlinkMacSystemFont, "helvetica neue", helvetica, roboto, noto, "segoe ui", arial, sans-serif;
-// $mono-font-family: "SFMono-Regular", Menlo, Consolas, Monospace;
-$root-font-size: 12px;         // Base font-size for rems
-// $body-line-height: 1.4;
-// $body-heading-line-height: 1.15;
-//
-// //
-// // Colors
-// //
-//
-// $white: #fff;
-//
-// $grey-dk-000: #959396;
-// $grey-dk-100: #5c5962;
-// $grey-dk-200: #44434d;
-// $grey-dk-250: #302d36 !default;
-// $grey-dk-300: #27262b;
-//
-// $grey-lt-000: #f5f6fa;
-// $grey-lt-100: #eeebee;
-// $grey-lt-200: #ecebed;
-// $grey-lt-300: #e6e1e8;
-//
-// $purple-000: #7253ed;
-// $purple-100: #5e41d0;
-// $purple-200: #4e26af;
-// $purple-300: #381885;
-//
-// $blue-000: #2c84fa;
-// $blue-100: #2869e6;
-// $blue-200: #264caf;
-// $blue-300: #183385;
-//
-// $green-000: #41d693;
-// $green-100: #11b584;
-// $green-200: #009c7b;
-// $green-300: #026e57;
-//
-// $body-background-color: $white !default;
-// $sidebar-color: $grey-lt-000 !default;
-// $code-background-color: $grey-lt-000 !default;
+$nav-width: 232px !default;
+$nav-width-md: 232px;
 
-// $body-text-color: $grey-dk-100 !default;
-// $body-heading-color: $grey-dk-300 !default;
-// $nav-child-link-color: $grey-dk-100 !default;
-// $link-color: $purple-000 !default;
-// $btn-primary-color: $purple-100 !default;
-// $base-button-color: #f7f7f7 !default;
-//
-// //
-// // Media queries in pixels
-// //
-//
-// $media-queries: (
-//   xs: 320px,
-//   sm: 500px,
-//   md: 740px,
-//   lg: 1120px,
-//   xl: 1400px
-// );
-//
-// //
-// // Spacing
-// //
-//
-$spacing-unit: 1rem; // 1rem == 16px
+.main {
+    margin-top: 3.0rem;
+    margin-left: $nav_width + 18px;
+}
+.main-content {
+    line-height: inherit;
+}
 
-$spacers: (
-  sp-0: 0,
-  sp-1: $spacing-unit * 0.1,
-  sp-2: $spacing-unit * 0.2,
-  sp-3: $spacing-unit * 0.4,
-  sp-4: $spacing-unit * 0.6,
-  sp-5: $spacing-unit * 0.8,
-  sp-6: $spacing-unit * 1.0,
-  sp-7: $spacing-unit * 1.2,
-  sp-8: $spacing-unit * 1.5,
-  sp-9: $spacing-unit * 2.0,
-  sp-10: $spacing-unit * 2.5
-);
+.page-banner {
+    z-index: 200;
+    position: fixed;
+    top: 0;
+    left: 0;
+    height: 3.0rem;
+    width: 100%;
+    background-color: #006F41;
+    img {
+       vertical-align: middle;
+       height: 100%;
+       padding: 0.5rem;
+    }
+    span {
+	vertical-align: middle;
+        height: 100%;
+        padding-left: 0.5rem;
+        color: white;
+        .site-title {
+            color: inherit;
+	    padding-top: 0px;
+	    padding-bottom: 0px;
+            text-decoration: none;
+	    flex-grow: 0;
+	    display: inline;
+	    &:hover {
+		background-image: none;
+	    }
+        }
+    }
+}
 
-$sp-1: map-get($spacers, sp-1);
-$sp-2: map-get($spacers, sp-2);
-$sp-3: map-get($spacers, sp-3);
-$sp-4: map-get($spacers, sp-4);
-$sp-5: map-get($spacers, sp-5);
-$sp-6: map-get($spacers, sp-6);
-$sp-7: map-get($spacers, sp-7);
-$sp-8: map-get($spacers, sp-8);
-$sp-9: map-get($spacers, sp-9);
-$sp-10: map-get($spacers, sp-10);
-//
-// //
-// // Borders
-// //
-//
-// $border: 1px solid;
-// $border-radius: 4px;
-// $border-color: $grey-lt-100;
-//
-// //
-// // Grid system
-// //
-//
-// $gutter-spacing: $sp-6;
-// $gutter-spacing-sm: $sp-4;
-// $nav-width: 232px;
-// $content-width: 800px;
-//
-// $media-queries: (
-//   xs: 320px,
-//   sm: 500px,
-//   md: 740px,
-//   lg: 800px,
-//   xl: 1316px
-// );
+.site-footer {
+  width: 100%;
+  border-top: $border $border-color;
+  color: black;
+  font-style: italic;
+  text-align: right;
+  
+  @include mq(md) {
+    align-self: flex-end;
+    justify-self: end;
+    padding-left: 0;
+  }
+}
+
+.side-bar {
+    @include mq(md) {
+	width: $nav-width + 16px;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+
+    @include mq(lg) {
+	width: $nav-width + 16px;
+	min-width: $nav-width;
+        padding-top: 0;
+        padding-bottom: 0;
+    }
+}
+
+
+.site-nav {
+    padding-left: 1.0rem;
+    padding-right: 1.0rem;
+    padding-top: 0;
+    width: 100%;
+  min-width: 100%;
+  @include mq(md) {
+    padding-top: 0;
+  }
+}
+
+
+h3.nav-title {
+    @include fs-4;
+    margin-top: 0.5rem;
+    margin-bottom: 0.1rem;
+    font-weight: bold;
+}
+.nav-list
+.nav-list-item
+.nav-list-link {
+    display: block;
+    padding-top: 0.1rem;
+    padding-bottom: 0.1rem;
+    line-height: 1.4;
+    min-height: 0.2rem;
+    padding-right: 0px;
+    padding-left: 0px;
+}
+
+.nav-list {
+    padding-left: 0px;
+    padding-right: 0px;
+    .nav-list-item {
+        @include mq(md) {
+	    margin-top: 0;
+        }
+    }
+}
+.nav-list-child-list {
+  padding-left: $sp-4;
+  list-style: none;
+
+  .nav-list-link {
+    color: $nav-child-link-color;
+  }
+
+  .nav-list-item {
+    position: relative;
+
+    &::before {
+      position: absolute;
+      //margin-top: 0.3em;
+      margin-left: -$sp-2;
+      color: rgba($body-text-color, 0.8);
+      content: "\2022";
+    }
+
+    &.active {
+      &::before {
+        color: $body-text-color;
+      }
+    }
+  }
+}
+
+.nav-list-item {
+    > .nav-list-child-list {
+	display: none;
+    }
+
+    &.active {
+	> .nav-list-child-list {
+	    display: block;
+	}
+    }
+}
+    
+
+.search-input {
+    padding-top: 0.2rem;
+    padding-bottom: 0.2rem;
+    
+}
+
+code {
+  padding: 0.1em 0.1em;
+}
+
+pre.highlight {
+  padding: $sp-1;
+}
+
+html {
+    @include fs-3;
+}
+
+h1,
+.text-alpha {
+  @include fs-7;
+  font-weight: bold;
+}
+
+h2,
+.text-beta {
+  @include fs-6;
+  font-weight: bold;
+}
+
+h3,
+.text-gamma {
+  @include fs-5;
+  font-weight: bold;
+}
+
+h4,
+.text-delta {
+  @include fs-3;
+  font-weight: bold;
+}
+
+h5,
+.text-epsilon {
+  @include fs-2;
+  color: $grey-dk-200;
+}
+
+h6,
+.text-zeta {
+  @include fs-2;
+  color: $grey-dk-200;
+}
+
+.text-small {
+  @include fs-2;
+}
+
+
+ 
+
+

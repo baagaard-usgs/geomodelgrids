@@ -6,6 +6,8 @@ aux_links:
     "GitHub repository":
       - "//github.com/baagaard-usgs/geomodelgrids"
 
-plugins:
-  - jekyll-seo-tag
-  
+color_scheme: usgs
+heading_anchors: false
+search_enabled: true
+
+geomodelgrids-version: 0.1.0
