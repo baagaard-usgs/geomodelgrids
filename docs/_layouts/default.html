@@ -43,6 +43,9 @@ layout: table_wrappers
 <div class="page-wrap">
     <div class="page-banner">
       {% include custom-banner.html %}
+      <!-- Need menu-button element defined to avoid Javascript error
+    in site initialization. -->
+      <a href="#" id="menu-button"></a>
     </div>
   <div class="side-bar">
     <nav role="navigation" aria-label="Main" id="site-nav" class="site-nav">
