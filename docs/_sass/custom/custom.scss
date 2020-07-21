@@ -7,6 +7,13 @@
 .main-content {
     line-height: inherit;
 }
+.main-content-wrap {
+    padding-bottom: 1rem;
+
+    @include mq(md) {
+	padding-bottom: 1rem;
+    }
+}
 
 .page-banner {
     z-index: 200;
@@ -46,11 +53,14 @@
   color: black;
   font-style: italic;
   text-align: right;
+  padding-top: 0.5rem;
+  padding-right: 0;
+  padding-left: 0;
+  padding-bottom: 0;
   
   @include mq(md) {
     align-self: flex-end;
     justify-self: end;
-    padding-left: 0;
   }
 }
 
