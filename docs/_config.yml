@@ -1,4 +1,4 @@
-remote_theme: pmarsceill/just-the-docs
+remote_theme: baagaard-usgs/just-the-docs
 title: GeoModelGrids
 baseurl: /geomodelgrids
 aux_links:
