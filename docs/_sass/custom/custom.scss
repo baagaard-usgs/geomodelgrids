@@ -1,9 +1,8 @@
-$nav-width: 232px !default;
-$nav-width-md: 232px;
-
 .main {
+  @include mq(md) {
     margin-top: 3.0rem;
-    margin-left: $nav_width + 18px;
+    margin-left: $nav-width;
+  }
 }
 .main-content {
     line-height: inherit;
@@ -56,14 +55,16 @@ $nav-width-md: 232px;
 }
 
 .side-bar {
+    padding-top: 3.0rem;
+    
     @include mq(md) {
-	width: $nav-width + 16px;
+	width: $nav-width;
         padding-top: 0;
         padding-bottom: 0;
     }
 
     @include mq(lg) {
-	width: $nav-width + 16px;
+	width: $nav-width;
 	min-width: $nav-width;
         padding-top: 0;
         padding-bottom: 0;
@@ -72,14 +73,16 @@ $nav-width-md: 232px;
 
 
 .site-nav {
+    display: block;
     padding-left: 1.0rem;
-    padding-right: 1.0rem;
+    padding-right: 0.2rem;
     padding-top: 0;
     width: 100%;
-  min-width: 100%;
-  @include mq(md) {
-    padding-top: 0;
-  }
+    min-width: 100%;
+
+    @include mq(md) {
+      padding-top: 0;
+    }
 }
 
 

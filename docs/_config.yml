@@ -1,7 +1,6 @@
 remote_theme: pmarsceill/just-the-docs
 title: GeoModelGrids
 baseurl: /geomodelgrids
-#search_enabled: true
 aux_links:
     "GitHub repository":
       - "//github.com/baagaard-usgs/geomodelgrids"
@@ -10,4 +9,5 @@ color_scheme: usgs
 heading_anchors: false
 search_enabled: true
 
-geomodelgrids-version: 0.1.0
+title_image: images/USGSsimple.png
+software_version: 0.1.0
