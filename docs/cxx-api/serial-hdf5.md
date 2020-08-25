@@ -12,35 +12,36 @@
 * [hasDataset(const char* name)](#bool-hasdatasetconst-char-name)
 * [getDatasetDims(hsize_t** dims, int* ndims, const char* path)](#getdatasetdimshsize_t-dims-int-ndims-const-char-path)
 * [getGroupDatasets(std::vector\<std::string\>* names, const char* parent)](#getgroupdatasetsstdvectorstdstring-names-const-char-parent)
-* [readAttribute(const char* parent, const char* name, hid_t datatype, void* value)](#readattributeconst-char-parent-const-char-name-hid_t-datatype-void-value)
+* [readAttribute(const char* path, const char* name, hid_t datatype, void* value)](#readattributeconst-char-path-const-char-name-hid_t-datatype-void-value)
 * [readAttribute(const char* path, const char* name)](#stdstring-readattributeconst-char-path-const-char-name)
 * [readAttribute(const char* path, const char* name, std::vector\<std::string\>* values)](#readattributeconst-char-path-const-char-name-stdvectorstdstring-values)
-* [readDatasetChunk(const char* parent, const char* name, char** const data, hsize_t** const dimsChunk, int* const ndims, const int chunk, hid_t datatype)](#readdatasetchunkconst-char-parent-const-char-name-char-const-data-hsize_t-dimschunk-int-const-ndims-const-int-chunk-hid_t-datatype)
+* [readDatasetHyperslab(void* values, const char* path, const hsize_t* const origin, const hsize_t* const dims, int ndims, hid_t datatype)](#readdatasethyperslabvoid-values-const-char-path-const-hsize_t-const-origin-const-hsize_t-const-dims-int-ndims-hid_t-datatype)
 
 
-## HDF5()
+### HDF5()
 
 Constructor.
 
-## open(const char* filename, hid_t model)
+
+### open(const char* filename, hid_t mode)
 
 Open HDF5 file.
 
 * **filename**[in] Name of HDF5 file.
-* **model**[in] Mode for HDF5 file.
+* **mode**[in] Mode for HDF5 file.
 
 
-## close()
+### close()
 
 Close HDF5 file.
 
 
-## bool isOpen()
+### bool isOpen()
 
 Check if HDF5 file is open.
 
 
-## bool hasGroup(const char* name)
+### bool hasGroup(const char* name)
 
 Check if HDF5 file has group.
 
@@ -48,7 +49,7 @@ Check if HDF5 file has group.
 * **returns** True if group exists, false otherwise.
 
 
-## bool hasDataset(const char* name)
+### bool hasDataset(const char* name)
 
 Check if HDF5 file has dataset.
 
@@ -56,7 +57,7 @@ Check if HDF5 file has dataset.
 * **returns** True if dataset exists, false otherwise.
 
 
-## getDatasetDims(hsize_t** dims, int* ndims, const char* path)
+### getDatasetDims(hsize_t** dims, int* ndims, const char* path)
 
 Get dimensions of dataset.
 
@@ -65,7 +66,7 @@ Get dimensions of dataset.
 * **path**[in] Full path of dataset.
 
 
-## getGroupDataset(std::vector\<std::string\>* names, const char* parent)
+### getGroupDatasets(std::vector\<std::string\>* names, const char* parent)
 
 Get names of datasets in group.
 
@@ -73,7 +74,7 @@ Get names of datasets in group.
 * **group**[in] Full path of group.
 
 
-## readAttribute(const char* parent, const char* name, hid_t datatype, void* value)
+### readAttribute(const char* path, const char* name, hid_t datatype, void* value)
 
 Read scalar attribute.
 
@@ -83,7 +84,7 @@ Read scalar attribute.
 * **value**[out] Attribute value.
 
 
-## std::string readAttribute(const char* path, const char* name)
+### std::string readAttribute(const char* path, const char* name)
 
 Read fixed or variable length string attribute.
 
@@ -91,7 +92,7 @@ Read fixed or variable length string attribute.
 * **path**[in] name Name of attribute.
 
 
-## readAttribute(const char* path, const char* name, std::vector\<std::string\>* values)
+### readAttribute(const char* path, const char* name, std::vector\<std::string\>* values)
 
 Read array of fixed or variable length strings attribute.
 
@@ -99,14 +100,13 @@ Read array of fixed or variable length strings attribute.
 * **name**[in] Name of attribute.
 * **values**[out] Array of strings.
 
-## readDatasetChunk(const char* parent, const char* name, char** const data, hsize_t** dimsChunk, int* const ndims, const int chunk, hid_t datatype)
+### readDatasetHyperslab(void* values, const char* path, const hsize_t* const origin, const hsize_t* const dims, int ndims, hid_t datatype)
 
-Read dataset chunk.
+Read hyperslab (subset of values) from dataset.
 
-* **parent**[in] Full path of parent group of dataset.
-* **name**[in] Name of dataset.
-* **chunk**[in] Index of chunk.
-* **datatype**[in] Type of data.
-* **data**[out] Data for chunk.
-* **dims**[out] Dimensions of chunk.
-* **ndims**[out] Number of dimensions of chunk.
+* **values**[out] Values of hyperslab.
+* **path**[in] Full path to dataset.
+* **orogin**[in] Origin of hyperslab in dataset.
+* **dims**[in] Dimensions of hyperslab.
+* **ndims**[in] Number of dimensions of hyperslab.
+* **datatype**[in] Type of data in dataset.

@@ -5,7 +5,7 @@ aux_links:
     "GitHub repository":
       - "//github.com/baagaard-usgs/geomodelgrids"
 
-color_scheme: usgs
+color_scheme: usgs_lightbg
 heading_anchors: false
 search_enabled: true
 

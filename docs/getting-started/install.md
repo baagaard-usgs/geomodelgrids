@@ -10,9 +10,9 @@
 
 * autotools (automake, autoconf, libtool)
 
-* HDF5 library (version X.X.X or later)
+* HDF5 library (version 1.10.0 or later)
 
-* Proj.4 (version X.X.X or later)
+* Proj.4 (version 6.3.0 or later)
 
 * Python 3 (if generating models)
 

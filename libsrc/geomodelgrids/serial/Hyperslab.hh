@@ -44,7 +44,7 @@ public:
     /** Compute values at point using bilinear interpolation.
      *
      * @param[out] values Preallocated array for interpolated values.
-     * @param[in] indexFloat Floating point index of target point.
+     * @param[in] indexFloat Index of target point as floating point values.
      */
     void interpolate(double* const values,
                      const double indexFloat[]);

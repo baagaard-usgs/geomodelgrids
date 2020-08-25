@@ -60,15 +60,20 @@ geomodelgrids::utils::CRSTransformer::initialize(void) {
 void
 geomodelgrids::utils::CRSTransformer::transform(double* destX,
                                                 double* destY,
+                                                double* destZ,
                                                 const double srcX,
-                                                const double srcY) {
+                                                const double srcY,
+                                                const double srcZ) {
     assert(destX);
     assert(destY);
 
-    PJ_COORD xySrc = proj_coord(srcX, srcY, 0.0, 0.0);
-    PJ_COORD xyDest = proj_trans(_proj, PJ_FWD, xySrc);
-    *destX = xyDest.xyzt.x;
-    *destY = xyDest.xyzt.y;
+    PJ_COORD xyzSrc = proj_coord(srcX, srcY, srcZ, 0.0);
+    PJ_COORD xyzDest = proj_trans(_proj, PJ_FWD, xyzSrc);
+    *destX = xyzDest.xyzt.x;
+    *destY = xyzDest.xyzt.y;
+    if (destZ) {
+        *destZ = xyzDest.xyzt.z;
+    } // if
 } // transform
 
 

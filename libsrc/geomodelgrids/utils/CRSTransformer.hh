@@ -45,13 +45,17 @@ public:
      *
      * @param[out] destX X coordinate in destination coordinate system.
      * @param[out] destY Y coordinate in destination coordinate system.
+     * @param[out] destZ Z coordinate in destination coordinate system (can be NULL).
      * @param[in] srcX X coordinate in source coordinate system.
      * @param[in] srcY Y coordinate in source coordinate system.
+     * @param[in] srcZ Z coordinate in source coordinate system.
      */
     void transform(double* destX,
                    double* destY,
+                   double* destZ,
                    const double srcX,
-                   const double srcY);
+                   const double srcY,
+                   const double srcZ);
 
     // PRIVATE MEMBERS -------------------------------------------------------------------------------------------------
 private:

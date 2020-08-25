@@ -9,5 +9,5 @@ Classes
 * [ModelInfo](serial-modelinfo.html) Object for model description information.
 * [Topography](serial-topography.html) Object with topography information.
 * [Block](serial-block.html) Object with data for a block.
+* [Hyperslab](serial-hyperslab.html) Object with data for current hyperslab.
 * [HDF5](serial-hdf5.html) High-level serial interface to HDF5 file.
-

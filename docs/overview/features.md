@@ -16,4 +16,3 @@
 * In addition to discretization information, the self-describing
   format includes description of the names of the values and their
   units, coordinate information.
-

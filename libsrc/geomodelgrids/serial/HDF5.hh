@@ -115,7 +115,7 @@ public:
      * @param[in] origin Origin of hyperslab in dataset.
      * @param[in] dims Dimensions of hyperslab.
      * @param[in] ndims Number of dimensions of hyperslab.
-     * @param[in] datatype Type of data.
+     * @param[in] datatype Type of data in dataset.
      */
     void readDatasetHyperslab(void* values,
                               const char* path,

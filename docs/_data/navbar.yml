@@ -13,11 +13,11 @@ toc:
         url: /getting-started/install.html
       - page: Running the code
         url: /getting-started/running.html
-  - title: Using geomodelgrids
+  - title: Using GeoModelGrids
     subitems:
-      - page: The geogrid_info command
+      - page: The geomodelgrids_info command
         url: /apps/info.html
-      - page: The geogrid_query command
+      - page: The geomodelgrids_query command
         url: /apps/query.html
   - title: Python scripting
     subitems:
@@ -55,10 +55,21 @@ toc:
             url: /cxx-api/serial-topography.html
           - page: Block
             url: /cxx-api/serial-block.html
+          - page: Hyperslab
+            url: /cxx-api/serial-hyperslab.html
           - page: HDF5
             url: /cxx-api/serial-hdf5.html
-      - page: Cluster (Parallel) Interfac)
+      - page: Cluster (Parallel Interface)
         url: /cxx-api/parallel.html
+      - page: Utilities (General)
+        url: /cxx-api/utils.html
+        subsubitems:
+          - page: CRSTransformer
+            url: /cxx-api/utils-crstransformer.html
+          - page: ErrorHandler
+            url: /cxx-api/utils-errorhandler.html
+          - page: TestDriver
+            url: /cxx-api/utils-testdriver.html
   - title: C API
     subitems:
       - page: Destktop (Serial Interface)
