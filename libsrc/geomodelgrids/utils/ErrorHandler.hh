@@ -56,7 +56,7 @@ public:
      * @note Turning logging on after it has been turned off will cause
      * subsequent messages to be appended to the log file.
      *
-     * @param value True to turn on logging, false to turn logging off
+     * @param[in] value True to turn on logging, false to turn logging off
      */
     void setLoggingOn(const bool value);
 
@@ -77,19 +77,19 @@ public:
 
     /** Set status to error and store error message.
      *
-     * @param msg Error message
+     * @param[in] msg Error message
      */
     void setError(const char* msg);
 
     /** Set status to warning and store warning message.
      *
-     * @param msg Warning message
+     * @param[in] msg Warning message
      */
     void setWarning(const char* msg);
 
     /** Write message to log file.
      *
-     * @param msg Message to write to log file
+     * @param[in] msg Message to write to log file
      */
     void logMessage(const char* msg);
 

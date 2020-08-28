@@ -3,16 +3,16 @@
 ## Model Representation
 
 We map the physical space of the model domain bounded by on the top by
-topography (or a flat surface) into topological space that has uniform
+topography (or a flat surface) into logical space that has uniform
 regular grids.
 
 <figure>
-  <img src="figs/gridmapping.png" alt="Diagram of physical and topological grids">
+  <img src="figs/gridmapping.png" alt="Diagram of physical and logical grids">
 </figure>
 
 The mapping from the physical space to topological space is:
 ```
-z_topological = -dim_z * (z_topography - z) / (z_topography + dim_z)
+z_logical = -dim_z * (z_topography - z_physical) / (z_topography + dim_z)
 ```
 
 

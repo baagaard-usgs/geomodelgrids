@@ -192,7 +192,7 @@ geomodelgrids::apps::Query::_printHelp(void) {
               << "elevation if the elevation is above ELEV.\n"
               << "    --models=FILE_0,...,FILE_M       Models to query (in order).\n"
               << "    --points=FILE_POINTS             Read input points from FILE_POINTS.\n"
-              << "    --points-coordsys=PROJ|EPSG|WKT  Coordinate system of intput points (default=EPSG:4326).\n"
+              << "    --points-coordsys=PROJ|EPSG|WKT  Coordinate system of input points (default=EPSG:4326).\n"
               << "    --log=FILE_LOG                   Write logging information to FILE_LOG."
               << "    --output=FILE_OUTPUT             Write values to FILE_OUTPUT."
               << std::endl;

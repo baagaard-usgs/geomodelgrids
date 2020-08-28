@@ -1,8 +1,8 @@
 # Features
 
-* Store georeferenced models composed of an arbitrary number of blocks
-  of uniform resolution.
-  
+* Store models in any georeferenced coordinate system composed of an
+  arbitrary number of blocks of uniform resolution.
+
 * Model domains need not be aligned with the x and y axes of the
   geographic projection.
 
@@ -16,4 +16,3 @@
 * In addition to discretization information, the self-describing
   format includes description of the names of the values and their
   units, coordinate information.
-

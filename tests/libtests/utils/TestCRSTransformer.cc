@@ -96,17 +96,37 @@ geomodelgrids::utils::TestCRSTransformer::testInitialize(void) {
 // Test transform().
 void
 geomodelgrids::utils::TestCRSTransformer::testTransform(void) {
+    double destXYZ[3];
+
     CRSTransformer transformer;
-
-    const double srcLonLat[2] = { 37.5, -122.0 };
-    const double destXYE[2] = { -176555.43141012415, -55540.14575705351 };
-    double destXY[2];
-
     transformer.initialize();
-    transformer.transform(&destXY[0], &destXY[1], srcLonLat[0], srcLonLat[1]);
-    const double tolerance = 1.0e-6;
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Mismatch in x coordinate.", destXYE[0], destXY[0], fabs(tolerance*destXYE[0]));
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Mismatch in y coordinate.", destXYE[1], destXY[1], fabs(tolerance*destXYE[1]));
+
+    { // 2D
+        const double srcLonLat[2] = { 37.5, -122.0 };
+        const double destXYE[2] = { -176555.43141012415, -55540.14575705351 };
+
+        transformer.transform(&destXYZ[0], &destXYZ[1], NULL, srcLonLat[0], srcLonLat[1], 0.0);
+        const double tolerance = 1.0e-6;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Mismatch in x coordinate in 2D check.", destXYE[0], destXYZ[0],
+                                             fabs(tolerance*destXYE[0]));
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Mismatch in y coordinate in 2D check.", destXYE[1], destXYZ[1],
+                                             fabs(tolerance*destXYE[1]));
+    } // 2D
+
+    { // 3D
+        const double srcLonLatElev[3] = { 37.5, -122.0, 10.0 };
+        const double destXYZE[3] = { -176555.43141012415, -55540.14575705351, 10.0 };
+
+        transformer.transform(&destXYZ[0], &destXYZ[1], &destXYZ[2],
+                              srcLonLatElev[0], srcLonLatElev[1], srcLonLatElev[2]);
+        const double tolerance = 1.0e-6;
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Mismatch in x coordinate in 3D check.", destXYZE[0], destXYZ[0],
+                                             fabs(tolerance*destXYZE[0]));
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Mismatch in y coordinate in 3D check.", destXYZE[1], destXYZ[1],
+                                             fabs(tolerance*destXYZE[1]));
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Mismatch in z coordinate in 3D check.", destXYZE[2], destXYZ[2],
+                                             fabs(tolerance*destXYZE[2]));
+    } // 3D
 } // testTransform
 
 

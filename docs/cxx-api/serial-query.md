@@ -4,37 +4,37 @@
 
 ## Methods
 
-* [Query(const char* filename)](#queryconst-char_filename)
-* [open()](#open)
-* [close()](#close)
-* [setValues(const char** names, const size_t numNames)](#setvaluesconst-char-names-const-size_t-numnames)
+* [Query()](#query)
+* [getErrorHandler()](#geterrorhandler)
+* [initialize(const std::vector\<std::string\>& modelFilenames, const std::vector\<std::string\>& valueNames, const std::string inputCRSString)](#initializeconst-stdvector-modelfilename-const-stdvector-valuenames-const-stdstring-inputcrsstring)
 * [setSquashMinElev(const double value)](#setsquashminelevconst-double-value)
-* [setCacheSize(const double value)](#setcachesizeconst-double-value)
-* [queryTopography(const double longitude, const double latitude)](#double-querytopographyconst-double-longitude-const-double-latitude)
-* [query(const double* values, const int numValues, const double longitude, const double latitude, const double elevation)](#queryconst-double-values-const-int-numvalues-const-double-longitude-const-double-latitude-const-double-elevation)
-* [query(const double** values, const int numValues, const double* points), const size_t numPoints](#queryconst-double-values-const-int-numvalues-const-double-points-const-size_t-numpoints)
+* [setSquashing(const bool value)](#setsquashingconst-bool-value)
+* [queryElevation(const double x, const double y)](#double-queryelevationconst-double-x-const-double-y)
+* [query(const double* values, const double x, const double y, const double z)](#queryconst-double-values-const-double-x-const-double-y-const-double-z)
+* [finalize()](#finalize)
 
 
-## Query(const char* filename)
+### Query()
 
-Constructor with filename.
-
-* **filename**[in] Name of model file.
-
-## open()
-
-Open the model for querying.
+Constructor.
 
 
-## setValues(const char** names, const size_t numNames)
+### getErrorHandler()
 
-Set the values to be returned in a query.
-
-* **names**[in] Array of value names.
-* **numNames**[in] Size of array.
+Get the error handler.
 
 
-## setSquashMinElev(const double value)
+### initialize(const std::vector\<std::string\>& modelFilenames, const std::vector\<std::string\>& valueNames, const std::string& inputCRSString)
+
+Setup for querying.
+
+* **modelFilenames**[in] Array of model filenames (in query order).
+* **valueNames**[in] Array of names of values to return in query.
+* **inputCRSString**[in] Coordinate reference system (CRS) as string
+  (PROJ, EPSG, WKT) for input points.
+
+
+### setSquashMinElev(const double value)
 
 Set minimum elevation (m) above which vertical coordinate is given as -depth.
 
@@ -46,41 +46,32 @@ deeper structure.
 * **value**[in] Minimum elevation (m) for squashing topography.
 
 
-## setCacheSize(const double value)
+### setSquashing(const bool value)
 
-Set maximum cache size (MB).
+Turn squashing on/off
 
-* **value**[in] Maximum size of cache in MB.
+* **value**[in] True if squashing is on, false otherwise.
 
 
-## double queryTopography(const double longitude, const double latitude)
+### double queryElevation(const double x, const double y)
 
 Query model for elevation of the ground surface (topograpy) at a point.
 
-* **longitude**[in] Longitude (degrees) of point in WGS84 horizontal datum.
-* **latitude**[in] Latitude (degrees) of point in WGS84 horizontal datum.
-* **return value** Elevation (meters).
+* **x**[in] X coordinate of of point in (in input CRS).
+* **y**[in] Y coordinate of of point in (in input CRS).
+* **return value** Elevation (meters) of ground surface at point.
 
 
-## query(const double* values, const int numValues, const double longitude, const double latitude, const double elevation)
+### query(const double* values, const double x, const double y, const double z)
 
 Query model for values at a point.
 
 * **values**[out] Array of values (must be preallocated).
-* **numValues**[in] Number of values (size of array).
-* **longitude**[in] Longitude (degrees) of point in WGS84 horizontal datum.
-* **latitude**[in] Latitude (degrees) of point in WGS84 horizontal datum.
-* **elevation**[in] Elevation (meters) of point in XXX vertical datum.
+* **x**[in] X coordinate of of point in (in input CRS).
+* **y**[in] Y coordinate of of point in (in input CRS).
+* **z**[in] Z coordinate of of point in (in input CRS).
 
 
-## query(const double** values, const int numValues, const double* points, const size_t numPoints)
+### finalize()
 
-Query model for values at a set of points. The coordinates of the
-points are longitude (degrees; WGS84 horizontal datum), latitude
-(degrees; WGS84 horizontal datum), and elevation (meters; XXX vertical
-datum).
-
-* **values**[out] Array of values at the set of points (must be preallocated).
-* **numValues**[in] Number of values (size of array).
-* **points**[in] Array of coordinates of the points [numPoints, 3]
-* **numPoints**[in] Number of points.
+Cleanup after querying.

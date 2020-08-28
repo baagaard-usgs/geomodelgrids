@@ -2,133 +2,155 @@
 
 **Full name**: geomodelgrids::serial::Model
 
+## Enums
+
+### ModelMode
+
+* **READ** Read only mode.
+* **READ_WRITE** Read/write mode.
+* **READ_WRITE_TRUNCATE** Read/write mode, truncate upon opening.
+
 ## Methods
 
 * [Model()](#model)
+* [setInputCRS(const std::string& value)](#setinputcrsconst-stdstring-value)
 * [open(const char* filename, ModelMode mode)](#openconst-char-filename-modelmode-mode)
 * [close()](#close)
 * [loadMetadata()](#loadmetadata)
+* [initialize()](#initialize)
 * [getValueNames()](#const-stdvectorstdstring-getvaluenames)
 * [getValueUnits()](#const-stdvectorstdstring-getvalueunits)
 * [getDims()](#const-double-getdims)
 * [getOrigin()](#const-double-getorigin)
 * [getYAzimuth()](#double-getyazimuth)
-* [getProjectionString()](#const-stdstring-getprojectionstring)
+* [getCRSString()](#const-stdstring-getcrsstring)
 * [getInfo()](#const-geomodelgridsserialmodelinfo-getinfo)
 * [getTopography()](#const-geomodelgridsserialtopography-gettopography)
 * [getBlocks()](#const-stdvectorgeomodelgridsserialblock-getblocks)
-* [contains(const double longitude, const double latitude, const double elevation)](#bool-containsconst-double-longitude-const-double-latitude-const-double-elevation)
-* [queryElevation(const double longitude, const double latitude)](#double-queryelevationconst-double-longitude-const-double-latitude)
-* [query(const double longitude, const double latitude, const double elevation)](#const-double-queryconst-double-longitude-const-double-latitude-const-double-elevation)
+* [contains(const double x, const double y, const double z)](#bool-containsconst-double-x-const-double-y-const-double-z)
+* [queryElevation(const double x, const double y)](#double-queryelevationconst-double-x-const-double-y)
+* [query(const double x, const double y, const double z)](#const-double-queryconst-double-x-const-double-y-const-double-z)
 
 
-## Model()
+### Model()
 
 Constructor.
 
-## open(const char* filename, ModelMode mode)
+### setInputCRS(const std::string& value)
+
+Set the coordinate reference system (CRS) of query input points.
+
+* **value**[in] CRS of input points as string (PROJ, EPSG, WKT).
+
+
+### open(const char* filename, ModelMode mode)
 
 Open the model for querying.
 
 
-## close()
+### close()
 
 Close the model after querying.
 
 
-## loadMetadata()
+### loadMetadata()
 
 Load model metadata.
 
 
-## const std::vector\<std::string\>& getValueNames()
+### initialize()
+
+Initialize the model.
+
+
+### const std::vector\<std::string\>& getValueNames()
 
 Get names of values in the model.
 
 * **returns** Array of names of values in the model.
 
 
-## const std::vector\<std::string\>& getValueUnits()
+### const std::vector\<std::string\>& getValueUnits()
 
 Get units of values in the model.
 
 * **returns** Array of units of values in the model.
 
 
-## const double* getDims()
+### const double* getDims()
 
 Get model dimension.
 
 * **returns** Model dimensions (m) [x, y, z].
 
 
-## const double* getOrigin()
+### const double* getOrigin()
 
 Get coordinates of model origin in geographic projection.
 
 * **returns** Coordinates of model origin [x, y].
 
 
-## double getYAzimuth()
+### double getYAzimuth()
 
 Get azimuth of y coordinate axis.
 
 * **returns** Azimuth (degrees) of y coordinate axis.
 
 
-## const std::string& getProjectionString()
+### const std::string& getCRSString()
 
-Get geographic projection for model.
+Get coordinate reference system for model.
 
-* **returns** Geographic projection in WKT.
+* **returns** Coordinate reference system for model as Proj, EPSG, or WKT.
 
 
-## const geomodelgrids::serial::ModelInfo& getInfo()
+### const geomodelgrids::serial::ModelInfo& getInfo()
 
 Get model description information.
 
 * **returns** Model description.
 
 
-## const geomodelgrids::serial::Topography& getTopography()
+### const geomodelgrids::serial::Topography& getTopography()
 
 Get topography for model.
 
 * **returns** Model topography.
 
 
-## const std::vector\<geomodelgrids::serial::Block*\>& getBlocks()
+### const std::vector\<geomodelgrids::serial::Block*\>& getBlocks()
 
 Get blocks in model.
 
 * **returns** Array of blocks in model.
 
 
-## bool contains(const double longitude, const double latitude, const double elevation)
+### bool contains(const double x, const double y, const double z)
 
 Does model contain given point?
 
-* **longitude**[in] Longitude (degrees) of point in WGS84 horizontal datum.
-* **latitude**[in] Latitude (degrees) of point in WGS84 horizontal datum.
-* **elevation**[in] Elevation (meters) of point in XXX vertical datum.
+* **x**[in] X coordinate of point (in input CRS).
+* **y**[in] Y coordinate of point (in input CRS).
+* **z**[in] Z coordinate of point (in input CRS).
 * **returns** True if model contains given point, false otherwise.
 
 
-## double queryElevation(const double longitude, const double latitude)
+### double queryElevation(const double x, const double y)
 
 Query model for elevation of the ground surface (topograpy) at a point
 using bilinear interpolation.
 
-* **longitude**[in] Longitude (degrees) of point in WGS84 horizontal datum.
-* **latitude**[in] Latitude (degrees) of point in WGS84 horizontal datum.
-* **returns** Elevation (meters).
+* **x**[in] X coordinate of point (in input CRS).
+* **y**[in] Y coordinate of point (in input CRS).
+* **returns** Elevation (meters) of ground surface at point.
 
 
-## const double* query(const double longitude, const double latitude, const double elevation)
+### const double* query(const double x, const double y, const double z)
 
 Query model for values at a point using bilinear interpolation
 
-* **longitude**[in] Longitude (degrees) of point in WGS84 horizontal datum.
-* **latitude**[in] Latitude (degrees) of point in WGS84 horizontal datum.
-* **elevation**[in] Elevation (meters) of point in XXX vertical datum.
+* **x**[in] X coordinate of point (in input CRS).
+* **y**[in] Y coordinate of point (in input CRS).
+* **z**[in] Z coordinate of point (in input CRS).
 * **returns** Array of model values at point.

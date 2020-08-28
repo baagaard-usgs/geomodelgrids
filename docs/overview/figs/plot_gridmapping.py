@@ -67,7 +67,7 @@ def topological_grid(ax):
         ax.set_xlim(X_MIN-100, X_MAX+100)
         ax.set_ylim(Z_BOT, numpy.max(TOPO))
         ax.set_aspect('equal', 'datalim')
-        ax.set_title("Topological Grid")
+        ax.set_title("Logical Grid")
     return
 
 

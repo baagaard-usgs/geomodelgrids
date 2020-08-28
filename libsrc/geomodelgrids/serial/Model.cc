@@ -319,7 +319,8 @@ geomodelgrids::serial::Model::_toModelXYZ(double* xModel,
 
     double xModelCRS = 0.0;
     double yModelCRS = 0.0;
-    _crsTransformer->transform(&xModelCRS, &yModelCRS, x, y);
+    double zModelCRS = 0.0;
+    _crsTransformer->transform(&xModelCRS, &yModelCRS, &zModelCRS, x, y, z);
     const double yazimuthRad = _yazimuth * M_PI / 180.0;
     const double cosAz = cos(yazimuthRad);
     const double sinAz = sin(yazimuthRad);
@@ -328,14 +329,13 @@ geomodelgrids::serial::Model::_toModelXYZ(double* xModel,
     *xModel = xRel*cosAz - yRel*sinAz;
     *yModel = xRel*sinAz + yRel*cosAz;
 
-    if (z) {
-        assert(zModel);
+    if (zModel) {
         double zGroundSurf = 0.0;
         if (_topography) {
             zGroundSurf = _topography->query(*xModel, *yModel);
         } // if
         const double zBottom = -_dims[2];
-        *zModel = zBottom * (zGroundSurf - z) / (zGroundSurf - zBottom);
+        *zModel = zBottom * (zGroundSurf - zModelCRS) / (zGroundSurf - zBottom);
     } // if
 } // _toModelXYZ
 

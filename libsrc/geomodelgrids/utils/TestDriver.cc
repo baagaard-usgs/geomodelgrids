@@ -130,7 +130,7 @@ geomodelgrids::utils::TestDriver::_parseArgs(int argc,
 void
 geomodelgrids::utils::TestDriver::_printHelp(void) {
     std::cout << "Command line arguments:\n"
-              << "[--help] [--list] [--quiet] [--tests=TEST_0,...,TEST_N\n\n"
+              << "[--help] [--list] [--tests=TEST_0,...,TEST_N\n\n"
               << "    --help           Print help information to stdout and exit.\n"
               << "    --list           Print names of tests.\n"
               << "    --tests          Comma separated list of tests to run (default is all tests).\n"

@@ -1,9 +1,9 @@
 # Objective
 
 The GeoModelGrids project focuses on storing and querying
-georeferenced grid-based models. The models are composed of blocks,
-where each block is a uniform grid with potentially different
-resolutions.
+georeferenced raster-based models. The models are composed of blocks,
+where each block is a uniform grid with a potentially different
+resolution.
 
 # Motivation
 
@@ -15,6 +15,6 @@ resolutions.
 
 # Target Use Cases
 
-* Storing and querying 3-D seismic velocity models in running computer
+* Storing and querying 3D seismic velocity models in computer
 simulations of earthquake ground motions.
 

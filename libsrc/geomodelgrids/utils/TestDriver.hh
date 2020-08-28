@@ -25,7 +25,6 @@ public:
      * Arguments:
      *   --help
      *   --list
-     *   --quiet
      *   --tests=TEST_0,...,TEST_N
      *
      * @param argc[in] Number of arguments passed.
