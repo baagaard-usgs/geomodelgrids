@@ -1,5 +1,7 @@
 # Installation
 
+**:TODO:**: Finish instructions after building binary.
+
 ## Installing via binary package
 
 ## Installing via source
