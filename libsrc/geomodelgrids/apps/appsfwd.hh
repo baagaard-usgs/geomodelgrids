@@ -5,6 +5,7 @@ namespace geomodelgrids {
     namespace apps {
         class Info;
         class Query;
+        class QueryElev;
     } // apps
 } // geomodelgrids
 

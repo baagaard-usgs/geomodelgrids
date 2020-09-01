@@ -9,6 +9,7 @@ lib_LTLIBRARIES = libgeomodelgrids.la
 libgeomodelgrids_la_SOURCES = \
 	apps/Info.cc \
 	apps/Query.cc \
+	apps/QueryElev.cc \
 	serial/Query.cc \
 	serial/cquery.cc \
 	serial/ModelInfo.cc \

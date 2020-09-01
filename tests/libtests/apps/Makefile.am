@@ -9,6 +9,7 @@ check_PROGRAMS = test_apps
 test_apps_SOURCES = \
 	TestInfo.cc \
 	TestQuery.cc \
+	TestQueryElev.cc \
 	../../data/ModelPoints.cc \
 	test_driver.cc
 
