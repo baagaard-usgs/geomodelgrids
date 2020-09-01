@@ -24,7 +24,7 @@ public:
      *
      * Arguments:
      *   --help
-     *   --values=VLAUE_0,...,VALUE_N
+     *   --values=VALUE_0,...,VALUE_N
      *   --squash-min-elev=ELEV
      *   --models=FILE_0,...,FILE_M
      *   --points=FILE_POINTS

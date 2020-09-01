@@ -149,7 +149,7 @@ geomodelgrids::apps::Info::_parseArgs(int argc,
 // Print help information.
 void
 geomodelgrids::apps::Info::_printHelp(void) {
-    std::cout << "Usage: geogrids_info "
+    std::cout << "Usage: geomodelgrids_info "
               << "[--help] [--description] [--coordsys] [--values] [--blocks] [--all] --models=FILE_0,...,FILE_M\n\n"
               << "    --help    Print help information to stdout and exit.\n"
               << "    --description    Print model description.\n"
