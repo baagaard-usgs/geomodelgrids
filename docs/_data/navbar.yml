@@ -79,6 +79,8 @@ toc:
             url: /c-api/serial-query.html
           - page: ErrorHandler
             url: /c-api/utils-errorhandler.html
+          - page: Example
+            url: /c-api/example-query.html
       - page: Cluster (Parallel Interface)
         url: /c-api/parallel.html
   - title: Developer
