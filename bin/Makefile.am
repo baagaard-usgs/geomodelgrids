@@ -1,6 +1,7 @@
 bin_PROGRAMS = \
 	geomodelgrids_info \
-	geomodelgrids_query
+	geomodelgrids_query \
+	geomodelgrids_queryelev
 
 if ENABLE_PYTHON
 bin_SCRIPTS = \
@@ -15,5 +16,8 @@ geomodelgrids_info_LDADD = $(top_builddir)/libsrc/geomodelgrids/libgeomodelgrids
 geomodelgrids_query_SOURCES = query.cc
 geomodelgrids_query_LDADD = $(top_builddir)/libsrc/geomodelgrids/libgeomodelgrids.la
 
+geomodelgrids_queryelev_SOURCES = queryelev.cc
+geomodelgrids_queryelev_LDADD = $(top_builddir)/libsrc/geomodelgrids/libgeomodelgrids.la
 
-# End of file 
+
+# End of file
