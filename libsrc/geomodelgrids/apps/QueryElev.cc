@@ -158,7 +158,7 @@ geomodelgrids::apps::QueryElev::_parseArgs(int argc,
 // Print help information.
 void
 geomodelgrids::apps::QueryElev::_printHelp(void) {
-    std::cout << "Usage: geomodelgrids_query "
+    std::cout << "Usage: geomodelgrids_queryelev "
               << "[--help] --models=FILE_0,...,FILE_M --points=FILE_POINTS [--points-coordsys=PROJ|EPSG|WKT]"
               << "[--log=FILE_LOG] --output=FILE_OUTPUT\n\n"
               << "    --help                           Print help information to stdout and exit.\n"
