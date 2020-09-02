@@ -231,6 +231,7 @@ AC_CONFIG_FILES([Makefile
 	libsrc/geomodelgrids/utils/Makefile
 	bin/Makefile
 	examples/Makefile
+	examples/cxx-api/Makefile
 	examples/c-api/Makefile
 	geomodelgrids/Makefile
 	tests/Makefile
