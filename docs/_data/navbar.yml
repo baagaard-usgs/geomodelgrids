@@ -59,6 +59,8 @@ toc:
             url: /cxx-api/serial-hyperslab.html
           - page: HDF5
             url: /cxx-api/serial-hdf5.html
+          - page: Example
+            url: /cxx-api/example-query.html
       - page: Cluster (Parallel Interface)
         url: /cxx-api/parallel.html
       - page: Utilities (General)
