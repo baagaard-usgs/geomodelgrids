@@ -104,6 +104,11 @@ geomodelgrids::serial::TestHDF5::testConstructor(void) {
     HDF5 h5;
 
     CPPUNIT_ASSERT_EQUAL(hid_t(-1), h5._file);
+
+    // Check default cache parameters.
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in cache size.", size_t(16*1048576), h5._cacheSize);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of slots for cache.", size_t(63997), h5._cacheNumSlots);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in cache preemption policy.", 0.75, h5._cachePreemption);
 } // testConstructor
 
 
@@ -118,8 +123,16 @@ geomodelgrids::serial::TestHDF5::testOpenClose(void) {
     h5.open("../../data/one-block-flat.h5", H5F_ACC_RDONLY);CPPUNIT_ASSERT(h5.isOpen());
     h5.close();CPPUNIT_ASSERT(!h5.isOpen());
 
+    const size_t cacheSize = 1048576;
+    const size_t cacheNumSlots = 37;
+    const double cachePreemption = 0.6;
+    h5.setCache(cacheSize, cacheNumSlots, cachePreemption);
+
     h5.open("../../data/one-block-flat.h5", H5F_ACC_RDWR);CPPUNIT_ASSERT(h5.isOpen());
     h5.close();CPPUNIT_ASSERT(!h5.isOpen());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in cache size.", cacheSize, h5._cacheSize);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of slots for cache.", cacheNumSlots, h5._cacheNumSlots);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in cache preemption policy.", cachePreemption, h5._cachePreemption);
 
     h5.open("../../data/one-block-flat.h5", H5F_ACC_RDWR);CPPUNIT_ASSERT(h5.isOpen());
     CPPUNIT_ASSERT_THROW(h5.open("../../data/one-block-flat.h5", H5F_ACC_RDONLY), std::runtime_error); // already open
@@ -134,6 +147,7 @@ geomodelgrids::serial::TestHDF5::testOpenClose(void) {
 void
 geomodelgrids::serial::TestHDF5::testAccessors(void) {
     HDF5 h5;
+
     h5.open("../../data/three-blocks-flat.h5", H5F_ACC_RDONLY);
 
     CPPUNIT_ASSERT(h5.hasGroup("blocks"));

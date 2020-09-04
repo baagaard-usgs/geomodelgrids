@@ -28,6 +28,29 @@ public:
     /// Destructor
     ~HDF5(void);
 
+    /** Set chunk caching parameters.
+     *
+     * Must be called BEFORE open().
+     *
+     * The cache should be large enough to fit at least as many chunks as there are in a hyperslab.
+     * HDF5 uses a default cache size of 1 MB. We use a default of 16 MB.
+     *
+     * The number of slots should be a prime number at least 10 times the number of chunks that can fit into the cache;
+     * usually 100 times that number of chunks provides maximum performance.
+     * HDF5 uses a default of 521. We use a default of 63997.
+     *
+     * Chunk preemption policy for this dataset; value between 0 and 1 (default is 0.75).
+     *
+     * See https://portal.hdfgroup.org/display/HDF5/H5P_SET_CACHE for more information.
+     *
+     * @param[in] cacheSize Dataset cache size in bytes.
+     * @param[in] nslots Number of chunk slots.
+     * @param[in] preemption Preemption policy value.
+     */
+    void setCache(const size_t cacheSize,
+                  const size_t nslots,
+                  const double preemption=0.75);
+
     /** Open HDF5.
      *
      * @param[in] filename Name of HDF5 file
@@ -128,6 +151,9 @@ public:
 private:
 
     hid_t _file; ///< HDF5 file
+    size_t _cacheSize; ///< Dataset cache size (in bytes).
+    size_t _cacheNumSlots; ///< Number of chunk slots in dataset cache.
+    double _cachePreemption; ///< Preemption policy value for cache.
 
 }; // HDF5
 

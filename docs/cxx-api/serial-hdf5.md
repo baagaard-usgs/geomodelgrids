@@ -1,10 +1,11 @@
-# Serial HDF5 Object 
+# Serial HDF5 Object
 
 **Full name**: geomodelgrids::serial::HDF5
 
 ## Methods
 
 * [HDF5()](#hdf5)
+* [setCache()](#setcacheconst-size_t-cachesize-const-size_t-nslots-const-double-preemption)
 * [open(const char* filename, hid_t mode)](#openconst-char-filename-hid_t-mode)
 * [close()](#close)
 * [isOpen()](#bool-isopen)
@@ -21,6 +22,26 @@
 ### HDF5()
 
 Constructor.
+
+
+### setCache(const size_t cacheSize, const size_t nslots, const double preemption)
+
+Must be called BEFORE open().
+
+The cache should be large enough to fit at least as many chunks as there are in a hyperslab.
+HDF5 uses a default cache size of 1 MB. We use a default of 16 MB.
+
+The number of slots should be a prime number at least 10 times the number of chunks that can fit into the cache;
+usually 100 times that number of chunks provides maximum performance.
+HDF5 uses a default of 521. We use a default of 63997.
+
+Chunk preemption policy for this dataset; value between 0 and 1 (default is 0.75).
+
+See [H5Pset_cache](https://portal.hdfgroup.org/display/HDF5/H5P_SET_CACHE) for more information.
+
+* **cacheSize**[in] Dataset cache size in bytes.
+* **nslots**[in] Number of chunk slots.
+* **preemption**[in] Preemption policy value.
 
 
 ### open(const char* filename, hid_t mode)
