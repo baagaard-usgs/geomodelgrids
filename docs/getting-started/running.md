@@ -11,5 +11,5 @@ additional details on how this program works, see the "Using
 GeoModelGrids" section below.
 
 We also provide an API for calling the query routines from external
-code.  See the "C++ API" and "C API" sections below for more
+code.  See the "C++ API" and "C API" sections for more
 information.
