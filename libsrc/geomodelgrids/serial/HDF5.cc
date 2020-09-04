@@ -46,7 +46,10 @@ struct geomodelgrids::serial::_HDF5Access {
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
 geomodelgrids::serial::HDF5::HDF5(void) :
-    _file(H5_NULL)
+    _file(H5_NULL),
+    _cacheSize(16*1048576),
+    _cacheNumSlots(63997),
+    _cachePreemption(0.75)
 {} // constructor
 
 
@@ -55,6 +58,18 @@ geomodelgrids::serial::HDF5::HDF5(void) :
 geomodelgrids::serial::HDF5::~HDF5(void) {
     close();
 } // destructor
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Set chunk caching parameters.
+void
+geomodelgrids::serial::HDF5::setCache(const size_t cacheSize,
+                                      const size_t nslots,
+                                      const double preemption) {
+    _cacheSize = cacheSize;
+    _cacheNumSlots = nslots;
+    _cachePreemption = std::max(0.0, std::min(1.0, preemption));
+} // setDatasetCache
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -68,8 +83,13 @@ geomodelgrids::serial::HDF5::open(const char* filename,
         throw std::runtime_error("HDF5 file already open.");
     } // if
 
+    hid_t fileAccess = H5Pcreate(H5P_FILE_ACCESS);
+    if (fileAccess < 0) { throw std::runtime_error("Could not create property for HDF5 cache parameters."); }
+    herr_t err = H5Pset_cache(fileAccess, 0, _cacheNumSlots, _cacheSize, _cachePreemption);
+    if (err < 0) { throw std::runtime_error("Could not set HDF5 file cache properties."); }
+
     if (hid_t(H5F_ACC_TRUNC) == mode) {
-        _file = H5Fcreate(filename, mode, H5P_DEFAULT, H5P_DEFAULT);
+        _file = H5Fcreate(filename, mode, H5P_DEFAULT, fileAccess);
         if (_file < 0) {
             std::ostringstream msg;
             msg << "Could not create HDF5 file '" << filename << "'.";
@@ -77,13 +97,15 @@ geomodelgrids::serial::HDF5::open(const char* filename,
         } // if
 
     } else {
-        _file = H5Fopen(filename, mode, H5P_DEFAULT);
+        _file = H5Fopen(filename, mode, fileAccess);
         if (_file < 0) {
             std::ostringstream msg;
             msg << "Could not open existing HDF5 file '" << filename << "'.";
             throw std::runtime_error(msg.str());
         } // if
     } // if/else
+
+    H5Pclose(fileAccess);
 } // constructor
 
 
@@ -384,7 +406,6 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
 } // readAttribute
 
 
-#include <iostream>
 // ---------------------------------------------------------------------------------------------------------------------
 // Read dataset slice.
 void
