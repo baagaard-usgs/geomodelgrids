@@ -1,11 +1,12 @@
-# docker build --build-arg BASE_IMAGE=${VARIABLE_NAME} --build-arg TEST_COVERAGE=yes/no --build-arg PYTHON_COVERAGE=${COVERAGE_EXECUTABLE} -f DOCKERFILE . -t IMAGE_NAME .
+# docker build --build-arg BASE_IMAGE=${VARIABLE_NAME} --build-arg TEST_COVERAGE=yes/no --build-arg PYTHON_COVERAGE=${COVERAGE_EXECUTABLE} ENABLE_VALGRIND=yes/no  -f DOCKERFILE . -t IMAGE_NAME .
 
 
 ARG BASE_IMAGE
 from ${BASE_IMAGE} as src
 ARG TEST_COVERAGE=no
 ARG PYTHON_COVERAGE=coverage2
-ENV TEST_COVERAGE=${TEST_COVERAGE} PYTHON_COVERAGE=${PYTHON_COVERAGE}
+ARG ENABLE_VALGRIND=no
+ENV TEST_COVERAGE=${TEST_COVERAGE} PYTHON_COVERAGE=${PYTHON_COVERAGE} ENABLE_VALGRIND=${ENABLE_VALGRIND}
 
 LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
 
@@ -27,7 +28,7 @@ ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${HDF5_LIBDIR}:${PREFIX_DIR}/lib:${PREFIX
 ENV PYTHONPATH ${PYTHONPATH}:${PREFIX_DIR}/lib/python${PYTHON_VERSION}/site-packages:${PREFIX_DIR}/lib64/python${PYTHON_VERSION}/site-packages
 
 WORKDIR ${BUILD_DIR}
-RUN ${SRC_DIR}/configure --prefix=${PREFIX_DIR} --enable-python --enable-testing --enable-test-coverage=${TEST_COVERAGE} --with-python-coverage=${PYTHON_COVERAGE} CPPFLAGS="-I/opt/geomodelgrids/dependencies/include -I${HDF5_INCDIR}" LDFLAGS="-L/opt/geomodelgrids/dependencies/lib -L${HDF5_LIBDIR} --coverage"  CFLAGS="-g -O --coverage" CXXFLAGS="-g -O --coverage"
+RUN ${SRC_DIR}/configure --prefix=${PREFIX_DIR} --enable-python --enable-testing --enable-test-coverage=${TEST_COVERAGE} --with-python-coverage=${PYTHON_COVERAGE} --enable-valgrind=${ENABLE_VALGRIND} CPPFLAGS="-I/opt/geomodelgrids/dependencies/include -I${HDF5_INCDIR}" LDFLAGS="-L/opt/geomodelgrids/dependencies/lib -L${HDF5_LIBDIR} --coverage"  CFLAGS="-g -O --coverage" CXXFLAGS="-g -O --coverage"
 
 
 # TESTING ----------

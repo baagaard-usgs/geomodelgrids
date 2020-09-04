@@ -32,5 +32,4 @@ test_serial_LDADD = \
 	-lproj
 
 
-
 # End of file

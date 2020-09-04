@@ -39,6 +39,13 @@ AC_ARG_WITH([python-coverage],
 	[python_coverage="coverage2"])
 AC_SUBST(python_coverage)
 
+# VALGRIND
+AC_ARG_ENABLE([valgrind],
+	[  --enable-valgrind        Enable memory testing with valgrind (requires valgrind) [[default=no]]],
+	[if test "$enableval" = yes ; then enable_valgrind=yes; else enable_valgrind=no; fi],
+	[enable_valgrind=no])
+AM_CONDITIONAL([ENABLE_VALGRIND], [test "$enable_valgrind" = yes])
+
 # SPATIAL w/spatialdata extension
 AC_ARG_ENABLE([spatial],
 	[  --enable-spatial        Enable use of spatialdata package (requires spatialdata) [[default=no]]],
@@ -213,6 +220,14 @@ if test "$enable_test_coverage" = "yes" ; then
   AC_PATH_PROG(PYTHON_COVERAGE, $python_coverage)
   if test -z "$PYTHON_COVERAGE"; then
     AC_MSG_FAILURE([cannot find '$python_coverage' program for Python test coverage.])
+  fi
+fi
+
+# VALGRIND
+if test "$enable_valgrind" = "yes" ; then
+  AC_PATH_PROG(VALGRIND, valgrind)
+  if test -z "$VALGRIND"; then
+    AC_MSG_FAILURE([cannot find 'valgrind' program for memory testing with valgrind.])
   fi
 fi
 

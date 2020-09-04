@@ -11,6 +11,9 @@ jobs:
     - name: debian-stable-gcc8
       os: linux
       env: BASE_IMAGE=baagaard/geomodelgrids-testenv-debian-stable-gcc8 TEST_COVERAGE=yes PYTHON_COVERAGE=python3-coverage
+    - name: debian-stable-valgrind
+      os: linux
+      env: BASE_IMAGE=baagaard/geomodelgrids-testenv-debian-stable-gcc8 ENABLE_VALGRIND=yes
     - name: debian-testing-gcc9
       os: linux
       env: BASE_IMAGE=baagaard/geomodelgrids-testenv-debian-testing-gcc9 TEST_COVERAGE=yes PYTHON_COVERAGE=python3-coverage
@@ -53,7 +56,7 @@ git:
 
 
 install:
-  - docker build -t geomodelgrids-testenv --build-arg BASE_IMAGE=$BASE_IMAGE --build-arg TEST_COVERAGE=$TEST_COVERAGE --build-arg PYTHON_COVERAGE=$PYTHON_COVERAGE --target src -f docker/geomodelgrids-testenv .
+  - docker build -t geomodelgrids-testenv --build-arg BASE_IMAGE=$BASE_IMAGE --build-arg TEST_COVERAGE=$TEST_COVERAGE --build-arg PYTHON_COVERAGE=$PYTHON_COVERAGE --build-arg ENABLE_VALGRIND=$ENABLE_VALGRIND --target src -f docker/geomodelgrids-testenv .
 
 
 script:
