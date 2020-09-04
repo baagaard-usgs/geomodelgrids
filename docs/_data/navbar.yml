@@ -19,6 +19,8 @@ toc:
         url: /apps/info.html
       - page: The geomodelgrids_query command
         url: /apps/query.html
+      - page: The geomodelgrids_queryelev command
+        url: /apps/queryelev.html
   - title: Python scripting
     subitems:
       - page: Data structures
