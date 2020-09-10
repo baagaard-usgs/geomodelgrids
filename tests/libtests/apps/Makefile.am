@@ -10,6 +10,7 @@ test_apps_SOURCES = \
 	TestInfo.cc \
 	TestQuery.cc \
 	TestQueryElev.cc \
+	TestBorehole.cc \
 	../../data/ModelPoints.cc \
 	test_driver.cc
 

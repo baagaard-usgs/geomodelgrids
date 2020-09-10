@@ -21,6 +21,8 @@ toc:
         url: /apps/query.html
       - page: The geomodelgrids_queryelev command
         url: /apps/queryelev.html
+      - page: The geomodelgrids_borehole command
+        url: /apps/borehole.html
   - title: Python scripting
     subitems:
       - page: Data structures

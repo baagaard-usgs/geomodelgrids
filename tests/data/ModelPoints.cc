@@ -182,6 +182,31 @@ geomodelgrids::testdata::OneBlockFlatPoints::OneBlockFlatPoints(void) :
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
+geomodelgrids::testdata::OneBlockFlatBorehole::OneBlockFlatBorehole(void) :
+    ModelPoints(6) {
+    const size_t numPoints = 6;assert(_numPoints == numPoints);
+    static const double pointsLLE[numPoints*3] = {
+        37.381, -121.581, 0.0,
+        37.381, -121.581, -1.0e+3,
+        37.381, -121.581, -2.0e+3,
+        37.381, -121.581, -3.0e+3,
+        37.381, -121.581, -4.0e+3,
+        37.381, -121.581, -5.0e+3,
+    };_pointsLLE = pointsLLE;
+    _modelCRS = "EPSG:26910";
+
+    _ModelPoints::Domain domain;
+    domain.yAzimuth = 90.0;
+    domain.originX = 590000.0;
+    domain.originY = 4150000.0;
+    domain.zBottom = -5.0e+3;
+    domain.hasTopography = false;
+    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
+} // Constructor
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Constructor.
 geomodelgrids::testdata::OneBlockTopoPoints::OneBlockTopoPoints(void) :
     ModelPoints(5) {
     const size_t numPoints = 5;assert(_numPoints == numPoints);
@@ -280,6 +305,32 @@ geomodelgrids::testdata::ThreeBlocksTopoPoints::ThreeBlocksTopoPoints(void) :
         35.1, -117.7, -15.0e+3,
         34.7, -117.9, -25.0e+3,
         34.7, -117.5, 43.0,
+    };_pointsLLE = pointsLLE;
+    _modelCRS = "EPSG:3311";
+
+    _ModelPoints::Domain domain;
+    domain.yAzimuth = 330.0;
+    domain.originX = 200000.0;
+    domain.originY = -400000.0;
+    domain.zBottom = -45.0e+3;
+    domain.hasTopography = true;
+    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
+} // constructor
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Constructor.
+geomodelgrids::testdata::ThreeBlocksTopoBorehole::ThreeBlocksTopoBorehole(void) :
+    ModelPoints(6) {
+    const size_t numPoints = 6;assert(_numPoints == numPoints);
+    const double groundSurf = 151.69036995974;
+    static const double pointsLLE[numPoints*3] = {
+        35.1, -117.7, 0.0 + groundSurf,
+        35.1, -117.7, -5.0e+3 + groundSurf,
+        35.1, -117.7, -10.0e+3 + groundSurf,
+        35.1, -117.7, -15.0e+3 + groundSurf,
+        35.1, -117.7, -20.0e+3 + groundSurf,
+        35.1, -117.7, -25.0e+3 + groundSurf,
     };_pointsLLE = pointsLLE;
     _modelCRS = "EPSG:3311";
 

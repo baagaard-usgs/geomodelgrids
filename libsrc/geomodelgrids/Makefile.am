@@ -10,6 +10,7 @@ libgeomodelgrids_la_SOURCES = \
 	apps/Info.cc \
 	apps/Query.cc \
 	apps/QueryElev.cc \
+	apps/Borehole.cc \
 	serial/Query.cc \
 	serial/cquery.cc \
 	serial/ModelInfo.cc \
