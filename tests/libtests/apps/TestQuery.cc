@@ -263,7 +263,7 @@ geomodelgrids::apps::TestQuery::testPrintHelp(void) {
     Query query;
     query._printHelp();
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(864), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(865), coutHelp.str().length());
 } // testPrintHelp
 
 
@@ -284,7 +284,7 @@ geomodelgrids::apps::TestQuery::testRunHelp(void) {
     query.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(864), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(865), coutHelp.str().length());
 } // testRunHelp
 
 
@@ -311,6 +311,8 @@ geomodelgrids::apps::TestQuery::testRunOneBlockFlat(void) {
     query.run(nargs, const_cast<char**>(args));
 
     std::ifstream sin("one-block-flat.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
+    std::string comment;
+    std::getline(sin, comment);
     _TestQuery::checkQuery(sin, pointsOne);
     sin.close();
 
@@ -340,6 +342,8 @@ geomodelgrids::apps::TestQuery::testRunThreeBlocksTopo(void) {
     query.run(nargs, const_cast<char**>(args));
 
     std::ifstream sin("three-blocks-topo.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
+    std::string comment;
+    std::getline(sin, comment);
     _TestQuery::checkQuery(sin, pointsThree);
     sin.close();
 } // testRunThreeBlocksTopo
@@ -368,6 +372,8 @@ geomodelgrids::apps::TestQuery::testRunThreeBlocksSquash(void) {
     query.run(nargs, const_cast<char**>(args));
 
     std::ifstream sin("three-blocks-topo.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
+    std::string comment;
+    std::getline(sin, comment);
     _TestQuery::checkQuery(sin, pointsThree);
     sin.close();
 } // testRunThreeBlocksSquash
@@ -397,6 +403,9 @@ geomodelgrids::apps::TestQuery::testRunTwoModels(void) {
     query.run(nargs, const_cast<char**>(args));
 
     std::ifstream sin("two-models.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
+    std::string comment;
+    std::getline(sin, comment);
+
     _TestQuery::checkQuery(sin, pointsOne);
     _TestQuery::checkQuery(sin, pointsThree);
     sin.close();
@@ -439,10 +448,11 @@ geomodelgrids::apps::_TestQuery::checkQuery(std::istream& sin,
         for (size_t iDim = 0; iDim < spaceDim; ++iDim) {
             sin >> xyz[iDim];
         } // for
+        CPPUNIT_ASSERT_MESSAGE("Could not read coordinates of point in output.", sin.good());
 
         { // Value 'two'
             double value = NODATA_VALUE;
-            sin >> value;
+            sin >> value;CPPUNIT_ASSERT_MESSAGE("Could not read value 'two' in output.", sin.good());
 
             const double valueE = points.computeValueTwo(x, y, z);
 
@@ -456,7 +466,7 @@ geomodelgrids::apps::_TestQuery::checkQuery(std::istream& sin,
 
         { // Value 'one'
             double value = NODATA_VALUE;
-            sin >> value;
+            sin >> value;CPPUNIT_ASSERT_MESSAGE("Could not read value 'one' in output.", sin.good());
 
             const double valueE = points.computeValueOne(x, y, z);
 

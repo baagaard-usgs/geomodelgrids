@@ -54,16 +54,17 @@ geomodelgrids::apps::Query::run(int argc,
 
     std::ifstream sin(_pointsFilename);
     std::ofstream sout(_outputFilename);
+    sout << _createOutputHeader(argc, argv);
     const size_t numQueryValues = _valueNames.size();
     std::vector<double> values(numQueryValues);
     sout << std::scientific << std::setprecision(6);
     while (true) {
         double srcX, srcY, srcZ;
         sin >> srcX >> srcY >> srcZ;
-	if (sin.eof() || !sin.good()) {
-	  break;
-	} // if
-	
+        if (sin.eof() || !sin.good()) {
+            break;
+        } // if
+
         query.query(&values[0], srcX, srcY, srcZ);
 
         sout << std::setw(14) << srcX
@@ -117,7 +118,7 @@ geomodelgrids::apps::Query::_parseArgs(int argc,
         } // 'v'
         case 's': {
             _squash = true;
-            _squashMinElev = atof(optarg);
+            _squashMinElev = std::stod(optarg);
             break;
         } // 's'
         case 'p': {
@@ -147,7 +148,7 @@ geomodelgrids::apps::Query::_parseArgs(int argc,
         } // 'm'
         case '?': {
             std::ostringstream msg;
-            msg << "Error passing command line arguments:\n";
+            msg << "Error parsing command line arguments:\n";
             for (int i = 0; i < argc; ++i) {
                 msg << argv[i] << " ";
             } // for
@@ -193,10 +194,25 @@ geomodelgrids::apps::Query::_printHelp(void) {
               << "    --models=FILE_0,...,FILE_M       Models to query (in order).\n"
               << "    --points=FILE_POINTS             Read input points from FILE_POINTS.\n"
               << "    --points-coordsys=PROJ|EPSG|WKT  Coordinate system of input points (default=EPSG:4326).\n"
-              << "    --log=FILE_LOG                   Write logging information to FILE_LOG."
+              << "    --log=FILE_LOG                   Write logging information to FILE_LOG.\n"
               << "    --output=FILE_OUTPUT             Write values to FILE_OUTPUT."
               << std::endl;
 } // _printHelp
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Create header for output.
+std::string
+geomodelgrids::apps::Query::_createOutputHeader(int argc,
+                                                char* argv[]) {
+    std::ostringstream header;
+    header << "#";
+    for (int i = 0; i < argc; ++i) {
+        header << " " << argv[i];
+    } // for
+    header << "\n";
+    return header.str();
+} // _createOutputHeader
 
 
 // End of file

@@ -249,7 +249,7 @@ geomodelgrids::apps::TestQueryElev::testPrintHelp(void) {
     QueryElev query;
     query._printHelp();
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(611), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(612), coutHelp.str().length());
 } // testPrintHelp
 
 
@@ -270,7 +270,7 @@ geomodelgrids::apps::TestQueryElev::testRunHelp(void) {
     query.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(611), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(612), coutHelp.str().length());
 } // testRunHelp
 
 
@@ -296,6 +296,8 @@ geomodelgrids::apps::TestQueryElev::testRunOneBlockFlat(void) {
     query.run(nargs, const_cast<char**>(args));
 
     std::ifstream sin("one-block-flat.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
+    std::string comment;
+    std::getline(sin, comment);
     bool hasTopography = false;
     _TestQueryElev::checkQuery(sin, pointsOne, hasTopography);
     sin.close();
@@ -325,6 +327,8 @@ geomodelgrids::apps::TestQueryElev::testRunThreeBlocksTopo(void) {
     query.run(nargs, const_cast<char**>(args));
 
     std::ifstream sin("three-blocks-topo.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
+    std::string comment;
+    std::getline(sin, comment);
     bool hasTopography = true;
     _TestQueryElev::checkQuery(sin, pointsThree, hasTopography);
     sin.close();
@@ -354,6 +358,8 @@ geomodelgrids::apps::TestQueryElev::testRunTwoModels(void) {
     query.run(nargs, const_cast<char**>(args));
 
     std::ifstream sin("two-models.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
+    std::string comment;
+    std::getline(sin, comment);
     bool hasTopography = false;
     _TestQueryElev::checkQuery(sin, pointsOne, hasTopography);
     hasTopography = true;
@@ -398,9 +404,10 @@ geomodelgrids::apps::_TestQueryElev::checkQuery(std::istream& sin,
         for (size_t iDim = 0; iDim < 2; ++iDim) {
             sin >> xy[iDim];
         } // for
+        CPPUNIT_ASSERT_MESSAGE("Could not read coordinates of point in output.", sin.good());
 
         double value = NODATA_VALUE;
-        sin >> value;
+        sin >> value;CPPUNIT_ASSERT_MESSAGE("Could not read elevation in output.", sin.good());
 
         const double valueE = hasTopography ? points.computeElevation(x, y) : 0.0;
 

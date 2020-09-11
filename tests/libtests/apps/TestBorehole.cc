@@ -352,13 +352,11 @@ geomodelgrids::apps::_TestBorehole::checkBorehole(std::istream& sin,
         std::getline(sin, comment);
 
         double zBH;
-        sin >> zBH;
-        if (!sin.good()) { throw std::runtime_error("Could not read elevation in borehole."); }
+        sin >> zBH;CPPUNIT_ASSERT_MESSAGE("Could not read elevation in borehole.", sin.good());
 
         { // Value 'two'
             double value = NODATA_VALUE;
-            sin >> value;
-            if (!sin.good()) { throw std::runtime_error("Could not read value 'two' in borehole."); }
+            sin >> value;CPPUNIT_ASSERT_MESSAGE("Could not read value 'two' in output.", sin.good());
 
             const double valueE = points.computeValueTwo(x, y, z);
 
@@ -372,8 +370,7 @@ geomodelgrids::apps::_TestBorehole::checkBorehole(std::istream& sin,
 
         { // Value 'one'
             double value = NODATA_VALUE;
-            sin >> value;
-            if (!sin.good()) { throw std::runtime_error("Could not read value 'two' in borehole."); }
+            sin >> value;CPPUNIT_ASSERT_MESSAGE("Could not read value 'one' in output.", sin.good());
 
             const double valueE = points.computeValueOne(x, y, z);
 

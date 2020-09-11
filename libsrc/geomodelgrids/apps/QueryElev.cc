@@ -50,6 +50,7 @@ geomodelgrids::apps::QueryElev::run(int argc,
 
     std::ifstream sin(_pointsFilename);
     std::ofstream sout(_outputFilename);
+    sout << _createOutputHeader(argc, argv);
     sout << std::scientific << std::setprecision(6);
     while (true) {
         double srcX, srcY;
@@ -122,7 +123,7 @@ geomodelgrids::apps::QueryElev::_parseArgs(int argc,
         } // 'm'
         case '?': {
             std::ostringstream msg;
-            msg << "Error passing command line arguments:\n";
+            msg << "Error parsing command line arguments:\n";
             for (int i = 0; i < argc; ++i) {
                 msg << argv[i] << " ";
             } // for
@@ -165,10 +166,25 @@ geomodelgrids::apps::QueryElev::_printHelp(void) {
               << "    --models=FILE_0,...,FILE_M       Models to query (in order).\n"
               << "    --points=FILE_POINTS             Read input points from FILE_POINTS.\n"
               << "    --points-coordsys=PROJ|EPSG|WKT  Coordinate system of input points (default=EPSG:4326).\n"
-              << "    --log=FILE_LOG                   Write logging information to FILE_LOG."
+              << "    --log=FILE_LOG                   Write logging information to FILE_LOG.\n"
               << "    --output=FILE_OUTPUT             Write values to FILE_OUTPUT."
               << std::endl;
 } // _printHelp
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Create header for output.
+std::string
+geomodelgrids::apps::QueryElev::_createOutputHeader(int argc,
+                                                    char* argv[]) {
+    std::ostringstream header;
+    header << "#";
+    for (int i = 0; i < argc; ++i) {
+        header << " " << argv[i];
+    } // for
+    header << "\n";
+    return header.str();
+} // _createOutputHeader
 
 
 // End of file
