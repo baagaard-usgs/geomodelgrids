@@ -54,6 +54,14 @@ private:
     /// Print help information.
     void _printHelp(void);
 
+    /** Create header for output file.
+     *
+     * @param argc[in] Number of arguments passed.
+     * @param argv[in] Array of input arguments.
+     */
+    std::string _createOutputHeader(int argc,
+                                    char* argv[]);
+
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
