@@ -223,7 +223,7 @@ geomodelgrids::apps::Borehole::_createOutputHeader(int argc,
     std::ostringstream header;
     header << "#";
     for (int i = 0; i < argc; ++i) {
-        header << " " << argv;
+        header << " " << argv[i];
     } // for
     header << "\n";
     return header.str();
