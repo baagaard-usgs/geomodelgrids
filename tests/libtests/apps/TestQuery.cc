@@ -448,10 +448,11 @@ geomodelgrids::apps::_TestQuery::checkQuery(std::istream& sin,
         for (size_t iDim = 0; iDim < spaceDim; ++iDim) {
             sin >> xyz[iDim];
         } // for
+        CPPUNIT_ASSERT_MESSAGE("Could not read coordinates of point in output.", sin.good());
 
         { // Value 'two'
             double value = NODATA_VALUE;
-            sin >> value;
+            sin >> value;CPPUNIT_ASSERT_MESSAGE("Could not read value 'two' in output.", sin.good());
 
             const double valueE = points.computeValueTwo(x, y, z);
 
@@ -465,7 +466,7 @@ geomodelgrids::apps::_TestQuery::checkQuery(std::istream& sin,
 
         { // Value 'one'
             double value = NODATA_VALUE;
-            sin >> value;
+            sin >> value;CPPUNIT_ASSERT_MESSAGE("Could not read value 'one' in output.", sin.good());
 
             const double valueE = points.computeValueOne(x, y, z);
 

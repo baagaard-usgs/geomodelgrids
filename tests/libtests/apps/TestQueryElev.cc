@@ -404,9 +404,10 @@ geomodelgrids::apps::_TestQueryElev::checkQuery(std::istream& sin,
         for (size_t iDim = 0; iDim < 2; ++iDim) {
             sin >> xy[iDim];
         } // for
+        CPPUNIT_ASSERT_MESSAGE("Could not read coordinates of point in output.", sin.good());
 
         double value = NODATA_VALUE;
-        sin >> value;
+        sin >> value;CPPUNIT_ASSERT_MESSAGE("Could not read elevation in output.", sin.good());
 
         const double valueE = hasTopography ? points.computeElevation(x, y) : 0.0;
 
