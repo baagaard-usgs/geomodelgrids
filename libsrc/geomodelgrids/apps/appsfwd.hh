@@ -6,6 +6,7 @@ namespace geomodelgrids {
         class Info;
         class Query;
         class QueryElev;
+        class Borehole;
     } // apps
 } // geomodelgrids
 

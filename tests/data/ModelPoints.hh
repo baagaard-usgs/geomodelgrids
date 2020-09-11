@@ -10,10 +10,12 @@ namespace geomodelgrids {
     namespace testdata {
         class ModelPoints;
         class OneBlockFlatPoints;
+        class OneBlockFlatBorehole;
         class OneBlockTopoPoints;
         class OneBlockSquashPoints;
         class ThreeBlocksFlatPoints;
         class ThreeBlocksTopoPoints;
+        class ThreeBlocksTopoBorehole;
         class ThreeBlocksSquashPoints;
         class OutsideDomainPoints;
     } // testdata
@@ -104,6 +106,12 @@ public:
     OneBlockFlatPoints(void);
 }; // OneBlockFlatPoints
 
+class geomodelgrids::testdata::OneBlockFlatBorehole : public ModelPoints {
+public:
+
+    OneBlockFlatBorehole(void);
+}; // OneBlockFlatBorehole
+
 class geomodelgrids::testdata::OneBlockTopoPoints : public ModelPoints {
 public:
 
@@ -127,6 +135,12 @@ public:
 
     ThreeBlocksTopoPoints(void);
 }; // ThreeBlocksTopoPoints
+
+class geomodelgrids::testdata::ThreeBlocksTopoBorehole : public ModelPoints {
+public:
+
+    ThreeBlocksTopoBorehole(void);
+}; // ThreeBlocksTopoBorehole
 
 class geomodelgrids::testdata::ThreeBlocksSquashPoints : public ModelPoints {
 public:
