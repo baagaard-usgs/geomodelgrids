@@ -296,6 +296,8 @@ geomodelgrids::apps::TestQueryElev::testRunOneBlockFlat(void) {
     query.run(nargs, const_cast<char**>(args));
 
     std::ifstream sin("one-block-flat.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
+    std::string comment;
+    std::getline(sin, comment);
     bool hasTopography = false;
     _TestQueryElev::checkQuery(sin, pointsOne, hasTopography);
     sin.close();
@@ -325,6 +327,8 @@ geomodelgrids::apps::TestQueryElev::testRunThreeBlocksTopo(void) {
     query.run(nargs, const_cast<char**>(args));
 
     std::ifstream sin("three-blocks-topo.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
+    std::string comment;
+    std::getline(sin, comment);
     bool hasTopography = true;
     _TestQueryElev::checkQuery(sin, pointsThree, hasTopography);
     sin.close();
@@ -354,6 +358,8 @@ geomodelgrids::apps::TestQueryElev::testRunTwoModels(void) {
     query.run(nargs, const_cast<char**>(args));
 
     std::ifstream sin("two-models.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
+    std::string comment;
+    std::getline(sin, comment);
     bool hasTopography = false;
     _TestQueryElev::checkQuery(sin, pointsOne, hasTopography);
     hasTopography = true;
