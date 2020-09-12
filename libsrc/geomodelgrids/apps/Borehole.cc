@@ -7,7 +7,7 @@
 
 #include <getopt.h> // USES getopt_long()
 #include <iomanip>
-#include <fstream> // USES std::ifstream, std::ofstream
+#include <fstream> // USES std::ofstream
 #include <sstream> // USES std::ostringstream, std::istringstream
 #include <cassert> // USES assert()
 #include <iostream> // USES std::cout
@@ -63,6 +63,11 @@ geomodelgrids::apps::Borehole::run(int argc,
     const size_t numPoints = size_t(1 + _maxDepth / _dz);
 
     std::ofstream sout(_outputFilename);
+    if (!sout.is_open() && !sout.good()) {
+      std::ostringstream msg;
+      msg << "Could not open output file '" << _outputFilename << "' for writing.";
+      throw std::runtime_error(msg.str().c_str());
+    } // if
     sout << _createOutputHeader(argc, argv);
 
     const size_t numQueryValues = _valueNames.size();
@@ -169,9 +174,16 @@ geomodelgrids::apps::Borehole::_parseArgs(int argc,
         } // switch
     } // while
 
+    if (1 == argc) {
+      _showHelp = true;
+    } // if
     if (!_showHelp) { // Verify required arguments were provided.
         bool optionsOkay = true;
         std::ostringstream msg;
+        if (_valueNames.empty()) {
+            msg << "    - Missing names of output values. Use --values=VALUE_0,...,VALUE_N\n";
+            optionsOkay = false;
+        } // if
         if (_outputFilename.empty()) {
             msg << "    - Missing filename for output. Use --output=FILE_OUTPUT\n";
             optionsOkay = false;
@@ -197,20 +209,19 @@ geomodelgrids::apps::Borehole::_parseArgs(int argc,
 void
 geomodelgrids::apps::Borehole::_printHelp(void) {
     std::cout << "Usage: geomodelgrids_borehole "
-              << "[--help] [--log=FILE_LOG] --location=X,Y --models=FILE_0,...,FILE_M --output=FILE_OUTPUT "
-              << "[--values=VALUE_0,...,VALUE_N] [--max-depth=Z] [--dz=RESOLUTION] [--points-coordsys=PROJ|EPSG|WKT]\n\n"
+              << "[--help] [--log=FILE_LOG] --location=X,Y --values=VALUE_0,...,VALUE_N --models=FILE_0,...,FILE_M "
+	      << "--output=FILE_OUTPUT [--max-depth=Z] [--dz=RESOLUTION] [--points-coordsys=PROJ|EPSG|WKT]\n\n"
               << "    --help                           Print help information to stdout and exit.\n"
               << "    --log=FILE_LOG                   Write logging information to FILE_LOG.\n"
               << "    --location=X,Y                   Location of virtual borehole in point coordinate system.\n"
+              << "    --values=VALUE_0,...,VALUE_N     Values (in order) to return in borehole query.\n"
               << "    --models=FILE_0,...,FILE_M       Models to query (in order).\n"
               << "    --output=FILE_OUTPUT             Write values to FILE_OUTPUT.\n"
-              << "    --values=VALUE_0,...,VALUE_N     Values (in order) to return in borehole query (default is all "
-              << "values in model).\n"
               << "    --max-depth=DEPTH                Depth extent of virtual borehole in point coordinate system "
               << "vertical units (default=5000m).\n"
               << "    --dz=RESOLUTION                  Vertical resolution of query points in virtual borehole "
               << "in point coordinate system vertical units (default=10m).\n"
-              << "    --points-coordsys=PROJ|EPSG|WKT  Coordinate system of input points (default=EPSG:4326).\n"
+              << "    --points-coordsys=PROJ|EPSG|WKT  Coordinate system of input points (default=EPSG:4326)."
               << std::endl;
 } // _printHelp
 

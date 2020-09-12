@@ -27,7 +27,9 @@ class geomodelgrids::apps::TestQuery : public CppUnit::TestFixture {
     CPPUNIT_TEST_SUITE(TestQuery);
 
     CPPUNIT_TEST(testConstructor);
+    CPPUNIT_TEST(testParseNoArgs);
     CPPUNIT_TEST(testParseArgsHelp);
+    CPPUNIT_TEST(testParseArgsNoValues);
     CPPUNIT_TEST(testParseArgsNoPoints);
     CPPUNIT_TEST(testParseArgsNoModels);
     CPPUNIT_TEST(testParseArgsNoOutput);
@@ -40,6 +42,8 @@ class geomodelgrids::apps::TestQuery : public CppUnit::TestFixture {
     CPPUNIT_TEST(testRunThreeBlocksTopo);
     CPPUNIT_TEST(testRunThreeBlocksSquash);
     CPPUNIT_TEST(testRunTwoModels);
+    CPPUNIT_TEST(testRunBadInput);
+    CPPUNIT_TEST(testRunBadOutput);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -52,8 +56,14 @@ public:
     /// Test constructor.
     void testConstructor(void);
 
+    /// Test _parseArgs() with no args.
+    void testParseNoArgs(void);
+
     /// Test _parseArgs() with --help.
     void testParseArgsHelp(void);
+
+    /// Test _parseArgs() missing --values.
+    void testParseArgsNoValues(void);
 
     /// Test _parseArgs() missing --points.
     void testParseArgsNoPoints(void);
@@ -90,6 +100,12 @@ public:
 
     /// Test run() wth one-block-flat and three-blocks-topo.
     void testRunTwoModels(void);
+
+    /// Test run() wth bad input.
+    void testRunBadInput(void);
+
+    /// Test run() wth bad output.
+    void testRunBadOutput(void);
 
 }; // class TestQuery
 CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::apps::TestQuery);
@@ -135,6 +151,19 @@ geomodelgrids::apps::TestQuery::testConstructor(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Test _parseArgs() with no args.
+void
+geomodelgrids::apps::TestQuery::testParseNoArgs(void) {
+    const int nargs = 1;
+    const char* const args[nargs] = { "test", };
+
+    Query query;
+    query._parseArgs(nargs, const_cast<char**>(args));
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in help.", query._showHelp);
+} // testParseNoArgs
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Test _parseArgs() with --help.
 void
 geomodelgrids::apps::TestQuery::testParseArgsHelp(void) {
@@ -148,11 +177,23 @@ geomodelgrids::apps::TestQuery::testParseArgsHelp(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Test _parseArgs() without --values.
+void
+geomodelgrids::apps::TestQuery::testParseArgsNoValues(void) {
+    const int nargs = 4;
+    const char* const args[nargs] = { "test", "--models=A", "--points=B", "--output=C", };
+
+    Query query;
+    CPPUNIT_ASSERT_THROW(query._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
+} // testParseArgsNoValues
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Test _parseArgs() without --points.
 void
 geomodelgrids::apps::TestQuery::testParseArgsNoPoints(void) {
-    const int nargs = 2;
-    const char* const args[nargs] = { "test", "--models=A" };
+    const int nargs = 4;
+    const char* const args[nargs] = { "test", "--values=A", "--models=B", "--output=C", };
 
     Query query;
     CPPUNIT_ASSERT_THROW(query._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
@@ -163,8 +204,8 @@ geomodelgrids::apps::TestQuery::testParseArgsNoPoints(void) {
 // Test _parseArgs() without --models.
 void
 geomodelgrids::apps::TestQuery::testParseArgsNoModels(void) {
-    const int nargs = 2;
-    const char* const args[nargs] = { "test", "--points=A" };
+    const int nargs = 4;
+    const char* const args[nargs] = { "test", "--values=A", "--points=B", "--output=C", };
 
     Query query;
     CPPUNIT_ASSERT_THROW(query._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
@@ -175,8 +216,8 @@ geomodelgrids::apps::TestQuery::testParseArgsNoModels(void) {
 // Test _parseArgs() without --output.
 void
 geomodelgrids::apps::TestQuery::testParseArgsNoOutput(void) {
-    const int nargs = 3;
-    const char* const args[nargs] = { "test", "--points=A", "--models=B" };
+    const int nargs = 4;
+    const char* const args[nargs] = { "test", "--values=A", "--points=B", "--models=C" };
 
     Query query;
     CPPUNIT_ASSERT_THROW(query._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
@@ -199,18 +240,22 @@ geomodelgrids::apps::TestQuery::testParseArgsWrong(void) {
 // Test _parseArgs() with required arguments.
 void
 geomodelgrids::apps::TestQuery::testParseArgsMinimal(void) {
-    const int nargs = 4;
+    const int nargs = 5;
     const char* const args[nargs] = {
         "test",
-        "--models=A",
+	"--values=one,two",
+        "--models=B",
         "--points=points.in",
         "--output=points.out",
     };
 
     Query query;
     query._parseArgs(nargs, const_cast<char**>(args));
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of values.", size_t(2), query._valueNames.size());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in values.", std::string("one"), query._valueNames[0]);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in values.", std::string("two"), query._valueNames[1]);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of models.", size_t(1), query._modelFilenames.size());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in models.", std::string("A"), query._modelFilenames[0]);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in models.", std::string("B"), query._modelFilenames[0]);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in points.", std::string("points.in"), query._pointsFilename);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in output.", std::string("points.out"), query._outputFilename);
     CPPUNIT_ASSERT_MESSAGE("Mismatch in help for minimal args.", !query._showHelp);
@@ -224,12 +269,12 @@ geomodelgrids::apps::TestQuery::testParseArgsAll(void) {
     const int nargs = 8;
     const char* const args[nargs] = {
         "test",
+        "--values=one,two,three",
         "--models=A",
         "--points=points.in",
         "--output=points.out",
         "--points-coordsys=EPSG:26910",
         "--squash-min-elev=-2.0e+3",
-        "--values=one,two,three",
         "--log=error.log",
     };
     const size_t numValues = 3;
@@ -237,16 +282,16 @@ geomodelgrids::apps::TestQuery::testParseArgsAll(void) {
 
     Query query;
     query._parseArgs(nargs, const_cast<char**>(args));
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of values.", numValues, query._valueNames.size());
+    for (size_t i = 0; i < numValues; ++i) {
+        CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in value name.", std::string(valueNamesE[i]), query._valueNames[i]);
+    } // for
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of models.", size_t(1), query._modelFilenames.size());
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in models.", std::string("A"), query._modelFilenames[0]);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in points.", std::string("points.in"), query._pointsFilename);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in output.", std::string("points.out"), query._outputFilename);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in points coordsys.", std::string("EPSG:26910"), query._pointsCRS);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in squash min elevation.", -2.0e+3, query._squashMinElev);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of values.", numValues, query._valueNames.size());
-    for (size_t i = 0; i < numValues; ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in value name.", std::string(valueNamesE[i]), query._valueNames[i]);
-    } // for
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in log.", std::string("error.log"), query._logFilename);
     CPPUNIT_ASSERT_MESSAGE("Mismatch in help.", !query._showHelp);
 } // testParseArgsAll
@@ -263,7 +308,7 @@ geomodelgrids::apps::TestQuery::testPrintHelp(void) {
     Query query;
     query._printHelp();
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(865), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(876), coutHelp.str().length());
 } // testPrintHelp
 
 
@@ -284,7 +329,7 @@ geomodelgrids::apps::TestQuery::testRunHelp(void) {
     query.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(865), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(876), coutHelp.str().length());
 } // testRunHelp
 
 
@@ -295,11 +340,11 @@ geomodelgrids::apps::TestQuery::testRunOneBlockFlat(void) {
     const int nargs = 7;
     const char* const args[nargs] = {
         "test",
+        "--values=two,one",
         "--models=../../data/one-block-flat.h5",
         "--points=one-block-flat.in",
         "--output=one-block-flat.out",
         "--points-coordsys=EPSG:4326",
-        "--values=two,one",
         "--log=error.log",
     };
     geomodelgrids::testdata::OneBlockFlatPoints pointsOne;
@@ -327,11 +372,11 @@ geomodelgrids::apps::TestQuery::testRunThreeBlocksTopo(void) {
     const int nargs = 6;
     const char* const args[nargs] = {
         "test",
+        "--values=two,one",
         "--models=../../data/three-blocks-topo.h5",
         "--points=three-blocks-topo.in",
         "--output=three-blocks-topo.out",
         "--points-coordsys=EPSG:4326",
-        "--values=two,one",
     };
     geomodelgrids::testdata::ThreeBlocksTopoPoints pointsThree;
     std::ofstream sout("three-blocks-topo.in");CPPUNIT_ASSERT(sout.is_open() && sout.good());
@@ -356,11 +401,11 @@ geomodelgrids::apps::TestQuery::testRunThreeBlocksSquash(void) {
     const int nargs = 7;
     const char* const args[nargs] = {
         "test",
+        "--values=two,one",
         "--models=../../data/three-blocks-topo.h5",
         "--points=three-blocks-topo.in",
         "--output=three-blocks-topo.out",
         "--points-coordsys=EPSG:4326",
-        "--values=two,one",
         "--squash-min-elev=-3.0e+3"
     };
     geomodelgrids::testdata::ThreeBlocksSquashPoints pointsThree(-3.0e+3);
@@ -410,6 +455,44 @@ geomodelgrids::apps::TestQuery::testRunTwoModels(void) {
     _TestQuery::checkQuery(sin, pointsThree);
     sin.close();
 } // testRunTwoModels
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Test run() with bad input.
+void
+geomodelgrids::apps::TestQuery::testRunBadInput(void) {
+    const int nargs = 6;
+    const char* const args[nargs] = {
+        "test",
+        "--models=../../data/one-block-flat.h5",
+        "--points=blah/two-models.in",
+        "--output=two-models.out",
+        "--points-coordsys=EPSG:4326",
+        "--values=two,one",
+    };
+    Query query;
+    CPPUNIT_ASSERT_THROW(query.run(nargs, const_cast<char**>(args)), std::runtime_error);
+
+} // testRunBadInput
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Test run() with bad output.
+void
+geomodelgrids::apps::TestQuery::testRunBadOutput(void) {
+    const int nargs = 6;
+    const char* const args[nargs] = {
+        "test",
+        "--models=../../data/one-block-flat.h5",
+        "--points=two-models.in",
+        "--output=blah/two-models.out",
+        "--points-coordsys=EPSG:4326",
+        "--values=two,one",
+    };
+    Query query;
+    CPPUNIT_ASSERT_THROW(query.run(nargs, const_cast<char**>(args)), std::runtime_error);
+
+} // testRunBadOutput
 
 
 // ---------------------------------------------------------------------------------------------------------------------

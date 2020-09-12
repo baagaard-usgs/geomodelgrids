@@ -150,13 +150,14 @@ geomodelgrids::apps::Info::_parseArgs(int argc,
 void
 geomodelgrids::apps::Info::_printHelp(void) {
     std::cout << "Usage: geomodelgrids_info "
-              << "[--help] [--description] [--coordsys] [--values] [--blocks] [--all] --models=FILE_0,...,FILE_M\n\n"
-              << "    --help    Print help information to stdout and exit.\n"
-              << "    --description    Print model description.\n"
-              << "    --coordsys       Print model coordinate system.\n"
-              << "    --values         Print names and units of values stored in the model.\n"
-              << "    --blocks         Print description of blocks.\n"
-              << "    --all            Print description, coordinate system, values, and blocks"
+              << "[--help] --models=FILE_0,...,FILE_M [--description] [--coordsys] [--values] [--blocks] [--all]\n\n"
+              << "    --help                       Print help information to stdout and exit.\n"
+              << "    --models=FILE_0,...,FILE_M   Models to query (in order).\n"
+              << "    --description                Display model description.\n"
+              << "    --coordsys                   Display model coordinate system.\n"
+              << "    --values                     Display names and units of values stored in the model.\n"
+              << "    --blocks                     Display description of blocks.\n"
+              << "    --all                        Display description, coordinate system, values, and blocks"
               << std::endl;
 } // _printHelp
 

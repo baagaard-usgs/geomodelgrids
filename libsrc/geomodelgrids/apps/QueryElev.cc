@@ -49,7 +49,19 @@ geomodelgrids::apps::QueryElev::run(int argc,
     query.initialize(_modelFilenames, valueNames, _pointsCRS);
 
     std::ifstream sin(_pointsFilename);
+    if (!sin.is_open() && !sin.good()) {
+      std::ostringstream msg;
+      msg << "Could not open points file '" << _pointsFilename << "' for reading.";
+      throw std::runtime_error(msg.str().c_str());
+    } // if
+
     std::ofstream sout(_outputFilename);
+    if (!sout.is_open() && !sout.good()) {
+      std::ostringstream msg;
+      msg << "Could not open output file '" << _outputFilename << "' for writing.";
+      throw std::runtime_error(msg.str().c_str());
+    } // if
+
     sout << _createOutputHeader(argc, argv);
     sout << std::scientific << std::setprecision(6);
     while (true) {
@@ -132,6 +144,9 @@ geomodelgrids::apps::QueryElev::_parseArgs(int argc,
         } // switch
     } // while
 
+    if (1 == argc) {
+      _showHelp = true;
+    } // if
     if (!_showHelp) { // Verify required arguments were provided.
         bool optionsOkay = true;
         std::ostringstream msg;
@@ -160,14 +175,14 @@ geomodelgrids::apps::QueryElev::_parseArgs(int argc,
 void
 geomodelgrids::apps::QueryElev::_printHelp(void) {
     std::cout << "Usage: geomodelgrids_queryelev "
-              << "[--help] --models=FILE_0,...,FILE_M --points=FILE_POINTS [--points-coordsys=PROJ|EPSG|WKT]"
-              << "[--log=FILE_LOG] --output=FILE_OUTPUT\n\n"
+              << "[--help] [--log=FILE_LOG] --models=FILE_0,...,FILE_M --points=FILE_POINTS --output=FILE_OUTPUT "
+              << "[--points-coordsys=PROJ|EPSG|WKT]\n\n"
               << "    --help                           Print help information to stdout and exit.\n"
+              << "    --log=FILE_LOG                   Write logging information to FILE_LOG.\n"
               << "    --models=FILE_0,...,FILE_M       Models to query (in order).\n"
               << "    --points=FILE_POINTS             Read input points from FILE_POINTS.\n"
-              << "    --points-coordsys=PROJ|EPSG|WKT  Coordinate system of input points (default=EPSG:4326).\n"
-              << "    --log=FILE_LOG                   Write logging information to FILE_LOG.\n"
-              << "    --output=FILE_OUTPUT             Write values to FILE_OUTPUT."
+              << "    --output=FILE_OUTPUT             Write values to FILE_OUTPUT.\n"
+              << "    --points-coordsys=PROJ|EPSG|WKT  Coordinate system of input points (default=EPSG:4326)."
               << std::endl;
 } // _printHelp
 
