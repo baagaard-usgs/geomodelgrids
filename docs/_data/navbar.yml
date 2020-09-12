@@ -13,15 +13,15 @@ toc:
         url: /getting-started/install.html
       - page: Running the code
         url: /getting-started/running.html
-  - title: Using GeoModelGrids
+  - title: Command line programs
     subitems:
-      - page: The geomodelgrids_info command
+      - page: geomodelgrids_info
         url: /apps/info.html
-      - page: The geomodelgrids_query command
+      - page: geomodelgrids_query
         url: /apps/query.html
-      - page: The geomodelgrids_queryelev command
+      - page: geomodelgrids_queryelev
         url: /apps/queryelev.html
-      - page: The geomodelgrids_borehole command
+      - page: geomodelgrids_borehole
         url: /apps/borehole.html
   - title: Python scripting
     subitems:
