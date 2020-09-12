@@ -77,7 +77,8 @@ geomodelgrids::apps::Borehole::run(int argc,
         const double elevation = groundSurf - _dz*iPt;
         query.query(&values[0], _location[0], _location[1], elevation);
 
-        sout << std::setw(14) << elevation;
+	const double depth = groundSurf - elevation;
+        sout << std::setw(14) << elevation << std::setw(14) << depth;
         for (size_t i = 0; i < numQueryValues; ++i) {
             sout << std::setw(14) << values[i];
         } // for
