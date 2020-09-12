@@ -55,7 +55,8 @@ Turn squashing on/off
 
 ### double queryElevation(const double x, const double y)
 
-Query model for elevation of the ground surface (topograpy) at a point.
+Query model for elevation of the ground surface (topograpy) at a point
+using bilinear interpolation (interpolation along each model axis).
 
 * **x**[in] X coordinate of of point in (in input CRS).
 * **y**[in] Y coordinate of of point in (in input CRS).
@@ -64,7 +65,8 @@ Query model for elevation of the ground surface (topograpy) at a point.
 
 ### query(const double* values, const double x, const double y, const double z)
 
-Query model for values at a point.
+Query model for values at a point using trilinear interpolation
+(interpolation along each model axis).
 
 * **values**[out] Array of values (must be preallocated).
 * **x**[in] X coordinate of of point in (in input CRS).
