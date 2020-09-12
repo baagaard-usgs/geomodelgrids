@@ -53,7 +53,19 @@ geomodelgrids::apps::Query::run(int argc,
     } // if
 
     std::ifstream sin(_pointsFilename);
+    if (!sin.is_open() && !sin.good()) {
+      std::ostringstream msg;
+      msg << "Could not open points file '" << _pointsFilename << "' for reading.";
+      throw std::runtime_error(msg.str().c_str());
+    } // if
+
     std::ofstream sout(_outputFilename);
+    if (!sout.is_open() && !sout.good()) {
+      std::ostringstream msg;
+      msg << "Could not open output file '" << _outputFilename << "' for writing.";
+      throw std::runtime_error(msg.str().c_str());
+    } // if
+
     sout << _createOutputHeader(argc, argv);
     const size_t numQueryValues = _valueNames.size();
     std::vector<double> values(numQueryValues);
@@ -157,9 +169,16 @@ geomodelgrids::apps::Query::_parseArgs(int argc,
         } // switch
     } // while
 
+    if (1 == argc) {
+        _showHelp = true;
+    } // if
     if (!_showHelp) { // Verify required arguments were provided.
         bool optionsOkay = true;
         std::ostringstream msg;
+        if (_valueNames.empty()) {
+            msg << "    - Missing names of values to return in queries. Use --values=VALUE_0,...,VALUE_N\n";
+            optionsOkay = false;
+        } // if
         if (_pointsFilename.empty()) {
             msg << "    - Missing filename for list of points. Use --points=FILE_POINTS\n";
             optionsOkay = false;
@@ -185,17 +204,17 @@ geomodelgrids::apps::Query::_parseArgs(int argc,
 void
 geomodelgrids::apps::Query::_printHelp(void) {
     std::cout << "Usage: geomodelgrids_query "
-              << "[--help] [--values=VALUE_0,...,VALUE_N] [--squash-min-elev=ELEV] --models=FILE_0,...,FILE_M "
-              << "--points=FILE_POINTS [--points-coordsys=PROJ|EPSG|WKT] [--log=FILE_LOG] --output=FILE_OUTPUT\n\n"
+              << "[--help]  [--log=FILE_LOG] --values=VALUE_0,...,VALUE_N --models=FILE_0,...,FILE_M "
+              << "--points=FILE_POINTS  --output=FILE_OUTPUT [--squash-min-elev=ELEV] [--points-coordsys=PROJ|EPSG|WKT]\n\n"
               << "    --help                           Print help information to stdout and exit.\n"
-              << "    --values=VALUE_0,...,VALUE_N     Values to return in query.\n"
-              << "    --squash-min-elev=ELEV           Vertical coordinates is interpreted as -depth instead of "
-              << "elevation if the elevation is above ELEV.\n"
+              << "    --log=FILE_LOG                   Write logging information to FILE_LOG.\n"
+              << "    --values=VALUE_0,...,VALUE_N     Values (in order) to return in query.\n"
               << "    --models=FILE_0,...,FILE_M       Models to query (in order).\n"
               << "    --points=FILE_POINTS             Read input points from FILE_POINTS.\n"
-              << "    --points-coordsys=PROJ|EPSG|WKT  Coordinate system of input points (default=EPSG:4326).\n"
-              << "    --log=FILE_LOG                   Write logging information to FILE_LOG.\n"
-              << "    --output=FILE_OUTPUT             Write values to FILE_OUTPUT."
+              << "    --output=FILE_OUTPUT             Write values to FILE_OUTPUT.\n"
+              << "    --squash-min-elev=ELEV           Vertical coordinates is interpreted as -depth instead of "
+              << "elevation if the elevation is above ELEV.\n"
+              << "    --points-coordsys=PROJ|EPSG|WKT  Coordinate system of input points (default=EPSG:4326)."
               << std::endl;
 } // _printHelp
 
