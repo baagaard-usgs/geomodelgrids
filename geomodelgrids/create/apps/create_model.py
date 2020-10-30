@@ -1,16 +1,18 @@
-"""Application for generating a rasterized model.
+"""Application for creating a GeoModelGrids model from data.
 """
 
 import sys
 import argparse
 import logging
 import configparser
+from importlib import import_module
 
-from .. import config
-from .. import earthvision
+import geomodelgrids.create.core as core
+from geomodelgrids.create.utils import config
+
 
 class App():
-    """Application for generating a rasterized model.
+    """Application for generating a GeoModelGrids model from data.
     """
 
     def __init__(self):
@@ -24,7 +26,7 @@ class App():
 
         Keyword arguments:
             config (str)
-                Name of Configuration (INI) file.
+                Name of configuration (INI) file.
             show_parameters (bool), default: False
                 If True, print parameters to stdout.
             import_domain (bool), default: False
@@ -44,7 +46,7 @@ class App():
         """
         args = argparse.Namespace(**kwargs) if kwargs else self._parse_command_line()
         log_level = logging.DEBUG if args.debug else logging.INFO
-        logging.basicConfig(level=log_level, filename="rasterize.log")
+        logging.basicConfig(level=log_level, filename=args.log_filename)
         if args.show_progress:
             self.show_progress = True
         self.initialize(args.config.split(","))
@@ -53,23 +55,34 @@ class App():
             self.show_parameters()
             return
 
-        model = earthvision.model.RulesModel(self.config)
+        data_path = self.config["geomodelgrids"]["data_source"].split(".")
+        data_obj = getattr(import_module(".".join(data_path[:-1])), data_path[-1])
+        datasrc = data_obj(self.config)
+        model = core.model.Model(self.config)
 
         if args.import_domain or args.all:
-            model.import_domain()
+            model.save_domain()
+
+        batch_size = int(self.config["domain"]["batch_size"])
 
         if args.import_topography or args.all:
             if model.topography.enabled:
-                points = model.topography.generate_points(model)
-                model.query_topography(points)
-                model.import_topography()
+                model.init_topography()
+                for batch in model.topography.get_batches(batch_size):
+                    points = model.topography.generate_points(batch)
+                    elevation = datasrc.get_topography(points)
+                    model.save_topography(elevation, batch)
 
         if args.import_blocks or args.all:
-            if model.topography.elevation is None:
-                model.load_topography()
             for block in model.blocks:
-                values = model.query_values(block)
-                model.import_block(block, values)
+                model.init_block(block)
+                for batch in block.get_batches(batch_size):
+                    if model.topography.enabled:
+                        topography = model.get_block_topography(block, batch)
+                    else:
+                        topography = None
+                    values = datasrc.get_values(block, topography, batch)
+                    model.save_block(block, values, batch)
 
     def initialize(self, config_filenames):
         """Set parameters from config file and DEFAULTS.
@@ -92,7 +105,7 @@ class App():
         """
         DESCRIPTION = (
             "Application for generating HDF5 file containing blocks of a grid-based model."
-            )
+        )
 
         parser = argparse.ArgumentParser(description=DESCRIPTION)
         parser.add_argument("--config", action="store", dest="config", required=True)
@@ -103,7 +116,7 @@ class App():
 
         parser.add_argument("--all", action="store_true", dest="all")
         parser.add_argument("--quiet", action="store_false", dest="show_progress", default=True)
-        parser.add_argument("--log", action="store", dest="log_filename", default="rasterize.log")
+        parser.add_argument("--log", action="store", dest="log_filename", default="create_model.log")
         parser.add_argument("--debug", action="store_true", dest="debug")
         args = parser.parse_args()
 

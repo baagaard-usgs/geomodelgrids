@@ -1,3 +1,3 @@
 """Initialize geomodelgrids applications module."""
 
-from . import rasterize
+from . import create_model
