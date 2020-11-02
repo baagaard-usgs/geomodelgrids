@@ -1,0 +1,86 @@
+\documentclass[tikz, border=2pt]{standalone}
+\usepackage[none]{hyphenat}
+\usepackage{helvet}
+\renewcommand{\familydefault}{phv}
+
+\usepackage{tikz}
+
+\begin{document}
+\pagestyle{empty}
+
+\input{palettes/palette_general}
+\input{palettes/palette_usgs}
+
+\usetikzlibrary{calc,3d,arrows,shapes}
+
+\tikzstyle{surface} = [line width=2pt, line join=round]
+\tikzstyle{groundsurf} = [surface, draw=green, fill=ltgreen]
+\tikzstyle{sidesurf} = [surface, line width=2pt, draw=green, fill=ltgreen!80!black]
+
+\tikzstyle{arrowto} = [line width=2pt, >=latex, ->]
+\tikzstyle{geoaxes} = [arrowto, draw=gray]
+\tikzstyle{geolabel} = [above, text=gray]
+\tikzstyle{cartaxes} = [arrowto, draw=black]
+\tikzstyle{cartlabel} = [right, text=black]
+
+\tikzstyle{refline} = [geoaxes, dashed]
+\tikzstyle{azimuth} = [draw=blue, arrowto, text=blue]
+
+\tikzstyle{annotation} = [text=black, font=\footnotesize, anchor=south west]
+
+\begin{tikzpicture}[%
+  x={(1.0cm,0cm)},
+  y={(0.4cm,0.4cm)},
+  z={(0cm,1cm)},
+  ]
+
+  % Domain
+  \def\domainx{8}
+  \def\domainy{10}
+  \def\domainz{4}
+  \def\yazimuth{20}
+
+  \def\axeslen{2}
+
+  % Ground surface
+  \coordinate (g0) at (0,0,0);
+  \coordinate (g1) at ({\domainx*cos(\yazimuth)},{-\domainx*sin(\yazimuth)},0);
+  \coordinate (g2) at ({\domainx*cos(\yazimuth)+\domainy*sin(\yazimuth)},{-\domainx*sin(\yazimuth)+\domainy*cos(\yazimuth)},0);
+  \coordinate (g3) at ({\domainy*sin(\yazimuth)},{\domainy*cos(\yazimuth)},0);
+  \draw[groundsurf] (g0) -- (g1) -- (g2) -- (g3) -- cycle;
+
+  % Front surface
+  \coordinate (f2) at ($(g1)+(0,0,{-\domainz})$);
+  \coordinate (f3) at ($(g0)+(0,0,{-\domainz})$);
+  \draw[sidesurf] (g0) -- (g1) -- (f2) -- (f3) -- cycle;
+
+  % Side surface
+  \coordinate (s3) at ($(g2)+(0,0,{-\domainz})$);
+  \draw[sidesurf] (g1) -- (f2) -- (s3) -- (g2) -- cycle;
+  
+
+  % East, North
+  \draw[geoaxes] (g0) -- ++({\axeslen,0,0}) node[geolabel]{East};
+  \draw[geoaxes] (g0) -- ++({0,\axeslen,0}) node[geolabel]{North};
+  
+  % x, y, z
+  \draw[cartaxes] (g0) -- ++({\axeslen*cos(\yazimuth)},{-\axeslen*sin(\yazimuth)},0) node[cartlabel]{x};
+  \draw[cartaxes] (g0) -- ++({\axeslen*sin(\yazimuth)},{\axeslen*cos(\yazimuth)},0) node[cartlabel]{y};
+  \draw[cartaxes] (g0) -- ++(0,0,{\axeslen}) node[cartlabel]{z};
+  
+  % y azimuth
+  \draw[refline] (0,{\axeslen},0) -- (0,{2.5*\axeslen},0);
+\draw[azimuth] (0,{2.5*\axeslen},0) to [bend left=20] node[above, yshift=1ex]{y\_azimuth} ({2.1*\axeslen*sin(\yazimuth)},{2.1*\axeslen*cos(\yazimuth)},0);
+
+  % Indices
+  \node[annotation] at ($(f2)+(2.5,0,0)$) {
+    \begin{minipage}{20em}
+      x index increases in the +x direction\\
+      y index increases in the +y direction\\
+      z index increases in the -z direction
+    \end{minipage}};
+  
+  
+\end{tikzpicture}
+
+\end{document}

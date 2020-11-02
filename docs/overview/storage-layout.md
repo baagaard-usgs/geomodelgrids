@@ -15,6 +15,23 @@ The mapping from the physical space to topological space is:
 z_logical = -dim_z * (z_topography - z_physical) / (z_topography + dim_z)
 ```
 
+## Data layout
+
+We use a Cartesian coordinate system for the model logical space with
+the origin at the top southwest corner (when the y axis is aligned
+with north) as shown in the figure. We measure the rotation of the
+coordinate system for the model logical space using the azimuth of the
+y direction relative to north (`y_azimuth` in the diagram).
+
+<figure>
+  <img src="figs/coordsys.png" alt="Diagram of Cartesian coordinate
+  system of the model logical space">
+</figure>
+
+For the logical space 4D arrays the x, y, and z indices are zero
+at the origin. The x index increases in the +x direction, the y index
+increases in the +y direction, and the z index increases in the -z direction.
+
 
 ## HDF5 Storage Scheme
 
