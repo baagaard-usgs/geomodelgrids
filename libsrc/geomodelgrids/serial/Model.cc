@@ -275,13 +275,25 @@ geomodelgrids::serial::Model::contains(const double x,
 double
 geomodelgrids::serial::Model::queryElevation(const double x,
                                              const double y) {
-    double elevation = 0;
+    double elevation = 0.0;
 
     if (_topography) {
         double xModel = 0.0;
         double yModel = 0.0;
         _toModelXYZ(&xModel, &yModel, NULL, x, y, 0.0);
-        elevation = _topography->query(xModel, yModel);
+        const double zModelCRS = _topography->query(xModel, yModel);
+
+        const double yazimuthRad = _yazimuth * M_PI / 180.0;
+        const double cosAz = cos(yazimuthRad);
+        const double sinAz = sin(yazimuthRad);
+        const double xRel = +xModel*cosAz + yModel*sinAz;
+        const double yRel = -xModel*sinAz + yModel*cosAz;
+        const double xModelCRS = xRel + _origin[0];
+        const double yModelCRS = yRel + _origin[1];
+
+        double xIn = 0.0;
+        double yIn = 0.0;
+        _crsTransformer->inverse_transform(&xIn, &yIn, &elevation, xModelCRS, yModelCRS, zModelCRS);
     } // if
 
     return elevation;

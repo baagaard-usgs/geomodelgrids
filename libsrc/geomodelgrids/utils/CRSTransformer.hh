@@ -57,6 +57,22 @@ public:
                    const double srcY,
                    const double srcZ);
 
+    /** Transform coordinates from destination to source coordinate system.
+     *
+     * @param[out] srcX X coordinate in source coordinate system.
+     * @param[out] srcY Y coordinate in source coordinate system.
+     * @param[out] srcZ Z coordinate in source coordinate system (can be NULL).
+     * @param[in] destX X coordinate in destination coordinate system.
+     * @param[in] destY Y coordinate in destination coordinate system.
+     * @param[in] destZ Z coordinate in destination coordinate system.
+     */
+    void inverse_transform(double* srcX,
+                           double* srcY,
+                           double* srcZ,
+                           const double destX,
+                           const double destY,
+                           const double destZ);
+
     // PRIVATE MEMBERS -------------------------------------------------------------------------------------------------
 private:
 
