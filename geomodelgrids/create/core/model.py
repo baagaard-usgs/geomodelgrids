@@ -206,6 +206,39 @@ class Block():
         xyz_model[:, :, :, 2] = xyz_geo[:, :, :, 2]
         return xyz_model
 
+    def get_topography(self, topography, batch=None):
+        """Get topography grid for block.
+        Args:
+            topography (Toppography)
+                Topography for model domain.
+            batch (BatchGenerator3D)
+                Current batch of points in block.
+        Returns:
+            Numpy array [Nx,Ny] with elevation of ground surface for current batch in block.
+        """
+        TOLERANCE = 0.01
+
+        class BatchTopography():
+
+            def __init__(self, x_range, y_range):
+                self.x_range = x_range
+                self.y_range = y_range
+
+        block_skip = int(0.01 + self.resolution_horiz / topography.resolution_horiz)
+        if math.fabs(block_skip * topography.resolution_horiz - self.resolution_horiz) > TOLERANCE:
+            raise ValueError("Block resolution ({}) must be a integer multiple of the topography resolution ({})".format(
+                self.resolution_horiz, topography.resolution_horiz))
+
+        if batch:
+            x_range = (block_skip * batch.x_range[0], block_skip * batch.x_range[1])
+            y_range = (block_skip * batch.y_range[0], block_skip * batch.y_range[1])
+            topo_batch = BatchTopography(x_range, y_range)
+        else:
+            topo_batch = None
+
+        elevation = self.storage.load_topography(topography, topo_batch)
+        return elevation[::block_skip, ::block_skip, 0].squeeze()
+
 
 @dataclass
 class ModelMetadata:
@@ -387,36 +420,6 @@ class Model():
                 Current batch of points in domain corresponding to elevation data.
         """
         self.storage.save_topography(elevation, batch)
-
-    def get_block_topography(self, topography, batch=None):
-        """Get topography grid for block.
-        Args:
-            domain (Model)
-                Model domain.
-            batch (BatchGenerator3D)
-                Current batch of points in block.
-        Returns:
-            Numpy array [Nx*Ny*Nz,3] of point locations in current batch for block.
-        """
-        TOLERANCE = 0.01
-
-        self.storage.load_topography(self.topography, batch)
-
-        num_skip = int(0.01 + self.resolution_horiz / topography.resolution_horiz)
-        if math.fabs(num_skip * topography.resolution_horiz - self.resolution_horiz) > TOLERANCE:
-            raise ValueError("Block resolution ({}) must be a integer multiple of the topography resolution ({})".format(
-                self.resolution_horiz, topography.resolution_horiz))
-
-        return topography.elevation[::num_skip, ::num_skip, 0].squeeze()
-
-    def load_topography(self, batch=None):
-        """Load topography from model file.
-
-        Args:
-            batch (utils.BatchGenerator2D)
-                Current batch of points in domain corresponding to elevation data.
-        """
-        return
 
     def init_block(self, block):
         """Create topography in storage.

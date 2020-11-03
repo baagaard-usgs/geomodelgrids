@@ -78,7 +78,7 @@ class App():
                 model.init_block(block)
                 for batch in block.get_batches(batch_size):
                     if model.topography.enabled:
-                        topography = model.get_block_topography(block, batch)
+                        topography = block.get_topography(model.topography, batch)
                     else:
                         topography = None
                     values = datasrc.get_values(block, topography, batch)

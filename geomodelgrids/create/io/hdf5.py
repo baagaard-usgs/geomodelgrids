@@ -108,13 +108,21 @@ class HDF5Storage():
         """
         h5 = h5py.File(self.filename, "r")
         topo_dataset = h5["topography"]
-        topography.elevation = topo_dataset[:]
         attrs = topo_dataset.attrs
         for attr in self.TOPOGRAPHY_ATTRS:
             if getattr(topography, attr) != attrs[attr]:
                 raise ValueError("Inconsistency in topography attribute '{}': config value: {}, value from model: {}".format(
                     attr, getattr(topography, attr), attrs[attr]))
+
+        if batch:
+            x_start, x_end = batch.x_range
+            y_start, y_end = batch.y_range
+            elevation = topo_dataset[x_start:x_end, y_start:y_end]
+        else:
+            elevation = topo_dataset[:]
         h5.close()
+
+        return elevation
 
     def create_block(self, block):
         """Create block in HDF5 file.
