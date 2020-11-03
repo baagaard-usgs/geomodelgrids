@@ -475,6 +475,11 @@ geomodelgrids::serial::TestCQuery::testQueryTopo(void) {
         } // for
     } // Outside domain
 
+    { // NULL values
+        err = geomodelgrids_squery_query(handle, NULL, 0, 0, 0);
+        CPPUNIT_ASSERT_MESSAGE("Mismatch in err value for NULL values.", err);
+    } // NULL values
+
     geomodelgrids_squery_destroy(&handle);CPPUNIT_ASSERT(!handle);
 } // testQueryTopo
 
