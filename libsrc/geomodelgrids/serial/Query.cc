@@ -144,7 +144,11 @@ geomodelgrids::serial::Query::query(double* const values,
                                     const double x,
                                     const double y,
                                     const double z) {
-    assert(values);
+    if (!values) {
+        assert(_errorHandler);
+        _errorHandler->setError("geomodelgrids::serial::Query::query() passed NULL for values argument.");
+        return geomodelgrids::utils::ErrorHandler::ERROR;
+    } // if
 
     const size_t numQueryValues = _valuesLowercase.size();
     std::fill(values, values+numQueryValues, NODATA_VALUE);

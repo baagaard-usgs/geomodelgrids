@@ -37,11 +37,11 @@ public:
      */
     size_t getNumPoints(void) const;
 
-    /** Get CRS for longitude, latitude, and elevation=.
+    /** Get CRS for longitude, latitude, and elevation.
      *
      * @returns String for CRS.
      */
-    const char* getCRSLonLatElev(void) const;
+    const char* getCRSLatLonElev(void) const;
 
     /** Get geographic coordinates of sample points.
      *

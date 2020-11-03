@@ -119,7 +119,8 @@ public:
     static
     void checkQuery(std::istream& sin,
                     const geomodelgrids::testdata::ModelPoints& points,
-                    const bool hasTopography);
+                    const bool hasTopography,
+                    const double elevScale=1.0);
 
 }; // _TestQueryElev
 
@@ -341,7 +342,7 @@ geomodelgrids::apps::TestQueryElev::testRunThreeBlocksTopo(void) {
         "--models=../../data/three-blocks-topo.h5",
         "--points=three-blocks-topo.in",
         "--output=three-blocks-topo.out",
-        "--points-coordsys=EPSG:4326",
+        "--points-coordsys=+proj=lonlat +axis=neu +datum=WGS84 +vunits=km",
     };
     geomodelgrids::testdata::ThreeBlocksTopoPoints pointsThree;
     std::ofstream sout("three-blocks-topo.in");CPPUNIT_ASSERT(sout.is_open() && sout.good());
@@ -354,8 +355,9 @@ geomodelgrids::apps::TestQueryElev::testRunThreeBlocksTopo(void) {
     std::ifstream sin("three-blocks-topo.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
     std::string comment;
     std::getline(sin, comment);
-    bool hasTopography = true;
-    _TestQueryElev::checkQuery(sin, pointsThree, hasTopography);
+    const bool hasTopography = true;
+    const double elevScale = 1.0e-3;
+    _TestQueryElev::checkQuery(sin, pointsThree, hasTopography, elevScale);
     sin.close();
 } // testRunThreeBlocksTopo
 
@@ -449,7 +451,8 @@ geomodelgrids::apps::_TestQueryElev::createPointsFile(std::ostream& sout,
 void
 geomodelgrids::apps::_TestQueryElev::checkQuery(std::istream& sin,
                                                 const geomodelgrids::testdata::ModelPoints& points,
-                                                const bool hasTopography) {
+                                                const bool hasTopography,
+                                                const double elevScale) {
     const size_t spaceDim = 3;
     const size_t numPoints = points.getNumPoints();
     const double* const pointsXYZ = points.getXYZ();
@@ -468,7 +471,7 @@ geomodelgrids::apps::_TestQueryElev::checkQuery(std::istream& sin,
         double value = NODATA_VALUE;
         sin >> value;CPPUNIT_ASSERT_MESSAGE("Could not read elevation in output.", sin.good());
 
-        const double valueE = hasTopography ? points.computeElevation(x, y) : 0.0;
+        const double valueE = hasTopography ? points.computeElevation(x, y) * elevScale : 0.0;
 
         std::ostringstream msg;
         msg << "Mismatch for 'elevation' for point ("

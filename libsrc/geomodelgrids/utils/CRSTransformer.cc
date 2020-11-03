@@ -77,4 +77,26 @@ geomodelgrids::utils::CRSTransformer::transform(double* destX,
 } // transform
 
 
+// ---------------------------------------------------------------------------------------------------------------------
+// Compute from src CRS to dest CRS.
+void
+geomodelgrids::utils::CRSTransformer::inverse_transform(double* srcX,
+                                                        double* srcY,
+                                                        double* srcZ,
+                                                        const double destX,
+                                                        const double destY,
+                                                        const double destZ) {
+    assert(srcX);
+    assert(srcY);
+
+    PJ_COORD xyzDest = proj_coord(destX, destY, destZ, 0.0);
+    PJ_COORD xyzSrc = proj_trans(_proj, PJ_INV, xyzDest);
+    *srcX = xyzSrc.xyzt.x;
+    *srcY = xyzSrc.xyzt.y;
+    if (srcZ) {
+        *srcZ = xyzSrc.xyzt.z;
+    } // if
+} // transform
+
+
 // End of file
