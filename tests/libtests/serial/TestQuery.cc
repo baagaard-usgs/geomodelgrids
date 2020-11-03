@@ -144,7 +144,7 @@ geomodelgrids::serial::TestQuery::testQueryElevation(void) {
     std::vector<std::string> filenames(filenamesArray, filenamesArray+numModels);
 
     geomodelgrids::testdata::OneBlockFlatPoints pointsOne;
-    const std::string& crs = pointsOne.getCRSLonLatElev();
+    const std::string& crs = pointsOne.getCRSLatLonElev();
     const size_t spaceDim = 3;
 
     Query query;
@@ -224,7 +224,7 @@ geomodelgrids::serial::TestQuery::testQueryFlat(void) {
     std::vector<std::string> valueNames(valueNamesArray, valueNamesArray+numValues);
 
     geomodelgrids::testdata::OneBlockFlatPoints pointsOne;
-    const std::string& crs = pointsOne.getCRSLonLatElev();
+    const std::string& crs = pointsOne.getCRSLatLonElev();
     const size_t spaceDim = 3;
 
     Query query;
@@ -331,7 +331,7 @@ geomodelgrids::serial::TestQuery::testQueryTopo(void) {
     std::vector<std::string> valueNames(valueNamesArray, valueNamesArray+numValues);
 
     geomodelgrids::testdata::OneBlockTopoPoints pointsOne;
-    const std::string& crs = pointsOne.getCRSLonLatElev();
+    const std::string& crs = pointsOne.getCRSLatLonElev();
     const size_t spaceDim = 3;
 
     Query query;
@@ -439,7 +439,7 @@ geomodelgrids::serial::TestQuery::testQuerySquash(void) {
     std::vector<std::string> valueNames(valueNamesArray, valueNamesArray+numValues);
 
     geomodelgrids::testdata::OneBlockSquashPoints pointsOne(squashMinElev);
-    const std::string& crs = pointsOne.getCRSLonLatElev();
+    const std::string& crs = pointsOne.getCRSLatLonElev();
     const size_t spaceDim = 3;
 
     Query query;

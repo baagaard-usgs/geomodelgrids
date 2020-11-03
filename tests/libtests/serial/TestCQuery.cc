@@ -177,7 +177,7 @@ geomodelgrids::serial::TestCQuery::testQueryElevation(void) {
     const char* const* valueNames = NULL;
 
     geomodelgrids::testdata::OneBlockFlatPoints pointsOne;
-    const std::string& crs = pointsOne.getCRSLonLatElev();
+    const std::string& crs = pointsOne.getCRSLatLonElev();
     const size_t spaceDim = 3;
 
     void* handle = geomodelgrids_squery_create();CPPUNIT_ASSERT(handle);
@@ -269,7 +269,7 @@ geomodelgrids::serial::TestCQuery::testQueryFlat(void) {
     const char* const valueNames[numValues] = { "two", "one" };
 
     geomodelgrids::testdata::OneBlockFlatPoints pointsOne;
-    const std::string& crs = pointsOne.getCRSLonLatElev();
+    const std::string& crs = pointsOne.getCRSLatLonElev();
     const size_t spaceDim = 3;
 
     void* handle = geomodelgrids_squery_create();CPPUNIT_ASSERT(handle);
@@ -383,7 +383,7 @@ geomodelgrids::serial::TestCQuery::testQueryTopo(void) {
     const char* const valueNames[numValues] = { "two", "one" };
 
     geomodelgrids::testdata::OneBlockTopoPoints pointsOne;
-    const std::string& crs = pointsOne.getCRSLonLatElev();
+    const std::string& crs = pointsOne.getCRSLatLonElev();
     const size_t spaceDim = 3;
 
     void* handle = geomodelgrids_squery_create();CPPUNIT_ASSERT(handle);
@@ -495,7 +495,7 @@ geomodelgrids::serial::TestCQuery::testQuerySquash(void) {
     const char* const valueNames[numValues] = { "two", "one" };
 
     geomodelgrids::testdata::OneBlockSquashPoints pointsOne(squashMinElev);
-    const std::string& crs = pointsOne.getCRSLonLatElev();
+    const std::string& crs = pointsOne.getCRSLatLonElev();
     const size_t spaceDim = 3;
 
     void* handle = geomodelgrids_squery_create();CPPUNIT_ASSERT(handle);

@@ -65,9 +65,9 @@ geomodelgrids::testdata::ModelPoints::getNumPoints(void) const {
 // ---------------------------------------------------------------------------------------------------------------------
 // Get CRS for longitude, latitude, and elevation=.
 const char*
-geomodelgrids::testdata::ModelPoints::getCRSLonLatElev(void) const {
+geomodelgrids::testdata::ModelPoints::getCRSLatLonElev(void) const {
     return _inCRS;
-} // getCRSLonLatElev
+} // getCRSLatLonElev
 
 
 // ---------------------------------------------------------------------------------------------------------------------
