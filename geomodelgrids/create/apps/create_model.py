@@ -64,6 +64,7 @@ class App():
             model.save_domain()
 
         batch_size = int(self.config["domain"]["batch_size"])
+        datasrc.initialize()
 
         if args.import_topography or args.all:
             if model.topography.enabled:

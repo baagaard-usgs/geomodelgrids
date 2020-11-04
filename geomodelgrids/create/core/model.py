@@ -94,9 +94,9 @@ class Topography():
 
         xyz_geo = numpy.stack((x, y, z), axis=2)
         xyz_model = numpy.zeros(xyz_geo.shape)
-        az_rad = domain.y_azimuth * math.pi / 180.0
-        xyz_model[:, :, 0] = domain.origin_x + xyz_geo[:, :, 0] * math.cos(az_rad) + xyz_geo[:, :, 1] * math.sin(az_rad)
-        xyz_model[:, :, 1] = domain.origin_y - xyz_geo[:, :, 0] * math.sin(az_rad) + xyz_geo[:, :, 1] * math.cos(az_rad)
+        az_rad = self.model_metadata.y_azimuth * math.pi / 180.0
+        xyz_model[:, :, 0] = self.model_metadata.origin_x + xyz_geo[:, :, 0] * math.cos(az_rad) + xyz_geo[:, :, 1] * math.sin(az_rad)
+        xyz_model[:, :, 1] = self.model_metadata.origin_y - xyz_geo[:, :, 0] * math.sin(az_rad) + xyz_geo[:, :, 1] * math.cos(az_rad)
         return xyz_model
 
 

@@ -51,7 +51,7 @@ class BatchGenerator2D():
 
         logger = logging.getLogger(__name__)
         logger.info("2D batches -- size: x=%d, y=%d; number: x=%d, y=%d",
-                    self.bnum_x, self.bnum_x, self.nbatch_x, y=self.nbatch_y)
+                    self.bnum_x, self.bnum_x, self.nbatch_x, self.nbatch_y)
 
     def __str__(self):
         return "Batch2D [{x0}:{x1}, {y0}:{y1}]".format(
