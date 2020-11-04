@@ -1,51 +1,43 @@
-FROM fedora:30 as os-update
-LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
+FROM ubuntu:20.10 as os-update
+MAINTAINER Brad Aagaard <baagaard@usgs.gov>
 
-RUN dnf install -y \
-    gcc \
-    gcc-c++ \
-    make \
-    file \
-    automake \
-    autoconf \
-    libtool \
-    curl \
-    python3 \
-    python3-devel \
-    python3-libs \
-    python3-numpy \
-    python3-setuptools \
-    python3-six \
-    python3-coverage \
-    python3-Cython \
-    zlib \
-    zlib-devel \
-    openssl \
-    openssl-libs \
-    unzip \
-    git \
-    ca-certificates \
-    cppunit \
-    cppunit-devel \
-    hdf5 \
-    hdf5-devel \
-    python3-h5py \
-    sqlite \
-    sqlite-libs \
-    sqlite-devel \
-    lcov \
-    valgrind \
-    vim \
-    vim-common
+RUN apt-get update \
+    && DEBIAN_FRONTEND="noninteractive" apt-get install -y --no-install-recommends \
+      g++ \
+      make \
+      file \
+      automake \
+      autoconf \
+      libtool \
+      curl \
+      python3-dev \
+      libpython3.7 \
+      python3-setuptools \
+      python3-numpy \
+      python3-coverage \
+      cython3 \
+      zlib1g-dev \
+      unzip \
+      git \
+      ca-certificates \
+      libcppunit-dev \
+      libhdf5-dev \
+      python3-h5py \
+      sqlite3 \
+      libsqlite3-0 \
+      libsqlite3-dev \
+      lcov \
+      valgrind \
+      vim-common \
+      vim-runtime \
+      vim-nox
 
-
-COPY docker/certs/ /usr/share/pki/ca-trust-source/anchors
-RUN update-ca-trust enable
-
+COPY docker/certs/ /usr/local/share/ca-certificates
+RUN update-ca-certificates
 
 ENV PYTHON_VERSION 3
-ENV HDF5_INCDIR /usr/include
-ENV HDF5_LIBDIR /usr/lib64
+ENV HDF5_INCDIR /usr/include/hdf5/serial
+ENV HDF5_LIBDIR /usr/lib/x86_64-linux-gnu/hdf5/serial
 
 # ----------------------------------------
 from os-update as build-deps
@@ -91,7 +83,7 @@ from build-deps as clean
 
 USER root
 RUN rm -fr $BUILD_DIR && unset BUILD_DIR
-RUN dnf clean all
+RUN apt-get clean
 
 # Setup user and environment
 USER $GEOMODELGRIDS_USER
