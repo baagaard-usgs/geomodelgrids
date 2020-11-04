@@ -1,5 +1,7 @@
 # Travis-CI configuration
 
+dist: bionic
+
 services:
     - docker
 
