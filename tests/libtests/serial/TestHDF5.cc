@@ -27,6 +27,7 @@ class geomodelgrids::serial::TestHDF5 : public CppUnit::TestFixture {
     CPPUNIT_TEST(testAccessors);
     CPPUNIT_TEST(testGetDatasetDims);
     CPPUNIT_TEST(testGetGroupDatasets);
+    CPPUNIT_TEST(testHasAttribute);
     CPPUNIT_TEST(testReadAttribute);
     CPPUNIT_TEST(testReadAttributeString);
     CPPUNIT_TEST(testReadAttributeStringArray);
@@ -57,6 +58,9 @@ public:
 
     /// Test getGroupDatasets().
     void testGetGroupDatasets(void);
+
+    /// Test hasAttribute.
+    void testHasAttribute(void);
 
     /// Test readAttribute.
     void testReadAttribute(void);
@@ -213,6 +217,23 @@ geomodelgrids::serial::TestHDF5::testGetGroupDatasets(void) {
 
     h5.close();
 } // testGetGroupDatasets
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Test hasAttribute.
+void
+geomodelgrids::serial::TestHDF5::testHasAttribute(void) {
+    HDF5 h5;
+    h5.open("../../data/three-blocks-flat.h5", H5F_ACC_RDONLY);
+
+    bool found = h5.hasAttribute("/blocks/bottom", "resolution_horiz");
+    CPPUNIT_ASSERT_MESSAGE("Couldn't find existing attribute.", found);
+
+    found = h5.hasAttribute("/blocks/bottom", "abcdf");
+    CPPUNIT_ASSERT_MESSAGE("Found nonexistent attribute.", !found);
+
+    h5.close();
+} // testReadAttribute
 
 
 // ---------------------------------------------------------------------------------------------------------------------

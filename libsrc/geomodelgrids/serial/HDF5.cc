@@ -255,6 +255,19 @@ geomodelgrids::serial::HDF5::getGroupDatasets(std::vector<std::string>* names,
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Check if HDF5 file has attribute.
+bool
+geomodelgrids::serial::HDF5::hasAttribute(const char* path,
+                                          const char* name) {
+    assert(path);
+    assert(name);
+
+    htri_t exists = H5Aexists_by_name(_file, path, name, H5P_DEFAULT);
+    return exists > 0;
+} // hasAttribute
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 // Read scalar attribute.
 void
 geomodelgrids::serial::HDF5::readAttribute(const char* path,
