@@ -39,12 +39,13 @@ geomodelgrids::serial::Topography::loadMetadata(geomodelgrids::serial::HDF5* con
     assert(h5);
 
     std::ostringstream msg;
+    const char* indent = "            ";
     bool missingAttributes = false;
 
     if (h5->hasAttribute("topography", "resolution_horiz")) {
         h5->readAttribute("topography", "resolution_horiz", H5T_NATIVE_DOUBLE, (void*)&_resolutionHoriz);
     } else {
-        msg << "    /topography/resolution_horiz";
+        msg << indent << "    /topography/resolution_horiz\n";
         missingAttributes = true;
     } // if/else
 

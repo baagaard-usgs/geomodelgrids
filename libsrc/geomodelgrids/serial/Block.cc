@@ -51,24 +51,25 @@ geomodelgrids::serial::Block::loadMetadata(geomodelgrids::serial::HDF5* const h5
     const std::string blockpath = std::string("blocks/") + _name;
 
     std::ostringstream msg;
+    const char* indent = "            ";
     bool missingAttributes = false;
 
     if (h5->hasAttribute(blockpath.c_str(), "resolution_horiz")) {
         h5->readAttribute(blockpath.c_str(), "resolution_horiz", H5T_NATIVE_DOUBLE, (void*)&_resolutionHoriz);
     } else {
-        msg << "    " << blockpath << "/resolution_horiz";
+        msg << indent << "    " << blockpath << "/resolution_horiz\n";
         missingAttributes = true;
     } // if/else
     if (h5->hasAttribute(blockpath.c_str(), "resolution_vert")) {
         h5->readAttribute(blockpath.c_str(), "resolution_vert", H5T_NATIVE_DOUBLE, (void*)&_resolutionVert);
     } else {
-        msg << "    " << blockpath << "/resolution_vert";
+        msg << indent << "    " << blockpath << "/resolution_vert\n";
         missingAttributes = true;
     } // if/else
     if (h5->hasAttribute(blockpath.c_str(), "z_top")) {
         h5->readAttribute(blockpath.c_str(), "z_top", H5T_NATIVE_DOUBLE, (void*)&_zTop);
     } else {
-        msg << "    " << blockpath << "/z_top";
+        msg << indent << "    " << blockpath << "/z_top\n";
         missingAttributes = true;
     } // if/else
 

@@ -7,6 +7,8 @@
 #include "geomodelgrids/serial/Block.hh" // USES Block
 #include "geomodelgrids/serial/Topography.hh" // USES Topography
 
+#include <cmath> // USES fabs()
+
 #include <getopt.h> // USES getopt_long()
 #include <iomanip>
 #include <iostream> // USES std::cout
@@ -23,6 +25,15 @@ namespace geomodelgrids {
             std::string indent(const size_t level,
                                const size_t width=4);
 
+            void verifyTopography(const geomodelgrids::serial::Topography* topography,
+                                  const geomodelgrids::serial::Model* model);
+
+            void verifyBlock(geomodelgrids::serial::Block* block,
+                             const geomodelgrids::serial::Model* model);
+
+            void verifyBlocksZ(const std::vector<geomodelgrids::serial::Block*>& blocks,
+                               const double zBottom);
+
         } // _Info
     } // apps
 } // geomodelgrids
@@ -35,7 +46,8 @@ geomodelgrids::apps::Info::Info() :
     _showDescription(false),
     _showBlocks(false),
     _showCoordSys(false),
-    _showValues(false) {}
+    _showValues(false),
+    _doVerification(false) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -59,9 +71,22 @@ geomodelgrids::apps::Info::run(int argc,
     const size_t numModels = _modelFilenames.size();
     for (size_t i = 0; i < numModels; ++i) {
         model.open(_modelFilenames[i].c_str(), geomodelgrids::serial::Model::READ);
-        model.loadMetadata();
 
         std::cout << "Model: " << _modelFilenames[i] << std::endl;
+        if (_doVerification || _showAll) {
+            _verify(&model);
+        } else {
+            try {
+                model.loadMetadata();
+            } catch (const std::runtime_error& err) {
+                std::cout << _Info::indent(1)
+                          << "WARNING: Errors encountered while reading metadata. Information may be incomplete.";
+                if (!_doVerification && !_showAll) {
+                    std::cout << err.what();
+                } // if
+            } // try/catch
+        } // if/else
+
         if (_showDescription || _showAll) { _printDescription(&model); }
         if (_showCoordSys || _showAll) { _printCoordSys(&model); }
         if (_showValues || _showAll) { _printValues(&model); }
@@ -79,17 +104,19 @@ geomodelgrids::apps::Info::run(int argc,
 void
 geomodelgrids::apps::Info::_parseArgs(int argc,
                                       char* argv[]) {
-    static struct option options[8] = {
+    static struct option options[9] = {
         {"help", no_argument, NULL, 'h'},
         {"description", no_argument, NULL, 'd'},
         {"blocks", no_argument, NULL, 'b'},
         {"coordsys", no_argument, NULL, 'c'},
         {"values", no_argument, NULL, 'v'},
+        {"verify", no_argument, NULL, 'q'},
         {"all", no_argument, NULL, 'a'},
         {"models", required_argument, NULL, 'm'},
         {0, 0, 0, 0}
     };
 
+    bool optionsOk = false;
     while (true) {
         // extern char* optarg;
         const char c = getopt_long(argc, argv, "hdbcvam:", options, NULL);
@@ -100,18 +127,27 @@ geomodelgrids::apps::Info::_parseArgs(int argc,
             break;
         case 'a':
             _showAll = true;
+            optionsOk = true;
             break;
         case 'd':
             _showDescription = true;
+            optionsOk = true;
             break;
         case 'b':
             _showBlocks = true;
+            optionsOk = true;
             break;
         case 'c':
             _showCoordSys = true;
+            optionsOk = true;
             break;
         case 'v':
             _showValues = true;
+            optionsOk = true;
+            break;
+        case 'q':
+            _doVerification = true;
+            optionsOk = true;
             break;
         case 'm': {
             _modelFilenames.clear();
@@ -136,7 +172,7 @@ geomodelgrids::apps::Info::_parseArgs(int argc,
         } // ?
         } // switch
     } // while
-    if (!_showHelp && !_showAll && !_showDescription && !_showCoordSys && !_showValues && !_showBlocks) {
+    if (!optionsOk) {
         _showHelp = true;
     } // if
     if (!_showHelp && (0 == _modelFilenames.size())) {
@@ -150,7 +186,8 @@ geomodelgrids::apps::Info::_parseArgs(int argc,
 void
 geomodelgrids::apps::Info::_printHelp(void) {
     std::cout << "Usage: geomodelgrids_info "
-              << "[--help] --models=FILE_0,...,FILE_M [--description] [--coordsys] [--values] [--blocks] [--all]\n\n"
+              << "[--help] --models=FILE_0,...,FILE_M "
+              << "[--description] [--coordsys] [--values] [--blocks] [--all] [--verify]\n\n"
               << "    --help                       Print help information to stdout and exit.\n"
               << "    --models=FILE_0,...,FILE_M   Models to query (in order).\n"
               << "    --description                Display model description.\n"
@@ -158,6 +195,7 @@ geomodelgrids::apps::Info::_printHelp(void) {
               << "    --values                     Display names and units of values stored in the model.\n"
               << "    --blocks                     Display description of blocks.\n"
               << "    --all                        Display description, coordinate system, values, and blocks"
+              << "    --verify                     Verify model conforms to GeoModelGrids specifications."
               << std::endl;
 } // _printHelp
 
@@ -265,6 +303,38 @@ geomodelgrids::apps::Info::_printBlocks(geomodelgrids::serial::Model* const mode
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Verify presence of metadata and consistency of model.
+void
+geomodelgrids::apps::Info::_verify(geomodelgrids::serial::Model* const model) {
+    assert(model);
+
+    std::cout << _Info::indent(1) << "Verification\n"
+              << _Info::indent(2) << "Verifying metadata...";
+    bool ok = true;
+
+    try {
+        model->loadMetadata();
+    } catch (const std::runtime_error& err) {
+        std::cout << "FAIL\n" << err.what();
+        ok = false;
+    } // try/catch
+    if (ok) { std::cout << "OK\n"; }
+
+    const geomodelgrids::serial::Topography* topography = model->getTopography();
+    if (topography) { _Info::verifyTopography(topography, model); }
+    const std::vector<geomodelgrids::serial::Block*>& blocks = model->getBlocks();
+    const size_t numBlocks = blocks.size();
+
+    for (size_t i = 0; i < numBlocks; ++i) {
+        _Info::verifyBlock(blocks[i], model);
+    } // for
+
+    const double zBottom = -model->getDims()[2];
+    _Info::verifyBlocksZ(blocks, zBottom);
+} // _verify
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 std::string
 geomodelgrids::apps::_Info::join(const std::vector<std::string>& values,
                                  const std::string& delimiter) {
@@ -288,6 +358,128 @@ geomodelgrids::apps::_Info::indent(const size_t level,
     buffer << std::setw(level*width) << " ";
     return buffer.str();
 } // indent
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+void
+geomodelgrids::apps::_Info::verifyTopography(const geomodelgrids::serial::Topography* topography,
+                                             const geomodelgrids::serial::Model* model) {
+    assert(topography);
+    assert(model);
+
+    std::cout << _Info::indent(2) << "Verifying topography...";
+    bool ok = true;
+
+    const double* dimsDomain = model->getDims();
+    const double resolution = topography->getResolutionHoriz();
+    const size_t* numTopo = topography->getDims();
+
+    const double tolerance = 1.0e-6;
+    const std::string dimLabel[2] = { "x", "y" };
+    for (size_t iDim = 0; iDim < 2; ++iDim) {
+        if (fabs(1.0 - resolution*(numTopo[iDim]-1)/dimsDomain[iDim]) > tolerance) {
+            if (ok) { std::cout << "FAIL\n"; }
+            std::cout << _Info::indent(3) << "Topography does not span the domain in the " << dimLabel[iDim]
+                      << " dimension (topography=" << resolution*numTopo[iDim] << ", domain=" << dimsDomain[iDim] << ").\n";
+            ok = false;
+        } // if
+    } // for
+
+    if (ok) { std::cout << "OK\n"; }
+}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+void
+geomodelgrids::apps::_Info::verifyBlock(geomodelgrids::serial::Block* block,
+                                        const geomodelgrids::serial::Model* model) {
+    assert(block);
+    assert(model);
+
+    std::cout << _Info::indent(2) << "Verifying block '" << block->getName() << "'...";
+    bool ok = true;
+
+    const double* dimsDomain = model->getDims();
+    const double resolution = block->getResolutionHoriz();
+    const size_t* numBlock = block->getDims();
+
+    const double tolerance = 1.0e-6;
+
+    // Verify block spans the domain.
+    const std::string dimLabel[2] = { "x", "y" };
+    for (size_t iDim = 0; iDim < 2; ++iDim) {
+        if (fabs(1.0 - resolution*(numBlock[iDim]-1)/dimsDomain[iDim]) > tolerance) {
+            if (ok) { std::cout << "FAIL\n"; }
+            std::cout << _Info::indent(3) << "Block '" << block->getName() << "' does not span the domain in the "
+                      << dimLabel[iDim] << " dimension (block=" << resolution*numBlock[iDim] << ", domain="
+                      << dimsDomain[iDim] << ").\n";
+            ok = false;
+        } // if
+    } // for
+
+    // Verify block resolution is integer multiple of topography resolution.
+    const geomodelgrids::serial::Topography* topography = model->getTopography();
+    if (topography) {
+        const double topoResolution = topography->getResolutionHoriz();
+        const int num_skip = int(0.01 + resolution / topoResolution);
+        if (fabs(num_skip * topoResolution - resolution) > tolerance) {
+            if (ok) { std::cout << "FAIL\n"; }
+            std::cout << _Info::indent(3) << "Horizontal resolution of block '" << block->getName() << "' ("
+                      << resolution << ") is not an integer multiple of the topography resolution (" << topoResolution
+                      << ").\n";
+            ok = false;
+        } // if
+    } // if
+
+    if (ok) { std::cout << "OK\n"; }
+}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Verify blocks span vertical dimension of domain. Blocks are ordered top to bottom.
+void
+geomodelgrids::apps::_Info::verifyBlocksZ(const std::vector<geomodelgrids::serial::Block*>& blocks,
+                                          const double zBottom) {
+    // Blocks are ordered top to bottom.
+
+    std::cout << _Info::indent(2) << "Verifying blocks span vertical dimension of domain...";
+    bool ok = true;
+
+    const double tolerance = 1.0e-4;
+    const size_t numBlocks = blocks.size();
+
+    if (numBlocks > 0) {
+        assert(blocks[0]);
+        if (fabs(blocks[0]->getZTop()) > tolerance) {
+            std::cout << "FAIL\n"
+                      << _Info::indent(3) << "Top block '" << blocks[0]->getName() << "' does not reach top of domain (z=0).\n";
+            ok = false;
+        } // if
+    } // if
+
+    for (size_t i = 1; i < numBlocks; ++i) {
+        assert(blocks[i]);
+        const double zBot = blocks[i-1]->getZBottom();
+        const double zTop = blocks[i]->getZTop();
+        if (fabs(zBot-zTop) > tolerance) {
+            if (ok) { std::cout << "FAIL\n"; }
+            std::cout << _Info::indent(3) << "Found vertical gap between blocks '" << blocks[i-1]->getName()
+                      << "' (zBottom=" << zBot << ") and '" << blocks[i]->getName() << "' (zTop=" << zTop << ").\n";
+            ok = false;
+        } // if
+    } // for
+
+    if (numBlocks > 0) {
+        if (fabs(blocks[numBlocks-1]->getZBottom()-zBottom) > tolerance) {
+            if (ok) { std::cout << "FAIL\n"; }
+            std::cout << _Info::indent(3) << "Bottom block '" << blocks[numBlocks-1]->getName()
+                      << "' does not reach bottom of domain (z=" << zBottom << ").\n";
+            ok = false;
+        } // if
+    } // if
+
+    if (ok) { std::cout << "OK\n"; }
+}
 
 
 // End of file

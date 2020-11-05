@@ -163,89 +163,90 @@ geomodelgrids::serial::ModelInfo::load(geomodelgrids::serial::HDF5* const h5) {
 
     // Verify attributes exist
     std::ostringstream msg;
+    const char* indent = "            ";
     bool missingAttributes = false;
 
     if (h5->hasAttribute("/", "title")) {
         _title = h5->readAttribute("/", "title");
     } else {
-        msg << "    /title";
+        msg << indent << "    /title\n";
         missingAttributes = true;
     } // if/else
 
     if (h5->hasAttribute("/", "id")) {
         _id = h5->readAttribute("/", "id");
     } else {
-        msg << "    /id";
+        msg << indent << "    /id\n";
         missingAttributes = true;
     } // if/else
 
     if (h5->hasAttribute("/", "description")) {
         _description = h5->readAttribute("/", "description");
     } else {
-        msg << "    /description";
+        msg << indent << "    /description\n";
         missingAttributes = true;
     } // if/else
 
     if (h5->hasAttribute("/", "keywords")) {
         h5->readAttribute("/", "keywords", &_keywords);
     } else {
-        msg << "    /keywords";
+        msg << indent << "    /keywords\n";
         missingAttributes = true;
     } // if/else
 
     if (h5->hasAttribute("/", "creator_name")) {
         _creatorName = h5->readAttribute("/", "creator_name");
     } else {
-        msg << "    /creator_name";
+        msg << indent << "    /creator_name\n";
         missingAttributes = true;
     } // if/else
 
     if (h5->hasAttribute("/", "creator_email")) {
         _creatorEmail = h5->readAttribute("/", "creator_email");
     } else {
-        msg << "    /creator_email";
+        msg << indent << "    /creator_email\n";
         missingAttributes = true;
     } // if/else
 
     if (h5->hasAttribute("/", "creator_institution")) {
         _creatorInstitution = h5->readAttribute("/", "creator_institution");
     } else {
-        msg << "    /creator_institution";
+        msg << indent << "    /creator_institution\n";
         missingAttributes = true;
     } // if/else
 
     if (h5->hasAttribute("/", "acknowledgments")) {
         _acknowledgments = h5->readAttribute("/", "acknowledgments");
     } else {
-        msg << "    /acknowledgments";
+        msg << indent << "    /acknowledgments\n";
         missingAttributes = true;
     } // if/else
 
     if (h5->hasAttribute("/", "authors")) {
         h5->readAttribute("/", "authors", &_authors);
     } else {
-        msg << "    /authors";
+        msg << indent << "    /authors\n";
         missingAttributes = true;
     } // if/else
 
     if (h5->hasAttribute("/", "references")) {
         h5->readAttribute("/", "references", &_references);
     } else {
-        msg << "    /references";
+        msg << indent << "    /references\n";
         missingAttributes = true;
     } // if/else
 
     if (h5->hasAttribute("/", "doi")) {
         _doi = h5->readAttribute("/", "doi");
     } else {
-        msg << "    /doi";
+        msg << indent << "    /doi\n";
         missingAttributes = true;
     } // if/else
 
     if (h5->hasAttribute("/", "version")) {
         _version = h5->readAttribute("/", "version");
     } else {
-        msg << "    /version";
+        msg << indent << "    /version\n";
         missingAttributes = true;
     } // if/else
 

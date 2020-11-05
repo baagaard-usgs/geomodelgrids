@@ -115,7 +115,8 @@ geomodelgrids::serial::Model::loadMetadata(void) {
     } // if
 
     std::ostringstream msg;
-    msg << "Missing attributes:\n";
+    const char* indent = "            ";
+    msg << indent << "Missing attributes:\n";
     bool missingAttributes = false;
 
     delete _info;_info = new geomodelgrids::serial::ModelInfo;assert(_info);
@@ -129,58 +130,58 @@ geomodelgrids::serial::Model::loadMetadata(void) {
     if (_h5->hasAttribute("/", "data_values")) {
         _h5->readAttribute("/", "data_values", &_valueNames);
     } else {
-        msg << "    /data_values";
+        msg << indent << "    /data_values\n";
         missingAttributes = true;
     } // if/else
 
     if (_h5->hasAttribute("/", "data_units")) {
         _h5->readAttribute("/", "data_units", &_valueUnits);
     } else {
-        msg << "    /data_units";
+        msg << indent << "    /data_units\n";
         missingAttributes = true;
     } // if/else
 
     if (_h5->hasAttribute("/", "dim_x")) {
         _h5->readAttribute("/", "dim_x", H5T_NATIVE_DOUBLE, (void*)&_dims[0]);
     } else {
-        msg << "    /dim_x";
+        msg << indent << "    /dim_x\n";
         missingAttributes = true;
     } // if/else
     if (_h5->hasAttribute("/", "dim_y")) {
         _h5->readAttribute("/", "dim_y", H5T_NATIVE_DOUBLE, (void*)&_dims[1]);
     } else {
-        msg << "    /dim_y";
+        msg << indent << "    /dim_y\n";
         missingAttributes = true;
     } // if/else
     if (_h5->hasAttribute("/", "dim_z")) {
         _h5->readAttribute("/", "dim_z", H5T_NATIVE_DOUBLE, (void*)&_dims[2]);
     } else {
-        msg << "    /dim_z";
+        msg << indent << "    /dim_z\n";
         missingAttributes = true;
     } // if/else
 
     if (_h5->hasAttribute("/", "crs")) {
         _modelCRSString = _h5->readAttribute("/", "crs");
     } else {
-        msg << "    /crs";
+        msg << indent << "    /crs\n";
         missingAttributes = true;
     } // if/else
     if (_h5->hasAttribute("/", "origin_x")) {
         _h5->readAttribute("/", "origin_x", H5T_NATIVE_DOUBLE, (void*)&_origin[0]);
     } else {
-        msg << "    /origin_x";
+        msg << indent << "    /origin_x\n";
         missingAttributes = true;
     } // if/else
     if (_h5->hasAttribute("/", "origin_y")) {
         _h5->readAttribute("/", "origin_y", H5T_NATIVE_DOUBLE, (void*)&_origin[1]);
     } else {
-        msg << "    /origin_y";
+        msg << indent << "    /origin_y\n";
         missingAttributes = true;
     } // if/else
     if (_h5->hasAttribute("/", "y_azimuth")) {
         _h5->readAttribute("/", "y_azimuth", H5T_NATIVE_DOUBLE, (void*)&_yazimuth);
     } else {
-        msg << "    /y_azimuth";
+        msg << indent << "    /y_azimuth\n";
         missingAttributes = true;
     } // if/else
 
@@ -190,7 +191,7 @@ geomodelgrids::serial::Model::loadMetadata(void) {
         try {
             _topography->loadMetadata(_h5);
         } catch (const std::runtime_error& err) {
-            msg << err.what();
+            msg << err.what() << "\n";
             missingAttributes = true;
         } // try/catch
     } // if
@@ -213,7 +214,7 @@ geomodelgrids::serial::Model::loadMetadata(void) {
         try {
             _blocks[i]->loadMetadata(_h5);
         } catch (std::runtime_error& err) {
-            msg << err.what();
+            msg << err.what() << "\n";
             missingAttributes = true;
         } // try/catch
     } // for

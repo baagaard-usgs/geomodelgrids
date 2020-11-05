@@ -30,6 +30,7 @@ public:
      *   --blocks
      *   --coordsys
      *   --values
+     *   --verify
      *   --models=FILE_0,...,FILE_M
      *
      * @param argc[in] Number of arguments passed.
@@ -78,6 +79,12 @@ private:
      */
     void _printBlocks(geomodelgrids::serial::Model* const model);
 
+    /** Verify presence of metadata and consistency of model.
+     *
+     * @param[in] model Target model.
+     */
+    void _verify(geomodelgrids::serial::Model* const model);
+
     // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
 
@@ -88,6 +95,7 @@ private:
     bool _showBlocks;
     bool _showCoordSys;
     bool _showValues;
+    bool _doVerification;
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:
