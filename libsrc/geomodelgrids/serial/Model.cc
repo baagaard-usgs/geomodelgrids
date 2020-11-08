@@ -191,7 +191,7 @@ geomodelgrids::serial::Model::loadMetadata(void) {
         try {
             _topography->loadMetadata(_h5);
         } catch (const std::runtime_error& err) {
-            msg << err.what() << "\n";
+            msg << err.what();
             missingAttributes = true;
         } // try/catch
     } // if
@@ -214,7 +214,7 @@ geomodelgrids::serial::Model::loadMetadata(void) {
         try {
             _blocks[i]->loadMetadata(_h5);
         } catch (std::runtime_error& err) {
-            msg << err.what() << "\n";
+            msg << err.what();
             missingAttributes = true;
         } // try/catch
     } // for

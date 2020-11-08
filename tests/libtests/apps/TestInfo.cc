@@ -445,7 +445,7 @@ geomodelgrids::apps::TestInfo::testRunBadMetadata(void) {
     info.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(1255), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(1871), coutHelp.str().length());
 }
 
 
