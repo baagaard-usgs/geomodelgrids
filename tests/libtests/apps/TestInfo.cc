@@ -29,6 +29,7 @@ class geomodelgrids::apps::TestInfo : public CppUnit::TestFixture {
     CPPUNIT_TEST(testParseArgsCoordSys);
     CPPUNIT_TEST(testParseArgsValues);
     CPPUNIT_TEST(testParseArgsBlocks);
+    CPPUNIT_TEST(testParseArgsVerify);
     CPPUNIT_TEST(testParseArgsAll);
     CPPUNIT_TEST(testParseArgsMany);
     CPPUNIT_TEST(testPrintHelp);
@@ -36,6 +37,9 @@ class geomodelgrids::apps::TestInfo : public CppUnit::TestFixture {
     CPPUNIT_TEST(testRunOneBlockFlat);
     CPPUNIT_TEST(testRunThreeBlocksTopo);
     CPPUNIT_TEST(testRunTwoModels);
+    CPPUNIT_TEST(testRunBadMetadata);
+    CPPUNIT_TEST(testRunBadTopography);
+    CPPUNIT_TEST(testRunBadBlock);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -72,6 +76,9 @@ public:
     /// Test _parseArgs() with --blocks.
     void testParseArgsBlocks(void);
 
+    /// Test _parseArgs() with --verify.
+    void testParseArgsVerify(void);
+
     /// Test _parseArgs() with --all.
     void testParseArgsAll(void);
 
@@ -92,6 +99,15 @@ public:
 
     /// Test run() wth one-block-flat and three-blocks-topo.
     void testRunTwoModels(void);
+
+    /// Test run() wth bad model metadata.
+    void testRunBadMetadata(void);
+
+    /// Test run() wth bad topography size.
+    void testRunBadTopography(void);
+
+    /// Test run() wth bad block size.
+    void testRunBadBlock(void);
 
 }; // class TestInfo
 CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::apps::TestInfo);
@@ -181,6 +197,7 @@ geomodelgrids::apps::TestInfo::testParseArgsDescription(void) {
     CPPUNIT_ASSERT_MESSAGE("Mismatch in coordsys.", !info._showCoordSys);
     CPPUNIT_ASSERT_MESSAGE("Mismatch in values.", !info._showValues);
     CPPUNIT_ASSERT_MESSAGE("Mismatch in blocks.", !info._showBlocks);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in verify.", !info._doVerification);
     CPPUNIT_ASSERT_MESSAGE("Mismatch in all.", !info._showAll);
 } // testParseArgsDescription
 
@@ -198,6 +215,7 @@ geomodelgrids::apps::TestInfo::testParseArgsCoordSys(void) {
     CPPUNIT_ASSERT_MESSAGE("Mismatch in coordsys.", info._showCoordSys);
     CPPUNIT_ASSERT_MESSAGE("Mismatch in values.", !info._showValues);
     CPPUNIT_ASSERT_MESSAGE("Mismatch in blocks.", !info._showBlocks);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in verify.", !info._doVerification);
     CPPUNIT_ASSERT_MESSAGE("Mismatch in all.", !info._showAll);
 } // testParseArgsCoordSys
 
@@ -215,6 +233,7 @@ geomodelgrids::apps::TestInfo::testParseArgsValues(void) {
     CPPUNIT_ASSERT_MESSAGE("Mismatch in coordsys.", !info._showCoordSys);
     CPPUNIT_ASSERT_MESSAGE("Mismatch in values.", info._showValues);
     CPPUNIT_ASSERT_MESSAGE("Mismatch in blocks.", !info._showBlocks);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in verify.", !info._doVerification);
     CPPUNIT_ASSERT_MESSAGE("Mismatch in all.", !info._showAll);
 } // testParseArgsValues
 
@@ -232,6 +251,25 @@ geomodelgrids::apps::TestInfo::testParseArgsBlocks(void) {
     CPPUNIT_ASSERT_MESSAGE("Mismatch in coordsys.", !info._showCoordSys);
     CPPUNIT_ASSERT_MESSAGE("Mismatch in values.", !info._showValues);
     CPPUNIT_ASSERT_MESSAGE("Mismatch in blocks.", info._showBlocks);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in verify.", !info._doVerification);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in all.", !info._showAll);
+} // testParseArgsBlocks
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Test _parseArgs() with --verify.
+void
+geomodelgrids::apps::TestInfo::testParseArgsVerify(void) {
+    const int nargs = 3;
+    const char* const args[nargs] = { "test", "--models=A", "--verify" };
+
+    Info info;
+    info._parseArgs(nargs, const_cast<char**>(args));
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in description.", !info._showDescription);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in coordsys.", !info._showCoordSys);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in values.", !info._showValues);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in blocks.", !info._showBlocks);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in verify.", info._doVerification);
     CPPUNIT_ASSERT_MESSAGE("Mismatch in all.", !info._showAll);
 } // testParseArgsBlocks
 
@@ -249,6 +287,7 @@ geomodelgrids::apps::TestInfo::testParseArgsAll(void) {
     CPPUNIT_ASSERT_MESSAGE("Mismatch in coordsys.", !info._showCoordSys);
     CPPUNIT_ASSERT_MESSAGE("Mismatch in values.", !info._showValues);
     CPPUNIT_ASSERT_MESSAGE("Mismatch in blocks.", !info._showBlocks);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in verify.", !info._doVerification);
     CPPUNIT_ASSERT_MESSAGE("Mismatch in all.", info._showAll);
 } // testParseArgsAll
 
@@ -277,7 +316,7 @@ geomodelgrids::apps::TestInfo::testParseArgsMany(void) {
 } // testParseArgsMany
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Test _printHelp().
 void
 geomodelgrids::apps::TestInfo::testPrintHelp(void) {
@@ -288,11 +327,11 @@ geomodelgrids::apps::TestInfo::testPrintHelp(void) {
     Info info;
     info._printHelp();
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(629), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(727), coutHelp.str().length());
 } // testPrintHelp
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Test run() with help.
 void
 geomodelgrids::apps::TestInfo::testRunHelp(void) {
@@ -309,11 +348,11 @@ geomodelgrids::apps::TestInfo::testRunHelp(void) {
     info.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(629), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(727), coutHelp.str().length());
 } // testRunHelp
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Test run() with one-block-flat.
 void
 geomodelgrids::apps::TestInfo::testRunOneBlockFlat(void) {
@@ -322,7 +361,7 @@ geomodelgrids::apps::TestInfo::testRunOneBlockFlat(void) {
     std::cout.rdbuf(coutHelp.rdbuf() );
 
     Info info;
-    const int nargs = 6;
+    const int nargs = 7;
     const char* const args[nargs] = {
         "test",
         "--models=../../data/one-block-flat.h5",
@@ -330,15 +369,16 @@ geomodelgrids::apps::TestInfo::testRunOneBlockFlat(void) {
         "--coordsys",
         "--values",
         "--blocks",
+        "--verify",
     };
     info.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(973), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(1123), coutHelp.str().length());
 } // testRunOneBlockFlat
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Test run() with three-blocks-topo.
 void
 geomodelgrids::apps::TestInfo::testRunThreeBlocksTopo(void) {
@@ -347,7 +387,7 @@ geomodelgrids::apps::TestInfo::testRunThreeBlocksTopo(void) {
     std::cout.rdbuf(coutHelp.rdbuf() );
 
     Info info;
-    const int nargs = 6;
+    const int nargs = 7;
     const char* const args[nargs] = {
         "test",
         "--models=../../data/three-blocks-topo.h5",
@@ -355,15 +395,16 @@ geomodelgrids::apps::TestInfo::testRunThreeBlocksTopo(void) {
         "--coordsys",
         "--values",
         "--blocks",
+        "--verify",
     };
     info.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(1546), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(1804), coutHelp.str().length());
 } // testRunThreeBlocksTopo
 
 
-// ----------------------------------------------------------------------
+// ---------------------------------------------------------------------------------------------------------------------
 // Test run() with one-block-flat and three-blocks-topo.
 void
 geomodelgrids::apps::TestInfo::testRunTwoModels(void) {
@@ -384,6 +425,74 @@ geomodelgrids::apps::TestInfo::testRunTwoModels(void) {
     std::cout.rdbuf(coutOrig);
     CPPUNIT_ASSERT_EQUAL(size_t(1250), coutHelp.str().length());
 } // testRunTwoModels
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Test run() wth bad model metadata.
+void
+geomodelgrids::apps::TestInfo::testRunBadMetadata(void) {
+    std::streambuf* coutOrig = std::cout.rdbuf();
+    std::ostringstream coutHelp;
+    std::cout.rdbuf(coutHelp.rdbuf() );
+
+    Info info;
+    const int nargs = 3;
+    const char* const args[nargs] = {
+        "test",
+        "--models=../../data/three-blocks-topo-missing-metadata.h5",
+        "--verify",
+    };
+    info.run(nargs, const_cast<char**>(args));
+
+    std::cout.rdbuf(coutOrig);
+    CPPUNIT_ASSERT_EQUAL(size_t(1871), coutHelp.str().length());
+}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Test run() wth bad topography size.
+void
+geomodelgrids::apps::TestInfo::testRunBadTopography(void) {
+    std::streambuf* coutOrig = std::cout.rdbuf();
+    std::ostringstream coutHelp;
+    std::cout.rdbuf(coutHelp.rdbuf() );
+
+    Info info;
+    const int nargs = 3;
+    const char* const args[nargs] = {
+        "test",
+        "--models=../../data/one-block-topo-bad-topo.h5",
+        "--verify",
+    };
+    info.run(nargs, const_cast<char**>(args));
+
+    std::cout.rdbuf(coutOrig);
+    CPPUNIT_ASSERT_EQUAL(size_t(433), coutHelp.str().length());
+
+}
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Test run() wth bad block size.
+void
+geomodelgrids::apps::TestInfo::testRunBadBlock(void) {
+    std::streambuf* coutOrig = std::cout.rdbuf();
+    std::ostringstream coutHelp;
+    std::cout.rdbuf(coutHelp.rdbuf() );
+
+    Info info;
+    const int nargs = 3;
+    const char* const args[nargs] = {
+        "test",
+        "--models=../../data/three-blocks-topo-bad-blocks.h5",
+        "--verify",
+    };
+    info.run(nargs, const_cast<char**>(args));
+
+    std::cout.rdbuf(coutOrig);
+    CPPUNIT_ASSERT_EQUAL(size_t(984), coutHelp.str().length());
+
+}
 
 
 // End of file

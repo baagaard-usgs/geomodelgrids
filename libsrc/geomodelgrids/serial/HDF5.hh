@@ -100,6 +100,15 @@ public:
     void getGroupDatasets(std::vector<std::string>* names,
                           const char* parent);
 
+    /** Check if HDF5 file has attribute.
+     *
+     * @param[in] path Full path to object with attribute.
+     * @param[in] name Name of attribute.
+     * @returns True if attribute exists, false otherwise.
+     */
+    bool hasAttribute(const char* path,
+                      const char* name);
+
     /** Read scalar attribute.
      *
      * @param[in] path Full path to object with attribute.

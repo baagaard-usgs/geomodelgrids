@@ -1,14 +1,13 @@
 # geomodelgrids_info
 
-The `geomodelgrids_info` command line program is used to print information
-about a model to stdout.
+The `geomodelgrids_info` command line program is used to print information about a model to stdout and verify a model conforms to the GeoModelGrids specification.
 
 ## Synopsis
 
 Optional command line arguments are in square brackets.
 
 ```
-geomodelgrids_info [--help] --models=FILE_0,...,FILE_M [--description] [--coordsys] [--values] [--blocks] [--all]
+geomodelgrids_info [--help] --models=FILE_0,...,FILE_M [--verify] [--description] [--coordsys] [--values] [--blocks] [--all]
 ```
 
 ### Required arguments
@@ -19,11 +18,20 @@ geomodelgrids_info [--help] --models=FILE_0,...,FILE_M [--description] [--coords
 ### Optional arguments
 
 * **--help** Print help information to stdout and exit.
+* **--verify** Verify a model conforms to the GeoModelGrids specification.
 * **--description** Display model description.
 * **--blocks** Display block grid information.
 * **--coordsys** Display coordinate system information.
 * **--values** Display names and units of values stored in the model.
 * **--all** Display description, coordinate system, values, and blocks.
+
+### Verification
+
+Verification includes:
+
+* checking for required metadata (HDF5 attributes);
+* verifying that the topography and blocks span the horizontal dimensions; and
+* verifying that the blocks span the vertical dimension of the domain.
 
 ## Example
 
@@ -35,6 +43,13 @@ geomodelgrids_info --all --models=tests/data/three-blocks-topo.h5
 
 # Output
 Model: three-blocks-topo.h5
+    Verification
+        Verifying metadata...OK
+        Verifying topography...OK
+        Verifying block 'top'...OK
+        Verifying block 'middle'...OK
+        Verifying block 'bottom'...OK
+        Verifying blocks span vertical dimension of domain...OK
     Title: Three Blocks Topo
     Id: three-blocks-topo
     Description: Model with three blocks and topography.

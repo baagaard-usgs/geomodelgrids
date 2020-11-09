@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import h5py
 import numpy
@@ -7,21 +7,21 @@ import numpy
 class TestData:
 
     MODEL_ATTRS = (
-        ("title", unicode),
-        ("id", unicode),
-        ("description", unicode),
-        ("keywords", unicode),
-        ("creator_name", unicode),
-        ("creator_institution", unicode),
-        ("creator_email", unicode),
-        ("acknowledgments", unicode),
-        ("authors", unicode),
-        ("references", unicode),
-        ("doi", unicode),
-        ("version", unicode),
-        ("data_values", unicode),
-        ("data_units", unicode),
-        ("crs", unicode),
+        ("title", str),
+        ("id", str),
+        ("description", str),
+        ("keywords", str),
+        ("creator_name", str),
+        ("creator_institution", str),
+        ("creator_email", str),
+        ("acknowledgments", str),
+        ("authors", str),
+        ("references", str),
+        ("doi", str),
+        ("version", str),
+        ("data_values", str),
+        ("data_units", str),
+        ("crs", str),
         ("origin_x", float),
         ("origin_y", float),
         ("y_azimuth", float),
@@ -41,7 +41,7 @@ class TestData:
     @staticmethod
     def _hdf5_type(value, map_fn):
         if type(value) in [list, tuple]:
-            value_h5 = map(map_fn, value)
+            value_h5 = list(map(map_fn, value))
         else:
             value_h5 = map_fn(value)
         return value_h5
@@ -202,6 +202,12 @@ class OneBlockTopo(TestData):
         data[:, :, :, 1] = -1.2e+3 + 2.1 * x - 0.9 * y + 0.3 * z
         block["data"] = data
 
+    def bad_topo_metadata(self):
+        self.filename = "one-block-topo-bad-topo.h5"
+        self.create()
+        with h5py.File(self.filename, "a") as h5:
+            h5["topography"].attrs["resolution_horiz"] *= 0.5
+
 
 class ThreeBlocksFlat(TestData):
     filename = "three-blocks-flat.h5"
@@ -338,6 +344,29 @@ class ThreeBlocksTopo(TestData):
         data[:, :, :, 1] = -1.2e+3 + 2.1 * x - 0.9 * y + 0.3 * z
         block["data"] = data
 
+    def bad_block_metadata(self):
+        self.filename = "three-blocks-topo-bad-blocks.h5"
+        self.create()
+        with h5py.File(self.filename, "a") as h5:
+            blocks = h5["blocks"]
+            blocks["bottom"].attrs["resolution_vert"] *= 0.75
+            blocks["middle"].attrs["resolution_horiz"] -= 5.0e+5
+            blocks["middle"].attrs["z_top"] += 10.0
+            blocks["top"].attrs["z_top"] -= 4.0
+
+    def missing_metadata(self):
+        self.filename = "three-blocks-topo-missing-metadata.h5"
+        self.create()
+        with h5py.File(self.filename, "a") as h5:
+            for attr in h5.attrs:
+                del h5.attrs[attr]
+            blocks = h5["blocks"]
+            for attr in blocks["middle"].attrs:
+                del blocks["middle"].attrs[attr]
+            topo = h5["topography"]
+            for attr in topo.attrs:
+                del topo.attrs[attr]
+
 
 # ==============================================================================
 if __name__ == "__main__":
@@ -345,6 +374,9 @@ if __name__ == "__main__":
     OneBlockTopo().create()
     ThreeBlocksFlat().create()
     ThreeBlocksTopo().create()
+    OneBlockTopo().bad_topo_metadata()
+    ThreeBlocksTopo().bad_block_metadata()
+    ThreeBlocksTopo().missing_metadata()
 
 
 # End of file

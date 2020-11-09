@@ -38,7 +38,16 @@ void
 geomodelgrids::serial::Topography::loadMetadata(geomodelgrids::serial::HDF5* const h5) {
     assert(h5);
 
-    h5->readAttribute("topography", "resolution_horiz", H5T_NATIVE_DOUBLE, (void*)&_resolutionHoriz);
+    std::ostringstream msg;
+    const char* indent = "            ";
+    bool missingAttributes = false;
+
+    if (h5->hasAttribute("topography", "resolution_horiz")) {
+        h5->readAttribute("topography", "resolution_horiz", H5T_NATIVE_DOUBLE, (void*)&_resolutionHoriz);
+    } else {
+        msg << indent << "    /topography/resolution_horiz\n";
+        missingAttributes = true;
+    } // if/else
 
     hsize_t* hdims = NULL;
     int ndims = 0;
@@ -48,6 +57,8 @@ geomodelgrids::serial::Topography::loadMetadata(geomodelgrids::serial::HDF5* con
         _dims[i] = hdims[i];
     } // for
     delete[] hdims;hdims = NULL;
+
+    if (missingAttributes) { throw std::runtime_error(msg.str().c_str()); }
 } // loadMetadata
 
 

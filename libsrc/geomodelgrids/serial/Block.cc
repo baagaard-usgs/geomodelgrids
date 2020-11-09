@@ -50,9 +50,28 @@ geomodelgrids::serial::Block::loadMetadata(geomodelgrids::serial::HDF5* const h5
 
     const std::string blockpath = std::string("blocks/") + _name;
 
-    h5->readAttribute(blockpath.c_str(), "resolution_horiz", H5T_NATIVE_DOUBLE, (void*)&_resolutionHoriz);
-    h5->readAttribute(blockpath.c_str(), "resolution_vert", H5T_NATIVE_DOUBLE, (void*)&_resolutionVert);
-    h5->readAttribute(blockpath.c_str(), "z_top", H5T_NATIVE_DOUBLE, (void*)&_zTop);
+    std::ostringstream msg;
+    const char* indent = "            ";
+    bool missingAttributes = false;
+
+    if (h5->hasAttribute(blockpath.c_str(), "resolution_horiz")) {
+        h5->readAttribute(blockpath.c_str(), "resolution_horiz", H5T_NATIVE_DOUBLE, (void*)&_resolutionHoriz);
+    } else {
+        msg << indent << "    " << blockpath << "/resolution_horiz\n";
+        missingAttributes = true;
+    } // if/else
+    if (h5->hasAttribute(blockpath.c_str(), "resolution_vert")) {
+        h5->readAttribute(blockpath.c_str(), "resolution_vert", H5T_NATIVE_DOUBLE, (void*)&_resolutionVert);
+    } else {
+        msg << indent << "    " << blockpath << "/resolution_vert\n";
+        missingAttributes = true;
+    } // if/else
+    if (h5->hasAttribute(blockpath.c_str(), "z_top")) {
+        h5->readAttribute(blockpath.c_str(), "z_top", H5T_NATIVE_DOUBLE, (void*)&_zTop);
+    } else {
+        msg << indent << "    " << blockpath << "/z_top\n";
+        missingAttributes = true;
+    } // if/else
 
     hsize_t* hdims = NULL;
     int ndims = 0;
@@ -71,6 +90,8 @@ geomodelgrids::serial::Block::loadMetadata(geomodelgrids::serial::HDF5* const h5
 
     _numValues = hdims[3];
     delete[] hdims;hdims = NULL;
+
+    if (missingAttributes) { throw std::runtime_error(msg.str().c_str()); }
 } // loadMetadata
 
 
