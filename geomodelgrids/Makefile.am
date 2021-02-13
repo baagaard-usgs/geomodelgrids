@@ -1,21 +1,11 @@
-nobase_pkgpyexec_PYTHON = \
-	__init__.py \
-	create/__init__.py \
-	create/apps/__init__.py \
-	create/apps/create_model.py \
-	create/core/__init__.py \
-	create/core/datasrc.py \
-	create/core/model.py \
-	create/earthvision/__init__.py \
-	create/earthvision/api.py \
-	create/earthvision/datasrc.py \
-	create/io/__init__.py \
-	create/io/hdf5.py \
-	create/io/scec_cca.py \
-	create/utils/__init__.py \
-	create/utils/batch.py \
-	create/utils/config.py \
-	create/utils/units.py
+install-exec-local:
+		cd $(top_srcdir) && \
+			$(PYTHON) setup.py egg_info && \
+			PYTHONUSERBASE=$(DESTDIR)$(prefix) $(PYTHON) setup.py install --record record.txt --single-version-externally-managed --user && \
+			cd $(abs_builddir)
 
+# Pip install is too slow, because it makes a copy of the entire source tree, including .git.
+# See https://github.com/pypa/pip/issues/2195
+# PYTHONUSERBASE=$(DESTDIR)$(prefix) $(PYTHON) -m pip install --user $(top_srcdir)
 
 # End of file
