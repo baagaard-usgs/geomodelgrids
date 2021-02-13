@@ -3,9 +3,6 @@
 # Run tests to generate coverage information. Upload test coverage data.
 # Must run codeocov script in top-level source directory.
 
-make -j$(nproc) install
-if [ $? != 0 ]; then exit 1; fi
-
 make check -C tests/data
 if [ $? != 0 ]; then exit 1; fi
 

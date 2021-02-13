@@ -1,54 +1,47 @@
-FROM fedora:32 as os-update
+FROM debian:testing as os-update
 LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
 
-RUN dnf install -y \
-    gcc \
-    gcc-c++ \
-    make \
-    file \
-    automake \
-    autoconf \
-    libtool \
-    curl \
-    python3 \
-    python3-devel \
-    python3-libs \
-    python3-numpy \
-    python3-setuptools \
-    python3-six \
-    python3-h5py \
-    python3-coverage \
-    python3-Cython \
-    zlib \
-    zlib-devel \
-    openssl \
-    openssl-libs \
-    unzip \
-    git \
-    ca-certificates \
-    cppunit \
-    cppunit-devel \
-    hdf5 \
-    hdf5-devel \
-    sqlite \
-    sqlite-libs \
-    sqlite-devel \
-    proj \
-    proj-devel \
-    proj-datumgrid \
-    lcov \
-    gdb \
-    valgrind \
-    vim \
-    vim-common
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        g++ \
+	make \
+        file \
+        automake \
+        autoconf \
+        libtool \
+        curl \
+        python3-dev \
+	libpython3.9 \
+	python3-pip \
+	python3-setuptools \
+	python3-numpy \
+	python3-h5py \
+	cython3 \
+	python3-coverage \
+        zlib1g-dev \
+	unzip \
+        git \
+	ca-certificates \
+	libhdf5-dev \
+        libcppunit-dev \
+	sqlite3 \
+	libsqlite3-0 \
+	libsqlite3-dev \
+	libproj-dev \
+	proj-bin \
+	proj-data \
+	gdb \
+	valgrind \
+	lcov \
+	vim-common \
+	vim-runtime \
+	vim-nox
+    
+COPY docker/certs/ /usr/local/share/ca-certificates
+RUN update-ca-certificates
 
-
-COPY docker/certs/ /usr/share/pki/ca-trust-source/anchors
-RUN update-ca-trust enable
-
-
-ENV PYTHON_VERSION 3.8
-ENV HDF5_INCDIR=/usr/include  HDF5_LIBDIR=/usr/lib64
+ENV PYTHON_VERSION 3.9
+ENV HDF5_INCDIR=/usr/include/hdf5/serial  HDF5_LIBDIR=/usr/lib/x86_64-linux-gnu/hdf5/serial
 
 # ------------------------------------------------------------------------------
 from os-update as user-setup

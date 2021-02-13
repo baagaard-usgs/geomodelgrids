@@ -10,23 +10,28 @@ RUN apt-get update \
       autoconf \
       libtool \
       curl \
+      libpython3.8 \
       python3-dev \
-      libpython3.7 \
+      python3-pip \
       python3-setuptools \
       python3-numpy \
       python3-coverage \
-      cython \
+      python3-h5py \
+      cython3 \
       zlib1g-dev \
       unzip \
       git \
       ca-certificates \
       libcppunit-dev \
       libhdf5-dev \
-      python3-h5py \
       sqlite3 \
       libsqlite3-0 \
       libsqlite3-dev \
+      proj-bin \
+      proj-data \
+      libproj-dev \
       lcov \
+      gdb \
       valgrind \
       vim-common \
       vim-runtime \
@@ -35,59 +40,32 @@ RUN apt-get update \
 COPY docker/certs/ /usr/local/share/ca-certificates
 RUN update-ca-certificates
 
-ENV PYTHON_VERSION 3
-ENV HDF5_INCDIR /usr/include/hdf5/serial
-ENV HDF5_LIBDIR /usr/lib/x86_64-linux-gnu/hdf5/serial
 
-# ----------------------------------------
-from os-update as build-deps
+ENV PYTHON_VERSION 3.8
+ENV HDF5_INCDIR=/usr/include/hdf5/serial  HDF5_LIBDIR=/usr/lib/x86_64-linux-gnu/hdf5/serial
 
-# Install dependencies to /opt/geomodelgrids/dependencies
-# Build dependencies in /home/installer/src
+# ------------------------------------------------------------------------------
+from os-update as user-setup
 
-# Create 'geomodelgrids-user' user
-ENV GEOMODELGRIDS_USER geomodelgrids-user
-RUN useradd --create-home --shell /bin/bash $GEOMODELGRIDS_USER
-
-ENV PREFIX_DIR /opt/geomodelgrids
-ENV DEPS_DIR ${PREFIX_DIR}/dependencies
-WORKDIR $DEPS_DIR
-RUN chown -R $GEOMODELGRIDS_USER $PREFIX_DIR \
-  && chgrp -R $GEOMODELGRIDS_USER $PREFIX_DIR
-
-ENV BUILD_DIR /home/installer
-WORKDIR $BUILD_DIR
-RUN chown $GEOMODELGRIDS_USER $BUILD_DIR \
-  && chgrp $GEOMODELGRIDS_USER $BUILD_DIR
-
-USER $GEOMODELGRIDS_USER
-ENV PATH $PATH:$DEPS_DIR/bin
-ENV LD_LIBRARY_PATH $LD_LIBRARY_PATH:$DEPS_DIR/lib
-ENV PYTHONPATH $PYTHONPATH:$DEPS_DIR/lib/python$PYTHON_VERSION/site-packages
-
-# proj
-ENV PROJ_VER 6.3.1
-RUN curl -O https://download.osgeo.org/proj/proj-6.3.1.tar.gz \
-    && curl -O https://download.osgeo.org/proj/proj-datumgrid-1.8.zip \
-    && tar -xf proj-${PROJ_VER}.tar.gz \
-    && unzip -o ${BUILD_DIR}/proj-datumgrid-1.8.zip -d ${BUILD_DIR}/proj-${PROJ_VER}/data/ \
-    && mkdir $BUILD_DIR/proj-build
-
-WORKDIR $BUILD_DIR/proj-build
-RUN ../proj-${PROJ_VER}/configure --prefix=$DEPS_DIR SQLITE3_CFLAGS=-I/usr/include SQLITE3_LIBS="-L/usr/lib -lsqlite3" \
-  && make -j$(nproc) && make install
+# Install geomodelgrids to /opt/geomodelgrids
+# Download source code to $HOME/src
+# Build geomodelgrids in $HOME/build
 
 
-# ----------------------------------------
-from build-deps as clean
+# Create 'gmg-tester' user
+ENV TEST_USER gmg-tester
+RUN useradd --create-home --shell /bin/bash $TEST_USER
+ENV  INSTALL_DIR=/opt/geomodelgrids  HOME=/home/$TEST_USER
+ENV  TOPSRC_DIR=$HOME/src  TOPBUILD_DIR=$HOME/build
 
-USER root
-RUN rm -fr $BUILD_DIR && unset BUILD_DIR
-RUN apt-get clean
+RUN mkdir ${INSTALL_DIR} \
+  && chown ${TEST_USER} ${INSTALL_DIR} \
+  && chgrp ${TEST_USER} ${INSTALL_DIR}
+ENV PATH=$PATH:$INSTALL_DIR/bin \
+    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$INSTALL_DIR/lib \
+    PYTHONPATH=${PYTHONPATH}:${INSTALL_DIR}/lib/python${PYTHON_VERSION}/site-packages
 
-# Setup user and environment
-USER $GEOMODELGRIDS_USER
-WORKDIR /home/$GEOMODELGRIDS_USER
 
-
+USER ${TEST_USER}
+WORKDIR ${HOME}
 CMD /bin/bash

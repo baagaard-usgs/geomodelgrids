@@ -6,5 +6,5 @@ bash> docker build -t $TAG -f docker/$FILE .
 ```
 
 ```
-bash> docker run -it -v $TOOLS_DIR/earthvision-10:/opt/earthvision -v $HOME/data/cencal-geology:/data/cencal-geology earthvision-env /bin/bash
+bash> docker run --rm -it -v $TOOLS_DIR/earthvision-11:/opt/earthvision -v $HOME/data/cencal-geology:/data/cencal-geology baagaard/earthvision-env /bin/bash
 ```

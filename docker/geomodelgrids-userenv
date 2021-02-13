@@ -1,4 +1,4 @@
-FROM ubuntu:18.04 as os-update
+FROM ubuntu:20.04 as os-update
 LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
 
 RUN apt-get update \
@@ -10,26 +10,25 @@ RUN apt-get update \
       autoconf \
       libtool \
       curl \
-      libpython3.6 \
-      python3-pip \
       python3-dev \
+      libpython3.8 \
+      python3-pip \
+      python3-setuptools \
       python3-numpy \
       python3-h5py \
-      python3-setuptools \
-      python3-coverage \
+      cython3 \
       zlib1g-dev \
       unzip \
       git \
       ca-certificates \
-      libcppunit-1.14.0 \
       libcppunit-dev \
       libhdf5-dev \
       sqlite3 \
       libsqlite3-0 \
       libsqlite3-dev \
-      lcov \
-      gdb \
-      valgrind \
+      proj-bin \
+      proj-data \
+      libproj-dev \
       vim-common \
       vim-runtime \
       vim-nox
@@ -37,7 +36,7 @@ RUN apt-get update \
 COPY docker/certs/ /usr/local/share/ca-certificates
 RUN update-ca-certificates
 
-ENV PYTHON_VERSION 3.6
+ENV PYTHON_VERSION 3.8
 ENV HDF5_INCDIR=/usr/include/hdf5/serial  HDF5_LIBDIR=/usr/lib/x86_64-linux-gnu/hdf5/serial
 
 # ------------------------------------------------------------------------------
@@ -48,8 +47,8 @@ from os-update as user-setup
 # Build geomodelgrids in $HOME/build
 
 
-# Create 'gmg-tester' user
-ENV GMG_USER gmg-tester
+# Create 'gmg-user' user
+ENV GMG_USER gmg-user
 RUN useradd --create-home --shell /bin/bash $GMG_USER
 ENV  INSTALL_DIR=/opt/geomodelgrids  HOME=/home/$GMG_USER
 ENV  TOPSRC_DIR=$HOME/src  TOPBUILD_DIR=$HOME/build
@@ -65,26 +64,32 @@ USER ${GMG_USER}
 
 
 # ------------------------------------------------------------------------------
-from user-setup as build-deps
+from user-setup as src
 
-# Install dependencies to /opt/geomodelgrids
-
-# proj
-ENV PROJ_VER=6.3.1  src_dir=${TOPSRC_DIR}/proj  build_dir=${TOPBUILD_DIR}/proj
+ENV  src_dir=${TOPSRC_DIR}/geomodelgrids  build_dir=${TOPBUILD_DIR}/geomodelgrids
 RUN mkdir -p ${src_dir} && mkdir -p ${build_dir}
 
+COPY --chown=gmg-user:gmg-user . ${src_dir}
 WORKDIR ${src_dir}
-RUN curl -O https://download.osgeo.org/proj/proj-${PROJ_VER}.tar.gz \
-    && curl -O https://download.osgeo.org/proj/proj-datumgrid-1.8.zip \
-    && tar -xf proj-${PROJ_VER}.tar.gz
+RUN autoreconf --install --verbose --force
 
 WORKDIR ${build_dir}
-RUN ${src_dir}/proj-${PROJ_VER}/configure --prefix=${INSTALL_DIR} SQLITE3_CFLAGS=-I/usr/include SQLITE3_LIBS="-L/usr/lib -lsqlite3" \
-  && unzip -o ${src_dir}/proj-datumgrid-1.8.zip -d ${build_dir}/data/ \
-  && make -j$(nproc) \
-  && make install \
-  && rm -r ${build_dir}
+RUN ${src_dir}/configure --prefix=${INSTALL_DIR} --enable-python --enable-testing CPPFLAGS="-I${HDF5_INCDIR}" LDFLAGS="-L${HDF5_LIBDIR}"  CFLAGS="-O3" CXXFLAGS="-O3"
+
+
+# ------------------------------------------------------------------------------
+from src as build
+
+RUN make -j$(nproc) install
+
+
+# ------------------------------------------------------------------------------
+from build as test
+
+RUN make check -C tests/data \
+  && make -j$(nproc) check -C tests/libtests VERBOSE=1
 
 
 WORKDIR ${HOME}
+
 CMD /bin/bash

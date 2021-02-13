@@ -9,18 +9,17 @@ import subprocess
 
 
 ENVS = (
-    ("debian:stable", "debian-stable-gcc8"),
-    ("debian:testing", "debian-testing-gcc9"),
+    ("debian:stable", "debian-stable"),
+    ("debian:testing", "debian-testing"),
     ("ubuntu:18.04", "ubuntu-18.04"),
     ("ubuntu:20.04", "ubuntu-20.04"),
     ("ubuntu:20.10", "ubuntu-20.10"),
-    ("fedora:31", "fedora-31"),
     ("fedora:32", "fedora-32"),
     ("fedora:33", "fedora-33"),
     ("centos:8", "centos-8"),
     )
 
-TAG_TEMPLATE = "baagaard/geomodelgrids-testenv-{env}"
+TAG_TEMPLATE = "registry.gitlab.com/baagaard-usgs/geomodelgrids-testenv-{env}"
 
 def run_docker(cmd, verbose=True):
     """Run docker command.
