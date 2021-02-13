@@ -522,6 +522,7 @@ geomodelgrids::apps::_TestQuery::checkQuery(std::istream& sin,
     const double* const pointsXYZ = points.getXYZ();
     const double* const pointsLLE = points.getLatLonElev();
 
+    const double tolerance = 1.0e-5;
     for (size_t iPt = 0; iPt < numPoints; ++iPt) {
         const double x = pointsXYZ[iPt*spaceDim+0];
         const double y = pointsXYZ[iPt*spaceDim+1];
@@ -542,7 +543,6 @@ geomodelgrids::apps::_TestQuery::checkQuery(std::istream& sin,
             std::ostringstream msg;
             msg << "Mismatch for value 'two' for point ("
                 << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ", " << pointsLLE[iPt*spaceDim+2] << ").";
-            const double tolerance = 1.0e-6;
             const double valueTolerance = std::max(tolerance, tolerance*fabs(valueE));
             CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, value, valueTolerance);
         } // Value 'two'
@@ -556,7 +556,6 @@ geomodelgrids::apps::_TestQuery::checkQuery(std::istream& sin,
             std::ostringstream msg;
             msg << "Mismatch for value 'one' for point ("
                 << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ", " << pointsLLE[iPt*spaceDim+2] << ").";
-            const double tolerance = 1.0e-6;
             const double valueTolerance = std::max(tolerance, tolerance*fabs(valueE));
             CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, value, valueTolerance);
         } // Value 'one'

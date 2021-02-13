@@ -450,13 +450,13 @@ geomodelgrids::serial::TestModel::testQuery(void) {
         const double y = pointsXYZ[iPt*spaceDim+1];
         const double z = pointsXYZ[iPt*spaceDim+2];
 
+	const double tolerance = 1.0e-5;
         { // Value 0
             const double valueE = points.computeValueOne(x, y, z);
 
             std::ostringstream msg;
             msg << "Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
                 << ", " << pointsLLE[iPt*spaceDim+2] << ") for value 0.";
-            const double tolerance = 1.0e-6;
             const double valueTolerance = std::max(tolerance, tolerance*fabs(valueE));
             CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[0], valueTolerance);
         } // Value 0
@@ -467,7 +467,6 @@ geomodelgrids::serial::TestModel::testQuery(void) {
             std::ostringstream msg;
             msg << "Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
                 << ", " << pointsLLE[iPt*spaceDim+2] << ") for value 1.";
-            const double tolerance = 1.0e-6;
             const double valueTolerance = std::max(tolerance, tolerance*fabs(valueE));
             CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[1], valueTolerance);
         } // Value 1

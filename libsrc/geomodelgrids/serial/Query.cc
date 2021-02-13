@@ -124,10 +124,11 @@ double
 geomodelgrids::serial::Query::queryElevation(const double x,
                                              const double y) {
     double elevation = NODATA_VALUE;
+    const double zOffset = -1.0e-3;
     for (size_t i = 0; i < _models.size(); ++i) {
         assert(_models[i]);
         const double elevationTmp = _models[i]->queryElevation(x, y);
-        if (_models[i]->contains(x, y, elevationTmp)) {
+        if (_models[i]->contains(x, y, elevationTmp+zOffset)) {
             elevation = elevationTmp;
             break;
         } // if
