@@ -7,6 +7,15 @@
 #include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
 
+#if H5_VERSION_GE(1,12,0)
+  #define GEOMODELGRIDS_HDF5_USE_API_112
+#else
+#if H5_VERSION_GE(1,8,0)
+  #define GEOMODELGRIDS_HDF5_USE_API_18
+#endif
+#endif
+
+
 const hid_t geomodelgrids::serial::HDF5::H5_NULL = -1;
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -143,7 +152,11 @@ geomodelgrids::serial::HDF5::hasGroup(const char* name) {
         _HDF5Access h5access;
         h5access.object = H5Oopen(_file, name, H5P_DEFAULT);assert(h5access.object >= 0);
         H5O_info_t info;
-        herr_t err = H5Oget_info(h5access.object, &info);
+#if defined(GEOMODELGRIDS_HDF5_USE_API_112)
+    herr_t err = H5Oget_info(h5access.object, &info, H5O_INFO_ALL);
+#else
+    herr_t err = H5Oget_info(h5access.object, &info);
+#endif
         assert(err >= 0);
         if (H5O_TYPE_GROUP == info.type) {
             exists = true;
@@ -166,7 +179,11 @@ geomodelgrids::serial::HDF5::hasDataset(const char* name) {
         _HDF5Access h5access;
         h5access.object = H5Oopen(_file, name, H5P_DEFAULT);assert(h5access.object >= 0);
         H5O_info_t info;
-        herr_t err = H5Oget_info(h5access.object, &info);
+#if defined(GEOMODELGRIDS_HDF5_USE_API_112)
+    herr_t err = H5Oget_info(h5access.object, &info, H5O_INFO_ALL);
+#else
+    herr_t err = H5Oget_info(h5access.object, &info);
+#endif
         assert(err >= 0);
         if (H5O_TYPE_DATASET == info.type) {
             exists = true;
