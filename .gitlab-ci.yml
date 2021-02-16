@@ -1,0 +1,124 @@
+image: docker:latest
+
+stages:
+  - manual-trigger
+  - basic-platform
+  - other-platforms
+  - auto-documentation
+
+.pull-request:
+  only:
+    - external_pull_requests
+
+.runner:
+  tags:
+    - docker
+    - private
+
+.builder:
+  extends:
+    - .pull-request
+    - .runner
+  stage: other-platforms
+  variables:
+    GIT_SUBMODULE_STRATEGY: "normal"
+    IMAGE_REGISTRY: "registry.gitlab.com/baagaard-usgs/geomodelgrids"
+  script:
+    - docker build -t geomodelgrids-testenv --build-arg BASE_IMAGE=$IMAGE_REGISTRY/$BASE_IMAGE --build-arg TEST_COVERAGE=$TEST_COVERAGE --build-arg PYTHON_COVERAGE=$PYTHON_COVERAGE --target build -f docker/geomodelgrids-testenv .
+    - docker run -e CI_JOB_ID -e GITLAB_CI -e CI_BUILD_REF_NAME -e CI_BUILD_ID -e CI_BUILD_REPO -e CI_BUILD_REF -e CODECOV_TOKEN geomodelgrids-testenv ci-config/run_test_coverage.sh
+
+.builder-first:
+  extends: .builder
+  stage: basic-platform
+
+.doc:
+  when: manual
+  extends: .runner
+  variables:
+    BASE_IMAGE: "testenv-debian-stable"
+  script:
+    - echo "-TODO- Generate documentation."
+
+trigger-job:
+  stage: manual-trigger
+  when: manual
+  extends:
+    - .pull-request
+    - .runner
+  allow_failure: false
+  script:
+    - echo "Pipeline triggered manually"
+
+debian-stable-job:
+  extends: .builder-first
+  variables:
+    BASE_IMAGE: "testenv-debian-stable"
+    TEST_COVERAGE: "yes"
+    PYTHON_COVERAGE: "python3-coverage"
+
+debian-stable-valgrind-job:
+  extends: .builder
+  variables:
+    BASE_IMAGE: "testenv-debian-stable"
+    ENABLE_VALGRIND: "yes"
+
+debian-testing-job:
+  extends: .builder
+  variables:
+    BASE_IMAGE: "testenv-debian-testing"
+    TEST_COVERAGE: "yes"
+    PYTHON_COVERAGE: "python3-coverage"
+
+ubuntu-18.04-job:
+  extends: .builder
+  variables:
+    BASE_IMAGE: "testenv-ubuntu-18.04"
+    TEST_COVERAGE: "yes"
+    PYTHON_COVERAGE: "python3-coverage"
+
+ubuntu-20.04-job:
+  extends: .builder
+  variables:
+    BASE_IMAGE: "testenv-ubuntu-20.04"
+    TEST_COVERAGE: "yes"
+    PYTHON_COVERAGE: "python3-coverage"
+
+ubuntu-20.10-job:
+  extends: .builder
+  variables:
+    BASE_IMAGE: "testenv-ubuntu-20.10"
+    TEST_COVERAGE: "yes"
+    PYTHON_COVERAGE: "python3-coverage"
+
+fedora-32-job:
+  extends: .builder
+  variables:
+    BASE_IMAGE: "testenv-fedora-32"
+    TEST_COVERAGE: "yes"
+    PYTHON_COVERAGE: "coverage3"
+
+fedora-33-job:
+  extends: .builder
+  variables:
+    BASE_IMAGE: "testenv-fedora-33"
+    TEST_COVERAGE: "yes"
+    PYTHON_COVERAGE: "coverage3"
+
+centos-8-job:
+  extends: .builder
+  variables:
+    BASE_IMAGE: "testenv-centos-8"
+    TEST_COVERAGE: "no"
+
+
+auto-doc-job:
+  stage: auto-documentation
+  extends:
+    - .pull-request
+    - .doc
+
+manual-doc-job:
+  stage: basic-platform
+  extends: .doc
+  only:
+    - main
