@@ -144,8 +144,8 @@ AC_SUBST(HDF5_LDFLAGS)
 # Python
 if test "$enable_python" = "yes" ; then
   # PYTHON
-  m4_define_default([_AM_PYTHON_INTERPRETER_LIST],[python3 python3.6 python3.7 python3.8])
-  AM_PATH_PYTHON([3.6])
+  m4_define_default([_AM_PYTHON_INTERPRETER_LIST],[python3 python3.7 python3.8 python3.9])
+  AM_PATH_PYTHON([3.7])
   CIT_PYTHON_SYSCONFIG
 
   # NUMPY
@@ -153,7 +153,7 @@ if test "$enable_python" = "yes" ; then
   CIT_NUMPY_INCDIR
 
   # H5PY
-  CIT_PYTHON_MODULE([h5py],[2.0.0])
+  CIT_PYTHON_MODULE([h5py],[3.0.0])
 fi
 
 # CPPUNIT
