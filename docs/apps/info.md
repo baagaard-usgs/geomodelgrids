@@ -59,7 +59,7 @@ Model: three-blocks-topo.h5
     References:
         Reference 1
         Reference 2
-    Acknowledgments: Thank you!
+    Acknowledgements: Thank you!
     DOI: this.is.a.doi
     Version: 1.0.0
     Dimensions of model (m): x=60000, y=120000, z=45000

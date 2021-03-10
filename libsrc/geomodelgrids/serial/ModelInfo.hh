@@ -68,7 +68,7 @@ public:
      *
      * @returns Acknowledgments for model.
      */
-    const std::string& getAcknowledgments(void) const;
+    const std::string& getAcknowledgements(void) const;
 
     /** Get authors of model.
      *
@@ -108,7 +108,7 @@ private:
     std::string _creatorName; ///< Name of person creating model.
     std::string _creatorEmail; ///< Email of creator.
     std::string _creatorInstitution; ///< Institution of creator.
-    std::string _acknowledgments; ///< Acknowledgments for model.
+    std::string _acknowledgements; ///< Acknowledgments for model.
     std::vector<std::string> _authors; ///< Name of authors.
     std::vector<std::string> _references; ///< References for model.
     std::string _doi; ///< Digital Object Identifier for model.

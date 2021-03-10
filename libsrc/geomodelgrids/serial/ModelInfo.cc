@@ -18,7 +18,7 @@ geomodelgrids::serial::ModelInfo::ModelInfo(void) :
     _creatorName(""),
     _creatorEmail(""),
     _creatorInstitution(""),
-    _acknowledgments(""),
+    _acknowledgements(""),
     _doi(""),
     _version("")
 {} // constructor
@@ -109,8 +109,8 @@ geomodelgrids::serial::ModelInfo::getCreatorInstitution(void) const {
  * @returns Acknowledgments for model.
  */
 const std::string&
-geomodelgrids::serial::ModelInfo::getAcknowledgments(void) const {
-    return _acknowledgments;
+geomodelgrids::serial::ModelInfo::getAcknowledgements(void) const {
+    return _acknowledgements;
 } // getAcknowledgments
 
 
@@ -215,10 +215,10 @@ geomodelgrids::serial::ModelInfo::load(geomodelgrids::serial::HDF5* const h5) {
         missingAttributes = true;
     } // if/else
 
-    if (h5->hasAttribute("/", "acknowledgments")) {
-        _acknowledgments = h5->readAttribute("/", "acknowledgments");
+    if (h5->hasAttribute("/", "acknowledgements")) {
+        _acknowledgements = h5->readAttribute("/", "acknowledgements");
     } else {
-        msg << indent << "    /acknowledgments\n";
+        msg << indent << "    /acknowledgements\n";
         missingAttributes = true;
     } // if/else
 

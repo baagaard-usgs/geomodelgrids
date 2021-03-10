@@ -12,7 +12,7 @@
 * [getCreatorName()](#const-stdstring-getcreatorname)
 * [getCreatorEmail()](#const-stdstring-getcreatoremail)
 * [getCreatorInstitution()](#const-stdstring-getcreatorinstitution)
-* [getAckowledgments()](#const-stdstring-getacknowledgments)
+* [getAckowledgments()](#const-stdstring-getacknowledgements)
 * [getAuthors()](#const-stdvectorstdstring-getauthors)
 * [getReferences()](#const-stdvectorstdstring-getreferences)
 * [getDOI()](#const-stdstring-getdoi)
@@ -73,11 +73,11 @@ Get institution of creator.
 * **returns** Institution of creator.
 
 
-### const std::string& getAcknowledgments()
+### const std::string& getacknowledgements()
 
-Get acknowledgments for model.
+Get acknowledgements for model.
 
-* **returns** Acknowledgments for model.
+* **returns** acknowledgements for model.
 
 
 ### const std::vector\<std::string\>& getAuthors()

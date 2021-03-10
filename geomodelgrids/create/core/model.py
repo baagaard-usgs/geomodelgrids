@@ -256,7 +256,7 @@ class ModelMetadata:
         "creator_name",
         "creator_institution",
         "creator_email",
-        "acknowledgments",
+        "acknowledgements",
         "authors",
         "references",
         "doi",
@@ -287,7 +287,7 @@ class ModelMetadata:
     creator_name: str
     creator_institution: str
     creator_email: str
-    acknowledgments: str
+    acknowledgements: str
     authors: List[str]
     references: List[str]
     doi: str
@@ -322,7 +322,7 @@ class ModelMetadata:
                     - creator_name: Name of person creating GeoModelGrids model.
                     - creator_email: Email of creator.
                     - creator_institution: Institution of creator.
-                    - acknowledgments: Acknowledgments for model.
+                    - acknowledgements: acknowledgements for model.
                     - authors: List of model authors.
                     - references: List of references for model.
                     - doi: Digital Object Identifier
@@ -348,7 +348,7 @@ class ModelMetadata:
         self.creator_name = config["geomodelgrids"]["creator_name"]
         self.creator_email = config["geomodelgrids"]["creator_email"]
         self.creator_institution = config["geomodelgrids"]["creator_institution"]
-        self.acknowledgments = config["geomodelgrids"]["acknowledgments"]
+        self.acknowledgements = config["geomodelgrids"]["acknowledgements"]
         self.authors = string_to_list(config["geomodelgrids"]["authors"], delimiter="|")
         self.references = string_to_list(config["geomodelgrids"]["references"], delimiter="|")
         self.doi = config["geomodelgrids"]["doi"]

@@ -220,7 +220,7 @@ geomodelgrids::apps::Info::_printDescription(geomodelgrids::serial::Model* const
     std::cout << _Info::indent(1) << "References:\n" << _Info::indent(2) <<
         _Info::join(info->getReferences(), std::string("\n") + _Info::indent(2)) << "\n";
 
-    std::cout << _Info::indent(1) << "Acknowledgments: " << info->getAcknowledgments() << "\n";
+    std::cout << _Info::indent(1) << "Acknowledgements: " << info->getAcknowledgements() << "\n";
     std::cout << _Info::indent(1) << "DOI: " << info->getDOI() << "\n";
     std::cout << _Info::indent(1) << "Version: " << info->getVersion() << "\n";
 
