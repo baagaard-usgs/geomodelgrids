@@ -1,59 +1,73 @@
-#!/usr/bin/env python
-# ======================================================================
-#
-#                           Brad T. Aagaard
-#                        U.S. Geological Survey
-#
-# ======================================================================
-#
+#!/usr/bin/env python3
+"""Script to run geomodelgrids Python test suite.
+
+Run `coverage report` to generate a report (included).
+Run `coverage html -d DIR` to generate an HTML report in directory `DIR`.
+"""
+
 
 import unittest
+import sys
+
+
+# sys.path.append("./pyre")
+
 
 class TestApp(object):
-  """
-  Test application.
-  """
-
-  def __init__(self):
+    """Application to run tests.
     """
-    Constructor.
-    """
-    return
+    cov = None
+    try:
+        import coverage
+        src_dirs = [
+            "geomodelgrids.create.apps",
+            "geomodelgrids.create.core",
+            "geomodelgrids.create.io",
+            "geomodelgrids.create.testing",
+            "geomodelgrids.create.utils",
+        ]
+        cov = coverage.Coverage(source=src_dirs)
+    except ImportError:
+        pass
 
-  def main(self):
-    """Run the application.
-    """
-    success = unittest.TextTestRunner(verbosity=2).run(self._suite()).wasSuccessful()
+    def main(self):
+        """
+        Run the application.
+        """
+        if self.cov:
+            self.cov.start()
 
-    if not success:
-      import sys
-      sys.exit(1)
-    return
-  
+        success = unittest.TextTestRunner(verbosity=2).run(self._suite()).wasSuccessful()
+        if not success:
+            sys.exit(1)
 
-  def _suite(self):
-    """
-    Setup the test suite.
-    """
+        if self.cov:
+            self.cov.stop()
+            self.cov.save()
+            self.cov.report()
+            self.cov.xml_report(outfile="coverage.xml")
 
-    suite = unittest.TestSuite()
+    def _suite(self):
+        """Setup the test suite.
+        """
+        import test_createapp
 
-    from TestGeneratePoints import TestGeneratePointsBlock1
-    suite.addTest(unittest.makeSuite(TestGeneratePointsBlock1))
+        test_cases = []
+        for mod in [
+            test_createapp,
+        ]:
+            test_cases += mod.test_classes()
 
-    from TestGeneratePoints import TestGeneratePointsBlock2
-    suite.addTest(unittest.makeSuite(TestGeneratePointsBlock2))
+        suite = unittest.TestSuite()
+        for test_case in test_cases:
+            suite.addTest(unittest.makeSuite(test_case))
 
-    from TestGeneratePoints import TestGeneratePointsBlockFlat
-    suite.addTest(unittest.makeSuite(TestGeneratePointsBlockFlat))
-
-    return suite
+        return suite
 
 
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
-  app = TestApp()
-  app.main()
+    TestApp().main()
 
 
-# End of file 
+# End of file

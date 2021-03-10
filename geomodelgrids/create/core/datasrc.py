@@ -8,8 +8,13 @@ class DataSrc(ABC):
     """Georeferenced data source providing gridded data.
     """
 
-    def __init__(self, config):
+    def __init__(self):
         """Constructor.
+        """
+        return
+
+    def initialize(self):
+        """Initialize data source.
         """
         return
 

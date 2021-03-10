@@ -37,7 +37,7 @@ class App():
                 If True, write block information to model.
             all (bool), default: False
                 If True, equivalent to import_domain=True, import_topography=True, import_blocks=True
-            quiet (bool), default: True
+            show_progress (bool), default: True
                 If False, print progress to stdout.
             log_filename (str), default: rasterize.log
                 Name of log file.
