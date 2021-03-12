@@ -30,7 +30,7 @@ class RulesDataSrc(DataSrc):
         self.api = None
         self.faultblock_ids = {}
         self.zone_ids = {}
-        super().__init__(config)
+        super().__init__()
 
     def initialize(self):
         """Initialize model.
@@ -68,7 +68,7 @@ class RulesDataSrc(DataSrc):
 
         os.remove(points_abspath)
         os.remove(elev_abspath)
-        return elev
+        return elev.reshape((elev.shape[0], elev.shape[1], 1))
 
     def get_values(self, block, topography, batch=None):
         """Query EarthVision model for values at points.
@@ -84,7 +84,7 @@ class RulesDataSrc(DataSrc):
         VALUES_FILENAME = "block_values.dat"  # Must have .data suffix.
 
         points_abspath = os.path.join(self.model_dir, POINTS_FILENAME)
-        points = block.generate_points(self, batch)
+        points = block.generate_points(topography, batch)
 
         scale = units.length_scale(self.config["earthvision"]["xy_units"])
         numpy.savetxt(points_abspath, points.reshape((-1, points.shape[3])) / scale, fmt="%16.8e")
@@ -92,9 +92,10 @@ class RulesDataSrc(DataSrc):
         ev_model = self.config["earthvision"]["geologic_model"]
         data = self.api.ev_label(VALUES_FILENAME, POINTS_FILENAME, ev_model)
 
+        topo_geo = block.get_topography(topography, batch)
         depth = numpy.zeros(points.shape[:-1])
         for iz in range(depth.shape[-1]):
-            depth[:, :, iz] = topography - points[:, :, iz, 2]
+            depth[:, :, iz] = topo_geo - points[:, :, iz, 2]
         depth[:, :, 0] -= block.z_top_offset
 
         fn_path = self.config["earthvision"]["rules_fn"].split(".")

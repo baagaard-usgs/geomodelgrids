@@ -2,6 +2,7 @@ docs/_site
 docs/Gemfile.lock
 docs/overview/figs/gridmapping.pdf
 docs/overview/figs/hdf5layout.pdf
+build
 models/plotting/data
 models/plotting/plots
 Makefile.in

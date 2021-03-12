@@ -22,7 +22,8 @@ class AnalyticDataSrc(DataSrc):
         """
         super().__init__()
 
-    def get_topography(self, points):
+    @staticmethod
+    def get_topography(points):
         """Get values topography using analytical function.
 
         Args:
@@ -36,9 +37,10 @@ class AnalyticDataSrc(DataSrc):
         amplitude = 20.0
         twopi = 2.0*numpy.pi
         elev = amplitude * numpy.sin(twopi*points[:, :, 0]/lx)*numpy.cos(twopi*points[:, :, 1]/ly)
-        return elev
+        return elev.reshape((elev.shape[0], elev.shape[1], 1))
 
-    def get_values(self, block, topography, batch=None):
+    @staticmethod
+    def get_values(block, topography, batch=None):
         """Get block values using analytical function.
 
         Args:
@@ -50,11 +52,11 @@ class AnalyticDataSrc(DataSrc):
         """
         NVALUES = 2
 
-        points = block.generate_points(self, batch)
+        points = block.generate_points(topography, batch)
         npts = points.shape
         values = numpy.zeros((npts[0], npts[1], npts[2], NVALUES), dtype=numpy.float32)
-        values[:, :, :, 0] = self._get_values_one(points)
-        values[:, :, :, 1] = self._get_values_two(points)
+        values[:, :, :, 0] = AnalyticDataSrc._get_values_one(points)
+        values[:, :, :, 1] = AnalyticDataSrc._get_values_two(points)
         return values
 
     @staticmethod
@@ -66,9 +68,9 @@ class AnalyticDataSrc(DataSrc):
         lz = 50.0e+3
         amplitude = 400.0
         twopi = 2.0 * numpy.pi
-        return amplitude * numpy.cos(twopi*points[:, 0]/lx) \
-            * numpy.sin(twopi*points[:, 1]/ly) \
-            * numpy.sin(twopi*points[:, 2]/lz)
+        return amplitude * numpy.cos(twopi*points[:, :, :, 0]/lx) \
+            * numpy.sin(twopi*points[:, :, :, 1]/ly) \
+            * numpy.sin(twopi*points[:, :, :, 2]/lz)
 
     @staticmethod
     def _get_values_two(points):
@@ -79,8 +81,8 @@ class AnalyticDataSrc(DataSrc):
         lz = 80.0e+3
         amplitude = 200.0
         twopi = 2.0 * numpy.pi
-        return 150.0 + amplitude * numpy.cos(twopi*points[:, 0]/lx) \
-            * numpy.sin(twopi*points[:, 1]/ly) \
-            * numpy.sin(twopi*points[:, 2]/lz)
+        return 150.0 + amplitude * numpy.cos(twopi*points[:, :, :, 0]/lx) \
+            * numpy.sin(twopi*points[:, :, :, 1]/ly) \
+            * numpy.sin(twopi*points[:, :, :, 2]/lz)
 
 # End of file

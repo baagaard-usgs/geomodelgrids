@@ -15,6 +15,7 @@ from geomodelgrids.create.utils import config
 
 class TestApp(unittest.TestCase):
     CONFIG_FILENAME = "test_createapp.cfg"
+    TOLERANCE = 1.0e-6
 
     def setUp(self):
         model_config = config.get_config([self.CONFIG_FILENAME])
@@ -83,7 +84,7 @@ class TestApp(unittest.TestCase):
         ARGS = {
             "config": self.CONFIG_FILENAME,
             "show_parameters": False,
-            "import_domain": False,
+            "import_domain": True,
             "import_topography": True,
             "import_blocks": False,
             "all": False,
@@ -98,22 +99,23 @@ class TestApp(unittest.TestCase):
         topographyE = AnalyticDataSrc().get_topography(points)
 
         h5 = h5py.File(self.metadata["filename"], "r")
-        topography = h5["topography"]
+        topography = h5["topography"][:]
 
-        toleranceV = numpy.maximum(1.0e-6, topographyE)
+        toleranceV = numpy.maximum(self.TOLERANCE, numpy.abs(topographyE)*self.TOLERANCE)
         valuesOk = numpy.abs(topographyE - topography) < toleranceV
         if numpy.sum(valuesOk.ravel()) != valuesOk.size:
             print("Mismatch in topography.")
             print("Expected values", topographyE[~valuesOk])
-            print("Actual values", topographyE[~valuesOk])
-            self.assertEqual(numpy.sum(valuesOk.ravel()), valuesOk.size())
+            print("Actual values", topography[~valuesOk])
+            h5.close()
+            self.assertEqual(numpy.sum(valuesOk.ravel()), valuesOk.size)
 
     def test_blocks(self):
         ARGS = {
             "config": self.CONFIG_FILENAME,
             "show_parameters": False,
-            "import_domain": False,
-            "import_topography": False,
+            "import_domain": True,
+            "import_topography": True,
             "import_blocks": True,
             "all": False,
             "show_progress": False,
@@ -126,17 +128,21 @@ class TestApp(unittest.TestCase):
         h5 = h5py.File(self.metadata["filename"], "r")
         for block in self.metadata["blocks"]:
             points = self._get_block_xyz(block)
-            valuesE = AnalyticDataSrc().get_values(points)
+            npts = points.shape
+            valuesE = numpy.zeros((npts[0], npts[1], npts[2], 2), dtype=numpy.float32)
+            valuesE[:, :, :, 0] = AnalyticDataSrc._get_values_one(points)
+            valuesE[:, :, :, 1] = AnalyticDataSrc._get_values_two(points)
 
-            values = h5["blocks"][block]
+            values = h5["blocks"][block][:]
 
-            toleranceV = numpy.maximum(1.0e-6, valuesE)
+            toleranceV = numpy.maximum(self.TOLERANCE, numpy.abs(valuesE)*self.TOLERANCE)
             valuesOk = numpy.abs(valuesE - values) < toleranceV
             if numpy.sum(valuesOk.ravel()) != valuesOk.size:
-                print("Mismatch in topography.")
+                print("Mismatch in data values.")
                 print("Expected values", valuesE[~valuesOk])
-                print("Actual values", valuesE[~valuesOk])
-                self.assertEqual(numpy.sum(valuesOk.ravel()), valuesOk.size())
+                print("Actual values", values[~valuesOk])
+                h5.close()
+                self.assertEqual(numpy.sum(valuesOk.ravel()), valuesOk.size)
 
     def _check_attributes(self, names, attrsE, attrs):
         for attr in names:
@@ -160,6 +166,34 @@ class TestApp(unittest.TestCase):
         x, y = numpy.meshgrid(x1, y1, indexing='ij')
         z = numpy.zeros(x.shape)
         xyz = numpy.stack((x, y, z), axis=2)
+        return xyz
+
+    def _get_block_xyz(self, block):
+        block_metadata = self.metadata["blocks"][block]
+        dx = block_metadata["resolution_horiz"]
+        x1 = self.metadata["origin_x"] + numpy.arange(0.0, self.metadata["dim_x"]+0.5*dx, dx)
+        y1 = self.metadata["origin_y"] + numpy.arange(0.0, self.metadata["dim_y"]+0.5*dx, dx)
+
+        # Get topography
+        x, y = numpy.meshgrid(x1, y1, indexing='ij')
+        z = numpy.zeros(x.shape)
+        xyz = numpy.stack((x, y, z), axis=2)
+        topography = AnalyticDataSrc.get_topography(xyz).squeeze()
+
+        # Create domain points
+        dz = block_metadata["resolution_vert"]
+        block_dimz = block_metadata["z_top"] - block_metadata["z_bot"]
+        z1 = numpy.arange(0.0, block_dimz+0.5*dz, dz)
+        x, y, z = numpy.meshgrid(x1, y1, z1, indexing='ij')
+
+        # Adjust domain points to conform to topography
+        domain_top = 0.0
+        domain_bot = -self.metadata["dim_z"]
+        for iz in range(z.shape[-1]):
+            z[:, :, iz] = domain_bot + (topography - domain_bot) / \
+                (domain_top - domain_bot) * (block_metadata["z_top"] - z[:, :, iz] - domain_bot)
+
+        xyz = numpy.stack((x, y, z), axis=3)
         return xyz
 
 

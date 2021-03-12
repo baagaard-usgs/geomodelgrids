@@ -124,7 +124,7 @@ class BatchGenerator3D():
                 if num_x < num_xyz:
                     self.bnum_x = num_x
                     self.bnum_y = max_nvalues // (num_xyz * num_x)
-                elif num_y < num_xy:
+                elif num_y < num_xyz:
                     self.bnum_y = num_y
                     self.bnum_x = max_nvalues // (num_xyz * num_y)
                 else:

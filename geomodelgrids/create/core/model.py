@@ -17,23 +17,26 @@ class Topography():
     """Surface topography.
     """
 
-    def __init__(self, model_metadata, config):
+    def __init__(self, model_metadata, config, storage):
         """Constructor.
 
         Args:
             model_metadata (ModelMetadata)
                 Metadata for model domain associated with block.
-           config (dict)
-             True if use of topography is enabled, False otherwise.
-             Keys:
-                 - use_topography: Model uses topography
-                 - resolution_horiz: Horizontal resolution in m
-                 - chunk_size: Dimensions of dataset chunk (should be about 10Kb - 1Mb)
+            config (dict)
+                True if use of topography is enabled, False otherwise.
+                Keys:
+                    - use_topography: Model uses topography
+                    - resolution_horiz: Horizontal resolution in m
+                    - chunk_size: Dimensions of dataset chunk (should be about 10Kb - 1Mb)
+            storage (HDF5Storage)
+                Stored topography.
         """
         self.model_metadata = model_metadata
         self.enabled = "True" == config["use_topography"]
         self.resolution_horiz = float(config["resolution_horiz"]) if self.enabled else None
         self.chunk_size = tuple(map(int, string_to_list(config["chunk_size"]))) if self.enabled else None
+        self.storage = storage
 
     def get_dims(self):
         """Get number of points in block along each dimension.
@@ -43,7 +46,7 @@ class Topography():
         """
         num_x = 1 + int(self.model_metadata.dim_x / self.resolution_horiz)
         num_y = 1 + int(self.model_metadata.dim_y / self.resolution_horiz)
-        return (num_x, num_y)
+        return (num_x, num_y, 1)
 
     def get_batches(self, batch_size):
         """Get iterator witch batches of points.
@@ -53,7 +56,7 @@ class Topography():
         if not self.enabled:
             raise NotImplementedError("Topography.get_batches() not implemented if topography is not enabled.")
 
-        num_x, num_y = self.get_dims()
+        num_x, num_y, _ = self.get_dims()
         return batch.BatchGenerator2D(num_x, num_y, batch_size)
 
     def generate_points(self, batch=None):
@@ -70,7 +73,7 @@ class Topography():
         if not self.enabled:
             raise NotImplementedError("Topography.generate_points() not implemented if topography is not enabled.")
 
-        num_x, num_y = self.get_dims()
+        num_x, num_y, _ = self.get_dims()
         logger = logging.getLogger(__name__)
         logger.info("Topography for domain contains %d points (%d x %d).",
                     num_x * num_y, num_x, num_y)
@@ -95,8 +98,10 @@ class Topography():
         xyz_geo = numpy.stack((x, y, z), axis=2)
         xyz_model = numpy.zeros(xyz_geo.shape)
         az_rad = self.model_metadata.y_azimuth * math.pi / 180.0
-        xyz_model[:, :, 0] = self.model_metadata.origin_x + xyz_geo[:, :, 0] * math.cos(az_rad) + xyz_geo[:, :, 1] * math.sin(az_rad)
-        xyz_model[:, :, 1] = self.model_metadata.origin_y - xyz_geo[:, :, 0] * math.sin(az_rad) + xyz_geo[:, :, 1] * math.cos(az_rad)
+        xyz_model[:, :, 0] = self.model_metadata.origin_x + xyz_geo[:, :, 0] * \
+            math.cos(az_rad) + xyz_geo[:, :, 1] * math.sin(az_rad)
+        xyz_model[:, :, 1] = self.model_metadata.origin_y - xyz_geo[:, :, 0] * \
+            math.sin(az_rad) + xyz_geo[:, :, 1] * math.cos(az_rad)
         return xyz_model
 
 
@@ -146,18 +151,18 @@ class Block():
         num_x, num_y, num_z = self.get_dims()
         return batch.BatchGenerator3D(num_x, num_y, num_z, batch_size)
 
-    def generate_points(self, domain, batch=None):
+    def generate_points(self, topography, batch=None):
         """Generate grid of points in block.
 
         Args:
-            domain (Model)
-                Model domain.
+            topography (Topography)
+                Elevation of ground surface for model domain.
             batch (BatchGenerator3D)
                 Current batch of points in block.
         Returns:
             3D array (Nx*Ny*Nz,3) of point locations in block.
         """
-        (num_x, num_y, num_z) = self.get_dims(domain)
+        (num_x, num_y, num_z) = self.get_dims()
         logger = logging.getLogger(__name__)
         logger.info("Entire block '%s' contains %d points (%d x %d x %d).",
                     self.name, num_x * num_y * num_z, num_x, num_y, num_z)
@@ -183,25 +188,22 @@ class Block():
         x, y, z = numpy.meshgrid(x1, y1, z1, indexing="ij")
 
         domain_top = 0.0
-        domain_bot = -domain.dim_z
-        if domain.topography is not None:
-            # :TODO: Update this
-            topo_geo = self.get_block_elevation(domain.topography, batch)
+        domain_bot = -self.model_metadata.dim_z
+        if topography.enabled:
+            topo_geo = self.get_topography(topography, batch)
             for iz in range(z.shape[-1]):
                 z[:, :, iz] = domain_bot + (topo_geo - domain_bot) / \
                     (domain_top - domain_bot) * (self.z_top - z[:, :, iz] - domain_bot)
-
-            # Move top points down
-            z[:, :, 0] += self.z_top_offset
         else:
             z = self.z_top - z
+        z[:, :, 0] += self.z_top_offset  # Adjust top points by offset
 
         xyz_geo = numpy.stack((x, y, z), axis=3)
         xyz_model = numpy.zeros(xyz_geo.shape)
-        az_rad = domain.y_azimuth * math.pi / 180.0
-        xyz_model[:, :, :, 0] = domain.origin_x + xyz_geo[:, :, :, 0] * \
+        az_rad = self.model_metadata.y_azimuth * math.pi / 180.0
+        xyz_model[:, :, :, 0] = self.model_metadata.origin_x + xyz_geo[:, :, :, 0] * \
             math.cos(az_rad) + xyz_geo[:, :, :, 1] * math.sin(az_rad)
-        xyz_model[:, :, :, 1] = domain.origin_y - xyz_geo[:, :, :, 0] * \
+        xyz_model[:, :, :, 1] = self.model_metadata.origin_y - xyz_geo[:, :, :, 0] * \
             math.sin(az_rad) + xyz_geo[:, :, :, 1] * math.cos(az_rad)
         xyz_model[:, :, :, 2] = xyz_geo[:, :, :, 2]
         return xyz_model
@@ -236,8 +238,8 @@ class Block():
         else:
             topo_batch = None
 
-        elevation = self.storage.load_topography(topography, topo_batch)
-        return elevation[::block_skip, ::block_skip, 0].squeeze()
+        elevation = topography.storage.load_topography(topography, topo_batch)
+        return numpy.float64(elevation[::block_skip, ::block_skip, 0].squeeze())
 
 
 @dataclass
@@ -394,12 +396,12 @@ class Model():
         """
         self.metadata = ModelMetadata(config)
 
-        self.topography = Topography(self.metadata, config["topography"])
         for name in string_to_list(config["domain"]["blocks"]):
             block = Block(name, self.metadata, config[name])
             self.blocks.append(block)
 
         self.storage = HDF5Storage(config["geomodelgrids"]["filename"])
+        self.topography = Topography(self.metadata, config["topography"], self.storage)
 
     def save_domain(self):
         """Write domain information to storage."""

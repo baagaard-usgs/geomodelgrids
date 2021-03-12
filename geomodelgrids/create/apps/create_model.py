@@ -78,11 +78,7 @@ class App():
             for block in model.blocks:
                 model.init_block(block)
                 for batch in block.get_batches(batch_size):
-                    if model.topography.enabled:
-                        topography = block.get_topography(model.topography, batch)
-                    else:
-                        topography = None
-                    values = datasrc.get_values(block, topography, batch)
+                    values = datasrc.get_values(block, model.topography, batch)
                     model.save_block(block, values, batch)
 
     def initialize(self, config_filenames):

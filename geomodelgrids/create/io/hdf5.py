@@ -94,7 +94,7 @@ class HDF5Storage():
         if batch:
             x_start, x_end = batch.x_range
             y_start, y_end = batch.y_range
-            topo_dataset[x_start:x_end, y_start:y_end] = elevation
+            topo_dataset[x_start:x_end, y_start:y_end, :] = elevation
         else:
             topo_dataset[:] = elevation
         h5.close()
