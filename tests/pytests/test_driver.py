@@ -50,10 +50,12 @@ class TestApp(object):
     def _suite(self):
         """Setup the test suite.
         """
+        import test_batch
         import test_createapp
 
         test_cases = []
         for mod in [
+            test_batch,
             test_createapp,
         ]:
             test_cases += mod.test_classes()

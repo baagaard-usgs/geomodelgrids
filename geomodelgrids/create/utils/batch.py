@@ -27,21 +27,23 @@ class BatchGenerator2D():
         self.num_x = num_x
         self.num_y = num_y
 
-        if not max_nvalues or num_x * num_y < max_nvalues:
+        if not max_nvalues or num_x * num_y <= max_nvalues:
             self.bnum_x = num_x
             self.bnum_y = num_y
         else:
-            num_xy = int(max_nvalues**0.5)
-            if num_x < num_xy:
+            num_xy = round(max_nvalues**0.5)
+            if num_x > num_xy and num_y > num_xy:
+                self.bnum_x = self.bnum_y = num_xy
+            elif num_x <= num_xy:
                 self.bnum_x = num_x
                 self.bnum_y = max_nvalues // num_x
-            elif num_y < num_xy:
+            elif num_y <= num_xy:
                 self.bnum_y = num_y
                 self.bnum_x = max_nvalues // num_y
             else:
-                self.bnum_x = self.bnum_y = num_xy
-        self.nbatch_x = int(math.ceil(num_x / self.bnum_x))
-        self.nbatch_y = int(math.ceil(num_y / self.bnum_y))
+                raise ValueError("Unknown case.")
+        self.nbatch_x = round(math.ceil(num_x / self.bnum_x))
+        self.nbatch_y = round(math.ceil(num_y / self.bnum_y))
 
         self.ix = 0
         self.iy = 0
@@ -113,36 +115,49 @@ class BatchGenerator3D():
         self.num_y = num_y
         self.num_z = num_z
 
-        if not max_nvalues or num_x * num_y * num_z < max_nvalues:
+        if not max_nvalues or num_x * num_y * num_z <= max_nvalues:
             self.bnum_x = num_x
             self.bnum_y = num_y
             self.bnum_z = num_z
         else:
-            num_xyz = int(max_nvalues**(1.0 / 3.0))
-            if num_z > num_xyz:
-                self.bnum_z = num_xyz
-                if num_x < num_xyz:
-                    self.bnum_x = num_x
-                    self.bnum_y = max_nvalues // (num_xyz * num_x)
-                elif num_y < num_xyz:
-                    self.bnum_y = num_y
-                    self.bnum_x = max_nvalues // (num_xyz * num_y)
-                else:
-                    self.bnum_x = self.bnum_y = num_xyz
-            else:  # num_z <= num_xyz:
+            num_xyz = round(max_nvalues**(1.0 / 3.0))
+            if num_x > num_xyz and num_y > num_xyz and num_z > num_xyz:
+                self.bnum_x = self.bnum_y = self.bnum_z = num_xyz
+            elif num_z <= num_xyz:
                 self.bnum_z = num_z
-                num_xy = int((max_nvalues // num_z)**0.5)
-                if num_x < num_xy:
+                num_xy = round((max_nvalues // num_z)**0.5)
+                if num_x > num_xy and num_y > num_xy:
+                    self.bnum_x = self.bnum_y = num_xy
+                elif num_x <= num_xy:
                     self.bnum_x = num_x
                     self.bnum_y = max_nvalues // (num_x * num_z)
-                elif num_y < num_xy:
+                elif num_y <= num_xy:
                     self.bnum_y = num_y
                     self.bnum_x = max_nvalues // (num_y * num_z)
                 else:
-                    self.bnum_x = self.bnum_y = num_xy
-        self.nbatch_x = int(math.ceil(num_x / self.bnum_x))
-        self.nbatch_y = int(math.ceil(num_y / self.bnum_y))
-        self.nbatch_z = int(math.ceil(num_z / self.bnum_z))
+                    raise ValueError("Unknown case")
+            elif num_x <= num_xyz:
+                self.bnum_x = num_x
+                num_yz = round((max_nvalues // num_x)**0.5)
+                if num_y > num_yz and num_z > num_yz:
+                    self.bnum_y = self.bnum_z = num_yz
+                elif num_y <= num_yz:
+                    self.bnum_y = num_y
+                    self.bnum_z = max_nvalues // (num_x * num_y)
+                else:
+                    raise ValueError("Unknown case")
+            elif num_y <= num_xyz:
+                self.bnum_y = num_y
+                num_xz = round((max_nvalues // num_y)**0.5)
+                if num_x > num_xz and num_z > num_xz:
+                    self.bnum_x = self.bnum_z = num_xz
+                else:
+                    raise ValueError("Unknown case")
+            else:
+                raise ValueError("Unknown case")
+        self.nbatch_x = round(math.ceil(num_x / self.bnum_x))
+        self.nbatch_y = round(math.ceil(num_y / self.bnum_y))
+        self.nbatch_z = round(math.ceil(num_z / self.bnum_z))
 
         self.ix = 0
         self.iy = 0
