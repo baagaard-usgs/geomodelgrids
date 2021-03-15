@@ -2,6 +2,7 @@
 kilogram).
 """
 
+
 def length_scale(name):
     """Get length scale associated with units.
 
@@ -17,7 +18,7 @@ def length_scale(name):
         value = 1.0
     elif name in ["km", "kilometer", "kilometers"]:
         value = 1000.0
-    elif name in ["ft", "feet"]:
+    elif name in ["ft", "foot", "feet"]:
         value = 0.3048
     else:
         raise ValueError("Unknown units '{}' for topography elevation.".format(name))
