@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 AC_PREREQ(2.59)
-AC_INIT([geomodelgrids], [0.1.0], [baagaard@usgs.gov])
+AC_INIT([geomodelgrids], [0.2.0], [baagaard@usgs.gov])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_MACRO_DIR([m4])
@@ -34,9 +34,9 @@ AC_ARG_ENABLE([test-coverage],
 	[enable_test_coverage=no])
 AC_ARG_WITH([python-coverage],
     [AC_HELP_STRING([--with-python-coverage],
-        [set executable for python-coverage @<:@default=coverage2@:>@])],
+        [set executable for python-coverage @<:@default=python3-coverage@:>@])],
 	[python_coverage=$withval],
-	[python_coverage="coverage2"])
+	[python_coverage="python3-coverage"])
 AC_SUBST(python_coverage)
 
 # VALGRIND
@@ -47,10 +47,10 @@ AC_ARG_ENABLE([valgrind],
 AM_CONDITIONAL([ENABLE_VALGRIND], [test "$enable_valgrind" = yes])
 
 # SPATIAL w/spatialdata extension
-AC_ARG_ENABLE([spatial],
-	[  --enable-spatial        Enable use of spatialdata package (requires spatialdata) [[default=no]]],
-	[enable_spatial=yes],
-	[enable_spatial=no])
+AC_ARG_ENABLE([spatialdata],
+	[  --enable-spatialdata     Enable use of spatialdata package (requires spatialdata) [[default=no]]],
+	[if test "$enableval" = yes ; then enable_spatialdata=yes; else enable_spatialdata=no; fi],
+	[enable_spatialdata=no])
 
 
 # ----------------------------------------------------------------------

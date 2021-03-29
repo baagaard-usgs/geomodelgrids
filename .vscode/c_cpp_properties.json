@@ -1,0 +1,25 @@
+{
+    "configurations": [
+        {
+            "name": "macos-clang",
+            "includePath": [
+                "${workspaceFolder}/libsrc",
+                "${GEOMODELGRIDS_BUILDDIR}",
+                "${PYTHON_INCDIR}",
+                "${MPI_INCDIR}",
+                "${HDF5_INCDIR}",
+                "${PROJ_INCDIR}",
+                "${CPPUNIT_INCDIR}"
+            ],
+            "defines": [],
+            "macFrameworkPath": [
+                "/Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk/System/Library/Frameworks"
+            ],
+            "compilerPath": "/usr/bin/clang",
+            "cStandard": "c11",
+            "cppStandard": "c++11",
+            "intelliSenseMode": "macos-clang-x64"
+        }
+    ],
+    "version": 4
+}

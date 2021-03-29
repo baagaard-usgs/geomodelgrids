@@ -1,4 +1,4 @@
-FROM baagaard/geomodelgrids-userenv as ev-deps
+FROM registry.gitlab.com/baagaard-usgs/geomodelgrids/geomodelgrids-userenv as ev-deps
 LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
 
 #USER root
@@ -16,7 +16,7 @@ LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
 #       libpq5
 #
 #
-#WORKDIR ${TOPSRC_DIR}
+#WORKDIR ${TOP_SRCDIR}
 #RUN curl -O http://ppa.launchpad.net/linuxuprising/libpng12/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1.1+1~ppa0~focal_amd64.deb \
 #    && dpkg -i libpng12-0_1.2.54-1ubuntu1.1+1~ppa0~focal_amd64.deb \
 #    && rm libpng12-0_1.2.54-1ubuntu1.1+1~ppa0~focal_amd64.deb
@@ -28,7 +28,7 @@ LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
 # libtiff3
 # ------------------------------------------------------------------------------
 #
-#ENV src_dir=${TOPSRC_DIR}/libtiff  build_dir=${TOPBUILD_DIR}/libtiff
+#ENV src_dir=${TOP_SRCDIR}/libtiff  build_dir=${TOP_BUILDDIR}/libtiff
 #RUN mkdir -p ${src_dir} && mkdir -p ${build_dir}
 #WORKDIR ${src_dir}
 #RUN curl -O https://download.osgeo.org/libtiff/old/tiff-3.9.6.tar.gz \
