@@ -255,6 +255,7 @@ AC_CONFIG_FILES([Makefile
 	tests/libtests/utils/Makefile
 	tests/libtests/serial/Makefile
 	tests/libtests/apps/Makefile
+  tests/pytests/Makefile
 	docs/Makefile
 	models/Makefile
 	])

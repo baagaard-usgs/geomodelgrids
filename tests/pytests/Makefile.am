@@ -1,0 +1,31 @@
+include $(top_srcdir)/check.am
+
+TESTS = test_geomodelgrids.py
+
+dist_check_SCRIPTS = test_geomodelgrids.py
+
+dist_noinst_PYTHON = \
+	test_driver.py \
+	test_units.py \
+	test_batch py \
+	test_createapp.py
+
+
+dist_noinst_DATA = \
+	test_createapp.cfg \
+	test_createapp_batch.cfg
+
+
+# 'export' the input files by performing a mock install
+export_datadir = $(top_builddir)/tests/pytests/
+export-data: $(noinst_DATA)
+	if [ "X$(top_srcdir)" != "X$(top_builddir)" ]; then $(install_sh) -d $(export_datadir); for f in $(dist_noinst_DATA); do $(install_sh_DATA) $(srcdir)/$$f $(export_datadir); done; fi
+
+clean-data:
+	if [ "X$(top_srcdir)" != "X$(top_builddir)" ]; then for f in $(dist_noinst_DATA); do $(RM) $(RM_FLAGS) $(export_datadir)/$$f; done; fi
+
+BUILT_SOURCES = export-data
+clean-local: clean-data
+
+
+# End of file

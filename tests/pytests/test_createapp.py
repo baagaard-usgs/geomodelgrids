@@ -197,8 +197,12 @@ class TestApp(unittest.TestCase):
         return xyz
 
 
+class TestAppBatch(TestApp):
+    CONFIG_FILENAME = "test_createapp_batch.cfg"
+
+
 def test_classes():
-    return [TestApp]
+    return [TestApp, TestAppBatch]
 
 
 if __name__ == "__main__":
