@@ -23,6 +23,7 @@ RUN apt-get update \
       git \
       ca-certificates \
       libcppunit-dev \
+      hdf5-tools \
       libhdf5-dev \
       sqlite3 \
       libsqlite3-0 \

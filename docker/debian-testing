@@ -22,6 +22,7 @@ RUN apt-get update \
 	unzip \
         git \
 	ca-certificates \
+	hdf5-tools \
 	libhdf5-dev \
         libcppunit-dev \
 	sqlite3 \
