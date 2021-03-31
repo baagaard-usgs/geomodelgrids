@@ -153,7 +153,7 @@ if test "$enable_python" = "yes" ; then
   CIT_NUMPY_INCDIR
 
   # H5PY
-  CIT_PYTHON_MODULE([h5py],[3.0.0])
+  CIT_PYTHON_MODULE([h5py],[2.8.0])
 fi
 
 # CPPUNIT
