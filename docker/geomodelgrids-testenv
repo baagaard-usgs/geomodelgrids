@@ -12,7 +12,7 @@ LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
 
 
 # ------------------------------------------------------------------------------
-ENV  src_dir=${TOPSRC_DIR}/geomodelgrids  build_dir=${TOPBUILD_DIR}/geomodelgrids
+ENV  src_dir=${TOP_SRCDIR}/geomodelgrids  build_dir=${TOP_BUILDDIR}/geomodelgrids
 
 RUN mkdir -p ${src_dir}
 COPY --chown=gmg-tester:gmg-tester . ${src_dir}
