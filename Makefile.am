@@ -41,6 +41,10 @@ coverage-libtests:
 	$(LCOV) --remove coverage-libtests.info '/usr/*' '/Library/*' "v1" "*/utils/TestDriver.*" -o coverage-libtests.info
 	$(LCOV) --list coverage-libtests.info
 
+coverage-pytests:
+	$(PYTHON_COVERAGE) combine tests/pytests/.coverage
+	$(PYTHON_COVERAGE) xml -o coverage-pytests.xml
+
 coverage-html: coverage-libtests
 	genhtml -o coverage-libtests coverage-libtests.info
 
