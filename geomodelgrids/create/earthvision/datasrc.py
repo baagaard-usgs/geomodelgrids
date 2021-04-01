@@ -12,6 +12,7 @@ from geomodelgrids.create.core.datasrc import DataSrc
 from geomodelgrids.create.utils import units
 from geomodelgrids.create.utils.config import string_to_list
 from geomodelgrids.create.earthvision import api
+from geomodelgrids.create.core import NODATA_VALUE
 
 
 class RulesDataSrc(DataSrc):
@@ -133,7 +134,7 @@ class RulesDataSrc(DataSrc):
         """
         FAULTBLOCK_HEADING = "Fault Block Names"
         ZONE_HEADING = "Zone Names"
-        NAME_PATTERN = r"^\[([0-9]+)\]\s([\S]+.+)"
+        NAME_PATTERN = r"^\[([0-9]+)\]\s([\S]+.*)"
 
         def _read_names(lines, start):
             id_mapping = {}
@@ -153,6 +154,10 @@ class RulesDataSrc(DataSrc):
                 self.faultblock_ids = _read_names(lines, iline + 1)
             if line.startswith(ZONE_HEADING):
                 self.zone_ids = _read_names(lines, iline + 1)
+        if not "" in self.faultblock_ids:
+            self.faultblock_ids[""] = NODATA_VALUE
+        if not "" in self.zone_ids:
+            self.zone_ids[""] = NODATA_VALUE
 
 
 # End of file
