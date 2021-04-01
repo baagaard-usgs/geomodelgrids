@@ -6,7 +6,7 @@ bin_PROGRAMS = \
 
 if ENABLE_PYTHON
 bin_SCRIPTS = \
-	geomodelgrids_rasterize
+	geomodelgrids_create_model
 endif
 
 AM_CPPFLAGS = -I$(top_srcdir)/libsrc

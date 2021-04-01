@@ -2,6 +2,7 @@ docs/_site
 docs/Gemfile.lock
 docs/overview/figs/gridmapping.pdf
 docs/overview/figs/hdf5layout.pdf
+build
 models/plotting/data
 models/plotting/plots
 Makefile.in
@@ -21,3 +22,4 @@ ltversion.m4
 lt~obsolete.m4
 m4/libtool.m4
 portinfo.in
+record.txt

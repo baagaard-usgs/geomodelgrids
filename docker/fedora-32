@@ -16,6 +16,7 @@ RUN dnf install -y \
     python3-numpy \
     python3-setuptools \
     python3-six \
+    python3-h5py \
     python3-coverage \
     python3-Cython \
     zlib \
@@ -29,7 +30,6 @@ RUN dnf install -y \
     cppunit-devel \
     hdf5 \
     hdf5-devel \
-    python3-h5py \
     sqlite \
     sqlite-libs \
     sqlite-devel \
@@ -37,6 +37,7 @@ RUN dnf install -y \
     proj-devel \
     proj-datumgrid \
     lcov \
+    gdb \
     valgrind \
     vim \
     vim-common
@@ -46,42 +47,31 @@ COPY docker/certs/ /usr/share/pki/ca-trust-source/anchors
 RUN update-ca-trust enable
 
 
-ENV PYTHON_VERSION 3
-ENV HDF5_INCDIR /usr/include
-ENV HDF5_LIBDIR /usr/lib64
+ENV PYTHON_VERSION 3.8
+ENV HDF5_INCDIR=/usr/include  HDF5_LIBDIR=/usr/lib64
 
-# ----------------------------------------
-from os-update as build-deps
+# ------------------------------------------------------------------------------
+from os-update as user-setup
 
-# Install dependencies to /opt/geomodelgrids/dependencies
-# Build dependencies in /home/installer/src
-
-# Create 'geomodelgrids-user' user
-ENV GEOMODELGRIDS_USER geomodelgrids-user
-RUN useradd --create-home --shell /bin/bash $GEOMODELGRIDS_USER
-
-ENV PREFIX_DIR /opt/geomodelgrids
-WORKDIR $PREFIX_DIR
-RUN chown -R $GEOMODELGRIDS_USER $PREFIX_DIR \
-  && chgrp -R $GEOMODELGRIDS_USER $PREFIX_DIR
-
-ENV BUILD_DIR /home/installer
-WORKDIR $BUILD_DIR
-RUN chown $GEOMODELGRIDS_USER $BUILD_DIR \
-  && chgrp $GEOMODELGRIDS_USER $BUILD_DIR
-
-USER $GEOMODELGRIDS_USER
-
-# ----------------------------------------
-from build-deps as clean
-
-USER root
-RUN rm -fr $BUILD_DIR && unset BUILD_DIR
-RUN dnf clean all
-
-# Setup user and environment
-USER $GEOMODELGRIDS_USER
-WORKDIR /home/$GEOMODELGRIDS_USER
+# Install geomodelgrids to /opt/geomodelgrids
+# Download source code to $HOME/src
+# Build geomodelgrids in $HOME/build
 
 
+# Create 'gmg-tester' user
+ENV TEST_USER gmg-tester
+RUN useradd --create-home --shell /bin/bash $TEST_USER
+ENV  INSTALL_DIR=/opt/geomodelgrids  HOME=/home/$TEST_USER
+ENV  TOPSRC_DIR=$HOME/src  TOPBUILD_DIR=$HOME/build
+
+RUN mkdir ${INSTALL_DIR} \
+  && chown ${TEST_USER} ${INSTALL_DIR} \
+  && chgrp ${TEST_USER} ${INSTALL_DIR}
+ENV PATH=$PATH:$INSTALL_DIR/bin \
+    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$INSTALL_DIR/lib \
+    PYTHONPATH=${PYTHONPATH}:${INSTALL_DIR}/lib/python${PYTHON_VERSION}/site-packages
+
+
+USER ${TEST_USER}
+WORKDIR ${HOME}
 CMD /bin/bash

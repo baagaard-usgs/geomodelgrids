@@ -4,8 +4,8 @@
 
 
 if __name__ == "__main__":
-    from geomodelgrids.apps import rasterize
-    rasterize.App().main()
+    from geomodelgrids.create.apps import create_model
+    create_model.App().main()
 
 
 # End of file

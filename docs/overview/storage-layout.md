@@ -57,7 +57,7 @@ metadata is needed to define the model.
 * **creator_name** *(string)* Name of person who created the HDF5 version of the model.
 * **creator_institution** *(string)* Institution/organization of model creator.
 * **creator_email** *(string)* Email of model creator.
-* **acknowledgments** *(string)* Acknowledgments for the model.
+* **acknowledgements** *(string)* acknowledgements for the model.
 * **authors** *(array of strings)* Model authors.
 * **references** *(array of strings)* Publications describing the model.
 * **doi** *(string)* Digital Object Identifier for model.

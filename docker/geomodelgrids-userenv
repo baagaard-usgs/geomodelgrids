@@ -1,0 +1,95 @@
+FROM ubuntu:20.04 as os-update
+LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
+
+RUN apt-get update \
+    && DEBIAN_FRONTEND="noninteractive" apt-get install -y --no-install-recommends \
+      g++ \
+      make \
+      file \
+      automake \
+      autoconf \
+      libtool \
+      curl \
+      python3-dev \
+      libpython3.8 \
+      python3-pip \
+      python3-setuptools \
+      python3-numpy \
+      python3-h5py \
+      cython3 \
+      zlib1g-dev \
+      unzip \
+      git \
+      ca-certificates \
+      libcppunit-dev \
+      libhdf5-dev \
+      sqlite3 \
+      libsqlite3-0 \
+      libsqlite3-dev \
+      proj-bin \
+      proj-data \
+      libproj-dev \
+      vim-common \
+      vim-runtime \
+      vim-nox
+
+COPY docker/certs/ /usr/local/share/ca-certificates
+RUN update-ca-certificates
+
+ENV PYTHON_VERSION 3.8
+ENV HDF5_INCDIR=/usr/include/hdf5/serial  HDF5_LIBDIR=/usr/lib/x86_64-linux-gnu/hdf5/serial
+
+# ------------------------------------------------------------------------------
+from os-update as user-setup
+
+# Install geomodelgrids to /opt/geomodelgrids
+# Download source code to $HOME/src
+# Build geomodelgrids in $HOME/build
+
+
+# Create 'gmg-user' user
+ENV GMG_USER gmg-user
+RUN useradd --create-home --shell /bin/bash $GMG_USER
+ENV  INSTALL_DIR=/opt/geomodelgrids  HOME=/home/$GMG_USER
+ENV  TOPSRC_DIR=$HOME/src  TOPBUILD_DIR=$HOME/build
+
+RUN mkdir ${INSTALL_DIR} \
+  && chown ${GMG_USER} ${INSTALL_DIR} \
+  && chgrp ${GMG_USER} ${INSTALL_DIR}
+ENV PATH=$PATH:$INSTALL_DIR/bin \
+    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$INSTALL_DIR/lib \
+    PYTHONPATH=${PYTHONPATH}:${INSTALL_DIR}/lib/python${PYTHON_VERSION}/site-packages
+
+USER ${GMG_USER}
+
+
+# ------------------------------------------------------------------------------
+from user-setup as src
+
+ENV  src_dir=${TOPSRC_DIR}/geomodelgrids  build_dir=${TOPBUILD_DIR}/geomodelgrids
+RUN mkdir -p ${src_dir} && mkdir -p ${build_dir}
+
+COPY --chown=gmg-user:gmg-user . ${src_dir}
+WORKDIR ${src_dir}
+RUN autoreconf --install --verbose --force
+
+WORKDIR ${build_dir}
+RUN ${src_dir}/configure --prefix=${INSTALL_DIR} --enable-python --enable-testing CPPFLAGS="-I${HDF5_INCDIR}" LDFLAGS="-L${HDF5_LIBDIR}"  CFLAGS="-O3" CXXFLAGS="-O3"
+
+
+# ------------------------------------------------------------------------------
+from src as build
+
+RUN make -j$(nproc) install
+
+
+# ------------------------------------------------------------------------------
+from build as test
+
+RUN make check -C tests/data \
+  && make -j$(nproc) check -C tests/libtests VERBOSE=1
+
+
+WORKDIR ${HOME}
+
+CMD /bin/bash

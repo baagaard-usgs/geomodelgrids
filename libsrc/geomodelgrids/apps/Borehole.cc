@@ -59,7 +59,11 @@ geomodelgrids::apps::Borehole::run(int argc,
     } // if
     query.initialize(_modelFilenames, _valueNames, _pointsCRS);
 
-    const double groundSurf = query.queryElevation(_location[0], _location[1]);
+    const double groundOffset = -1.0e-6;
+    double groundSurf = query.queryElevation(_location[0], _location[1]);
+    if (groundSurf != 0.0) {
+        groundSurf += groundOffset;
+    } // if
     const size_t numPoints = size_t(1 + _maxDepth / _dz);
 
     std::ofstream sout(_outputFilename);

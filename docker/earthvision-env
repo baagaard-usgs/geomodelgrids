@@ -1,63 +1,55 @@
-FROM baagaard/geomodelgrids-testenv-debian-stable-gcc8 as os-update
+FROM baagaard/geomodelgrids-userenv as ev-deps
 LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
 
-USER root
-
-RUN apt-get update \
-    && apt-get install -y --no-install-recommends \
-       multiarch-support \
-       xfonts-100dpi \
-       libmotif-common \
-       libqt5x11extras5 \
-       libjpeg62 \
-       libpq5
-
-
-RUN curl -O http://http.us.debian.org/debian/pool/main/libp/libpng/libpng12-0_1.2.50-2+deb8u3_amd64.deb \
-    && dpkg -i libpng12-0_1.2.50-2+deb8u3_amd64.deb && rm libpng12-0_1.2.50-2+deb8u3_amd64.deb
-
-# ----------------------------------------
-from os-update as clean
-
-USER root
-RUN apt-get clean
-
-# ----------------------------------------
-from clean as geomodelgrids
-
-USER ${GEOMODELGRIDS_USER}
-ENV TOP_DIR /home/${GEOMODELGRIDS_USER}
-
-# Copy source code
-ENV PREFIX_DIR /opt/geomodelgrids
-ENV BUILD_DIR ${TOP_DIR}/build
-ENV SRC_DIR ${TOP_DIR}/src
-
-COPY --chown=geomodelgrids-user:geomodelgrids-user . ${SRC_DIR}
-WORKDIR ${SRC_DIR}
-RUN autoreconf --install --verbose --force
-
-RUN mkdir -p ${BUILD_DIR}
-ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${HDF5_LIBDIR}:${PREFIX_DIR}/lib:${PREFIX_DIR}/lib64
-ENV PYTHONPATH ${PYTHONPATH}:${PREFIX_DIR}/lib/python${PYTHON_VERSION}/site-packages
-ENV PATH ${PATH}:${PREFIX_DIR}/bin
-
-WORKDIR ${BUILD_DIR}
-RUN ${SRC_DIR}/configure --prefix=${PREFIX_DIR} --enable-python --enable-testing CPPFLAGS="-I/opt/geomodelgrids/dependencies/include -I${HDF5_INCDIR}" LDFLAGS="-L/opt/geomodelgrids/dependencies/lib -L${HDF5_LIBDIR}"  CFLAGS="-g -O3 -DNDEBUG" CXXFLAGS="-g -O3 -DNDEBUG" \
-    && make -j$(nproc) install
-
-
-# ----------------------------------------
-from geomodelgrids as earthvision
-
-WORKDIR /home/$GEOMODELGRIDS_USER
+#USER root
+#
+# These are some of the pacakges need to get the EarthVision GUI to work
+# They are not needed for the basic command line programs needed to generate
+# a model, so we skip this step for now.
+#
+#RUN apt-get update \
+#    && apt-get install -y --no-install-recommends \
+#       xfonts-100dpi \
+#       libmotif-common \
+#       libqt5x11extras5 \
+#       libjpeg62 \
+#       libpq5
+#
+#
+#WORKDIR ${TOPSRC_DIR}
+#RUN curl -O http://ppa.launchpad.net/linuxuprising/libpng12/ubuntu/pool/main/libp/libpng/libpng12-0_1.2.54-1ubuntu1.1+1~ppa0~focal_amd64.deb \
+#    && dpkg -i libpng12-0_1.2.54-1ubuntu1.1+1~ppa0~focal_amd64.deb \
+#    && rm libpng12-0_1.2.54-1ubuntu1.1+1~ppa0~focal_amd64.deb
+#
+#USER ${GMG_USER}
+#
+#
+# ------------------------------------------------------------------------------
+# libtiff3
+# ------------------------------------------------------------------------------
+#
+#ENV src_dir=${TOPSRC_DIR}/libtiff  build_dir=${TOPBUILD_DIR}/libtiff
+#RUN mkdir -p ${src_dir} && mkdir -p ${build_dir}
+#WORKDIR ${src_dir}
+#RUN curl -O https://download.osgeo.org/libtiff/old/tiff-3.9.6.tar.gz \
+#  && tar -xf tiff-3.9.6.tar.gz
+#
+#
+#WORKDIR ${build_dir}
+#RUN ${src_dir}/tiff-3.9.6/configure --prefix=${INSTALL_DIR} \
+#  && make -j$(nproc) install
+#
+#
+# ------------------------------------------------------------------------------
+from ev-deps as earthvision
 
 ENV DGIHOME /opt/earthvision
-ENV EVHOME $DGIHOME/ev10
+ENV EVHOME $DGIHOME/ev11
 ENV LM_LICENSE_FILE $DGIHOME/license/license.dat
 
 ENV PATH $EVHOME/bin64:$EVHOME/scripts:$PATH
 ENV LD_LIBRARY_PATH $EVHOME/lib64:$LD_LIBRARY_PATH
 
+WORKDIR ${HOME}
 
 CMD /bin/bash

@@ -1,0 +1,70 @@
+FROM debian:testing as os-update
+LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
+
+RUN apt-get update \
+    && apt-get install -y --no-install-recommends \
+        g++ \
+	make \
+        file \
+        automake \
+        autoconf \
+        libtool \
+        curl \
+        python3-dev \
+	libpython3.9 \
+	python3-pip \
+	python3-setuptools \
+	python3-numpy \
+	python3-h5py \
+	cython3 \
+	python3-coverage \
+        zlib1g-dev \
+	unzip \
+        git \
+	ca-certificates \
+	libhdf5-dev \
+        libcppunit-dev \
+	sqlite3 \
+	libsqlite3-0 \
+	libsqlite3-dev \
+	libproj-dev \
+	proj-bin \
+	proj-data \
+	gdb \
+	valgrind \
+	lcov \
+	vim-common \
+	vim-runtime \
+	vim-nox
+    
+COPY docker/certs/ /usr/local/share/ca-certificates
+RUN update-ca-certificates
+
+ENV PYTHON_VERSION 3.9
+ENV HDF5_INCDIR=/usr/include/hdf5/serial  HDF5_LIBDIR=/usr/lib/x86_64-linux-gnu/hdf5/serial
+
+# ------------------------------------------------------------------------------
+from os-update as user-setup
+
+# Install geomodelgrids to /opt/geomodelgrids
+# Download source code to $HOME/src
+# Build geomodelgrids in $HOME/build
+
+
+# Create 'gmg-tester' user
+ENV TEST_USER gmg-tester
+RUN useradd --create-home --shell /bin/bash $TEST_USER
+ENV  INSTALL_DIR=/opt/geomodelgrids  HOME=/home/$TEST_USER
+ENV  TOPSRC_DIR=$HOME/src  TOPBUILD_DIR=$HOME/build
+
+RUN mkdir ${INSTALL_DIR} \
+  && chown ${TEST_USER} ${INSTALL_DIR} \
+  && chgrp ${TEST_USER} ${INSTALL_DIR}
+ENV PATH=$PATH:$INSTALL_DIR/bin \
+    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$INSTALL_DIR/lib \
+    PYTHONPATH=${PYTHONPATH}:${INSTALL_DIR}/lib/python${PYTHON_VERSION}/site-packages
+
+
+USER ${TEST_USER}
+WORKDIR ${HOME}
+CMD /bin/bash

@@ -11,30 +11,34 @@ ENV TEST_COVERAGE=${TEST_COVERAGE} PYTHON_COVERAGE=${PYTHON_COVERAGE} ENABLE_VAL
 LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
 
 
-USER ${GEOMODELGRIDS_USER}
-ENV TOP_DIR /home/${GEOMODELGRIDS_USER}
+# ------------------------------------------------------------------------------
+ENV  src_dir=${TOP_SRCDIR}/geomodelgrids  build_dir=${TOP_BUILDDIR}/geomodelgrids
 
-# Copy source code
-ENV PREFIX_DIR ${TOP_DIR}/geomodelgrids
-ENV BUILD_DIR ${TOP_DIR}/build
-ENV SRC_DIR ${TOP_DIR}/src
-
-COPY --chown=geomodelgrids-user:geomodelgrids-user . ${SRC_DIR}
-WORKDIR ${SRC_DIR}
+RUN mkdir -p ${src_dir}
+COPY --chown=gmg-tester:gmg-tester . ${src_dir}
+WORKDIR ${src_dir}
 RUN autoreconf --install --verbose --force
 
-RUN mkdir -p ${BUILD_DIR}
-ENV LD_LIBRARY_PATH ${LD_LIBRARY_PATH}:${HDF5_LIBDIR}:${PREFIX_DIR}/lib:${PREFIX_DIR}/lib64
-ENV PYTHONPATH ${PYTHONPATH}:${PREFIX_DIR}/lib/python${PYTHON_VERSION}/site-packages:${PREFIX_DIR}/lib64/python${PYTHON_VERSION}/site-packages
+RUN mkdir -p ${build_dir}
+WORKDIR ${build_dir}
+RUN ${src_dir}/configure --prefix=${INSTALL_DIR} --enable-python --enable-testing --enable-test-coverage=${TEST_COVERAGE} --with-python-coverage=${PYTHON_COVERAGE} --enable-valgrind=${ENABLE_VALGRIND} CPPFLAGS="-I${INSTALL_DIR}/include -I${HDF5_INCDIR}" LDFLAGS="-L${INSTALL_DIR}/lib -L${HDF5_LIBDIR}"  CFLAGS="-g -O --coverage" CXXFLAGS="-g -O --coverage"
 
-WORKDIR ${BUILD_DIR}
-RUN ${SRC_DIR}/configure --prefix=${PREFIX_DIR} --enable-python --enable-testing --enable-test-coverage=${TEST_COVERAGE} --with-python-coverage=${PYTHON_COVERAGE} --enable-valgrind=${ENABLE_VALGRIND} CPPFLAGS="-I/opt/geomodelgrids/dependencies/include -I${HDF5_INCDIR}" LDFLAGS="-L/opt/geomodelgrids/dependencies/lib -L${HDF5_LIBDIR} --coverage"  CFLAGS="-g -O --coverage" CXXFLAGS="-g -O --coverage"
+# ------------------------------------------------------------------------------
+from src as build
+
+RUN make -j$(nproc) install
+
+WORKDIR ${src_dir}
+
+# ------------------------------------------------------------------------------
+from build as test
+
+WORKDIR ${build_dir}
+RUN make check -C tests/data \
+  && make clean-coverage \
+  && make -j$(nproc) check -C tests/libtests VERBOSE=1 \
+  && make coverage-libtests
 
 
-# TESTING ----------
-from src as test
-
-RUN make -j$(nproc) install && make check -C tests/data
-RUN make clean-coverage && make -j$(nproc) check -C tests/libtests VERBOSE=1 && make coverage-libtests
-
+# ------------------------------------------------------------------------------
 CMD /bin/bash

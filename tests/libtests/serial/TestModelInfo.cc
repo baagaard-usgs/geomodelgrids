@@ -52,7 +52,7 @@ geomodelgrids::serial::TestModelInfo::testConstructor(void) {
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Expect empty creator name", std::string(""), info._creatorName);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Expect empty creator email", std::string(""), info._creatorEmail);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Expect empty creator institution", std::string(""), info._creatorInstitution);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Expect empty acknowledgments", std::string(""), info._acknowledgments);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Expect empty acknowledgements", std::string(""), info._acknowledgements);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Expect empty DOI", std::string(""), info._doi);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Expect empty version", std::string(""), info._version);
     CPPUNIT_ASSERT_MESSAGE("Expect empty keywords array", info._keywords.empty());
@@ -78,7 +78,7 @@ geomodelgrids::serial::TestModelInfo::testAccessors(void) {
     const std::string creatorName("Name");info._creatorName = creatorName;
     const std::string creatorInstitution("Institution");info._creatorInstitution = creatorInstitution;
     const std::string creatorEmail("email@organization.org");info._creatorEmail = creatorEmail;
-    const std::string acknowledgments("Acknowledgments");info._acknowledgments = acknowledgments;
+    const std::string acknowledgements("Acknowledgements");info._acknowledgements = acknowledgements;
 
     const size_t numAuthors = 4;
     const char* authorsPtr[numAuthors] = {"Name 0", "Name 1", "Name 2", "Name 3"};
@@ -104,7 +104,7 @@ geomodelgrids::serial::TestModelInfo::testAccessors(void) {
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking creatorName", creatorName, info.getCreatorName());
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking creatorInstitution", creatorInstitution, info.getCreatorInstitution());
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking creatorEmail", creatorEmail, info.getCreatorEmail());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking acknowledgments", acknowledgments, info.getAcknowledgments());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking acknowledgements", acknowledgements, info.getAcknowledgements());
 
     const std::vector<std::string>& authorsT = info.getAuthors();
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking authors size", authors.size(), authorsT.size());
@@ -144,7 +144,7 @@ geomodelgrids::serial::TestModelInfo::testLoad(void) {
     const std::string creatorName("John Doe");
     const std::string creatorInstitution("Agency");
     const std::string creatorEmail("johndoe@agency.org");
-    const std::string acknowledgments("Thank you!");
+    const std::string acknowledgements("Thank you!");
 
     const size_t numAuthors = 3;
     const char* authorsPtr[numAuthors] = {"Smith, Jim", "Doe, John", "Doyle, Sarah"};
@@ -170,7 +170,7 @@ geomodelgrids::serial::TestModelInfo::testLoad(void) {
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking creatorName", creatorName, info.getCreatorName());
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking creatorInstitution", creatorInstitution, info.getCreatorInstitution());
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking creatorEmail", creatorEmail, info.getCreatorEmail());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking acknowledgments", acknowledgments, info.getAcknowledgments());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking acknowledgements", acknowledgements, info.getAcknowledgements());
 
     const std::vector<std::string>& authorsT = info.getAuthors();
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking authors size", authors.size(), authorsT.size());
