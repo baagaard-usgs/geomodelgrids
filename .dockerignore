@@ -5,6 +5,7 @@ autom4te.cache
 aux-config
 docker
 !docker/certs
+build
 models/plotting/data
 models/plotting/plots
 models/plotting/isosurfs

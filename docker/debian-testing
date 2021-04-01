@@ -22,6 +22,7 @@ RUN apt-get update \
 	unzip \
         git \
 	ca-certificates \
+	hdf5-tools \
 	libhdf5-dev \
         libcppunit-dev \
 	sqlite3 \
@@ -55,7 +56,7 @@ from os-update as user-setup
 ENV TEST_USER gmg-tester
 RUN useradd --create-home --shell /bin/bash $TEST_USER
 ENV  INSTALL_DIR=/opt/geomodelgrids  HOME=/home/$TEST_USER
-ENV  TOPSRC_DIR=$HOME/src  TOPBUILD_DIR=$HOME/build
+ENV  TOP_SRCDIR=$HOME/src  TOP_BUILDDIR=$HOME/build
 
 RUN mkdir ${INSTALL_DIR} \
   && chown ${TEST_USER} ${INSTALL_DIR} \

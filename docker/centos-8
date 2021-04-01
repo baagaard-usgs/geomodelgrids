@@ -54,7 +54,7 @@ from os-update as user-setup
 ENV GMG_USER gmg-tester
 RUN useradd --create-home --shell /bin/bash $GMG_USER
 ENV  INSTALL_DIR=/opt/geomodelgrids  HOME=/home/$GMG_USER
-ENV  TOPSRC_DIR=$HOME/src  TOPBUILD_DIR=$HOME/build
+ENV  TOP_SRCDIR=$HOME/src  TOP_BUILDDIR=$HOME/build
 
 RUN mkdir ${INSTALL_DIR} \
   && chown ${GMG_USER} ${INSTALL_DIR} \
@@ -74,7 +74,7 @@ from user-setup as build-deps
 # --------------------------------------
 # proj
 # --------------------------------------
-ENV PROJ_VER=6.3.1  src_dir=${TOPSRC_DIR}/proj  build_dir=${TOPBUILD_DIR}/proj
+ENV PROJ_VER=6.3.1  src_dir=${TOP_SRCDIR}/proj  build_dir=${TOP_BUILDDIR}/proj
 RUN mkdir -p ${src_dir} && mkdir -p ${build_dir}
 WORKDIR ${src_dir}
 RUN curl -O https://download.osgeo.org/proj/proj-${PROJ_VER}.tar.gz \
@@ -93,7 +93,7 @@ RUN ${src_dir}/proj-${PROJ_VER}/configure --prefix=${INSTALL_DIR} SQLITE3_CFLAGS
 # HDF5
 # --------------------------------------
 ENV HDF5_INCDIR=${INSTALL_DIR}/include  HDF5_LIBDIR=${INSTALL_DIR}/lib
-ENV HDF5_VER=1.12.0  src_dir=${TOPSRC_DIR}/hdf5  build_dir=${TOPBUILD_DIR}/hdf5
+ENV HDF5_VER=1.12.0  src_dir=${TOP_SRCDIR}/hdf5  build_dir=${TOP_BUILDDIR}/hdf5
 RUN mkdir -p ${src_dir} && mkdir -p ${build_dir}
 WORKDIR ${src_dir}
 RUN curl -O https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-${HDF5_VER}/src/hdf5-${HDF5_VER}.tar.gz \
