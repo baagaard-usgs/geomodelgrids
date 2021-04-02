@@ -8,35 +8,35 @@ class HDF5Storage():
     """HDF5 file for storing gridded model.
     """
     MODEL_ATTRS = (
-        "title",
-        "id",
-        "description",
-        "keywords",
-        "creator_name",
-        "creator_email",
-        "creator_institution",
-        "acknowledgements",
-        "authors",
-        "references",
-        "doi",
-        "version",
-        "data_values",
-        "data_units",
-        "crs",
-        "origin_x",
-        "origin_y",
-        "y_azimuth",
-        "dim_x",
-        "dim_y",
-        "dim_z",
+        ("title", str),
+        ("id", str),
+        ("description", str),
+        ("keywords", list),
+        ("creator_name", str),
+        ("creator_email", str),
+        ("creator_institution", str),
+        ("acknowledgements", str),
+        ("authors", list),
+        ("references", list),
+        ("doi", str),
+        ("version", str),
+        ("data_values", list),
+        ("data_units", list),
+        ("crs", str),
+        ("origin_x", float),
+        ("origin_y", float),
+        ("y_azimuth", float),
+        ("dim_x", float),
+        ("dim_y", float),
+        ("dim_z", float),
     )
     TOPOGRAPHY_ATTRS = (
-        "resolution_horiz",
+        ("resolution_horiz", float),
     )
     BLOCK_ATTRS = (
-        "resolution_horiz",
-        "resolution_vert",
-        "z_top",
+        ("resolution_horiz", float),
+        ("resolution_vert", float),
+        ("z_top", float),
     )
 
     def __init__(self, filename):
@@ -57,8 +57,10 @@ class HDF5Storage():
         """
         h5 = h5py.File(self.filename, "a")
         attrs = h5.attrs
-        for attr in self.MODEL_ATTRS:
+        for attr, typeE in self.MODEL_ATTRS:
             value = getattr(domain.metadata, attr)
+            if not isinstance(value, typeE):
+                raise ValueError(f"Expected type '{typeE}' for domain attribute '{attr}'. Got type '{type(value)}'")
             if isinstance(value, list) and isinstance(value[0], str):
                 attrs[attr] = [numpy.string_(v) for v in value]
             else:
@@ -75,10 +77,14 @@ class HDF5Storage():
         h5 = h5py.File(self.filename, "a")
         if "topography" in h5:
             del h5["topography"]
-        topo_dataset = h5.create_dataset("topography", shape=topography.get_dims(), chunks=topography.chunk_size)
+        topo_dataset = h5.create_dataset("topography", shape=topography.get_dims(),
+                                         chunks=topography.chunk_size, compression="gzip")
         attrs = topo_dataset.attrs
-        for attr in self.TOPOGRAPHY_ATTRS:
-            attrs[attr] = getattr(topography, attr)
+        for attr, typeE in self.TOPOGRAPHY_ATTRS:
+            value = getattr(topography, attr)
+            if not isinstance(value, typeE):
+                raise ValueError(f"Expected type '{typeE}' for topography attribute '{attr}'. Got type '{type(value)}'")
+            attrs[attr] = value
         h5.close()
 
     def save_topography(self, elevation, batch=None):
@@ -109,7 +115,7 @@ class HDF5Storage():
         h5 = h5py.File(self.filename, "r")
         topo_dataset = h5["topography"]
         attrs = topo_dataset.attrs
-        for attr in self.TOPOGRAPHY_ATTRS:
+        for attr, _ in self.TOPOGRAPHY_ATTRS:
             if getattr(topography, attr) != attrs[attr]:
                 raise ValueError("Inconsistency in topography attribute '{}': config value: {}, value from model: {}".format(
                     attr, getattr(topography, attr), attrs[attr]))
@@ -138,9 +144,10 @@ class HDF5Storage():
         if block.name in blocks_group:
             del blocks_group[block.name]
         shape = list(block.get_dims()) + [len(block.model_metadata.data_values)]
-        block_dataset = blocks_group.create_dataset(block.name, shape=shape, chunks=block.chunk_size)
+        block_dataset = blocks_group.create_dataset(
+            block.name, shape=shape, chunks=block.chunk_size, compression="gzip")
         attrs = block_dataset.attrs
-        for attr in self.BLOCK_ATTRS:
+        for attr, _ in self.BLOCK_ATTRS:
             attrs[attr] = getattr(block, attr)
         h5.close()
 
