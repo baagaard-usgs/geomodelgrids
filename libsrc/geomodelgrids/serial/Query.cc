@@ -162,13 +162,15 @@ geomodelgrids::serial::Query::query(double* const values,
                 const double groundElev = _models[i]->queryElevation(x, y);
                 elevationSquash = z + groundElev;
             } // if
-            found = true;
 
             const double* modelValues = _models[i]->query(x, y, elevationSquash);
             values_map_type& modelMap = _valuesIndex[i];
             for (size_t iValue = 0; iValue < numQueryValues; ++iValue) {
                 values[iValue] = modelValues[modelMap[iValue]];
             } // for
+
+            found = true;
+	    break;
         } // if
     } // for
 
