@@ -17,6 +17,14 @@ from geomodelgrids.create.earthvision import api
 class RulesDataSrc(DataSrc):
     """EarthVision model constructed from rules applies to fault blocks and zones.
     """
+    def query_rule(rulse_fn, data, depth):
+        return rules_fn(data[3], data[4])(data[0], data[1], depth)
+
+    def set_faultblock_id(faultblock_ids, name):
+        return faultblock_ids[name]
+
+    def set_zone_id(zone_ids, name):
+        return zone_ids[name]
 
     def __init__(self, config):
         """Constructor.
@@ -104,18 +112,20 @@ class RulesDataSrc(DataSrc):
             if not path in sys.path:
                 sys.path.append(path)
         rules_fn = getattr(import_module(".".join(fn_path[:-1])), fn_path[-1])
-
-        values = numpy.array([rules_fn(pt["fault_block"], pt["zone"])(pt['x'], pt['y'], pt_depth)
-                              for (pt, pt_depth) in zip(data, depth.ravel())])
+        rules_values = numpy.vectorize(query_rule)(rules_fn, data, depth.ravel())
         del depth
 
         # Append fault block and zone id to values
         # :KLUDGE: Fault block and zone id are converted from int to float
-        faultblock_id = numpy.array([self.faultblock_ids[name] for name in data["fault_block"]])
-        zone_id = numpy.array([self.zone_ids[name] for name in data["zone"]])
-        values = numpy.hstack((values, faultblock_id.reshape((-1, 1)), zone_id.reshape((-1, 1))))
-
+        faultblock_id = numpy.vectorize(set_faultblock_id)(self.faultblock_ids, data["fault_block"])
+        zone_id = numpy.vectorize(set_zone_id)(self.zone_ids, data["zone"])
+        values = numpy.vstack([v for v in rules_values] + [faultblock_id.reshape((1, -1)),
+                                                           zone_id.reshape((1, -1))]).transpose()
         values = values.reshape((points.shape[0], points.shape[1], points.shape[2], -1))
+
+        data_abspath = os.path.join(self.model_dir, VALUES_FILENAME)
+        os.remove(points_abspath)
+        os.remove(data_abspath)
         return values
 
     def _get_faultblocks_zones(self):
