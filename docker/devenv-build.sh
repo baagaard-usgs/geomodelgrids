@@ -7,8 +7,8 @@ fi
 
 
 if [ $opttype == "debug" ]; then
-    CFLAGS="-g -Wterminate -Wall --coverage"
-    CXXFLAGS="-std=c++11 -g -Wall --coverage"
+    CFLAGS="-g -Wall --coverage"
+    CXXFLAGS="-std=c++11 -Wterminate -g -Wall --coverage"
 elif [ $opttype == "opt" ]; then
     CFLAGS="-O3 -march=native"
     CXXFLAGS="-std=c++11 -O3 -march=native -g"
