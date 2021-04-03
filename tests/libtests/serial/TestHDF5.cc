@@ -319,11 +319,11 @@ geomodelgrids::serial::TestHDF5::testReadDatasetHyperslab(void) {
     h5.readDatasetHyperslab((void*)values, dataset, origin, dims, ndims, H5T_NATIVE_DOUBLE);
 
     const double tolerance = 1.0e-6;
-    for (int ix = 0, i = 0; ix < dims[0]; ++ix) {
+    for (hsize_t ix = 0, i = 0; ix < dims[0]; ++ix) {
         const double x = res_horiz * (origin[0] + ix);
-        for (int iy = 0; iy < dims[1]; ++iy) {
+        for (hsize_t iy = 0; iy < dims[1]; ++iy) {
             const double y = res_horiz * (origin[1] + iy);
-            for (int iz = 0; iz < dims[2]; ++iz) {
+            for (hsize_t iz = 0; iz < dims[2]; ++iz) {
                 const double z = z_top - res_vert * (origin[2] + iz);
 
                 { // Value 0

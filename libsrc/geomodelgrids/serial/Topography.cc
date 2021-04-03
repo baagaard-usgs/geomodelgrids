@@ -92,7 +92,7 @@ geomodelgrids::serial::Topography::setHyperslabDims(const size_t dims[],
     } // if
     assert(dims);
 
-    for (int i = 0; i < ndims; ++i) {
+    for (size_t i = 0; i < ndims; ++i) {
         _hyperslabDims[i] = dims[i];
     } // for
 } // setHyperslabDims
