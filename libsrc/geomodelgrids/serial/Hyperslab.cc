@@ -371,10 +371,11 @@ geomodelgrids::serial::_Hyperslab::_interpolate3D(double* const values,
         for (hsize_t iDim = 0; iDim < 2; ++iDim) {
             for (hsize_t jDim = 0; jDim < 2; ++jDim) {
                 for (hsize_t kDim = 0; kDim < 2; ++kDim) {
-                    if (_hyperslab._values[ii[iDim][jDim][kDim] + iValue] == geomodelgrids::NODATA_VALUE) {
+                    const double interpolateValue = _hyperslab._values[ii[iDim][jDim][kDim] + iValue];
+                    if (fabs(1.0 - interpolateValue/geomodelgrids::NODATA_VALUE) < 1.0e-3) {
                         hasNoDataValue = true;
                     } // if
-                    values[iValue] += wts[iDim][jDim][kDim] * _hyperslab._values[ii[iDim][jDim][kDim] + iValue];
+                    values[iValue] += wts[iDim][jDim][kDim] * interpolateValue;
                 } // for
             } // for
         } // for
