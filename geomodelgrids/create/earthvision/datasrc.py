@@ -12,17 +12,21 @@ from geomodelgrids.create.core.datasrc import DataSrc
 from geomodelgrids.create.utils import units
 from geomodelgrids.create.utils.config import string_to_list
 from geomodelgrids.create.earthvision import api
+from geomodelgrids.create.core import NODATA_VALUE
 
 
 class RulesDataSrc(DataSrc):
     """EarthVision model constructed from rules applies to fault blocks and zones.
     """
-    def query_rule(rulse_fn, data, depth):
+    @staticmethod
+    def query_rule(rules_fn, data, depth):
         return rules_fn(data[3], data[4])(data[0], data[1], depth)
 
+    @staticmethod
     def set_faultblock_id(faultblock_ids, name):
         return faultblock_ids[name]
 
+    @staticmethod
     def set_zone_id(zone_ids, name):
         return zone_ids[name]
 
@@ -112,13 +116,13 @@ class RulesDataSrc(DataSrc):
             if not path in sys.path:
                 sys.path.append(path)
         rules_fn = getattr(import_module(".".join(fn_path[:-1])), fn_path[-1])
-        rules_values = numpy.vectorize(query_rule)(rules_fn, data, depth.ravel())
+        rules_values = numpy.vectorize(self.query_rule)(rules_fn, data, depth.ravel())
         del depth
 
         # Append fault block and zone id to values
         # :KLUDGE: Fault block and zone id are converted from int to float
-        faultblock_id = numpy.vectorize(set_faultblock_id)(self.faultblock_ids, data["fault_block"])
-        zone_id = numpy.vectorize(set_zone_id)(self.zone_ids, data["zone"])
+        faultblock_id = numpy.vectorize(self.set_faultblock_id)(self.faultblock_ids, data["fault_block"])
+        zone_id = numpy.vectorize(self.set_zone_id)(self.zone_ids, data["zone"])
         values = numpy.vstack([v for v in rules_values] + [faultblock_id.reshape((1, -1)),
                                                            zone_id.reshape((1, -1))]).transpose()
         values = values.reshape((points.shape[0], points.shape[1], points.shape[2], -1))
@@ -133,7 +137,7 @@ class RulesDataSrc(DataSrc):
         """
         FAULTBLOCK_HEADING = "Fault Block Names"
         ZONE_HEADING = "Zone Names"
-        NAME_PATTERN = r"^\[([0-9]+)\]\s([\S]+.+)"
+        NAME_PATTERN = r"^\[([0-9]+)\]\s([\S]+.*)"
 
         def _read_names(lines, start):
             id_mapping = {}
@@ -153,6 +157,10 @@ class RulesDataSrc(DataSrc):
                 self.faultblock_ids = _read_names(lines, iline + 1)
             if line.startswith(ZONE_HEADING):
                 self.zone_ids = _read_names(lines, iline + 1)
+        if not "" in self.faultblock_ids:
+            self.faultblock_ids[""] = NODATA_VALUE
+        if not "" in self.zone_ids:
+            self.zone_ids[""] = NODATA_VALUE
 
 
 # End of file

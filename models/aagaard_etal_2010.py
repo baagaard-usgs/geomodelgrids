@@ -32,7 +32,7 @@ base units with Vp and Vs in m/s, density in kg/m**3, and depth in m.
 
 """
 
-UNKNOWN = -999
+from geomodelgrids.create.core import NODATA_VALUE
 
 def default_vs(depth, vp):
     """Default rule for shear wave speed as a function of Vp.
@@ -466,13 +466,11 @@ def seawater(x, y, depth):
         Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
     """
     vp = 1500.0
-
-    vs = UNKNOWN
-
     density = 1000.0
 
-    qs = UNKNOWN
-    qp = UNKNOWN
+    vs = NODATA_VALUE
+    qs = NODATA_VALUE
+    qp = NODATA_VALUE
     return (density, vp, vs, qp, qs)
 
 
@@ -490,9 +488,9 @@ def outside_model(x, y, depth):
     Returns:
         Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
     """
-    vp = UNKNOWN
-    vs = UNKNOWN
-    density = UNKNOWN
-    qs = UNKNOWN
-    qp = UNKNOWN
+    vp = NODATA_VALUE
+    vs = NODATA_VALUE
+    density = NODATA_VALUE
+    qs = NODATA_VALUE
+    qp = NODATA_VALUE
     return (density, vp, vs, qp, qs)
