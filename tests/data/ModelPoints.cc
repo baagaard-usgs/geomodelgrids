@@ -22,7 +22,7 @@ public:
         double originY;
         double yAzimuth;
         double zBottom;
-        bool hasTopography;
+        bool hasTopSurface;
     };
 
     static
@@ -90,12 +90,21 @@ geomodelgrids::testdata::ModelPoints::getXYZ(void) const {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Compute elevation of ground surface at point.
+// Compute elevation of top surface at point.
 double
-geomodelgrids::testdata::ModelPoints::computeElevation(const double x,
-                                                       const double y) {
+geomodelgrids::testdata::ModelPoints::computeTopElevation(const double x,
+                                                          const double y) {
     return 1.5e+2 + 2.0e-5 * x - 1.2e-5 * y + 5.0e-10 * x * y;
-} // computeTopography
+} // computeTopElevation
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Compute elevation of topography/bathymetry at point.
+double
+geomodelgrids::testdata::ModelPoints::computeTopoBathyElevation(const double x,
+                                                                const double y) {
+    return 1.5e+2 + 2.0e-5 * x - 1.2e-5 * y - 5.0e-10 * x * y;
+} // computeTopoBathyElevation
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -146,8 +155,8 @@ geomodelgrids::testdata::_ModelPoints::toXYZ(double* const coordsDest,
         coordsDest[i*dim+1] = x * sin(yAzimuthRad) + y * cos(yAzimuthRad);
 
         double zGroundSurf = 0.0;
-        if (domain.hasTopography) {
-            zGroundSurf = ModelPoints::computeElevation(coordsDest[i*dim+0], coordsDest[i*dim+1]);
+        if (domain.hasTopSurface) {
+            zGroundSurf = ModelPoints::computeTopElevation(coordsDest[i*dim+0], coordsDest[i*dim+1]);
         } // if
         coordsDest[i*dim+2] = domain.zBottom * (zGroundSurf - coordsSrc[i*dim+2]) / (zGroundSurf - domain.zBottom);
     } // for
@@ -175,7 +184,7 @@ geomodelgrids::testdata::OneBlockFlatPoints::OneBlockFlatPoints(void) :
     domain.originX = 590000.0;
     domain.originY = 4150000.0;
     domain.zBottom = -5.0e+3;
-    domain.hasTopography = false;
+    domain.hasTopSurface = false;
     _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
 } // Constructor
 
@@ -200,7 +209,7 @@ geomodelgrids::testdata::OneBlockFlatBorehole::OneBlockFlatBorehole(void) :
     domain.originX = 590000.0;
     domain.originY = 4150000.0;
     domain.zBottom = -5.0e+3;
-    domain.hasTopography = false;
+    domain.hasTopSurface = false;
     _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
 } // Constructor
 
@@ -224,7 +233,7 @@ geomodelgrids::testdata::OneBlockTopoPoints::OneBlockTopoPoints(void) :
     domain.originX = 590000.0;
     domain.originY = 4150000.0;
     domain.zBottom = -5.0e+3;
-    domain.hasTopography = true;
+    domain.hasTopSurface = true;
     _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
 } // Constructor
 
@@ -248,7 +257,7 @@ geomodelgrids::testdata::OneBlockSquashPoints::OneBlockSquashPoints(const double
     domain.originX = 590000.0;
     domain.originY = 4150000.0;
     domain.zBottom = -5.0e+3;
-    domain.hasTopography = true;
+    domain.hasTopSurface = true;
 
     _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
 
@@ -258,11 +267,11 @@ geomodelgrids::testdata::OneBlockSquashPoints::OneBlockSquashPoints(const double
         const double x = _pointsXYZ[i*3+0];
         const double y = _pointsXYZ[i*3+1];
         const double elevOrig = _pointsLLE[i*3+2];
-        const double elevGround = computeElevation(x, y);
+        const double elevTopSurface = computeTopElevation(x, y);
 
         pointsLLESquash[i*3+0] = pointsLLE[i*3+0];
         pointsLLESquash[i*3+1] = pointsLLE[i*3+1];
-        pointsLLESquash[i*3+2] = (elevOrig > squashMinElev) ? elevOrig + elevGround : elevOrig;
+        pointsLLESquash[i*3+2] = (elevOrig > squashMinElev) ? elevOrig + elevTopSurface : elevOrig;
     } // for
     _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLESquash, numPoints, domain);
 } // Constructor
@@ -288,7 +297,7 @@ geomodelgrids::testdata::ThreeBlocksFlatPoints::ThreeBlocksFlatPoints(void) :
     domain.originX = 200000.0;
     domain.originY = -400000.0;
     domain.zBottom = -45.0e+3;
-    domain.hasTopography = false;
+    domain.hasTopSurface = false;
     _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
 } // constructor
 
@@ -313,7 +322,7 @@ geomodelgrids::testdata::ThreeBlocksTopoPoints::ThreeBlocksTopoPoints(void) :
     domain.originX = 200000.0;
     domain.originY = -400000.0;
     domain.zBottom = -45.0e+3;
-    domain.hasTopography = true;
+    domain.hasTopSurface = true;
     _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
 } // constructor
 
@@ -339,14 +348,14 @@ geomodelgrids::testdata::ThreeBlocksTopoBorehole::ThreeBlocksTopoBorehole(void) 
     domain.originX = 200000.0;
     domain.originY = -400000.0;
     domain.zBottom = -45.0e+3;
-    domain.hasTopography = true;
+    domain.hasTopSurface = true;
     _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
 } // constructor
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
-geomodelgrids::testdata::ThreeBlocksSquashPoints::ThreeBlocksSquashPoints(const double squashMinElev) :
+geomodelgrids::testdata::ThreeBlocksSquashTopPoints::ThreeBlocksSquashTopPoints(const double squashMinElev) :
     ModelPoints(6) {
     const size_t numPoints = 6;assert(_numPoints == numPoints);
     static const double pointsLLE[numPoints*3] = {
@@ -364,7 +373,7 @@ geomodelgrids::testdata::ThreeBlocksSquashPoints::ThreeBlocksSquashPoints(const 
     domain.originX = 200000.0;
     domain.originY = -400000.0;
     domain.zBottom = -45.0e+3;
-    domain.hasTopography = true;
+    domain.hasTopSurface = true;
 
     _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
 
@@ -374,11 +383,51 @@ geomodelgrids::testdata::ThreeBlocksSquashPoints::ThreeBlocksSquashPoints(const 
         const double x = _pointsXYZ[i*3+0];
         const double y = _pointsXYZ[i*3+1];
         const double elevOrig = _pointsLLE[i*3+2];
-        const double elevGround = computeElevation(x, y);
+        const double elevGround = computeTopElevation(x, y);
 
         pointsLLESquash[i*3+0] = pointsLLE[i*3+0];
         pointsLLESquash[i*3+1] = pointsLLE[i*3+1];
         pointsLLESquash[i*3+2] = (elevOrig > squashMinElev) ? elevOrig + elevGround : elevOrig;
+    } // for
+    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLESquash, numPoints, domain);
+} // Constructor
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Constructor.
+geomodelgrids::testdata::ThreeBlocksSquashTopoBathyPoints::ThreeBlocksSquashTopoBathyPoints(const double squashMinElev) :
+    ModelPoints(6) {
+    const size_t numPoints = 6;assert(_numPoints == numPoints);
+    static const double pointsLLE[numPoints*3] = {
+        35.3, -118.2, -10.0,
+        35.5, -117.9, -45.0e+3,
+        35.0, -118.1, -3.0e+3,
+        35.1, -117.7, -15.0e+3,
+        34.7, -117.9, -25.0e+3,
+        34.7, -117.5, -43.0,
+    };_pointsLLE = pointsLLE;
+    _modelCRS = "EPSG:3311";
+
+    _ModelPoints::Domain domain;
+    domain.yAzimuth = 330.0;
+    domain.originX = 200000.0;
+    domain.originY = -400000.0;
+    domain.zBottom = -45.0e+3;
+    domain.hasTopSurface = true;
+
+    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
+
+    // Adjust elevation before recomputing model coordinates (x, y, z).
+    double pointsLLESquash[numPoints*3];
+    for (size_t i = 0; i < numPoints; ++i) {
+        const double x = _pointsXYZ[i*3+0];
+        const double y = _pointsXYZ[i*3+1];
+        const double elevOrig = _pointsLLE[i*3+2];
+        const double elevTopoBathy = computeTopoBathyElevation(x, y);
+
+        pointsLLESquash[i*3+0] = pointsLLE[i*3+0];
+        pointsLLESquash[i*3+1] = pointsLLE[i*3+1];
+        pointsLLESquash[i*3+2] = (elevOrig > squashMinElev) ? elevOrig + elevTopoBathy : elevOrig;
     } // for
     _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLESquash, numPoints, domain);
 } // Constructor
@@ -403,7 +452,7 @@ geomodelgrids::testdata::OutsideDomainPoints::OutsideDomainPoints(void) :
     domain.originX = 200000.0;
     domain.originY = -400000.0;
     domain.zBottom = -45.0e+3;
-    domain.hasTopography = false;
+    domain.hasTopSurface = false;
     _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
 } // constructor
 

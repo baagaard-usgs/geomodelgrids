@@ -20,7 +20,7 @@ geomodelgrids::apps::Query::Query() :
     _outputFilename(""),
     _logFilename(""),
     _squashMinElev(0.0),
-    _squash(false),
+    _squash(geomodelgrids::serial::Query::SQUASH_NONE),
     _showHelp(false) {}
 
 
@@ -48,22 +48,23 @@ geomodelgrids::apps::Query::run(int argc,
         errorHandler.setLoggingOn(true);
     } // if
     query.initialize(_modelFilenames, _valueNames, _pointsCRS);
-    if (_squash) {
+    if (geomodelgrids::serial::Query::SQUASH_NONE != _squash) {
+        query.setSquashing(_squash);
         query.setSquashMinElev(_squashMinElev);
     } // if
 
     std::ifstream sin(_pointsFilename);
     if (!sin.is_open() && !sin.good()) {
-      std::ostringstream msg;
-      msg << "Could not open points file '" << _pointsFilename << "' for reading.";
-      throw std::runtime_error(msg.str().c_str());
+        std::ostringstream msg;
+        msg << "Could not open points file '" << _pointsFilename << "' for reading.";
+        throw std::runtime_error(msg.str().c_str());
     } // if
 
     std::ofstream sout(_outputFilename);
     if (!sout.is_open() && !sout.good()) {
-      std::ostringstream msg;
-      msg << "Could not open output file '" << _outputFilename << "' for writing.";
-      throw std::runtime_error(msg.str().c_str());
+        std::ostringstream msg;
+        msg << "Could not open output file '" << _outputFilename << "' for writing.";
+        throw std::runtime_error(msg.str().c_str());
     } // if
 
     sout << _createOutputHeader(argc, argv);
@@ -99,10 +100,11 @@ geomodelgrids::apps::Query::run(int argc,
 void
 geomodelgrids::apps::Query::_parseArgs(int argc,
                                        char* argv[]) {
-    static struct option options[9] = {
+    static struct option options[10] = {
         {"help", no_argument, NULL, 'h'},
         {"values", required_argument, NULL, 'v'},
         {"squash-min-elev", required_argument, NULL, 's'},
+        {"squash-surface", required_argument, NULL, 'r'},
         {"points", required_argument, NULL, 'p'},
         {"points-coordsys", required_argument, NULL, 'c'},
         {"output", required_argument, NULL, 'o'},
@@ -113,7 +115,7 @@ geomodelgrids::apps::Query::_parseArgs(int argc,
 
     while (true) {
         // extern char* optarg;
-        const char c = getopt_long(argc, argv, "hv:s:p:c:o:l:m:", options, NULL);
+        const char c = getopt_long(argc, argv, "hv:s:r:p:c:o:l:m:", options, NULL);
         if (-1 == c) { break; }
         switch (c) {
         case 'h':
@@ -129,8 +131,21 @@ geomodelgrids::apps::Query::_parseArgs(int argc,
             break;
         } // 'v'
         case 's': {
-            _squash = true;
+            if (geomodelgrids::serial::Query::SQUASH_NONE == _squash) {
+                _squash = geomodelgrids::serial::Query::SQUASH_TOP_SURFACE;
+            } // if
             _squashMinElev = std::stod(optarg);
+            break;
+        } // 's'
+        case 'r': {
+            const std::string& surface = optarg;
+            if (std::string("top_surface") == surface) {
+                _squash = geomodelgrids::serial::Query::SQUASH_TOP_SURFACE;
+            } else if (std::string("topography_bathymetry") == surface) {
+                _squash = geomodelgrids::serial::Query::SQUASH_TOPOGRAPHY_BATHYMETRY;
+            } else {
+                _squash = geomodelgrids::serial::Query::SQUASH_NONE;
+            }
             break;
         } // 's'
         case 'p': {
@@ -205,15 +220,16 @@ void
 geomodelgrids::apps::Query::_printHelp(void) {
     std::cout << "Usage: geomodelgrids_query "
               << "[--help]  [--log=FILE_LOG] --values=VALUE_0,...,VALUE_N --models=FILE_0,...,FILE_M "
-              << "--points=FILE_POINTS  --output=FILE_OUTPUT [--squash-min-elev=ELEV] [--points-coordsys=PROJ|EPSG|WKT]\n\n"
+              << "--points=FILE_POINTS  --output=FILE_OUTPUT [--squash-min-elev=ELEV] "
+              << "[--squash-surface=none|top_surface|topography_bathymetry] [--points-coordsys=PROJ|EPSG|WKT]\n\n"
               << "    --help                           Print help information to stdout and exit.\n"
               << "    --log=FILE_LOG                   Write logging information to FILE_LOG.\n"
               << "    --values=VALUE_0,...,VALUE_N     Values (in order) to return in query.\n"
               << "    --models=FILE_0,...,FILE_M       Models to query (in order).\n"
               << "    --points=FILE_POINTS             Read input points from FILE_POINTS.\n"
               << "    --output=FILE_OUTPUT             Write values to FILE_OUTPUT.\n"
-              << "    --squash-min-elev=ELEV           Vertical coordinates is interpreted as -depth instead of "
-              << "elevation if the elevation is above ELEV.\n"
+              << "    --squash-min-elev=ELEV           Vertical coordinate is interpreted as -depth instead of elevation.\n"
+              << "    --squash-surface=none|top_surface|topography_bathymetry    Surface reference for squashing (default=none).\n"
               << "    --points-coordsys=PROJ|EPSG|WKT  Coordinate system of input points (default=EPSG:4326)."
               << std::endl;
 } // _printHelp

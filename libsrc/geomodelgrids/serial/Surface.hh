@@ -1,24 +1,27 @@
-/** Topography stored as HDF5 file.
+/** Surface stored as HDF5 file.
  */
 
-#if !defined(geomodelgrids_serial_topography_hh)
-#define geomodelgrids_serial_topography_hh
+#if !defined(geomodelgrids_serial_surface_hh)
+#define geomodelgrids_serial_surface_hh
 
 #include "serialfwd.hh" // forward declarations
 
 #include <string> // HASA std::string
 
-class geomodelgrids::serial::Topography {
-    friend class TestTopography; // Unit testing
+class geomodelgrids::serial::Surface {
+    friend class TestSurface; // Unit testing
 
     // PUBLIC METHODS --------------------------------------------------------------------------------------------------
 public:
 
-    /// Default constructor.
-    Topography(void);
+    /** Default constructor.
+     *
+     * @param[in] name Name of surface.
+     */
+    Surface(const char* const name);
 
     /// Destructor
-    ~Topography(void);
+    ~Surface(void);
 
     /** Load metadata.
      *
@@ -68,12 +71,13 @@ public:
 private:
 
     geomodelgrids::serial::Hyperslab* _hyperslab; ///< Hyperslab of data in model.
+    std::string _name; ///< Name of surface (matches dataset in HDF5 file).
     double _resolutionHoriz; ///< Horizontal resolution (m).
     size_t _dims[2]; ///< Number of points along grid in each x and y dimension [x, y].
     size_t _hyperslabDims[3]; ///< Dimensions of hyperslab.
 
-}; // Topography
+}; // Surface
 
-#endif // geomodelgrids_serial_topography_hh
+#endif // geomodelgrids_serial_surface_hh
 
 // End of file

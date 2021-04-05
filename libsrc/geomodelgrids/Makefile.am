@@ -15,7 +15,7 @@ libgeomodelgrids_la_SOURCES = \
 	serial/cquery.cc \
 	serial/ModelInfo.cc \
 	serial/Model.cc \
-	serial/Topography.cc \
+	serial/Surface.cc \
 	serial/Block.cc \
 	serial/HDF5.cc \
 	serial/Hyperslab.cc \

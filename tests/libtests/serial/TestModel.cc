@@ -8,7 +8,7 @@
 
 #include "geomodelgrids/serial/Model.hh" // USES Model
 #include "geomodelgrids/serial/ModelInfo.hh" // USES ModelInfo
-#include "geomodelgrids/serial/Topography.hh" // USES Topography
+#include "geomodelgrids/serial/Surface.hh" // USES Surface
 #include "geomodelgrids/serial/Block.hh" // USES Block
 
 #include <cppunit/extensions/HelperMacros.h>
@@ -33,7 +33,8 @@ class geomodelgrids::serial::TestModel : public CppUnit::TestFixture {
     CPPUNIT_TEST(testToModelXYZFlat);
     CPPUNIT_TEST(testToModelXYZTopo);
     CPPUNIT_TEST(testContains);
-    CPPUNIT_TEST(testQueryElevation);
+    CPPUNIT_TEST(testQueryTopElevation);
+    CPPUNIT_TEST(testQueryTopoBathyElevation);
     CPPUNIT_TEST(testQuery);
 
     CPPUNIT_TEST_SUITE_END();
@@ -65,8 +66,11 @@ public:
     /// Test contains().
     void testContains(void);
 
-    /// Test queryElevation().
-    void testQueryElevation(void);
+    /// Test queryTopElevation().
+    void testQueryTopElevation(void);
+
+    /// Test queryTopoBathyElevation().
+    void testQueryTopoBathyElevation(void);
 
     /// Test query().
     void testQuery(void);
@@ -91,7 +95,8 @@ geomodelgrids::serial::TestModel::testConstructor(void) {
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking dims[2]", 0.0, model._dims[2]);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking h5", (HDF5*)NULL, model._h5);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking info", (ModelInfo*)NULL, model._info);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking topography", (Topography*)NULL, model._topography);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking top surface", (Surface*)NULL, model._surfaceTop);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking topography/bathymetry", (Surface*)NULL, model._surfaceTopoBathy);
     // CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking CRS", (HDF5*)NULL, model._h5);
     CPPUNIT_ASSERT_MESSAGE("Checking blocks", model._blocks.empty());
 } // testConstructor
@@ -119,7 +124,8 @@ geomodelgrids::serial::TestModel::testAccessors(void) {
     model._dims[2] = dims[2];
 
     ModelInfo* info = new ModelInfo();model._info = info;
-    Topography* topography = new Topography();model._topography = topography;
+    Surface* surfaceTop = new Surface("top_surface");model._surfaceTop = surfaceTop;
+    Surface* surfaceTopoBathy = new Surface("topography_bathymetry");model._surfaceTopoBathy = surfaceTopoBathy;
 
     const size_t numBlocks(3);
     Block* blocksPtr[numBlocks] = {
@@ -160,7 +166,8 @@ geomodelgrids::serial::TestModel::testAccessors(void) {
     } // for
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking info", const_cast<const ModelInfo*>(info), model.getInfo());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking topography", const_cast<const Topography*>(topography), model.getTopography());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking top surface", const_cast<const Surface*>(surfaceTop), model.getTopSurface());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking topography/bathymetry", const_cast<const Surface*>(surfaceTopoBathy), model.getTopoBathy());
 
     const std::vector<Block*>& blocksT = model.getBlocks();
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking blocks size", blocks.size(), blocksT.size());
@@ -255,10 +262,15 @@ geomodelgrids::serial::TestModel::testLoadMetadata(void) {
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking model id", id, info->getId());
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking model doi", doi, info->getDOI());
 
-    const Topography* topography = model.getTopography();
-    CPPUNIT_ASSERT_MESSAGE("Checking topography pointer", topography);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking horizontal resolution of topography",
-                                         topoHorizRes, topography->getResolutionHoriz(), tolerance);
+    const Surface* surfaceTop = model.getTopSurface();
+    CPPUNIT_ASSERT_MESSAGE("Checking top surface pointer", surfaceTop);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking horizontal resolution of top surface",
+                                         topoHorizRes, surfaceTop->getResolutionHoriz(), tolerance);
+
+    const Surface* surfaceTopoBathy = model.getTopoBathy();
+    CPPUNIT_ASSERT_MESSAGE("Checking topography/bathymetry pointer", surfaceTopoBathy);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking horizontal resolution of topography/bathymetry",
+                                         topoHorizRes, surfaceTopoBathy->getResolutionHoriz(), tolerance);
 
     const std::vector<Block*>& blocksT = model.getBlocks();
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking blocks size", numBlocks, blocksT.size());
@@ -285,9 +297,14 @@ geomodelgrids::serial::TestModel::testInitialize(void) {
 
     CPPUNIT_ASSERT_MESSAGE("CRS transformer not created.", model._crsTransformer);
 
-    Topography* const topography = model._topography;
-    if (topography) {
-        CPPUNIT_ASSERT_NO_THROW(topography->query(0.0, 0.0));
+    Surface* const surfaceTop = model._surfaceTop;
+    if (surfaceTop) {
+        CPPUNIT_ASSERT_NO_THROW(surfaceTop->query(0.0, 0.0));
+    } // if
+
+    Surface* const surfaceTopoBathy = model._surfaceTopoBathy;
+    if (surfaceTopoBathy) {
+        CPPUNIT_ASSERT_NO_THROW(surfaceTopoBathy->query(0.0, 0.0));
     } // if
 
     model.close();
@@ -401,9 +418,9 @@ geomodelgrids::serial::TestModel::testContains(void) {
 
 
 // ----------------------------------------------------------------------
-// Test queryElevation().
+// Test queryTopElevation().
 void
-geomodelgrids::serial::TestModel::testQueryElevation(void) {
+geomodelgrids::serial::TestModel::testQueryTopElevation(void) {
     Model model;
     model.open("../../data/three-blocks-topo.h5", Model::READ);
     model.loadMetadata();
@@ -416,8 +433,8 @@ geomodelgrids::serial::TestModel::testQueryElevation(void) {
     const double* pointsXYZ = points.getXYZ();
 
     for (size_t iPt = 0; iPt < numPoints; ++iPt) {
-        const double elevation = model.queryElevation(pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1]);
-        const double elevationE = points.computeElevation(pointsXYZ[iPt*spaceDim+0], pointsXYZ[iPt*spaceDim+1]);
+        const double elevation = model.queryTopElevation(pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1]);
+        const double elevationE = points.computeTopElevation(pointsXYZ[iPt*spaceDim+0], pointsXYZ[iPt*spaceDim+1]);
 
         std::ostringstream msg;
         msg << "Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").";
@@ -426,6 +443,34 @@ geomodelgrids::serial::TestModel::testQueryElevation(void) {
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), elevationE, elevation, valueTolerance);
     } // for
 } // testQueryElevation
+
+
+// ----------------------------------------------------------------------
+// Test queryTopoBathyElevation().
+void
+geomodelgrids::serial::TestModel::testQueryTopoBathyElevation(void) {
+    Model model;
+    model.open("../../data/three-blocks-topo.h5", Model::READ);
+    model.loadMetadata();
+    model.initialize();
+
+    geomodelgrids::testdata::ThreeBlocksTopoPoints points;
+    const size_t numPoints = points.getNumPoints();
+    const size_t spaceDim = 3;
+    const double* pointsLLE = points.getLatLonElev();
+    const double* pointsXYZ = points.getXYZ();
+
+    for (size_t iPt = 0; iPt < numPoints; ++iPt) {
+        const double elevation = model.queryTopoBathyElevation(pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1]);
+        const double elevationE = points.computeTopoBathyElevation(pointsXYZ[iPt*spaceDim+0], pointsXYZ[iPt*spaceDim+1]);
+
+        std::ostringstream msg;
+        msg << "Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").";
+        const double tolerance = 1.0e-6;
+        const double valueTolerance = std::max(tolerance, tolerance*fabs(elevationE));
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), elevationE, elevation, valueTolerance);
+    } // for
+} // testQueryTopoBathyElevation
 
 
 // ----------------------------------------------------------------------
@@ -450,7 +495,7 @@ geomodelgrids::serial::TestModel::testQuery(void) {
         const double y = pointsXYZ[iPt*spaceDim+1];
         const double z = pointsXYZ[iPt*spaceDim+2];
 
-	const double tolerance = 1.0e-5;
+        const double tolerance = 1.0e-5;
         { // Value 0
             const double valueE = points.computeValueOne(x, y, z);
 

@@ -4,7 +4,7 @@
 
 #include "geomodelgrids/serial/HDF5.hh" // USES HDF5
 #include "geomodelgrids/serial/ModelInfo.hh" // USES ModelInfo
-#include "geomodelgrids/serial/Topography.hh" // USES Topography
+#include "geomodelgrids/serial/Surface.hh" // USES Surface
 #include "geomodelgrids/serial/Block.hh" // USES Block
 #include "geomodelgrids/utils/CRSTransformer.hh" // USES CRSTransformer
 
@@ -23,7 +23,8 @@ geomodelgrids::serial::Model::Model(void) :
     _yazimuth(0.0),
     _h5(NULL),
     _info(NULL),
-    _topography(NULL),
+    _surfaceTop(NULL),
+    _surfaceTopoBathy(NULL),
     _crsTransformer(NULL) {
     _origin[0] = 0.0;
     _origin[1] = 0.0;
@@ -82,8 +83,11 @@ geomodelgrids::serial::Model::open(const char* filename,
 // Close Model file.
 void
 geomodelgrids::serial::Model::close(void) {
-    if (_topography) {
-        _topography->closeQuery();
+    if (_surfaceTop) {
+        _surfaceTop->closeQuery();
+    } // if
+    if (_surfaceTopoBathy) {
+        _surfaceTopoBathy->closeQuery();
     } // if
     size_t numBlocks = _blocks.size();
     for (size_t i = 0; i < numBlocks; ++i) {
@@ -99,7 +103,8 @@ geomodelgrids::serial::Model::close(void) {
 
     delete _info;_info = NULL;
     delete _crsTransformer;_crsTransformer = NULL;
-    delete _topography;_topography = NULL;
+    delete _surfaceTop;_surfaceTop = NULL;
+    delete _surfaceTopoBathy;_surfaceTopoBathy = NULL;
     for (size_t i = 0; i < _blocks.size(); ++i) {
         delete _blocks[i];_blocks[i] = NULL;
     } // for
@@ -185,11 +190,22 @@ geomodelgrids::serial::Model::loadMetadata(void) {
         missingAttributes = true;
     } // if/else
 
-    delete _topography;_topography = NULL;
-    if (_h5->hasDataset("topography")) {
-        _topography = new geomodelgrids::serial::Topography();assert(_topography);
+    delete _surfaceTop;_surfaceTop = NULL;
+    if (_h5->hasDataset("top_surface")) {
+        _surfaceTop = new geomodelgrids::serial::Surface("top_surface");assert(_surfaceTop);
         try {
-            _topography->loadMetadata(_h5);
+            _surfaceTop->loadMetadata(_h5);
+        } catch (const std::runtime_error& err) {
+            msg << err.what();
+            missingAttributes = true;
+        } // try/catch
+    } // if
+
+    delete _surfaceTopoBathy;_surfaceTopoBathy = NULL;
+    if (_h5->hasDataset("topography_bathymetry")) {
+        _surfaceTopoBathy = new geomodelgrids::serial::Surface("topography_bathymetry");assert(_surfaceTopoBathy);
+        try {
+            _surfaceTopoBathy->loadMetadata(_h5);
         } catch (const std::runtime_error& err) {
             msg << err.what();
             missingAttributes = true;
@@ -234,8 +250,11 @@ geomodelgrids::serial::Model::initialize(void) {
     _crsTransformer->setDest(_modelCRSString.c_str());
     _crsTransformer->initialize();
 
-    if (_topography) {
-        _topography->openQuery(_h5);
+    if (_surfaceTop) {
+        _surfaceTop->openQuery(_h5);
+    } // if
+    if (_surfaceTopoBathy) {
+        _surfaceTopoBathy->openQuery(_h5);
     } // if
     size_t numBlocks = _blocks.size();
     for (size_t i = 0; i < numBlocks; ++i) {
@@ -302,10 +321,18 @@ geomodelgrids::serial::Model::getInfo(void) const {
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Get model topography.
-const geomodelgrids::serial::Topography*
-geomodelgrids::serial::Model::getTopography(void) const {
-    return _topography;
-} // getTopography
+const geomodelgrids::serial::Surface*
+geomodelgrids::serial::Model::getTopSurface(void) const {
+    return _surfaceTop;
+} // getTopSurface
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Get model topography/bathymetry.
+const geomodelgrids::serial::Surface*
+geomodelgrids::serial::Model::getTopoBathy(void) const {
+    return _surfaceTopoBathy;
+} // getTopoBathy
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -339,17 +366,17 @@ geomodelgrids::serial::Model::contains(const double x,
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Get model description.
+// Query for elevation of top of model at point using bilinear interpolation.
 double
-geomodelgrids::serial::Model::queryElevation(const double x,
-                                             const double y) {
+geomodelgrids::serial::Model::queryTopElevation(const double x,
+                                                const double y) {
     double elevation = 0.0;
 
-    if (_topography) {
+    if (_surfaceTop) {
         double xModel = 0.0;
         double yModel = 0.0;
         _toModelXYZ(&xModel, &yModel, NULL, x, y, 0.0);
-        const double zModelCRS = _topography->query(xModel, yModel);
+        const double zModelCRS = _surfaceTop->query(xModel, yModel);
 
         const double yazimuthRad = _yazimuth * M_PI / 180.0;
         const double cosAz = cos(yazimuthRad);
@@ -365,7 +392,37 @@ geomodelgrids::serial::Model::queryElevation(const double x,
     } // if
 
     return elevation;
-} // queryElevation
+} // queryTopElevation
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Query for elevation of topography/bathymetry at point using bilinear interpolation.
+double
+geomodelgrids::serial::Model::queryTopoBathyElevation(const double x,
+                                                      const double y) {
+    double elevation = 0.0;
+
+    if (_surfaceTopoBathy || _surfaceTop) {
+        double xModel = 0.0;
+        double yModel = 0.0;
+        _toModelXYZ(&xModel, &yModel, NULL, x, y, 0.0);
+        const double zModelCRS = (_surfaceTopoBathy) ? _surfaceTopoBathy->query(xModel, yModel) : _surfaceTop->query(xModel, yModel);
+
+        const double yazimuthRad = _yazimuth * M_PI / 180.0;
+        const double cosAz = cos(yazimuthRad);
+        const double sinAz = sin(yazimuthRad);
+        const double xRel = +xModel*cosAz + yModel*sinAz;
+        const double yRel = -xModel*sinAz + yModel*cosAz;
+        const double xModelCRS = xRel + _origin[0];
+        const double yModelCRS = yRel + _origin[1];
+
+        double xIn = 0.0;
+        double yIn = 0.0;
+        _crsTransformer->inverse_transform(&xIn, &yIn, &elevation, xModelCRS, yModelCRS, zModelCRS);
+    } // if
+
+    return elevation;
+} // queryTopoBathyElevation
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -411,8 +468,8 @@ geomodelgrids::serial::Model::_toModelXYZ(double* xModel,
 
     if (zModel) {
         double zGroundSurf = 0.0;
-        if (_topography) {
-            zGroundSurf = _topography->query(*xModel, *yModel);
+        if (_surfaceTop) {
+            zGroundSurf = _surfaceTop->query(*xModel, *yModel);
         } // if
         const double zBottom = -_dims[2];
         *zModel = zBottom * (zGroundSurf - zModelCRS) / (zGroundSurf - zBottom);

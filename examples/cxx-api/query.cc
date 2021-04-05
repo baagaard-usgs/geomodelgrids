@@ -104,7 +104,7 @@ main(int argc,
         geomodelgrids::NODATA_VALUE, geomodelgrids::NODATA_VALUE,
         geomodelgrids::NODATA_VALUE, geomodelgrids::NODATA_VALUE,
     };
-    static const double groundElevE[16] = {
+    static const double surfaceElevE[16] = {
         // Elevations for one-block-topo points
         150.046,
         149.775,
@@ -136,8 +136,8 @@ main(int argc,
         const double elevation = points[iPt*spaceDim+2];
         const int err = query.query(values, latitude, longitude, elevation);
 
-        // Query for elevation of ground surface.
-        const double groundElev = query.queryElevation(latitude, longitude);
+        // Query for elevation of top surface.
+        const double surfaceElev = query.queryTopElevation(latitude, longitude);
 
         // Use the values returned in the query. In this case we check the values against the expected ones.
         //
@@ -167,13 +167,13 @@ main(int argc,
         } // for
 
         // Check ground surface elevation values.
-        const double tolerance = 1.0e-06 * fabs(groundElevE[iPt]);
-        if (fabs(groundElev-groundElevE[iPt]) > tolerance) {
-            std::cout << "Expected ground surface elevation of " << groundElevE[iPt] << " at point (" << latitude
-                      << ", " << longitude << ") but got a value of " << groundElev << "." << std::endl;
+        const double tolerance = 1.0e-06 * fabs(surfaceElevE[iPt]);
+        if (fabs(surfaceElev-surfaceElevE[iPt]) > tolerance) {
+            std::cout << "Expected ground surface elevation of " << surfaceElevE[iPt] << " at point (" << latitude
+                      << ", " << longitude << ") but got a value of " << surfaceElev << "." << std::endl;
         } else {
-            if (groundElev != geomodelgrids::NODATA_VALUE) {
-                std::cout << "Point (" << latitude << ", " << longitude << "), ground surface elevation: " << groundElev
+            if (surfaceElev != geomodelgrids::NODATA_VALUE) {
+                std::cout << "Point (" << latitude << ", " << longitude << "), ground surface elevation: " << surfaceElev
                           << "." << std::endl;
             } else {
                 std::cout << "No ground surface elevation for point (" << latitude << ", " << longitude << ")."

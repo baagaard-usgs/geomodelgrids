@@ -30,7 +30,7 @@ class HDF5Storage():
         ("dim_y", float),
         ("dim_z", float),
     )
-    TOPOGRAPHY_ATTRS = (
+    SURFACE_ATTRS = (
         ("resolution_horiz", float),
     )
     BLOCK_ATTRS = (
@@ -67,65 +67,72 @@ class HDF5Storage():
                 attrs[attr] = value
         h5.close()
 
-    def create_topography(self, topography):
-        """Create topography in HDF5 file.
+    def create_surface(self, surface):
+        """Create surface in HDF5 file.
 
         Args:
-            topography (Topography)
-                Surface topography.
+            surface (Surface)
+                Model surface.
         """
         h5 = h5py.File(self.filename, "a")
-        if "topography" in h5:
-            del h5["topography"]
-        topo_dataset = h5.create_dataset("topography", shape=topography.get_dims(),
-                                         chunks=topography.chunk_size, compression="gzip")
-        attrs = topo_dataset.attrs
-        for attr, typeE in self.TOPOGRAPHY_ATTRS:
-            value = getattr(topography, attr)
+        if surface.name in h5:
+            del h5[surface.name]
+        surf_dataset = h5.create_dataset(surface.name, shape=surface.get_dims(),
+                                         chunks=surface.chunk_size, compression="gzip")
+        attrs = surf_dataset.attrs
+        for attr, typeE in self.SURFACE_ATTRS:
+            value = getattr(surface, attr)
             if not isinstance(value, typeE):
-                raise ValueError(f"Expected type '{typeE}' for topography attribute '{attr}'. Got type '{type(value)}'")
+                raise ValueError(
+                    f"Expected type '{typeE}' for surface '{surface.name}' attribute '{attr}'. Got type '{type(value)}'")
             attrs[attr] = value
         h5.close()
 
-    def save_topography(self, elevation, batch=None):
-        """Write topography to HDF5 file.
+    def save_surface(self, surface, elevation, batch=None):
+        """Write surface to HDF5 file.
 
         Args:
+            surface (Surface)
+                Model surface
             elevation (numpy.array)
-                Elevation of ground surface associated with topography.
+                Elevation of surface in model.
+            batch (utils.BatchGenerator2D)
+                Current batch of points in domain corresponding to elevation data.
         """
         h5 = h5py.File(self.filename, "a")
-        assert "topography" in h5
-        topo_dataset = h5["topography"]
+        assert surface.name in h5
+        surf_dataset = h5[surface.name]
         if batch:
             x_start, x_end = batch.x_range
             y_start, y_end = batch.y_range
-            topo_dataset[x_start:x_end, y_start:y_end, :] = elevation
+            surf_dataset[x_start:x_end, y_start:y_end, :] = elevation
         else:
-            topo_dataset[:] = elevation
+            surf_dataset[:] = elevation
         h5.close()
 
-    def load_topography(self, topography, batch=None):
-        """Load topography from HDF5 file.
+    def load_surface(self, surface, batch=None):
+        """Load surface from HDF5 file.
 
         Args:
-            topography (Topography)
-                Surface topography.
+            surface (Surface)
+                Model surface.
+            batch (utils.BatchGenerator2D)
+                Current batch of points in domain corresponding to elevation data.
         """
         h5 = h5py.File(self.filename, "r")
-        topo_dataset = h5["topography"]
-        attrs = topo_dataset.attrs
-        for attr, _ in self.TOPOGRAPHY_ATTRS:
-            if getattr(topography, attr) != attrs[attr]:
-                raise ValueError("Inconsistency in topography attribute '{}': config value: {}, value from model: {}".format(
-                    attr, getattr(topography, attr), attrs[attr]))
+        surf_dataset = h5[surface.name]
+        attrs = surf_dataset.attrs
+        for attr, _ in self.SURFACE_ATTRS:
+            if getattr(surface, attr) != attrs[attr]:
+                raise ValueError("Inconsistency in surface '{surface.name}' attribute '{}': config value: {}, value from model: {}".format(
+                    attr, getattr(surface, attr), attrs[attr]))
 
         if batch:
             x_start, x_end = batch.x_range
             y_start, y_end = batch.y_range
-            elevation = topo_dataset[x_start:x_end, y_start:y_end]
+            elevation = surf_dataset[x_start:x_end, y_start:y_end]
         else:
-            elevation = topo_dataset[:]
+            elevation = surf_dataset[:]
         h5.close()
 
         return elevation

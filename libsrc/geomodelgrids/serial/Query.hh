@@ -15,6 +15,15 @@ class geomodelgrids::serial::Query {
     friend class TestCQuery; // unit testing
     friend class _Query; // Helper class
 
+    // PUBLIC ENUMS ///////////////////////////////////////////////////////////////////////////////////////////////////
+public:
+
+    enum SQUASHING_TYPE {
+        SQUASH_NONE=0,
+        SQUASH_TOP_SURFACE=1,
+        SQUASH_TOPOGRAPHY_BATHYMETRY=2,
+    };
+
     // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
@@ -48,20 +57,29 @@ public:
      */
     void setSquashMinElev(const double value);
 
-    /** Turn squashing on/off.
+    /** Set type of squashing.
      *
-     * @param[in] value True if squashing is on, false otherwise.
+     * @param[in] value Type of squashing.
      */
-    void setSquashing(const bool value);
+    void setSquashing(const SQUASHING_TYPE value);
 
-    /** Query for elevation of ground surface at point.
+    /** Query for elevation of top of model at point.
+     *
+     * @param[in] x X coordinate of point (in input CRS).
+     * @param[in] y Y coordinate of point (in input CRS).
+     * @returns Elevation (m) of top of model at point.
+     */
+    double queryTopElevation(const double x,
+                             const double y);
+
+    /** Query for elevation of topography/bathymetry at point.
      *
      * @param[in] x X coordinate of point (in input CRS).
      * @param[in] y Y coordinate of point (in input CRS).
      * @returns Elevation (m) of ground surface at point.
      */
-    double queryElevation(const double x,
-                          const double y);
+    double queryTopoBathyElevation(const double x,
+                                   const double y);
 
     /** Query model for values at a point.
      *
@@ -97,7 +115,7 @@ private:
     std::vector<values_map_type> _valuesIndex;
     double _squashMinElev;
     geomodelgrids::utils::ErrorHandler* _errorHandler;
-    bool _squash;
+    SQUASHING_TYPE _squash;
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

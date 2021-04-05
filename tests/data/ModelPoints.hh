@@ -16,7 +16,8 @@ namespace geomodelgrids {
         class ThreeBlocksFlatPoints;
         class ThreeBlocksTopoPoints;
         class ThreeBlocksTopoBorehole;
-        class ThreeBlocksSquashPoints;
+        class ThreeBlocksSquashTopPoints;
+        class ThreeBlocksSquashTopoBathyPoints;
         class OutsideDomainPoints;
     } // testdata
 } // geomodelgrids
@@ -55,15 +56,25 @@ public:
      */
     const double* getXYZ(void) const;
 
-    /** Compute elevation of ground surface at point.
+    /** Compute elevation of top surface at point.
      *
      * @param[in] x X coordinate of point.
      * @parma[in] y Y coordinate of point.
-     * @returns Elevation (m) of ground surface.
+     * @returns Elevation (m) of top surface.
      */
     static
-    double computeElevation(const double x,
-                            const double y);
+    double computeTopElevation(const double x,
+                               const double y);
+
+    /** Compute elevation of topography/bathymetry at point.
+     *
+     * @param[in] x X coordinate of point.
+     * @parma[in] y Y coordinate of point.
+     * @returns Elevation (m) of topography/bathymetry surface.
+     */
+    static
+    double computeTopoBathyElevation(const double x,
+                                     const double y);
 
     /** Compute value 'one' at point.
      *
@@ -142,10 +153,16 @@ public:
     ThreeBlocksTopoBorehole(void);
 }; // ThreeBlocksTopoBorehole
 
-class geomodelgrids::testdata::ThreeBlocksSquashPoints : public ModelPoints {
+class geomodelgrids::testdata::ThreeBlocksSquashTopPoints : public ModelPoints {
 public:
 
-    ThreeBlocksSquashPoints(const double squashMinElev);
+    ThreeBlocksSquashTopPoints(const double squashMinElev);
+}; // ThreeBlocksSquashPoints
+
+class geomodelgrids::testdata::ThreeBlocksSquashTopoBathyPoints : public ModelPoints {
+public:
+
+    ThreeBlocksSquashTopoBathyPoints(const double squashMinElev);
 }; // ThreeBlocksSquashPoints
 
 class geomodelgrids::testdata::OutsideDomainPoints : public ModelPoints {

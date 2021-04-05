@@ -1,12 +1,12 @@
 /**
- * C++ unit testing of geomodelgrids::serial::Topography.
+ * C++ unit testing of geomodelgrids::serial::Surface.
  */
 
 #include <portinfo>
 
 #include "ModelPoints.hh"
 
-#include "geomodelgrids/serial/Topography.hh" // USES Topography
+#include "geomodelgrids/serial/Surface.hh" // USES Surface
 #include "geomodelgrids/serial/HDF5.hh" // USES HDF5
 
 #include <cppunit/extensions/HelperMacros.h>
@@ -15,13 +15,13 @@
 
 namespace geomodelgrids {
     namespace serial {
-        class TestTopography;
+        class TestSurface;
     } // serial
 } // geomodelgrids
 
-class geomodelgrids::serial::TestTopography : public CppUnit::TestFixture {
+class geomodelgrids::serial::TestSurface : public CppUnit::TestFixture {
     // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestTopography);
+    CPPUNIT_TEST_SUITE(TestSurface);
 
     CPPUNIT_TEST(testConstructor);
     CPPUNIT_TEST(testAccessors);
@@ -49,14 +49,14 @@ public:
     /// Test query().
     void testQuery(void);
 
-}; // class TestTopography
-CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::serial::TestTopography);
+}; // class TestSurface
+CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::serial::TestSurface);
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Test constructor.
 void
-geomodelgrids::serial::TestTopography::testConstructor(void) {
-    Topography topo;
+geomodelgrids::serial::TestSurface::testConstructor(void) {
+    Surface topo("top_surface");
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking horizontal resolution", 0.0, topo._resolutionHoriz);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking dims[0]", size_t(0), topo._dims[0]);
@@ -67,8 +67,8 @@ geomodelgrids::serial::TestTopography::testConstructor(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Test getters.
 void
-geomodelgrids::serial::TestTopography::testAccessors(void) {
-    Topography topo;
+geomodelgrids::serial::TestSurface::testAccessors(void) {
+    Surface topo("top_surface");
 
     const double resolutionHoriz(8.0);topo._resolutionHoriz = resolutionHoriz;
     const size_t dimsE[2] = { 5, 6 };
@@ -86,8 +86,8 @@ geomodelgrids::serial::TestTopography::testAccessors(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Test setHyperslabDims.
 void
-geomodelgrids::serial::TestTopography::testSetHyperslabDims(void) {
-    Topography topo;
+geomodelgrids::serial::TestSurface::testSetHyperslabDims(void) {
+    Surface topo("top_surface");
 
     const size_t ndims = 3;
     const size_t dimsDefault[ndims] = { 128, 128, 1 };
@@ -112,11 +112,11 @@ geomodelgrids::serial::TestTopography::testSetHyperslabDims(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Test loadMetadata().
 void
-geomodelgrids::serial::TestTopography::testLoadMetadata(void) {
+geomodelgrids::serial::TestSurface::testLoadMetadata(void) {
     geomodelgrids::serial::HDF5 h5;
     h5.open("../../data/one-block-topo.h5", H5F_ACC_RDONLY);
 
-    Topography topo;
+    Surface topo("top_surface");
     topo.loadMetadata(&h5);
 
     const double resolutionHoriz(10.0e+3);
@@ -132,7 +132,7 @@ geomodelgrids::serial::TestTopography::testLoadMetadata(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Test query().
 void
-geomodelgrids::serial::TestTopography::testQuery(void) {
+geomodelgrids::serial::TestSurface::testQuery(void) {
     const size_t npoints = 5;
     const size_t spaceDim = 2;
     const double xy[npoints*spaceDim] = {
@@ -146,7 +146,7 @@ geomodelgrids::serial::TestTopography::testQuery(void) {
     geomodelgrids::serial::HDF5 h5;
     h5.open("../../data/one-block-topo.h5", H5F_ACC_RDONLY);
 
-    Topography topo;
+    Surface topo("top_surface");
     topo.loadMetadata(&h5);
 
     topo.openQuery(&h5);
@@ -156,7 +156,7 @@ geomodelgrids::serial::TestTopography::testQuery(void) {
         const double y = xy[i*spaceDim+1];
         const double elevation = topo.query(x, y);
 
-        const double elevationE = geomodelgrids::testdata::ModelPoints::computeElevation(x, y);
+        const double elevationE = geomodelgrids::testdata::ModelPoints::computeTopElevation(x, y);
 
         std::ostringstream msg;
         msg << "Mismatch in elevation at (" << x << ", " << y << ").";

@@ -1,6 +1,6 @@
 #include <portinfo>
 
-#include "Topography.hh" // implementation of class methods
+#include "Surface.hh" // implementation of class methods
 
 #include "geomodelgrids/serial/HDF5.hh" // USES HDF5
 #include "geomodelgrids/serial/Hyperslab.hh" // USES Hyperslab
@@ -13,8 +13,9 @@
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Default constructor.
-geomodelgrids::serial::Topography::Topography(void) :
+geomodelgrids::serial::Surface::Surface(const char* const name) :
     _hyperslab(NULL),
+    _name(name),
     _resolutionHoriz(0.0) {
     _dims[0] = 0;
     _dims[1] = 0;
@@ -27,7 +28,7 @@ geomodelgrids::serial::Topography::Topography(void) :
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Destructor
-geomodelgrids::serial::Topography::~Topography(void) {
+geomodelgrids::serial::Surface::~Surface(void) {
     delete _hyperslab;_hyperslab = NULL;
 } // destructor
 
@@ -35,23 +36,23 @@ geomodelgrids::serial::Topography::~Topography(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Load metadata.
 void
-geomodelgrids::serial::Topography::loadMetadata(geomodelgrids::serial::HDF5* const h5) {
+geomodelgrids::serial::Surface::loadMetadata(geomodelgrids::serial::HDF5* const h5) {
     assert(h5);
 
     std::ostringstream msg;
     const char* indent = "            ";
     bool missingAttributes = false;
 
-    if (h5->hasAttribute("topography", "resolution_horiz")) {
-        h5->readAttribute("topography", "resolution_horiz", H5T_NATIVE_DOUBLE, (void*)&_resolutionHoriz);
+    if (h5->hasAttribute(_name.c_str(), "resolution_horiz")) {
+        h5->readAttribute(_name.c_str(), "resolution_horiz", H5T_NATIVE_DOUBLE, (void*)&_resolutionHoriz);
     } else {
-        msg << indent << "    /topography/resolution_horiz\n";
+        msg << indent << "    /" << _name << "/resolution_horiz\n";
         missingAttributes = true;
     } // if/else
 
     hsize_t* hdims = NULL;
     int ndims = 0;
-    h5->getDatasetDims(&hdims, &ndims, "topography");
+    h5->getDatasetDims(&hdims, &ndims, _name.c_str());
     assert(3 == ndims);
     for (int i = 0; i < 2; ++i) {
         _dims[i] = hdims[i];
@@ -65,7 +66,7 @@ geomodelgrids::serial::Topography::loadMetadata(geomodelgrids::serial::HDF5* con
 // ---------------------------------------------------------------------------------------------------------------------
 // Get horizontal resolution.
 double
-geomodelgrids::serial::Topography::getResolutionHoriz(void) const {
+geomodelgrids::serial::Surface::getResolutionHoriz(void) const {
     return _resolutionHoriz;
 } // getResolutionHoriz
 
@@ -73,7 +74,7 @@ geomodelgrids::serial::Topography::getResolutionHoriz(void) const {
 // ---------------------------------------------------------------------------------------------------------------------
 // Get number of values along each grid dimension.
 const size_t*
-geomodelgrids::serial::Topography::getDims(void) const {
+geomodelgrids::serial::Surface::getDims(void) const {
     return _dims;
 } // getDims
 
@@ -81,8 +82,8 @@ geomodelgrids::serial::Topography::getDims(void) const {
 // ---------------------------------------------------------------------------------------------------------------------
 // Set hyperslab size.
 void
-geomodelgrids::serial::Topography::setHyperslabDims(const size_t dims[],
-                                                    const size_t ndimsIn) {
+geomodelgrids::serial::Surface::setHyperslabDims(const size_t dims[],
+                                                 const size_t ndimsIn) {
     const size_t ndims = 2; // 3rd dimension is 1.
     if (2 != ndimsIn) {
         std::ostringstream msg;
@@ -101,20 +102,20 @@ geomodelgrids::serial::Topography::setHyperslabDims(const size_t dims[],
 // ---------------------------------------------------------------------------------------------------------------------
 // Prepare for querying.
 void
-geomodelgrids::serial::Topography::openQuery(geomodelgrids::serial::HDF5* const h5) {
+geomodelgrids::serial::Surface::openQuery(geomodelgrids::serial::HDF5* const h5) {
     const size_t ndims = 3;
     hsize_t dims[ndims];
     dims[0] = 128;
     dims[1] = 128;
     dims[2] = 1;
-    delete _hyperslab;_hyperslab = new geomodelgrids::serial::Hyperslab(h5, "topography", dims, ndims);
+    delete _hyperslab;_hyperslab = new geomodelgrids::serial::Hyperslab(h5, _name.c_str(), dims, ndims);
 } // openQuery
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Cleanup after querying.
 void
-geomodelgrids::serial::Topography::closeQuery(void) {
+geomodelgrids::serial::Surface::closeQuery(void) {
     delete _hyperslab;_hyperslab = NULL;
 } // closeQuery
 
@@ -122,8 +123,8 @@ geomodelgrids::serial::Topography::closeQuery(void) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Query for values at a point using bilinear interpolation.
 double
-geomodelgrids::serial::Topography::query(const double x,
-                                         const double y) {
+geomodelgrids::serial::Surface::query(const double x,
+                                      const double y) {
     double index[2];
     index[0] = x / _resolutionHoriz;
     index[1] = y / _resolutionHoriz;

@@ -13,27 +13,32 @@ from geomodelgrids.create.utils import batch
 from geomodelgrids.create.io.hdf5 import HDF5Storage
 
 
-class Topography():
-    """Surface topography.
+class Surface():
+    """Model surface.
+
+    Used for top of the model (topography+water) and topography+bathymetry.
     """
 
-    def __init__(self, model_metadata, config, storage):
+    def __init__(self, name, model_metadata, config, storage):
         """Constructor.
 
         Args:
+            name (str)
+                Name of surface.
             model_metadata (ModelMetadata)
                 Metadata for model domain associated with block.
             config (dict)
-                True if use of topography is enabled, False otherwise.
+                True if use of surface is enabled, False otherwise.
                 Keys:
-                    - use_topography: Model uses topography
+                    - use_surface: Model uses surface
                     - resolution_horiz: Horizontal resolution in m
                     - chunk_size: Dimensions of dataset chunk (should be about 10Kb - 1Mb)
             storage (HDF5Storage)
-                Stored topography.
+                Storage interface.
         """
+        self.name = name
         self.model_metadata = model_metadata
-        self.enabled = "True" == config["use_topography"]
+        self.enabled = "True" == config["use_surface"]
         self.resolution_horiz = float(config["resolution_horiz"]) if self.enabled else None
         self.chunk_size = tuple(map(int, string_to_list(config["chunk_size"]))) if self.enabled else None
         self.storage = storage
@@ -51,18 +56,18 @@ class Topography():
     def get_batches(self, batch_size):
         """Get iterator witch batches of points.
 
-        Should not be called if topography is not enabled.
+        Should not be called if surface is not enabled.
         """
         if not self.enabled:
-            raise NotImplementedError("Topography.get_batches() not implemented if topography is not enabled.")
+            raise NotImplementedError("Surface.get_batches() not implemented if surface is not enabled.")
 
         num_x, num_y, _ = self.get_dims()
         return batch.BatchGenerator2D(num_x, num_y, batch_size)
 
     def generate_points(self, batch=None):
-        """Generate points for topography.
+        """Generate points for surface.
 
-        Should not be called if topography is not enabled.
+        Should not be called if surface is not enabled.
 
         Args:
             batch (utils.BatchGenerator2D)
@@ -71,17 +76,17 @@ class Topography():
             2D array (Nx*Ny,2) of point locations for ground surface.
         """
         if not self.enabled:
-            raise NotImplementedError("Topography.generate_points() not implemented if topography is not enabled.")
+            raise NotImplementedError("Surface.generate_points() not implemented if surface is not enabled.")
 
         num_x, num_y, _ = self.get_dims()
         logger = logging.getLogger(__name__)
-        logger.info("Topography for domain contains %d points (%d x %d).",
+        logger.info("Surface for domain contains %d points (%d x %d).",
                     num_x * num_y, num_x, num_y)
 
         if batch:
             x_start, x_end = batch.x_range
             y_start, y_end = batch.y_range
-            logger.info("Topography for batch contains %d points (%d x %d).",
+            logger.info("Surface for batch contains %d points (%d x %d).",
                         (x_end - x_start) * (y_end - y_start), (x_end - x_start), (y_end - y_start))
         else:
             x_start = 0
@@ -151,12 +156,12 @@ class Block():
         num_x, num_y, num_z = self.get_dims()
         return batch.BatchGenerator3D(num_x, num_y, num_z, batch_size)
 
-    def generate_points(self, topography, batch=None):
+    def generate_points(self, top_surface, batch=None):
         """Generate grid of points in block.
 
         Args:
-            topography (Topography)
-                Elevation of ground surface for model domain.
+            top_surface (Surface)
+                Elevation of top surface of model domain.
             batch (BatchGenerator3D)
                 Current batch of points in block.
         Returns:
@@ -189,10 +194,10 @@ class Block():
 
         domain_top = 0.0
         domain_bot = -self.model_metadata.dim_z
-        if topography.enabled:
-            topo_geo = self.get_topography(topography, batch)
+        if top_surface.enabled:
+            top_elev = self.get_surface(top_surface, batch)
             for iz in range(z.shape[-1]):
-                z[:, :, iz] = domain_bot + (topo_geo - domain_bot) / \
+                z[:, :, iz] = domain_bot + (top_elev - domain_bot) / \
                     (domain_top - domain_bot) * (self.z_top - z[:, :, iz] - domain_bot)
         else:
             z = self.z_top - z
@@ -208,37 +213,37 @@ class Block():
         xyz_model[:, :, :, 2] = xyz_geo[:, :, :, 2]
         return xyz_model
 
-    def get_topography(self, topography, batch=None):
-        """Get topography grid for block.
+    def get_surface(self, surface, batch=None):
+        """Get surface grid for block.
         Args:
-            topography (Toppography)
-                Topography for model domain.
+            surface (Surface)
+                Surface in model domain.
             batch (BatchGenerator3D)
                 Current batch of points in block.
         Returns:
-            Numpy array [Nx,Ny] with elevation of ground surface for current batch in block.
+            Numpy array [Nx,Ny] with elevation of surface for current batch in block.
         """
         TOLERANCE = 0.01
 
-        class BatchTopography():
+        class BatchSurface():
 
             def __init__(self, x_range, y_range):
                 self.x_range = x_range
                 self.y_range = y_range
 
-        block_skip = int(0.01 + self.resolution_horiz / topography.resolution_horiz)
-        if math.fabs(block_skip * topography.resolution_horiz - self.resolution_horiz) > TOLERANCE:
-            raise ValueError("Block resolution ({}) must be a integer multiple of the topography resolution ({})".format(
-                self.resolution_horiz, topography.resolution_horiz))
+        block_skip = int(0.01 + self.resolution_horiz / surface.resolution_horiz)
+        if math.fabs(block_skip * surface.resolution_horiz - self.resolution_horiz) > TOLERANCE:
+            raise ValueError("Block resolution ({}) must be a integer multiple of the surface resolution ({})".format(
+                self.resolution_horiz, surface.resolution_horiz))
 
         if batch:
             x_range = (block_skip * batch.x_range[0], block_skip * batch.x_range[1])
             y_range = (block_skip * batch.y_range[0], block_skip * batch.y_range[1])
-            topo_batch = BatchTopography(x_range, y_range)
+            surface_batch = BatchSurface(x_range, y_range)
         else:
-            topo_batch = None
+            surface_batch = None
 
-        elevation = topography.storage.load_topography(topography, topo_batch)
+        elevation = surface.storage.load_surface(surface, surface_batch)
         return numpy.float64(elevation[::block_skip, ::block_skip, 0].squeeze())
 
 
@@ -378,7 +383,8 @@ class Model():
     def __init__(self, config):
         """Constructor.
         """
-        self.topography = None
+        self.top_surface = None
+        self.topo_bathy = None
         self.blocks = []
         self.config = None
         self.storage = None
@@ -401,30 +407,47 @@ class Model():
             self.blocks.append(block)
 
         self.storage = HDF5Storage(config["geomodelgrids"]["filename"])
-        self.topography = Topography(self.metadata, config["topography"], self.storage)
+        self.top_surface = Surface("top_surface", self.metadata, config["top_surface"], self.storage)
+        self.topo_bathy = Surface("topography_bathymetry", self.metadata, config["topography_bathymetry"], self.storage)
 
     def save_domain(self):
         """Write domain information to storage."""
         self.storage.save_domain(self)
 
-    def init_topography(self):
-        """Create topography in storage.
+    def init_top_surface(self):
+        """Create top_surface in storage.
         """
-        self.storage.create_topography(self.topography)
+        self.storage.create_surface(self.top_surface)
 
-    def save_topography(self, elevation, batch=None):
-        """Write topography information to storage.
+    def save_top_surface(self, elevation, batch=None):
+        """Write top_surface information to storage.
 
         Args:
             elevation (numpy_array [Nx,Ny])
-                Numpy array with elevation of ground surface.
+                Numpy array with elevation of top surface.
             batch (BatchGenerator2D)
                 Current batch of points in domain corresponding to elevation data.
         """
-        self.storage.save_topography(elevation, batch)
+        self.storage.save_surface(self.top_surface, elevation, batch)
+
+    def init_topography_bathymetry(self):
+        """Create topography/bathymetry in storage.
+        """
+        self.storage.create_surface(self.topo_bathy)
+
+    def save_topography_bathymetry(self, elevation, batch=None):
+        """Write topography/bathymetry information to storage.
+
+        Args:
+            elevation (numpy_array [Nx,Ny])
+                Numpy array with elevation of ground surface and sea floor.
+            batch (BatchGenerator2D)
+                Current batch of points in domain corresponding to elevation data.
+        """
+        self.storage.save_surface(self.topo_bathy, elevation, batch)
 
     def init_block(self, block):
-        """Create topography in storage.
+        """Create block in storage.
 
         Args:
             block (Block)

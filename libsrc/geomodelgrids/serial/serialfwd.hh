@@ -6,7 +6,7 @@ namespace geomodelgrids {
         class ModelInfo;
         class Model;
         class Block;
-        class Topography;
+        class Surface;
 
         class Query;
 

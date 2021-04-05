@@ -38,7 +38,7 @@ class geomodelgrids::apps::TestQueryElev : public CppUnit::TestFixture {
     CPPUNIT_TEST(testPrintHelp);
     CPPUNIT_TEST(testRunHelp);
     CPPUNIT_TEST(testRunOneBlockFlat);
-    CPPUNIT_TEST(testRunThreeBlocksTopo);
+    CPPUNIT_TEST(testRunThreeBlocksTop);
     CPPUNIT_TEST(testRunTwoModels);
     CPPUNIT_TEST(testRunBadInput);
     CPPUNIT_TEST(testRunBadOutput);
@@ -87,8 +87,8 @@ public:
     /// Test run() wth one-block-flat.
     void testRunOneBlockFlat(void);
 
-    /// Test run() wth three-blocks-topo.
-    void testRunThreeBlocksTopo(void);
+    /// Test run() wth three-blocks-topo and top surface.
+    void testRunThreeBlocksTop(void);
 
     /// Test run() wth one-block-flat and three-blocks-topo.
     void testRunTwoModels(void);
@@ -119,7 +119,7 @@ public:
     static
     void checkQuery(std::istream& sin,
                     const geomodelgrids::testdata::ModelPoints& points,
-                    const bool hasTopography,
+                    const bool hasTopSurface,
                     const double elevScale=1.0);
 
 }; // _TestQueryElev
@@ -242,13 +242,14 @@ geomodelgrids::apps::TestQueryElev::testParseArgsMinimal(void) {
 // Test _parseArgs() with all arguments.
 void
 geomodelgrids::apps::TestQueryElev::testParseArgsAll(void) {
-    const int nargs = 6;
+    const int nargs = 7;
     const char* const args[nargs] = {
         "test",
         "--models=A",
         "--points=points.in",
         "--output=points.out",
         "--points-coordsys=EPSG:26910",
+        "--surface=topography_bathymetry",
         "--log=error.log",
     };
 
@@ -259,6 +260,7 @@ geomodelgrids::apps::TestQueryElev::testParseArgsAll(void) {
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in points.", std::string("points.in"), query._pointsFilename);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in output.", std::string("points.out"), query._outputFilename);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in points coordsys.", std::string("EPSG:26910"), query._pointsCRS);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in surface.", true, query._useTopoBathy);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in log.", std::string("error.log"), query._logFilename);
     CPPUNIT_ASSERT_MESSAGE("Mismatch in help.", !query._showHelp);
 } // testParseArgsAll
@@ -275,7 +277,7 @@ geomodelgrids::apps::TestQueryElev::testPrintHelp(void) {
     QueryElev query;
     query._printHelp();
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(613), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(758), coutHelp.str().length());
 } // testPrintHelp
 
 
@@ -296,7 +298,7 @@ geomodelgrids::apps::TestQueryElev::testRunHelp(void) {
     query.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(613), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(758), coutHelp.str().length());
 } // testRunHelp
 
 
@@ -324,8 +326,8 @@ geomodelgrids::apps::TestQueryElev::testRunOneBlockFlat(void) {
     std::ifstream sin("one-block-flat.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
     std::string comment;
     std::getline(sin, comment);
-    bool hasTopography = false;
-    _TestQueryElev::checkQuery(sin, pointsOne, hasTopography);
+    bool hasTopSurface = false;
+    _TestQueryElev::checkQuery(sin, pointsOne, hasTopSurface);
     sin.close();
 
     std::ifstream slog("error.log");CPPUNIT_ASSERT(slog.is_open() && slog.good());
@@ -333,33 +335,33 @@ geomodelgrids::apps::TestQueryElev::testRunOneBlockFlat(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Test run() with three-blocks-topo.
+// Test run() with three-blocks-topo with top surface.
 void
-geomodelgrids::apps::TestQueryElev::testRunThreeBlocksTopo(void) {
+geomodelgrids::apps::TestQueryElev::testRunThreeBlocksTop(void) {
     const int nargs = 5;
     const char* const args[nargs] = {
         "test",
         "--models=../../data/three-blocks-topo.h5",
-        "--points=three-blocks-topo.in",
-        "--output=three-blocks-topo.out",
+        "--points=three-blocks-top.in",
+        "--output=three-blocks-top.out",
         "--points-coordsys=+proj=lonlat +axis=neu +datum=WGS84 +vunits=km",
     };
     geomodelgrids::testdata::ThreeBlocksTopoPoints pointsThree;
-    std::ofstream sout("three-blocks-topo.in");CPPUNIT_ASSERT(sout.is_open() && sout.good());
+    std::ofstream sout("three-blocks-top.in");CPPUNIT_ASSERT(sout.is_open() && sout.good());
     _TestQueryElev::createPointsFile(sout, pointsThree);
     sout.close();
 
     QueryElev query;
     query.run(nargs, const_cast<char**>(args));
 
-    std::ifstream sin("three-blocks-topo.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
+    std::ifstream sin("three-blocks-top.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
     std::string comment;
     std::getline(sin, comment);
-    const bool hasTopography = true;
+    const bool hasTopSurface = true;
     const double elevScale = 1.0e-3;
-    _TestQueryElev::checkQuery(sin, pointsThree, hasTopography, elevScale);
+    _TestQueryElev::checkQuery(sin, pointsThree, hasTopSurface, elevScale);
     sin.close();
-} // testRunThreeBlocksTopo
+} // testRunThreeBlocksTop
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -387,10 +389,10 @@ geomodelgrids::apps::TestQueryElev::testRunTwoModels(void) {
     std::ifstream sin("two-models.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
     std::string comment;
     std::getline(sin, comment);
-    bool hasTopography = false;
-    _TestQueryElev::checkQuery(sin, pointsOne, hasTopography);
-    hasTopography = true;
-    _TestQueryElev::checkQuery(sin, pointsThree, hasTopography);
+    bool hasTopSurface = false;
+    _TestQueryElev::checkQuery(sin, pointsOne, hasTopSurface);
+    hasTopSurface = true;
+    _TestQueryElev::checkQuery(sin, pointsThree, hasTopSurface);
     sin.close();
 } // testRunTwoModels
 
@@ -451,7 +453,7 @@ geomodelgrids::apps::_TestQueryElev::createPointsFile(std::ostream& sout,
 void
 geomodelgrids::apps::_TestQueryElev::checkQuery(std::istream& sin,
                                                 const geomodelgrids::testdata::ModelPoints& points,
-                                                const bool hasTopography,
+                                                const bool hasTopSurface,
                                                 const double elevScale) {
     const size_t spaceDim = 3;
     const size_t numPoints = points.getNumPoints();
@@ -471,7 +473,7 @@ geomodelgrids::apps::_TestQueryElev::checkQuery(std::istream& sin,
         double value = NODATA_VALUE;
         sin >> value;CPPUNIT_ASSERT_MESSAGE("Could not read elevation in output.", sin.good());
 
-        const double valueE = hasTopography ? points.computeElevation(x, y) * elevScale : 0.0;
+        const double valueE = hasTopSurface ? points.computeTopElevation(x, y) * elevScale : 0.0;
 
         std::ostringstream msg;
         msg << "Mismatch for 'elevation' for point ("

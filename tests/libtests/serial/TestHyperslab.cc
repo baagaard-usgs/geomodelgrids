@@ -88,7 +88,7 @@ geomodelgrids::serial::TestHyperslab::tearDown(void) {
 // Test constructor in 2D.
 void
 geomodelgrids::serial::TestHyperslab::testConstructor2D(void) {
-    const std::string dataset("/topography");
+    const std::string dataset("/top_surface");
     const size_t ndims(3);
     const hsize_t dims[ndims] = { 3, 4, 1 };
     const hsize_t dimsAll[ndims] = { 4, 5, 1 };
@@ -187,7 +187,7 @@ geomodelgrids::serial::TestHyperslab::testConstructorBadDims(void) {
 // Test interpolate in 2D.
 void
 geomodelgrids::serial::TestHyperslab::testInterpolate2D(void) {
-    const std::string dataset("/topography");
+    const std::string dataset("/top_surface");
     const size_t ndims(3);
     const hsize_t dims[ndims] = { 3, 2, 1 };
 
@@ -215,7 +215,7 @@ geomodelgrids::serial::TestHyperslab::testInterpolate2D(void) {
 
         const double x = resolution * index[i*spaceDim + 0];
         const double y = resolution * index[i*spaceDim + 1];
-        const double elevationE = geomodelgrids::testdata::ModelPoints::computeElevation(x, y);
+        const double elevationE = geomodelgrids::testdata::ModelPoints::computeTopElevation(x, y);
 
         std::ostringstream msg;
         msg << "Mismatch in elevation for index (" << index[i*spaceDim+0] << ", " << index[i*spaceDim+1] << ").";

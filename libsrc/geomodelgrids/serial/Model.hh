@@ -99,11 +99,17 @@ public:
      */
     const geomodelgrids::serial::ModelInfo* getInfo(void) const;
 
-    /** Get model topography.
+    /** Get top surface of model.
      *
-     * @returns Model topography.
+     * @returns Top surface.
      */
-    const geomodelgrids::serial::Topography* getTopography(void) const;
+    const geomodelgrids::serial::Surface* getTopSurface(void) const;
+
+    /** Get model topography/bathymetry.
+     *
+     * @returns Model topography/bathymetry.
+     */
+    const geomodelgrids::serial::Surface* getTopoBathy(void) const;
 
     /** Get model blocks.
      *
@@ -122,14 +128,23 @@ public:
                   const double y,
                   const double z) const;
 
-    /** Query for elevation of ground surface at point using bilinear interpolation.
+    /** Query for elevation of top of model at point using bilinear interpolation.
      *
      * @param[in] x X coordinate of point (in input CRS).
      * @param[in] y Y coordinate of point (in input CRS).
-     * @returns Elevation (m) of ground surface at point.
+     * @returns Elevation (m) of top of model at point.
      */
-    double queryElevation(const double x,
-                          const double y);
+    double queryTopElevation(const double x,
+                             const double y);
+
+    /** Query for elevation of topography/bathymetry at point using bilinear interpolation.
+     *
+     * @param[in] x X coordinate of point (in input CRS).
+     * @param[in] y Y coordinate of point (in input CRS).
+     * @returns Elevation (m) of solid surface at point.
+     */
+    double queryTopoBathyElevation(const double x,
+                                   const double y);
 
     /** Query for model values at point using bilinear interpolation.
      *
@@ -185,7 +200,8 @@ private:
 
     geomodelgrids::serial::HDF5* _h5; ///< Model file.
     geomodelgrids::serial::ModelInfo* _info; ///< Model description information.
-    geomodelgrids::serial::Topography* _topography; ///< Model topography.
+    geomodelgrids::serial::Surface* _surfaceTop; ///< Top surface of model.
+    geomodelgrids::serial::Surface* _surfaceTopoBathy; ///< Model topography/bathymetry.
     geomodelgrids::utils::CRSTransformer* _crsTransformer; ///< Coordinate system transformer.
     std::vector<geomodelgrids::serial::Block*> _blocks; ///< Model blocks.
 
