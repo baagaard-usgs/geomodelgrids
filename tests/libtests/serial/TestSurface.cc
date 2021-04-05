@@ -116,15 +116,15 @@ geomodelgrids::serial::TestSurface::testLoadMetadata(void) {
     geomodelgrids::serial::HDF5 h5;
     h5.open("../../data/one-block-topo.h5", H5F_ACC_RDONLY);
 
-    Surface topo("top_surface");
-    topo.loadMetadata(&h5);
+    Surface topSurface("top_surface");
+    topSurface.loadMetadata(&h5);
 
     const double resolutionHoriz(10.0e+3);
     const size_t dims[2] = { 4, 5 };
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking horizontal resolution", resolutionHoriz, topo.getResolutionHoriz());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking horizontal resolution", resolutionHoriz, topSurface.getResolutionHoriz());
     for (size_t i = 0; i < 2; ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking dims", dims[i], topo._dims[i]);
+        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking dims", dims[i], topSurface._dims[i]);
     } // for
 } // testLoadMetadata
 
@@ -146,15 +146,15 @@ geomodelgrids::serial::TestSurface::testQuery(void) {
     geomodelgrids::serial::HDF5 h5;
     h5.open("../../data/one-block-topo.h5", H5F_ACC_RDONLY);
 
-    Surface topo("top_surface");
-    topo.loadMetadata(&h5);
+    Surface topSurface("top_surface");
+    topSurface.loadMetadata(&h5);
 
-    topo.openQuery(&h5);
+    topSurface.openQuery(&h5);
     for (size_t i = 0; i < npoints; ++i) {
         const double tolerance = 1.0e-6;
         const double x = xy[i*spaceDim+0];
         const double y = xy[i*spaceDim+1];
-        const double elevation = topo.query(x, y);
+        const double elevation = topSurface.query(x, y);
 
         const double elevationE = geomodelgrids::testdata::ModelPoints::computeTopElevation(x, y);
 
@@ -163,7 +163,7 @@ geomodelgrids::serial::TestSurface::testQuery(void) {
         const double toleranceV = std::max(tolerance, tolerance*fabs(elevationE));
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), elevationE, elevation, toleranceV);
     } // for
-    topo.closeQuery();
+    topSurface.closeQuery();
 } // testQuery
 
 

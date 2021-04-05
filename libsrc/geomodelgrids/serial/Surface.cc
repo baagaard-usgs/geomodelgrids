@@ -39,20 +39,22 @@ void
 geomodelgrids::serial::Surface::loadMetadata(geomodelgrids::serial::HDF5* const h5) {
     assert(h5);
 
+    const std::string& surfacePath = std::string("surfaces/") + _name;
+
     std::ostringstream msg;
     const char* indent = "            ";
     bool missingAttributes = false;
 
-    if (h5->hasAttribute(_name.c_str(), "resolution_horiz")) {
-        h5->readAttribute(_name.c_str(), "resolution_horiz", H5T_NATIVE_DOUBLE, (void*)&_resolutionHoriz);
+    if (h5->hasAttribute(surfacePath.c_str(), "resolution_horiz")) {
+        h5->readAttribute(surfacePath.c_str(), "resolution_horiz", H5T_NATIVE_DOUBLE, (void*)&_resolutionHoriz);
     } else {
-        msg << indent << "    /" << _name << "/resolution_horiz\n";
+        msg << indent << "    /" << surfacePath << "/resolution_horiz\n";
         missingAttributes = true;
     } // if/else
 
     hsize_t* hdims = NULL;
     int ndims = 0;
-    h5->getDatasetDims(&hdims, &ndims, _name.c_str());
+    h5->getDatasetDims(&hdims, &ndims, surfacePath.c_str());
     assert(3 == ndims);
     for (int i = 0; i < 2; ++i) {
         _dims[i] = hdims[i];
@@ -108,7 +110,8 @@ geomodelgrids::serial::Surface::openQuery(geomodelgrids::serial::HDF5* const h5)
     dims[0] = 128;
     dims[1] = 128;
     dims[2] = 1;
-    delete _hyperslab;_hyperslab = new geomodelgrids::serial::Hyperslab(h5, _name.c_str(), dims, ndims);
+    const std::string& surfacePath = std::string("surfaces/") + _name;
+    delete _hyperslab;_hyperslab = new geomodelgrids::serial::Hyperslab(h5, surfacePath.c_str(), dims, ndims);
 } // openQuery
 
 

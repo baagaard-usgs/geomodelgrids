@@ -48,34 +48,34 @@ geomodelgrids::serial::Block::loadMetadata(geomodelgrids::serial::HDF5* const h5
     assert(h5);
     delete[] _values;_values = NULL;
 
-    const std::string blockpath = std::string("blocks/") + _name;
+    const std::string& blockPath = std::string("blocks/") + _name;
 
     std::ostringstream msg;
     const char* indent = "            ";
     bool missingAttributes = false;
 
-    if (h5->hasAttribute(blockpath.c_str(), "resolution_horiz")) {
-        h5->readAttribute(blockpath.c_str(), "resolution_horiz", H5T_NATIVE_DOUBLE, (void*)&_resolutionHoriz);
+    if (h5->hasAttribute(blockPath.c_str(), "resolution_horiz")) {
+        h5->readAttribute(blockPath.c_str(), "resolution_horiz", H5T_NATIVE_DOUBLE, (void*)&_resolutionHoriz);
     } else {
-        msg << indent << "    " << blockpath << "/resolution_horiz\n";
+        msg << indent << "    " << blockPath << "/resolution_horiz\n";
         missingAttributes = true;
     } // if/else
-    if (h5->hasAttribute(blockpath.c_str(), "resolution_vert")) {
-        h5->readAttribute(blockpath.c_str(), "resolution_vert", H5T_NATIVE_DOUBLE, (void*)&_resolutionVert);
+    if (h5->hasAttribute(blockPath.c_str(), "resolution_vert")) {
+        h5->readAttribute(blockPath.c_str(), "resolution_vert", H5T_NATIVE_DOUBLE, (void*)&_resolutionVert);
     } else {
-        msg << indent << "    " << blockpath << "/resolution_vert\n";
+        msg << indent << "    " << blockPath << "/resolution_vert\n";
         missingAttributes = true;
     } // if/else
-    if (h5->hasAttribute(blockpath.c_str(), "z_top")) {
-        h5->readAttribute(blockpath.c_str(), "z_top", H5T_NATIVE_DOUBLE, (void*)&_zTop);
+    if (h5->hasAttribute(blockPath.c_str(), "z_top")) {
+        h5->readAttribute(blockPath.c_str(), "z_top", H5T_NATIVE_DOUBLE, (void*)&_zTop);
     } else {
-        msg << indent << "    " << blockpath << "/z_top\n";
+        msg << indent << "    " << blockPath << "/z_top\n";
         missingAttributes = true;
     } // if/else
 
     hsize_t* hdims = NULL;
     int ndims = 0;
-    h5->getDatasetDims(&hdims, &ndims, blockpath.c_str());
+    h5->getDatasetDims(&hdims, &ndims, blockPath.c_str());
     assert(4 == ndims);
     for (int i = 0; i < 3; ++i) {
         _dims[i] = hdims[i];

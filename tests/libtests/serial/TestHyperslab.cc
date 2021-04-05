@@ -88,7 +88,7 @@ geomodelgrids::serial::TestHyperslab::tearDown(void) {
 // Test constructor in 2D.
 void
 geomodelgrids::serial::TestHyperslab::testConstructor2D(void) {
-    const std::string dataset("/top_surface");
+    const std::string dataset("/surfaces/top_surface");
     const size_t ndims(3);
     const hsize_t dims[ndims] = { 3, 4, 1 };
     const hsize_t dimsAll[ndims] = { 4, 5, 1 };
@@ -187,7 +187,7 @@ geomodelgrids::serial::TestHyperslab::testConstructorBadDims(void) {
 // Test interpolate in 2D.
 void
 geomodelgrids::serial::TestHyperslab::testInterpolate2D(void) {
-    const std::string dataset("/top_surface");
+    const std::string dataset("/surfaces/top_surface");
     const size_t ndims(3);
     const hsize_t dims[ndims] = { 3, 2, 1 };
 

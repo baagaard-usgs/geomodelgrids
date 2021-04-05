@@ -63,18 +63,18 @@ class TestData:
         attrs["keywords"] = [numpy.string_(v) for v in self.model["keywords"]]
         attrs["creator_institution"] = numpy.string_(self.model["creator_institution"])
 
-        # Top surface
+        # Surfaces
+        h5.create_group("surfaces")
+        surfaces_group = h5["surfaces"]
         if not self.top_surface is None:
-            topo_dataset = h5.create_dataset("top_surface", data=self.top_surface["elevation"],
-                                             chunks=self.top_surface["chunk_size"])
-            attrs = topo_dataset.attrs
+            top_dataset = surfaces_group.create_dataset("top_surface", data=self.top_surface["elevation"],
+                                                        chunks=self.top_surface["chunk_size"])
+            attrs = top_dataset.attrs
             for attr_name, map_fn in self.TOPOGRAPHY_ATTRS:
                 attrs[attr_name] = self._hdf5_type(self.top_surface[attr_name], map_fn)
-
-        # Topography/Bathymetry
         if not self.topo_bathy is None:
-            topobathy_dataset = h5.create_dataset("topography_bathymetry", data=self.topo_bathy["elevation"],
-                                                  chunks=self.topo_bathy["chunk_size"])
+            topobathy_dataset = surfaces_group.create_dataset("topography_bathymetry", data=self.topo_bathy["elevation"],
+                                                              chunks=self.topo_bathy["chunk_size"])
             attrs = topobathy_dataset.attrs
             for attr_name, map_fn in self.TOPOGRAPHY_ATTRS:
                 attrs[attr_name] = self._hdf5_type(self.topo_bathy[attr_name], map_fn)
@@ -223,7 +223,7 @@ class OneBlockTopo(TestData):
         self.filename = "one-block-topo-bad-topo.h5"
         self.create()
         with h5py.File(self.filename, "a") as h5:
-            h5["top_surface"].attrs["resolution_horiz"] *= 0.5
+            h5["surfaces"]["top_surface"].attrs["resolution_horiz"] *= 0.5
 
 
 class ThreeBlocksFlat(TestData):
@@ -391,7 +391,7 @@ class ThreeBlocksTopo(TestData):
             blocks = h5["blocks"]
             for attr in blocks["middle"].attrs:
                 del blocks["middle"].attrs[attr]
-            topo = h5["top_surface"]
+            topo = h5["surfaces"]["top_surface"]
             for attr in topo.attrs:
                 del topo.attrs[attr]
 

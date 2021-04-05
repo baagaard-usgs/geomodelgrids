@@ -271,24 +271,25 @@ void
 geomodelgrids::apps::Info::_printBlocks(geomodelgrids::serial::Model* const model) {
     assert(model);
 
-    std::cout << _Info::indent(1) << "Top surface:\n";
+    std::cout << _Info::indent(1) << "Surfaces\n";
+    std::cout << _Info::indent(2) << "Top surface:\n";
     const geomodelgrids::serial::Surface* surfaceTop = model->getTopSurface();
     if (surfaceTop) {
         const size_t* dims = surfaceTop->getDims();
-        std::cout << _Info::indent(2) << "Number of points: x=" << dims[0] << ", y=" << dims[1] << "\n";
-        std::cout << _Info::indent(2) << "Horizontal resolution (m): " << surfaceTop->getResolutionHoriz() << "\n";
+        std::cout << _Info::indent(3) << "Number of points: x=" << dims[0] << ", y=" << dims[1] << "\n";
+        std::cout << _Info::indent(3) << "Horizontal resolution (m): " << surfaceTop->getResolutionHoriz() << "\n";
     } else {
-        std::cout << _Info::indent(2) << "None\n";
+        std::cout << _Info::indent(3) << "None\n";
     } // if/else
 
-    std::cout << _Info::indent(1) << "Topography/bathymetry:\n";
+    std::cout << _Info::indent(2) << "Topography/bathymetry:\n";
     const geomodelgrids::serial::Surface* surfaceTopoBathy = model->getTopoBathy();
     if (surfaceTopoBathy) {
         const size_t* dims = surfaceTopoBathy->getDims();
-        std::cout << _Info::indent(2) << "Number of points: x=" << dims[0] << ", y=" << dims[1] << "\n";
-        std::cout << _Info::indent(2) << "Horizontal resolution (m): " << surfaceTopoBathy->getResolutionHoriz() << "\n";
+        std::cout << _Info::indent(3) << "Number of points: x=" << dims[0] << ", y=" << dims[1] << "\n";
+        std::cout << _Info::indent(3) << "Horizontal resolution (m): " << surfaceTopoBathy->getResolutionHoriz() << "\n";
     } else {
-        std::cout << _Info::indent(2) << "None\n";
+        std::cout << _Info::indent(3) << "None\n";
     } // if/else
 
     const std::vector<geomodelgrids::serial::Block*>& blocks = model->getBlocks();

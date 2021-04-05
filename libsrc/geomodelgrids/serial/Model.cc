@@ -191,7 +191,7 @@ geomodelgrids::serial::Model::loadMetadata(void) {
     } // if/else
 
     delete _surfaceTop;_surfaceTop = NULL;
-    if (_h5->hasDataset("top_surface")) {
+    if (_h5->hasDataset("surfaces/top_surface")) {
         _surfaceTop = new geomodelgrids::serial::Surface("top_surface");assert(_surfaceTop);
         try {
             _surfaceTop->loadMetadata(_h5);
@@ -202,7 +202,7 @@ geomodelgrids::serial::Model::loadMetadata(void) {
     } // if
 
     delete _surfaceTopoBathy;_surfaceTopoBathy = NULL;
-    if (_h5->hasDataset("topography_bathymetry")) {
+    if (_h5->hasDataset("surfaces/topography_bathymetry")) {
         _surfaceTopoBathy = new geomodelgrids::serial::Surface("topography_bathymetry");assert(_surfaceTopoBathy);
         try {
             _surfaceTopoBathy->loadMetadata(_h5);
