@@ -4,8 +4,8 @@
 
 ## Methods
 
-* [TestDriver()](#testdriver)
-* [run(int argv, char* argv\[\])](#runint-argc-char-argv)
++ [TestDriver()](#testdriver)
++ [run(int argv, char* argv\[\])](#runint-argc-char-argv)
 
 
 ### TestDriver()
@@ -17,7 +17,7 @@ Constructor.
 
 Run test application.
 
-```
+```bash
 # Command line arguments
 --help Print help message to stdout.
 --list List unit tests.

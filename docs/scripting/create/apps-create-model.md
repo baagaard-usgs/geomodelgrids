@@ -1,6 +1,8 @@
-# RasterizeApp Python Object 
+# App Python Object 
 
-**Full name**: geomodelgrids.apps.rasterize.App
+**Full name**: geomodelgrids.create.apps.create_model.App
+
+## Data Members
 
 ## Methods
 

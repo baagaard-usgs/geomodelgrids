@@ -1,10 +1,10 @@
-# Serial Topography Object 
+# Serial Surface Object 
 
-**Full name**: geomodelgrids::serial::Topography
+**Full name**: geomodelgrids::serial::Surface
 
 ## Methods
 
-* [Topography()](#topography)
+* [Surface()](#surfaceconst-char-const-name)
 * [loadMetadata()](#loadmetadatageomodelgridsserialhdf5-const-h5)
 * [getResolutionHoriz()](#double-getresolutionhoriz)
 * [getDims()](#const-size_t-getdims)
@@ -14,9 +14,11 @@
 * [query(const double x, const double y)](#double-queryconst-double-x-const-double-y)
 
 
-### Topography()
+### Surface(const char* const name)
 
 Constructor.
+
+* **name**[in] Name of surface.
 
 ### loadMetadata(geomodelgrids::serial::HDF5* const h5)
 
@@ -25,7 +27,7 @@ Load metadata from the model file.
 
 ### double getResolutionHoriz()
 
-Get horizontal resolution of topography grid.
+Get horizontal resolution of surface grid.
 
 * **returns** Horizontal resolution (m).
 

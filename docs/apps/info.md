@@ -12,8 +12,7 @@ geomodelgrids_info [--help] --models=FILE_0,...,FILE_M [--verify] [--description
 
 ### Required arguments
 
-* **--models=FILE_0,...,FILE_M** Names of `M` model files to query. The
-  information for each model is printed.
+* **--models=FILE_0,...,FILE_M** Names of `M` model files to examine. The information for each model is printed to stdout.
 
 ### Optional arguments
 
@@ -35,8 +34,7 @@ Verification includes:
 
 ## Example
 
-Show all information for a model with three blocks and topography. The
-file is `three-blocks-topo.h5` in the `tests/data` directory.
+Show all information for a model with three blocks and topography. The file is `three-blocks-topo.h5` in the `tests/data` directory.
 
 ```bash
 geomodelgrids_info --all --models=tests/data/three-blocks-topo.h5
@@ -70,9 +68,13 @@ Model: three-blocks-topo.h5
     Values stored in model:
         0: one (m)
         1: two (m/s)
-    Topography:
-        Number of points: x=13, y=25
-        Horizontal resolution (m): 5000
+    Surfaces
+        Top surface:
+            Number of points: x=13, y=25
+            Horizontal resolution (m): 5000
+        Topography/bathymetry:
+            Number of points: x=13, y=25
+            Horizontal resolution (m): 5000
     Blocks (3)
         Block 'top'
             Resolution (m): horizontal=10000, vertical=5000

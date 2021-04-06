@@ -2,9 +2,7 @@
 
 ## Model Representation
 
-We map the physical space of the model domain bounded by on the top by
-topography (or a flat surface) into logical space that has uniform
-regular grids.
+We map the physical space of the model domain bounded on top by topography (or a flat surface) into logical space that has uniform regular grids.
 
 <figure>
   <img src="figs/gridmapping.png" alt="Diagram of physical and logical grids">
@@ -17,30 +15,19 @@ z_logical = -dim_z * (z_topography - z_physical) / (z_topography + dim_z)
 
 ## Data layout
 
-We use a Cartesian coordinate system for the model logical space with
-the origin at the top southwest corner (when the y axis is aligned
-with north) as shown in the figure. We measure the rotation of the
-coordinate system for the model logical space using the azimuth of the
-y direction relative to north (`y_azimuth` in the diagram).
+We use a Cartesian coordinate system for the model logical space with the origin at the top southwest corner (when the y axis is aligned with north) as shown in the figure. We measure the rotation of the coordinate system for the model logical space using the azimuth of the y direction relative to north (`y_azimuth` in the diagram).
 
 <figure>
   <img src="figs/coordsys.png" alt="Diagram of Cartesian coordinate
   system of the model logical space">
 </figure>
 
-For the logical space 4D arrays the x, y, and z indices are zero
-at the origin. The x index increases in the +x direction, the y index
-increases in the +y direction, and the z index increases in the -z direction.
+For the logical space 4D arrays the x, y, and z indices are zero at the origin. The x index increases in the +x direction, the y index increases in the +y direction, and the z index increases in the -z direction.
 
 
 ## HDF5 Storage Scheme
 
-The model is stored in an HDF5 file. The elevation of the ground
-surface (topography) is stored in the `topography` dataset if it is not
-a flat surface at sea level. The grids are stored in the `blocks`
-group. Attributes are included at the root level and for each data set
-in order to yield a self-describing model. That is, no additional
-metadata is needed to define the model.
+The model is stored in an HDF5 file. If the top surface of the model is not a flat surface at sea level, then a `surfaces/top_surface` dataset provides the elevation of the top surface. Models may also include a `surfaces/topography_bathymetry` dataset to define topography and bathymetry, which corresponds to the top of the solid surface. The grids are stored in the `blocks` group. Attributes are included at the root level as well as for each dataset to yield a self-describing model. That is, no additional metadata is needed to define the model.
 
 <figure>
   <img src="figs/hdf5layout.png" alt="Diagram of HDF5 layout scheme">
@@ -78,7 +65,7 @@ metadata is needed to define the model.
 * **dim_y** *(float)* Dimension of model in local (rotated) y direction in units of CRS coordinates.
 * **dim_z** *(float)* Dimension of model in local z direction in units of CRS coordinates.
 
-## Topography Metadata
+## Surface Metadata
 
 * **resolution_horiz** *(float)* Horizontal resolution in units of CRS coordinates.
 

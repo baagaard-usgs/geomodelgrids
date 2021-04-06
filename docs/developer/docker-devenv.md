@@ -1,9 +1,6 @@
 # GeoModelGrids Docker Development Environment
 
-The `geomodelgrids-devenv` Docker image provides all of the dependencies and
-defines the environment for GeoModelGrids development. It is intended to be
-read only with a separate Docker volume, which provides persistent
-storage, for the GeoModelGrids development workspace.
+The `geomodelgrids-devenv` Docker image (https://registry.gitlab.com/baagaard-usgs/geomodelgrids/geomodelgrids-devenv) provides all of the dependencies and defines the environment for GeoModelGrids development. It is intended to be read only with a separate Docker volume for persistent storage and the GeoModelGrids development workspace.
 
 ## Setup
 
@@ -11,13 +8,10 @@ You only need to run these setup steps once.
 
 ### Fork repositories on GitHub
 
-1. Log in to your [GitHub](https://github.com) account, creating an
-account if you do not already have one.
-
-2. Fork the GeoModelGrids repository:
-* https://github.com/baagaard-usgs/geomodelgrids
-
 This creates a copy of the repository in your GitHub account.
+
+1. Log in to your [GitHub](https://github.com) account, creating an account if you do not already have one.
+2. Fork the GeoModelGrids repository: https://github.com/baagaard-usgs/geomodelgrids
 
 ### Create Docker volume for persistent storage
 
@@ -44,8 +38,7 @@ docker run --name geomodelgrids-dev-workspace --rm -it \
 
 ### Setup directory structure
 
-We will use the directory following directory structure for the
-persistent storage.
+We will use the directory following directory structure for the persistent storage.
 
 ```
 /opt/geomodelgrids
@@ -66,10 +59,7 @@ persistent storage.
             └── share
 ```
 
-This directory structure is setup for both a debugging version for
-development (debug directory) and an optimized version for performance
-testing (opt directory). For now, we will only setup the debugging
-version.
+This directory structure is setup for both a debugging version for development (debug directory) and an optimized version for performance testing (opt directory). For now, we will only setup the debugging version.
 
 ```
 cd /opt/geomodelgrids

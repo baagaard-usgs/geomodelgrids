@@ -4,19 +4,19 @@
 
 ## Methods
 
-* [HDF5()](#hdf5)
-* [setCache()](#setcacheconst-size_t-cachesize-const-size_t-nslots-const-double-preemption)
-* [open(const char* filename, hid_t mode)](#openconst-char-filename-hid_t-mode)
-* [close()](#close)
-* [isOpen()](#bool-isopen)
-* [hasGroup(const char* name)](#bool-hasgroupconst-char-name)
-* [hasDataset(const char* name)](#bool-hasdatasetconst-char-name)
-* [getDatasetDims(hsize_t** dims, int* ndims, const char* path)](#getdatasetdimshsize_t-dims-int-ndims-const-char-path)
-* [getGroupDatasets(std::vector\<std::string\>* names, const char* parent)](#getgroupdatasetsstdvectorstdstring-names-const-char-parent)
-* [readAttribute(const char* path, const char* name, hid_t datatype, void* value)](#readattributeconst-char-path-const-char-name-hid_t-datatype-void-value)
-* [readAttribute(const char* path, const char* name)](#stdstring-readattributeconst-char-path-const-char-name)
-* [readAttribute(const char* path, const char* name, std::vector\<std::string\>* values)](#readattributeconst-char-path-const-char-name-stdvectorstdstring-values)
-* [readDatasetHyperslab(void* values, const char* path, const hsize_t* const origin, const hsize_t* const dims, int ndims, hid_t datatype)](#readdatasethyperslabvoid-values-const-char-path-const-hsize_t-const-origin-const-hsize_t-const-dims-int-ndims-hid_t-datatype)
++ [HDF5()](#hdf5)
++ [setCache()](#setcacheconst-size_t-cachesize-const-size_t-nslots-const-double-preemption)
++ [open(const char* filename, hid_t mode)](#openconst-char-filename-hid_t-mode)
++ [close()](#close)
++ [isOpen()](#bool-isopen)
++ [hasGroup(const char* name)](#bool-hasgroupconst-char-name)
++ [hasDataset(const char* name)](#bool-hasdatasetconst-char-name)
++ [getDatasetDims(hsize_t** dims, int* ndims, const char* path)](#getdatasetdimshsize_t-dims-int-ndims-const-char-path)
++ [getGroupDatasets(std::vector\<std::string\>* names, const char* parent)](#getgroupdatasetsstdvectorstdstring-names-const-char-parent)
++ [readAttribute(const char* path, const char* name, hid_t datatype, void* value)](#readattributeconst-char-path-const-char-name-hid_t-datatype-void-value)
++ [readAttribute(const char* path, const char* name)](#stdstring-readattributeconst-char-path-const-char-name)
++ [readAttribute(const char* path, const char* name, std::vector\<std::string\>* values)](#readattributeconst-char-path-const-char-name-stdvectorstdstring-values)
++ [readDatasetHyperslab(void* values, const char* path, const hsize_t* const origin, const hsize_t* const dims, int ndims, hid_t datatype)](#readdatasethyperslabvoid-values-const-char-path-const-hsize_t-const-origin-const-hsize_t-const-dims-int-ndims-hid_t-datatype)
 
 
 ### HDF5()
@@ -28,12 +28,9 @@ Constructor.
 
 Must be called BEFORE open().
 
-The cache should be large enough to fit at least as many chunks as there are in a hyperslab.
-HDF5 uses a default cache size of 1 MB. We use a default of 16 MB.
+The cache should be large enough to fit at least as many chunks as there are in a hyperslab. HDF5 uses a default cache size of 1 MB. We use a default of 16 MB.
 
-The number of slots should be a prime number at least 10 times the number of chunks that can fit into the cache;
-usually 100 times that number of chunks provides maximum performance.
-HDF5 uses a default of 521. We use a default of 63997.
+The number of slots should be a prime number at least 10 times the number of chunks that can fit into the cache; usually 100 times that number of chunks provides maximum performance. HDF5 uses a default of 521. We use a default of 63997.
 
 Chunk preemption policy for this dataset; value between 0 and 1 (default is 0.75).
 

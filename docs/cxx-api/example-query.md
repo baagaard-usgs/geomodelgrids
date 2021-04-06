@@ -2,22 +2,19 @@
 
 See [examples/cxx-api/query.c](https://github.com/baagaard-usgs/geomodelgrids/blob/master/examples/c-api/query.c) for the complete source code associated with this example.
 
-We first show a complete example in a single code block and then
-discuss the individual pieces.
+We first show a complete example in a single code block and then discuss the individual pieces.
 
-* [Source code](#source-code) (single block)
-* [Header files](#header-files)
-* [Set query parameters](#set-query-parameters)
-* [Create and initialize the query](#create-and-initialize-the-query)
-* [Setup error handler](#setup-error-handler)
-* [Set points to query](#set-points-for-query)
-* [Query model](#query-model)
++ [Source code](#source-code) (single block)
++ [Header files](#header-files)
++ [Set query parameters](#set-query-parameters)
++ [Create and initialize the query](#create-and-initialize-the-query)
++ [Setup error handler](#setup-error-handler)
++ [Set points to query](#set-points-for-query)
++ [Query model](#query-model)
 
 ## Source code
 
-In this example, we hardwire the parameters for convenience. See the
-[C++ query application](https://github.com/baagaard-usgs/geomodelgrids/blob/master/libsrc/geomodelgrids/apps/Query.cc)
-for a more sophisticated interface.
+In this example, we hardwire the parameters for convenience. See the [C++ query application](https://github.com/baagaard-usgs/geomodelgrids/blob/master/libsrc/geomodelgrids/apps/Query.cc) for a more sophisticated interface.
 
 ```c++
 #include "geomodelgrids/serial/Query.hh"
@@ -83,8 +80,7 @@ int main(int argc, char* argv[]) {
 
 ### Header files
 
-We include the header files for the query and error handler interfaces
-as well as defined constants.
+We include the header files for the query and error handler interfaces as well as defined constants.
 
 ```c++
 #include "geomodelgrids/serial/Query.hh"
@@ -94,11 +90,9 @@ as well as defined constants.
 
 ### Set query parameters
 
-As mentioned earlier, in this example we hardwire all of the query
-parameters using local variables.
+As mentioned earlier, in this example we hardwire all of the query parameters using local variables.
 
-Set the parameters indicating which model to query. Multiple models
-can be queries and they will be accessed in the order given.
+Set the parameters indicating which model to query. Multiple models can be queried and they will be accessed in the order given. Once values are found in one of the models, the rest of the models are skipped.
 
 ```c++
 static const std::vector<std::string>& filenames{
@@ -107,22 +101,14 @@ static const std::vector<std::string>& filenames{
 };
 ```
 
-Set the parameters for the values to be returned in queries. The order
-specified is the order in which they will be returned in queries.
+Set the parameters for the values to be returned in queries. The order specified is the order in which they will be returned in queries.
 
 ```c++
 static const std::vector<std::string>& valueNames{ "two", "one" };
 static const size_t numValues = valueNames.size();
 ```
 
-Set the coordinate system that is used for the points passed to the
-query function. The coordinate system is specified using a string
-corresponding to any coordinate reference system (CRS) recognized by
-the [Proj library](https://proj.org). This includes EPGS codes, Proj
-parameters, and Well-Known Text (WKT). In this case, we specify the
-coordinates as longitude, latitude, elevation in the WGS horizontal
-datum, which corresponds to `EPSG:4326`. Elevation is meters above the
-WGS84 ellipsoid.
+Set the coordinate system that is used for the points passed to the query function. The coordinate system is specified using a string corresponding to any coordinate reference system (CRS) recognized by the [Proj library](https://proj.org). This includes EPGS codes, Proj parameters, and Well-Known Text (WKT). In this case, we specify the coordinates as longitude, latitude, elevation in the WGS horizontal datum, which corresponds to `EPSG:4326`. Elevation is meters above the WGS84 ellipsoid.
 
 ```c++
 static const char* const crs = "EPSG:4326";
@@ -140,8 +126,7 @@ query.initialize(filenames, valueNames, crs);
 
 ### Setup error handler
 
-We get the error handler from the query object and set the name of the
-log file where warnings and errors will be written.
+We get the error handler from the query object and set the name of the log file where warnings and errors will be written.
 
 ```c++
 geomodelgrids::utils::ErrorHandler& errorHandler = query.getErrorHandler();
@@ -150,8 +135,7 @@ errorHandler.setLogFilename("error.log");
 
 ### Set points for query
 
-In this example, we hardwire the query points using a local variable.
-The coordinate system is the one specified by the `crs` variable.
+In this example, we hardwire the query points using a local variable. The coordinate system is the one specified by the `crs` variable.
 
 ```c
 static const size_t numPoints = 5;
@@ -166,10 +150,7 @@ static const double points[5*3] = {
 
 ### Query model
 
-We query the model looping over the points. We must preallocate the
-array holding the values returned in the queries. We do not do
-anything with the values returned as indicated by the comment at the
-end of the `for` loop.
+We query the model looping over the points. We must preallocate the array holding the values returned in the queries. We do not do anything with the values returned as indicated by the comment at the end of the `for` loop.
 
 ```c++
 double values[numValues];
