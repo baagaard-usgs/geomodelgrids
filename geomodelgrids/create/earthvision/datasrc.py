@@ -92,7 +92,7 @@ class RulesDataSrc(DataSrc):
             Numpy array [Nx,Ny] of elevation of topography or bathymetry at points.
         """
         POINTS_FILENAME = "topography_bathymetry_points.dat"  # Must have .dat suffix.
-        ELEV_FILENAME = "topography__bathymetry elev.dat"  # Must have .dat suffix.
+        ELEV_FILENAME = "topography_bathymetry_elev.dat"  # Must have .dat suffix.
 
         points_abspath = os.path.join(self.model_dir, POINTS_FILENAME)
         elev_abspath = os.path.join(self.model_dir, ELEV_FILENAME)
