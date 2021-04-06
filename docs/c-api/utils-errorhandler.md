@@ -12,12 +12,12 @@ All of these functions are prefixed by `geomodelgrids_cerrorhandler`.
 
 ## Functions
 
-* [geomodelgrids_cerrorhandler_setLogFilename(void* handle, const char* filename)](#geomodelgrids_cerrorhandler_setlogfilenamevoid-handle-const-char-filename)
-* [geomodelgrids_cerrorhandler_getLogFilename(void* handle)](#const-char-const-geomodelgrids_cerrorhandler_getlogfilenamevoid-handle-const)
-* [geomodelgrids_cerrorhandler_setLoggingOn(void* handle, const int value)](#geomodelgrids_cerrorhandler_setloggingonvoid-handle-const-int-value)
-* [geomodelgrids_cerrorhandler_resetStatus(void* handle)](#geomodelgrids_cerrorhandler_resetstatusvoid-handle)
-* [geomodelgrids_cerrorhandler_getStatus(void* handle)](#geomodelgridsstatusenum-geomodelgrids_cerrorhandler_getstatusvoid-handle-const)
-* [geomodelgrids_cerrorhandler_getMessage(void* handle)](#const-char-geomodelgrids_cerrorhandler_getmessagevoid-handle-const)
++ [geomodelgrids_cerrorhandler_setLogFilename(void* handle, const char* filename)](#geomodelgrids_cerrorhandler_setlogfilenamevoid-handle-const-char-filename)
++ [geomodelgrids_cerrorhandler_getLogFilename(void* handle)](#const-char-const-geomodelgrids_cerrorhandler_getlogfilenamevoid-handle-const)
++ [geomodelgrids_cerrorhandler_setLoggingOn(void* handle, const int value)](#geomodelgrids_cerrorhandler_setloggingonvoid-handle-const-int-value)
++ [geomodelgrids_cerrorhandler_resetStatus(void* handle)](#geomodelgrids_cerrorhandler_resetstatusvoid-handle)
++ [geomodelgrids_cerrorhandler_getStatus(void* handle)](#geomodelgridsstatusenum-geomodelgrids_cerrorhandler_getstatusvoid-handle-const)
++ [geomodelgrids_cerrorhandler_getMessage(void* handle)](#const-char-geomodelgrids_cerrorhandler_getmessagevoid-handle-const)
 
 
 ### geomodelgrids_cerrorhandler_setLogFilename(void* handle, const char* filename)

@@ -2,16 +2,25 @@
 
 **Full name**: geomodelgrids::serial::Query
 
+## Enumerated types
+
+### SQUASHING_TYPE
+
+- **SQUASH_NONE** No squashing.
+- **SQUASH_TOP_SURFACE** Squash relative to the top surface of the model.
+- **SQUASH_TOPOGRPAHY_BATHYMETRY** Squash relative to the topography/bathymetry surface.
+
 ## Methods
 
-* [Query()](#query)
-* [getErrorHandler()](#geterrorhandler)
-* [initialize(const std::vector\<std::string\>& modelFilenames, const std::vector\<std::string\>& valueNames, const std::string inputCRSString)](#initializeconst-stdvector-modelfilename-const-stdvector-valuenames-const-stdstring-inputcrsstring)
-* [setSquashMinElev(const double value)](#setsquashminelevconst-double-value)
-* [setSquashing(const bool value)](#setsquashingconst-bool-value)
-* [queryElevation(const double x, const double y)](#double-queryelevationconst-double-x-const-double-y)
-* [query(const double* values, const double x, const double y, const double z)](#queryconst-double-values-const-double-x-const-double-y-const-double-z)
-* [finalize()](#finalize)
++ [Query()](#query)
++ [getErrorHandler()](#geterrorhandler)
++ [initialize(const std::vector\<std::string\>& modelFilenames, const std::vector\<std::string\>& valueNames, const std::string inputCRSString)](#initializeconst-stdvector-modelfilename-const-stdvector-valuenames-const-stdstring-inputcrsstring)
++ [setSquashMinElev(const double value)](#setsquashminelevconst-double-value)
++ [setSquashing(const SQUASHING_TYPE value)](#setsquashingconst-squashing-type-value)
++ [queryTopElevation(const double x, const double y)](#double-querytopelevationconst-double-x-const-double-y)
++ [queryTopoBathyElevation(const double x, const double y)](#double-querytopobathyelevationconst-double-x-const-double-y)
++ [query(const double* values, const double x, const double y, const double z)](#queryconst-double-values-const-double-x-const-double-y-const-double-z)
++ [finalize()](#finalize)
 
 
 ### Query()
@@ -30,43 +39,45 @@ Setup for querying.
 
 * **modelFilenames**[in] Array of model filenames (in query order).
 * **valueNames**[in] Array of names of values to return in query.
-* **inputCRSString**[in] Coordinate reference system (CRS) as string
-  (PROJ, EPSG, WKT) for input points.
+* **inputCRSString**[in] Coordinate reference system (CRS) as string (PROJ, EPSG, WKT) for input points.
 
 
 ### setSquashMinElev(const double value)
 
 Set minimum elevation (m) above which vertical coordinate is given as -depth.
 
-This option is used to adjust (squash) topography to sea level above
-`value`. Below `value` the original geometry of the model is
-maintained. For example, this maintains the original geometry of
-deeper structure.
+This option is used to adjust (squash) topography to sea level above `value`. Below `value` the original geometry of the model is maintained. For example, this maintains the original geometry of deeper structure.
 
 * **value**[in] Minimum elevation (m) for squashing topography.
 
 
-### setSquashing(const bool value)
+### setSquashing(const SQUASHING_TYPE value)
 
-Turn squashing on/off
+Set type of squashing.
 
 * **value**[in] True if squashing is on, false otherwise.
 
 
-### double queryElevation(const double x, const double y)
+### double queryTopElevation(const double x, const double y)
 
-Query model for elevation of the ground surface (topograpy) at a point
-using bilinear interpolation (interpolation along each model axis).
+Query model for elevation of the top surface of the model at a point using bilinear interpolation (interpolation along each model axis).
 
 * **x**[in] X coordinate of of point in (in input CRS).
 * **y**[in] Y coordinate of of point in (in input CRS).
-* **return value** Elevation (meters) of ground surface at point.
+* **return value** Elevation (meters) of top surface at point.
+
+### double queryTopoBathyElevation(const double x, const double y)
+
+Query model for elevation of the topography/bathymetry surface of the model at a point using bilinear interpolation (interpolation along each model axis). If the model does not contain a topography/bathymetry surface, then the top surface of the model is used.
+
+* **x**[in] X coordinate of of point in (in input CRS).
+* **y**[in] Y coordinate of of point in (in input CRS).
+* **return value** Elevation (meters) of topography/bathymetry surface at point.
 
 
 ### query(const double* values, const double x, const double y, const double z)
 
-Query model for values at a point using trilinear interpolation
-(interpolation along each model axis).
+Query model for values at a point using trilinear interpolation (interpolation along each model axis).
 
 * **values**[out] Array of values (must be preallocated).
 * **x**[in] X coordinate of of point in (in input CRS).

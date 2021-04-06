@@ -6,30 +6,32 @@
 
 ### ModelMode
 
-* **READ** Read only mode.
-* **READ_WRITE** Read/write mode.
-* **READ_WRITE_TRUNCATE** Read/write mode, truncate upon opening.
+- **READ** Read only mode.
+- **READ_WRITE** Read/write mode.
+- **READ_WRITE_TRUNCATE** Read/write mode, truncate upon opening.
 
 ## Methods
 
-* [Model()](#model)
-* [setInputCRS(const std::string& value)](#setinputcrsconst-stdstring-value)
-* [open(const char* filename, ModelMode mode)](#openconst-char-filename-modelmode-mode)
-* [close()](#close)
-* [loadMetadata()](#loadmetadata)
-* [initialize()](#initialize)
-* [getValueNames()](#const-stdvectorstdstring-getvaluenames)
-* [getValueUnits()](#const-stdvectorstdstring-getvalueunits)
-* [getDims()](#const-double-getdims)
-* [getOrigin()](#const-double-getorigin)
-* [getYAzimuth()](#double-getyazimuth)
-* [getCRSString()](#const-stdstring-getcrsstring)
-* [getInfo()](#const-geomodelgridsserialmodelinfo-getinfo)
-* [getTopography()](#const-geomodelgridsserialtopography-gettopography)
-* [getBlocks()](#const-stdvectorgeomodelgridsserialblock-getblocks)
-* [contains(const double x, const double y, const double z)](#bool-containsconst-double-x-const-double-y-const-double-z)
-* [queryElevation(const double x, const double y)](#double-queryelevationconst-double-x-const-double-y)
-* [query(const double x, const double y, const double z)](#const-double-queryconst-double-x-const-double-y-const-double-z)
++ [Model()](#model)
++ [setInputCRS(const std::string& value)](#setinputcrsconst-stdstring-value)
++ [open(const char* filename, ModelMode mode)](#openconst-char-filename-modelmode-mode)
++ [close()](#close)
++ [loadMetadata()](#loadmetadata)
++ [initialize()](#initialize)
++ [getValueNames()](#const-stdvectorstdstring-getvaluenames)
++ [getValueUnits()](#const-stdvectorstdstring-getvalueunits)
++ [getDims()](#const-double-getdims)
++ [getOrigin()](#const-double-getorigin)
++ [getYAzimuth()](#double-getyazimuth)
++ [getCRSString()](#const-stdstring-getcrsstring)
++ [getInfo()](#const-geomodelgridsserialmodelinfo-getinfo)
++ [getTopSurface()](#const-geomodelgridsserialsurface-gettopsurface)
++ [getTopoBathy()](#const-geomodelgridsserialsurface-gettopobathy)
++ [getBlocks()](#const-stdvectorgeomodelgridsserialblock-getblocks)
++ [contains(const double x, const double y, const double z)](#bool-containsconst-double-x-const-double-y-const-double-z)
++ [queryTopElevation(const double x, const double y)](#double-querytopelevationconst-double-x-const-double-y)
++ [queryTopoBathyElevation(const double x, const double y)](#double-querytopobathyelevationconst-double-x-const-double-y)
++ [query(const double x, const double y, const double z)](#const-double-queryconst-double-x-const-double-y-const-double-z)
 
 
 ### Model()
@@ -112,11 +114,18 @@ Get model description information.
 * **returns** Model description.
 
 
-### const geomodelgrids::serial::Topography& getTopography()
+### const geomodelgrids::serial::Surface& getTopSurface()
 
-Get topography for model.
+Get top surface of model.
 
-* **returns** Model topography.
+* **returns** Model surface.
+
+
+### const geomodelgrids::serial::Surface& getTopoBathy()
+
+Get topography/bathymetry surface of model.
+
+* **returns** Model surface.
 
 
 ### const std::vector\<geomodelgrids::serial::Block*\>& getBlocks()
@@ -136,14 +145,22 @@ Does model contain given point?
 * **returns** True if model contains given point, false otherwise.
 
 
-### double queryElevation(const double x, const double y)
+### double queryTopElevation(const double x, const double y)
 
-Query model for elevation of the ground surface (topograpy) at a point
-using bilinear interpolation.
+Query model for elevation of the top surface at a point using bilinear interpolation.
 
 * **x**[in] X coordinate of point (in input CRS).
 * **y**[in] Y coordinate of point (in input CRS).
-* **returns** Elevation (meters) of ground surface at point.
+* **returns** Elevation (meters) of surface at point.
+
+
+### double queryTopoBathyElevation(const double x, const double y)
+
+Query model for elevation of the topogrpahy/bathymetry surface at a point using bilinear interpolation.
+
+* **x**[in] X coordinate of point (in input CRS).
+* **y**[in] Y coordinate of point (in input CRS).
+* **returns** Elevation (meters) of surface at point.
 
 
 ### const double* query(const double x, const double y, const double z)

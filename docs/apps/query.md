@@ -1,55 +1,37 @@
 # geomodelgrids_query
 
-The `geomodelgrids_query` command line program is used to query for
-values of the model at a set of points.
+The `geomodelgrids_query` command line program is used to query for values of the model at a set of points.
 
-The query values will be interpolated from the model using trilinear
-interpolation (interpolation along each model axis).
+The query values will be interpolated from the model using trilinear interpolation (interpolation along each model axis). If any value in the interpolation is equal to NODATA_VALUE, then the value returned will be NODATA_VALUE.
 
 ## Synopsis
 
 Optional command line arguments are in square brackets.
 
 ```
-geomodelgrids_query [--help] [--log=FILE_LOG] --values=VALUE_0,...,VALUE_N --models=FILE_0,...,FILE_M --points=FILE_POINTS  --output=FILE_OUTPUT [--squash-min-elev=ELEV] [--points-coordsys=PROJ|EPSG|WKT]
+geomodelgrids_query [--help] [--log=FILE_LOG] --values=VALUE_0,...,VALUE_N --models=FILE_0,...,FILE_M --points=FILE_POINTS  --output=FILE_OUTPUT [--squash-min-elev=ELEV] [--squash-surface=SURFACE] [--points-coordsys=PROJ|EPSG|WKT]
 ```
 
 ### Required arguments
 
-* **--values=VALUE_0,...,VALUE_N** Names of `N` values to be returned in
-  query. Values will be returned in the order specified.
-* **--models=FILE_0,...,FILE_M** Names of `M` model files to
-  query. For each point the models are queried in the order given
-  until a model is found that contains value(s) the point.
-* **--points=FILE_POINTS** Name of file with a list of input points. The
-  format is whitespace separated columns of x, y, z in the user
-  specified coordinate reference system.
-* **--output=FILE_OUTPUT** Name of file for output values. The format
-  is whitespace separated columns of the input coordinates and
-  `VALUE_0`, ..., `VALUE_N`.
+* **--values=VALUE_0,...,VALUE_N** Names of `N` values to be returned in query. Values will be returned in the order specified.
+* **--models=FILE_0,...,FILE_M** Names of `M` model files to query. For each point the models are queried in the order given until a model is found that contains value(s) the point.
+* **--points=FILE_POINTS** Name of file with a list of input points. The format is whitespace separated columns of x, y, z in the user specified coordinate reference system.
+* **--output=FILE_OUTPUT** Name of file for output values. The format is whitespace separated columns of the input coordinates and `VALUE_0`, ..., `VALUE_N`.
 
 ### Optional arguments
 
 * **--help** Print help information to stdout and exit.
 * **--log=FILE_LOG** Name of file for logging.
-* **--squash-min-elev=ELEV** Interpret vertical coordinate as
-  depth instead of elevation if the elevation is above `ELEV`. This
-  option is used to adjust (squash) topography to sea level above
-  `ELEV`. Below `ELEV` the original geometry of the model is
-  maintained; this maintains the original geometry of
-  deeper structure.
-* **--points-coordsys=PROJ|EPSG|WKT** Coordinate reference system of
-  input points as Proj parameters, EPSG code, or Well-Known
-  Text. Default is EPSG:4326 (latitude, WGS84 degrees; longitude,
-  WGS84 degrees; elevation, m above ellipsoid.
+* **--squash-min-elev=ELEV** Interpret vertical coordinate as depth instead of elevation if the elevation is above `ELEV`. This option is used to adjust (squash) topography to sea level above
+  `ELEV`. Below `ELEV` the original geometry of the model is maintained; this maintains the original geometry of deeper structure.
+* **--squash-surface=SURFACE** Surface to use as a vertical reference for computing depth. Valid values for `SURFACE` include `top_surface` (default), `topography_bathymetry`, and `none` (disables squashing).
+* **--points-coordsys=PROJ\|EPSG\|WKT** Coordinate reference system of input points as Proj parameters, EPSG code, or Well-Known Text. Default is EPSG:4326 (latitude, WGS84 degrees; longitude, WGS84 degrees; elevation, m above ellipsoid.
 
 
 ### Output file
 
-The output file contains a one line header with the command used to
-generate the file. The header is followed by lines with columns of the
-input coordinates and the values (in the order they were specified on
-the command line).
+The output file contains a one line header with the command used to generate the file. The header is followed by lines with columns of the input coordinates and the values (in the order they were specified on the command line).
 
 
 ## Examples
@@ -58,12 +40,7 @@ The input files for these examples are located in `tests/data`.
 
 ### Query with input points in WGS84
 
-Query the model `one-block-flat.h5` for a single value `two` at three
-points given in file `one-block-flat_latlon.in` with the output
-written to file `one-block-flat_latlon.out`. We use the default
-coordinate system for the input points, which is latitude, longitude,
-elevation with the WGS84 horizontal datum and meters above the
-ellipsoid for the vertical datum.
+Query the model `one-block-flat.h5` for a single value `two` at three points given in file `one-block-flat_latlon.in` with the output written to file `one-block-flat_latlon.out`. We use the default coordinate system for the input points, which is latitude, longitude, elevation with the WGS84 horizontal datum and meters above the ellipsoid for the vertical datum.
 
 ```bash
 geomodelgrids_query --models=tests/data/one-block-flat.h5 --points=tests/data/one-block-flat_latlon.in  --output=tests/data/one-block-flat_latlon.out --values=two
@@ -83,11 +60,7 @@ geomodelgrids_query --models=tests/data/one-block-flat.h5 --points=tests/data/on
 
 ### Query with input points in UTM
 
-Query the model `one-block-flat.h5` for values `one` and `two` at the
-same three points as the previous example given in file
-`one-block-flat_utm.in` with the output written to file
-`one-block-flat_utm.out`. In this example, we provide the points in
-UTM zone 10 coordinates, which corresponds to EPSG:26910.
+Query the model `one-block-flat.h5` for values `one` and `two` at the same three points as the previous example given in file `one-block-flat_utm.in` with the output written to file `one-block-flat_utm.out`. In this example, we provide the points in UTM zone 10 coordinates, which corresponds to EPSG:26910.
 
 
 ```bash

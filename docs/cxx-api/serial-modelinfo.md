@@ -4,20 +4,20 @@
 
 ## Methods
 
-* [ModelInfo()](#modelinfo)
-* [getTitle()](#const-stdstring-gettitle)
-* [getId()](#const-stdstring-getid)
-* [getDescription()](#const-stdstring-getdescription)
-* [getKeywords()](#const-stdvectorstdstring-getkeywords)
-* [getCreatorName()](#const-stdstring-getcreatorname)
-* [getCreatorEmail()](#const-stdstring-getcreatoremail)
-* [getCreatorInstitution()](#const-stdstring-getcreatorinstitution)
-* [getAckowledgments()](#const-stdstring-getacknowledgements)
-* [getAuthors()](#const-stdvectorstdstring-getauthors)
-* [getReferences()](#const-stdvectorstdstring-getreferences)
-* [getDOI()](#const-stdstring-getdoi)
-* [getVersion()](#const-stdstring-getversion)
-* [load(geomodelgrids::serial::HDF5* const h5)](#loadgeomodelgridsserialhdf5-const-h5)
++ [ModelInfo()](#modelinfo)
++ [getTitle()](#const-stdstring-gettitle)
++ [getId()](#const-stdstring-getid)
++ [getDescription()](#const-stdstring-getdescription)
++ [getKeywords()](#const-stdvectorstdstring-getkeywords)
++ [getCreatorName()](#const-stdstring-getcreatorname)
++ [getCreatorEmail()](#const-stdstring-getcreatoremail)
++ [getCreatorInstitution()](#const-stdstring-getcreatorinstitution)
++ [getAckowledgments()](#const-stdstring-getacknowledgements)
++ [getAuthors()](#const-stdvectorstdstring-getauthors)
++ [getReferences()](#const-stdvectorstdstring-getreferences)
++ [getDOI()](#const-stdstring-getdoi)
++ [getVersion()](#const-stdstring-getversion)
++ [load(geomodelgrids::serial::HDF5* const h5)](#loadgeomodelgridsserialhdf5-const-h5)
 
 
 ### ModelInfo()
@@ -111,5 +111,3 @@ Get model version.
 ### load(geomodelgrids::serial::HDF5* const h5)
 
 Load model information.
-
-

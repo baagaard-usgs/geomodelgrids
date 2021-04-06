@@ -4,19 +4,19 @@
 
 ## Methods
 
-* [Block(const char* name)](#blockconst-char-name)
-* [loadMetadata(geomodelgrids::serial::HDF5* const h5)](#loadmetadatageomodelgridsserialhdf5-const-h5)
-* [getName()](#const-stdstring-getname)
-* [getResolutionHoriz()](#double-getresolutionhoriz)
-* [getResolutionVert()](#double-getresolutionvert)
-* [getZTop()](#double-getztop)
-* [getZBottom()](#double-getzbottom)
-* [getDims()](#const-size_t-getdims)
-* [getNumValues())](#size_t-getnumvalues)
-* [setHyperslabDims(const size_t dims\[\], const size_t ndims)](#sethyperslabdimsconst-size_t-dims-const-size_t-ndims)
-* [openQuery(geomodelgrids::serial::HDF5* const h5)](#openquerygeomodelgridsserialhdf5-const-h5)
-* [query(const double x, const double y, const double z)](#const-double-queryconst-double-x-const-double-y-const-double-z)
-* [closeQuery()](#closequery)
++ [Block(const char* name)](#blockconst-char-name)
++ [loadMetadata(geomodelgrids::serial::HDF5* const h5)](#loadmetadatageomodelgridsserialhdf5-const-h5)
++ [getName()](#const-stdstring-getname)
++ [getResolutionHoriz()](#double-getresolutionhoriz)
++ [getResolutionVert()](#double-getresolutionvert)
++ [getZTop()](#double-getztop)
++ [getZBottom()](#double-getzbottom)
++ [getDims()](#const-size_t-getdims)
++ [getNumValues())](#size_t-getnumvalues)
++ [setHyperslabDims(const size_t dims\[\], const size_t ndims)](#sethyperslabdimsconst-size_t-dims-const-size_t-ndims)
++ [openQuery(geomodelgrids::serial::HDF5* const h5)](#openquerygeomodelgridsserialhdf5-const-h5)
++ [query(const double x, const double y, const double z)](#const-double-queryconst-double-x-const-double-y-const-double-z)
++ [closeQuery()](#closequery)
 
 
 ### Block(const char* name)

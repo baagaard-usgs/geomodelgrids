@@ -15,6 +15,6 @@ resolution.
 
 # Target Use Cases
 
-* Storing and querying 3D seismic velocity models in computer
+* Storing and querying 3D seismic velocity models for computer
 simulations of earthquake ground motions.
 

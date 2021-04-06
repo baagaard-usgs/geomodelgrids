@@ -12,16 +12,16 @@
 
 ## Methods
 
-* [ErrorHandler()](#errorhandler)
-* [setLogFilename(const char* filename)](#setlogfilenameconst-char-filename)
-* [getLogFilename()](#const-char-const-getlogfilenamevoid-const)
-* [setLoggingOn(const bool value)](#setloggingonconst-bool-value)
-* [resetStatus()](#resetstatus)
-* [getStatus()](#statusenum-getstatus-const)
-* [getMessage()](#const-char-getmessagevoid-const)
-* [setError(const char* msg)](#seterrorconst-char-msg)
-* [setWarning(const char* msg)](#setwarningconst-char-msg)
-* [logMessage(const char* msg)](#logmessageconst-char-msg)
++ [ErrorHandler()](#errorhandler)
++ [setLogFilename(const char* filename)](#setlogfilenameconst-char-filename)
++ [getLogFilename()](#const-char-const-getlogfilenamevoid-const)
++ [setLoggingOn(const bool value)](#setloggingonconst-bool-value)
++ [resetStatus()](#resetstatus)
++ [getStatus()](#statusenum-getstatus-const)
++ [getMessage()](#const-char-getmessagevoid-const)
++ [setError(const char* msg)](#seterrorconst-char-msg)
++ [setWarning(const char* msg)](#setwarningconst-char-msg)
++ [logMessage(const char* msg)](#logmessageconst-char-msg)
 
 
 ### ErrorHandler()
@@ -48,11 +48,9 @@ Get filename used in logging.
 
 Turn logging on/off.
 
-The log filename must have been set for logging to work if it is
-turned on.
+The log filename must have been set for logging to work if it is turned on.
 
-Turning logging on after it has been turned off will cause subsequent
-messages to be appended to the log file.
+Turning logging on after it has been turned off will cause subsequent messages to be appended to the log file.
 
 * **value**[in] True to turn on logging, false to turn logging off
 

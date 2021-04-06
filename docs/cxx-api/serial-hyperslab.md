@@ -4,8 +4,8 @@
 
 ## Methods
 
-* [Hyperslab(geomodelgrids::serial::HDF* const h5, const char* path, const hsize_t dims\[\], const size_t ndims)](#hyperslabgeomodelgridsserialhdf-const-h5-const-char-path-const-hsize_t-dims-const-size_t-ndims)
-* [interpolate(double* const values, const double indexFloat\[\])](#interpolatedouble-const-values-const-double-indexfloat)
++ [Hyperslab(geomodelgrids::serial::HDF* const h5, const char* path, const hsize_t dims\[\], const size_t ndims)](#hyperslabgeomodelgridsserialhdf-const-h5-const-char-path-const-hsize_t-dims-const-size_t-ndims)
++ [interpolate(double* const values, const double indexFloat\[\])](#interpolatedouble-const-values-const-double-indexfloat)
 
 
 ### Hyperslab(geomodelgrids::serial::HDF* const h5, const char* path, const hsize_t dims\[\], const size_t ndims)
