@@ -98,11 +98,24 @@ class TestApp(unittest.TestCase):
         app = App()
         app.main(**ARGS)
 
-        points = self._get_top_surface_xyz()
+        points = self._get_surface_xyz()
         elevationE = AnalyticDataSrc().get_top_surface(points)
 
         h5 = h5py.File(self.metadata["filename"], "r")
-        elevation = h5["top_surface"][:]
+        elevation = h5["surfaces"]["top_surface"][:]
+
+        toleranceV = numpy.maximum(self.TOLERANCE, numpy.abs(elevationE)*self.TOLERANCE)
+        valuesOk = numpy.abs(elevationE - elevation) < toleranceV
+        if numpy.sum(valuesOk.ravel()) != valuesOk.size:
+            print("Mismatch in elevation.")
+            print("Expected values", elevationE[~valuesOk])
+            print("Actual values", elevation[~valuesOk])
+            h5.close()
+            self.assertEqual(numpy.sum(valuesOk.ravel()), valuesOk.size)
+
+        elevationE = AnalyticDataSrc().get_topography_bathymetry(points)
+        h5 = h5py.File(self.metadata["filename"], "r")
+        elevation = h5["surfaces"]["topography_bathymetry"][:]
 
         toleranceV = numpy.maximum(self.TOLERANCE, numpy.abs(elevationE)*self.TOLERANCE)
         valuesOk = numpy.abs(elevationE - elevation) < toleranceV
@@ -162,7 +175,7 @@ class TestApp(unittest.TestCase):
             else:
                 self.assertEqual(attrsE[attr], attrs.get(attr), msg=msg)
 
-    def _get_top_surface_xyz(self):
+    def _get_surface_xyz(self):
         dx = self.metadata["top_surface"]["resolution_horiz"]
         x1 = self.metadata["origin_x"] + numpy.arange(0.0, self.metadata["dim_x"]+0.5*dx, dx)
         y1 = self.metadata["origin_y"] + numpy.arange(0.0, self.metadata["dim_y"]+0.5*dx, dx)

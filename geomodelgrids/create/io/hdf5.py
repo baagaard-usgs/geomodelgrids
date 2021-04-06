@@ -75,10 +75,13 @@ class HDF5Storage():
                 Model surface.
         """
         h5 = h5py.File(self.filename, "a")
-        if surface.name in h5:
-            del h5[surface.name]
-        surf_dataset = h5.create_dataset(surface.name, shape=surface.get_dims(),
-                                         chunks=surface.chunk_size, compression="gzip")
+        if not "surfaces" in h5:
+            h5.create_group("surfaces")
+        surfaces_group = h5["surfaces"]
+        if surface.name in surfaces_group:
+            del surfaces_group[surface.name]
+        surf_dataset = surfaces_group.create_dataset(surface.name, shape=surface.get_dims(),
+                                                     chunks=surface.chunk_size, compression="gzip")
         attrs = surf_dataset.attrs
         for attr, typeE in self.SURFACE_ATTRS:
             value = getattr(surface, attr)
@@ -100,8 +103,9 @@ class HDF5Storage():
                 Current batch of points in domain corresponding to elevation data.
         """
         h5 = h5py.File(self.filename, "a")
-        assert surface.name in h5
-        surf_dataset = h5[surface.name]
+        surfaces_group = h5["surfaces"]
+        assert surface.name in surfaces_group
+        surf_dataset = surfaces_group[surface.name]
         if batch:
             x_start, x_end = batch.x_range
             y_start, y_end = batch.y_range
@@ -120,7 +124,7 @@ class HDF5Storage():
                 Current batch of points in domain corresponding to elevation data.
         """
         h5 = h5py.File(self.filename, "r")
-        surf_dataset = h5[surface.name]
+        surf_dataset = h5["surfaces"][surface.name]
         attrs = surf_dataset.attrs
         for attr, _ in self.SURFACE_ATTRS:
             if getattr(surface, attr) != attrs[attr]:
