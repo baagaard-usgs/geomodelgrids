@@ -4,6 +4,9 @@
 #define geomodelgrids_serial_cquery_h
 
 #define GEOMODELGRIDS_NODATA_VALUE -1.0e+20
+#define GEOMODELGRIDS_SQUASH_NONE 0
+#define GEOMODELGRIDS_SQUASH_TOP_SURFACE 1
+#define GEOMODELGRIDS_SQUASH_TOPOGRAPHY_BATHYMETRY 2
 
 /** Create query object.
  *
@@ -53,7 +56,7 @@ int geomodelgrids_squery_initialize(void* handle,
 int geomodelgrids_squery_setSquashMinElev(void* handle,
                                           const double value);
 
-/** Turn squashing on/off.
+/** Set squashing type.
  *
  * @param[inout] handle Handle to query object.
  * @param[in] value True if squashing is on, false otherwise.
@@ -61,16 +64,27 @@ int geomodelgrids_squery_setSquashMinElev(void* handle,
 int geomodelgrids_squery_setSquashing(void* handle,
                                       const int value);
 
-/** Query for elevation of ground surface at point.
+/** Query for elevation of top of model at point.
+ *
+ * @param[inout] handle Handle to query object.
+ * @param[in] x X coordinate of point (in input CRS).
+ * @param[in] y Y coordinate of point (in input CRS).
+ * @returns Elevation (m) of top of model at point.
+ */
+double geomodelgrids_squery_queryTopElevation(void* handle,
+                                              const double x,
+                                              const double y);
+
+/** Query for elevation of topography/bathymetry at point.
  *
  * @param[inout] handle Handle to query object.
  * @param[in] x X coordinate of point (in input CRS).
  * @param[in] y Y coordinate of point (in input CRS).
  * @returns Elevation (m) of ground surface at point.
  */
-double geomodelgrids_squery_queryElevation(void* handle,
-                                           const double x,
-                                           const double y);
+double geomodelgrids_squery_queryTopoBathyElevation(void* handle,
+                                                    const double x,
+                                                    const double y);
 
 /** Query model for values at a point.
  *

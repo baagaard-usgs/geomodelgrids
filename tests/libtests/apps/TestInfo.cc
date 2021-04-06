@@ -38,7 +38,7 @@ class geomodelgrids::apps::TestInfo : public CppUnit::TestFixture {
     CPPUNIT_TEST(testRunThreeBlocksTopo);
     CPPUNIT_TEST(testRunTwoModels);
     CPPUNIT_TEST(testRunBadMetadata);
-    CPPUNIT_TEST(testRunBadTopography);
+    CPPUNIT_TEST(testRunBadTopSurface);
     CPPUNIT_TEST(testRunBadBlock);
 
     CPPUNIT_TEST_SUITE_END();
@@ -103,8 +103,8 @@ public:
     /// Test run() wth bad model metadata.
     void testRunBadMetadata(void);
 
-    /// Test run() wth bad topography size.
-    void testRunBadTopography(void);
+    /// Test run() wth bad top surface size.
+    void testRunBadTopSurface(void);
 
     /// Test run() wth bad block size.
     void testRunBadBlock(void);
@@ -374,7 +374,7 @@ geomodelgrids::apps::TestInfo::testRunOneBlockFlat(void) {
     info.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(1124), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(1194), coutHelp.str().length());
 } // testRunOneBlockFlat
 
 
@@ -400,7 +400,7 @@ geomodelgrids::apps::TestInfo::testRunThreeBlocksTopo(void) {
     info.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(1805), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(2106), coutHelp.str().length());
 } // testRunThreeBlocksTopo
 
 
@@ -445,14 +445,14 @@ geomodelgrids::apps::TestInfo::testRunBadMetadata(void) {
     info.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(1872), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(2359), coutHelp.str().length());
 }
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Test run() wth bad topography size.
+// Test run() wth bad top surface size.
 void
-geomodelgrids::apps::TestInfo::testRunBadTopography(void) {
+geomodelgrids::apps::TestInfo::testRunBadTopSurface(void) {
     std::streambuf* coutOrig = std::cout.rdbuf();
     std::ostringstream coutHelp;
     std::cout.rdbuf(coutHelp.rdbuf() );
@@ -467,8 +467,7 @@ geomodelgrids::apps::TestInfo::testRunBadTopography(void) {
     info.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(433), coutHelp.str().length());
-
+    CPPUNIT_ASSERT_EQUAL(size_t(460), coutHelp.str().length());
 }
 
 
@@ -490,7 +489,7 @@ geomodelgrids::apps::TestInfo::testRunBadBlock(void) {
     info.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(984), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(1143), coutHelp.str().length());
 
 }
 

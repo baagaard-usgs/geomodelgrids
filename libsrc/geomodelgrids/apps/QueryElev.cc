@@ -19,6 +19,7 @@ geomodelgrids::apps::QueryElev::QueryElev() :
     _pointsCRS("EPSG:4326"),
     _outputFilename(""),
     _logFilename(""),
+    _useTopoBathy(false),
     _showHelp(false) {}
 
 
@@ -50,16 +51,16 @@ geomodelgrids::apps::QueryElev::run(int argc,
 
     std::ifstream sin(_pointsFilename);
     if (!sin.is_open() && !sin.good()) {
-      std::ostringstream msg;
-      msg << "Could not open points file '" << _pointsFilename << "' for reading.";
-      throw std::runtime_error(msg.str().c_str());
+        std::ostringstream msg;
+        msg << "Could not open points file '" << _pointsFilename << "' for reading.";
+        throw std::runtime_error(msg.str().c_str());
     } // if
 
     std::ofstream sout(_outputFilename);
     if (!sout.is_open() && !sout.good()) {
-      std::ostringstream msg;
-      msg << "Could not open output file '" << _outputFilename << "' for writing.";
-      throw std::runtime_error(msg.str().c_str());
+        std::ostringstream msg;
+        msg << "Could not open output file '" << _outputFilename << "' for writing.";
+        throw std::runtime_error(msg.str().c_str());
     } // if
 
     sout << _createOutputHeader(argc, argv);
@@ -71,7 +72,7 @@ geomodelgrids::apps::QueryElev::run(int argc,
             break;
         } // if
 
-        const double elev = query.queryElevation(srcX, srcY);
+        const double elev = (_useTopoBathy) ? query.queryTopoBathyElevation(srcX, srcY) : query.queryTopElevation(srcX, srcY);
 
         sout << std::setw(14) << srcX
              << std::setw(14) << srcY
@@ -90,19 +91,20 @@ geomodelgrids::apps::QueryElev::run(int argc,
 void
 geomodelgrids::apps::QueryElev::_parseArgs(int argc,
                                            char* argv[]) {
-    static struct option options[9] = {
+    static struct option options[10] = {
         {"help", no_argument, NULL, 'h'},
         {"points", required_argument, NULL, 'p'},
         {"points-coordsys", required_argument, NULL, 'c'},
         {"output", required_argument, NULL, 'o'},
         {"log", required_argument, NULL, 'l'},
         {"models", required_argument, NULL, 'm'},
+        {"surface", required_argument, NULL, 's'},
         {0, 0, 0, 0}
     };
 
     while (true) {
         // extern char* optarg;
-        const char c = getopt_long(argc, argv, "hv:s:p:c:o:l:m:", options, NULL);
+        const char c = getopt_long(argc, argv, "hv:s:p:c:o:l:m:s:", options, NULL);
         if (-1 == c) { break; }
         switch (c) {
         case 'h':
@@ -133,6 +135,14 @@ geomodelgrids::apps::QueryElev::_parseArgs(int argc,
             } // while
             break;
         } // 'm'
+        case 's': {
+            _useTopoBathy = false;
+            std::string surface = optarg;
+            if (surface == std::string("topography_bathymetry")) {
+                _useTopoBathy = true;
+            } // if
+            break;
+        } // 'm'
         case '?': {
             std::ostringstream msg;
             msg << "Error parsing command line arguments:\n";
@@ -145,7 +155,7 @@ geomodelgrids::apps::QueryElev::_parseArgs(int argc,
     } // while
 
     if (1 == argc) {
-      _showHelp = true;
+        _showHelp = true;
     } // if
     if (!_showHelp) { // Verify required arguments were provided.
         bool optionsOkay = true;
@@ -176,13 +186,14 @@ void
 geomodelgrids::apps::QueryElev::_printHelp(void) {
     std::cout << "Usage: geomodelgrids_queryelev "
               << "[--help] [--log=FILE_LOG] --models=FILE_0,...,FILE_M --points=FILE_POINTS --output=FILE_OUTPUT "
-              << "[--points-coordsys=PROJ|EPSG|WKT]\n\n"
+              << "[--points-coordsys=PROJ|EPSG|WKT] [--surface=top_surface|topography_bathymetry]\n\n"
               << "    --help                           Print help information to stdout and exit.\n"
               << "    --log=FILE_LOG                   Write logging information to FILE_LOG.\n"
               << "    --models=FILE_0,...,FILE_M       Models to query (in order).\n"
               << "    --points=FILE_POINTS             Read input points from FILE_POINTS.\n"
               << "    --output=FILE_OUTPUT             Write values to FILE_OUTPUT.\n"
-              << "    --points-coordsys=PROJ|EPSG|WKT  Coordinate system of input points (default=EPSG:4326)."
+              << "    --points-coordsys=PROJ|EPSG|WKT  Coordinate system of input points (default=EPSG:4326).\n"
+              << "    --surface=top_surface|topography_bathymetry  Surface elevation to query (default=top_surface)."
               << std::endl;
 } // _printHelp
 

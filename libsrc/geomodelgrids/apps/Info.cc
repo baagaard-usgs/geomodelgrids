@@ -5,7 +5,7 @@
 #include "geomodelgrids/serial/Model.hh" // USES Model
 #include "geomodelgrids/serial/ModelInfo.hh" // USES ModelInfo
 #include "geomodelgrids/serial/Block.hh" // USES Block
-#include "geomodelgrids/serial/Topography.hh" // USES Topography
+#include "geomodelgrids/serial/Surface.hh" // USES Surface
 
 #include <cmath> // USES fabs()
 
@@ -25,8 +25,9 @@ namespace geomodelgrids {
             std::string indent(const size_t level,
                                const size_t width=4);
 
-            void verifyTopography(const geomodelgrids::serial::Topography* topography,
-                                  const geomodelgrids::serial::Model* model);
+            void verifySurface(const geomodelgrids::serial::Surface* topography,
+                               const geomodelgrids::serial::Model* model,
+                               const char* const name);
 
             void verifyBlock(geomodelgrids::serial::Block* block,
                              const geomodelgrids::serial::Model* model);
@@ -270,14 +271,25 @@ void
 geomodelgrids::apps::Info::_printBlocks(geomodelgrids::serial::Model* const model) {
     assert(model);
 
-    std::cout << _Info::indent(1) << "Topography:\n";
-    const geomodelgrids::serial::Topography* topography = model->getTopography();
-    if (topography) {
-        const size_t* dims = topography->getDims();
-        std::cout << _Info::indent(2) << "Number of points: x=" << dims[0] << ", y=" << dims[1] << "\n";
-        std::cout << _Info::indent(2) << "Horizontal resolution (m): " << topography->getResolutionHoriz() << "\n";
+    std::cout << _Info::indent(1) << "Surfaces\n";
+    std::cout << _Info::indent(2) << "Top surface:\n";
+    const geomodelgrids::serial::Surface* surfaceTop = model->getTopSurface();
+    if (surfaceTop) {
+        const size_t* dims = surfaceTop->getDims();
+        std::cout << _Info::indent(3) << "Number of points: x=" << dims[0] << ", y=" << dims[1] << "\n";
+        std::cout << _Info::indent(3) << "Horizontal resolution (m): " << surfaceTop->getResolutionHoriz() << "\n";
     } else {
-        std::cout << _Info::indent(2) << "None\n";
+        std::cout << _Info::indent(3) << "None\n";
+    } // if/else
+
+    std::cout << _Info::indent(2) << "Topography/bathymetry:\n";
+    const geomodelgrids::serial::Surface* surfaceTopoBathy = model->getTopoBathy();
+    if (surfaceTopoBathy) {
+        const size_t* dims = surfaceTopoBathy->getDims();
+        std::cout << _Info::indent(3) << "Number of points: x=" << dims[0] << ", y=" << dims[1] << "\n";
+        std::cout << _Info::indent(3) << "Horizontal resolution (m): " << surfaceTopoBathy->getResolutionHoriz() << "\n";
+    } else {
+        std::cout << _Info::indent(3) << "None\n";
     } // if/else
 
     const std::vector<geomodelgrids::serial::Block*>& blocks = model->getBlocks();
@@ -320,11 +332,26 @@ geomodelgrids::apps::Info::_verify(geomodelgrids::serial::Model* const model) {
     } // try/catch
     if (ok) { std::cout << "OK\n"; }
 
-    const geomodelgrids::serial::Topography* topography = model->getTopography();
-    if (topography) { _Info::verifyTopography(topography, model); }
+    const geomodelgrids::serial::Surface* surfaceTop = model->getTopSurface();
+    if (surfaceTop) { _Info::verifySurface(surfaceTop, model, "top surface"); }
+
+    const geomodelgrids::serial::Surface* surfaceTopoBathy = model->getTopoBathy();
+    if (surfaceTopoBathy) { _Info::verifySurface(surfaceTopoBathy, model, "topography/bathymetry"); }
+
+    if (surfaceTop && surfaceTopoBathy) {
+        std::cout << _Info::indent(2) << "Verifying resolution of top surface matches resolution of topography/bathymetry...";
+        const double topResolution = surfaceTop->getResolutionHoriz();
+        const double topoResolution = surfaceTopoBathy->getResolutionHoriz();
+        if (fabs(1.0 - topoResolution/topResolution) > 1.0e-4) {
+            std::cout << "FAIL\n"
+                      << _Info::indent(3) << "Resolution of top surface: " << topResolution << "; resolution of topography/bathymetry " << topoResolution << "\n";
+        } else {
+            std::cout << "OK\n";
+        } // if/else
+    } // if
+
     const std::vector<geomodelgrids::serial::Block*>& blocks = model->getBlocks();
     const size_t numBlocks = blocks.size();
-
     for (size_t i = 0; i < numBlocks; ++i) {
         _Info::verifyBlock(blocks[i], model);
     } // for
@@ -362,25 +389,27 @@ geomodelgrids::apps::_Info::indent(const size_t level,
 
 // ---------------------------------------------------------------------------------------------------------------------
 void
-geomodelgrids::apps::_Info::verifyTopography(const geomodelgrids::serial::Topography* topography,
-                                             const geomodelgrids::serial::Model* model) {
-    assert(topography);
+geomodelgrids::apps::_Info::verifySurface(const geomodelgrids::serial::Surface* surface,
+                                          const geomodelgrids::serial::Model* model,
+                                          const char* const name) {
+    assert(surface);
     assert(model);
+    assert(name);
 
-    std::cout << _Info::indent(2) << "Verifying topography...";
+    std::cout << _Info::indent(2) << "Verifying surface '" << name << "'...";
     bool ok = true;
 
     const double* dimsDomain = model->getDims();
-    const double resolution = topography->getResolutionHoriz();
-    const size_t* numTopo = topography->getDims();
+    const double resolution = surface->getResolutionHoriz();
+    const size_t* numTopo = surface->getDims();
 
     const double tolerance = 1.0e-6;
     const std::string dimLabel[2] = { "x", "y" };
     for (size_t iDim = 0; iDim < 2; ++iDim) {
         if (fabs(1.0 - resolution*(numTopo[iDim]-1)/dimsDomain[iDim]) > tolerance) {
             if (ok) { std::cout << "FAIL\n"; }
-            std::cout << _Info::indent(3) << "Topography does not span the domain in the " << dimLabel[iDim]
-                      << " dimension (topography=" << resolution*numTopo[iDim] << ", domain=" << dimsDomain[iDim] << ").\n";
+            std::cout << _Info::indent(3) << "Surface '" << name << "' does not span the domain in the " << dimLabel[iDim]
+                      << " dimension (surface=" << resolution*numTopo[iDim] << ", domain=" << dimsDomain[iDim] << ").\n";
             ok = false;
         } // if
     } // for
@@ -418,9 +447,9 @@ geomodelgrids::apps::_Info::verifyBlock(geomodelgrids::serial::Block* block,
     } // for
 
     // Verify block resolution is integer multiple of topography resolution.
-    const geomodelgrids::serial::Topography* topography = model->getTopography();
-    if (topography) {
-        const double topoResolution = topography->getResolutionHoriz();
+    const geomodelgrids::serial::Surface* surfaceTop = model->getTopSurface();
+    if (surfaceTop) {
+        const double topoResolution = surfaceTop->getResolutionHoriz();
         const int num_skip = int(0.01 + resolution / topoResolution);
         if (fabs(num_skip * topoResolution - resolution) > tolerance) {
             if (ok) { std::cout << "FAIL\n"; }

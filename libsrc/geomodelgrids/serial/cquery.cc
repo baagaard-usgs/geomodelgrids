@@ -117,21 +117,37 @@ geomodelgrids_squery_setSquashing(void* handle,
     } // if
 
     assert(query);
-    query->setSquashing(bool(value));
+    geomodelgrids::serial::Query::SQUASHING_TYPE valueEnum = geomodelgrids::serial::Query::SQUASH_NONE;
+    switch (value) {
+    case GEOMODELGRIDS_SQUASH_NONE:
+        valueEnum = geomodelgrids::serial::Query::SQUASH_NONE;
+        break;
+    case GEOMODELGRIDS_SQUASH_TOP_SURFACE:
+        valueEnum = geomodelgrids::serial::Query::SQUASH_TOP_SURFACE;
+        break;
+    case GEOMODELGRIDS_SQUASH_TOPOGRAPHY_BATHYMETRY:
+        valueEnum = geomodelgrids::serial::Query::SQUASH_TOPOGRAPHY_BATHYMETRY;
+        break;
+    default:
+        geomodelgrids::utils::ErrorHandler& errorHandler = query->getErrorHandler();
+        errorHandler.setError("Unknown squashing type.");
+
+    } // switch
+    query->setSquashing(valueEnum);
 
     return query->getErrorHandler().getStatus();
 } // setSquashing
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Query for elevation of ground surface at point.
+// Query for elevation of top of model at point.
 double
-geomodelgrids_squery_queryElevation(void* handle,
-                                    const double x,
-                                    const double y) {
+geomodelgrids_squery_queryTopElevation(void* handle,
+                                       const double x,
+                                       const double y) {
     geomodelgrids::serial::Query* query = (geomodelgrids::serial::Query*) handle;
     if (!handle) {
-        std::cerr << "NULL handle for query object in call to geomodelgrids_squery_queryElevation().";
+        std::cerr << "NULL handle for query object in call to geomodelgrids_squery_queryTopElevation().";
         return geomodelgrids::NODATA_VALUE;
     } // if
 
@@ -139,21 +155,21 @@ geomodelgrids_squery_queryElevation(void* handle,
 
     double elevation = geomodelgrids::NODATA_VALUE;
     try {
-        elevation = query->queryElevation(x, y);
+        elevation = query->queryTopElevation(x, y);
         if (elevation == geomodelgrids::NODATA_VALUE) {
             std::ostringstream warning;
             warning << "WARNING: Could not find model containing ("
                     << std::resetiosflags(std::ios::fixed)
                     << std::setiosflags(std::ios::scientific)
                     << std::setprecision(6)
-                    << x << ", " << y << ") when querying for elevation.";
+                    << x << ", " << y << ") when querying for elevation of top of model.";
             geomodelgrids::utils::ErrorHandler& errorHandler = query->getErrorHandler();
             errorHandler.setWarning(warning.str().c_str());
             errorHandler.logMessage(warning.str().c_str());
         } // if
     } catch (const std::exception& err) {
         std::ostringstream error;
-        error << "ERROR: Fatal error when querying for elevation at point "
+        error << "ERROR: Fatal error when querying for elevation of top of model at point "
               << std::resetiosflags(std::ios::fixed)
               << std::setiosflags(std::ios::scientific)
               << std::setprecision(6)
@@ -164,7 +180,51 @@ geomodelgrids_squery_queryElevation(void* handle,
     } // try/catch
 
     return elevation;
-} // queryElevation
+} // queryTopElevation
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Query for elevation of topography/bathymetry at point.
+double
+geomodelgrids_squery_queryTopoBathyElevation(void* handle,
+                                             const double x,
+                                             const double y) {
+    geomodelgrids::serial::Query* query = (geomodelgrids::serial::Query*) handle;
+    if (!handle) {
+        std::cerr << "NULL handle for query object in call to geomodelgrids_squery_queryTopoBathyElevation().";
+        return geomodelgrids::NODATA_VALUE;
+    } // if
+
+    assert(query);
+
+    double elevation = geomodelgrids::NODATA_VALUE;
+    try {
+        elevation = query->queryTopoBathyElevation(x, y);
+        if (elevation == geomodelgrids::NODATA_VALUE) {
+            std::ostringstream warning;
+            warning << "WARNING: Could not find model containing ("
+                    << std::resetiosflags(std::ios::fixed)
+                    << std::setiosflags(std::ios::scientific)
+                    << std::setprecision(6)
+                    << x << ", " << y << ") when querying for elevation of ground surface.";
+            geomodelgrids::utils::ErrorHandler& errorHandler = query->getErrorHandler();
+            errorHandler.setWarning(warning.str().c_str());
+            errorHandler.logMessage(warning.str().c_str());
+        } // if
+    } catch (const std::exception& err) {
+        std::ostringstream error;
+        error << "ERROR: Fatal error when querying for elevation of ground surface at point "
+              << std::resetiosflags(std::ios::fixed)
+              << std::setiosflags(std::ios::scientific)
+              << std::setprecision(6)
+              << x << ", " << y <<"\n" << err.what();
+        geomodelgrids::utils::ErrorHandler& errorHandler = query->getErrorHandler();
+        errorHandler.setError(error.str().c_str());
+        errorHandler.logMessage(error.str().c_str());
+    } // try/catch
+
+    return elevation;
+} // queryTopoBathyElevation
 
 
 // ---------------------------------------------------------------------------------------------------------------------

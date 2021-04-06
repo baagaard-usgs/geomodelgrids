@@ -5,7 +5,7 @@
 #include "geomodelgrids/serial/Model.hh" // USES Model
 #include "geomodelgrids/serial/ModelInfo.hh" // USES ModelInfo
 #include "geomodelgrids/serial/Block.hh" // USES Block
-#include "geomodelgrids/serial/Topography.hh" // USES Topography
+#include "geomodelgrids/serial/Surface.hh" // USES Surface
 #include "geomodelgrids/utils/ErrorHandler.hh" // USES ErrorHandler
 #include "geomodelgrids/utils/constants.hh" // USES NODATA_VALUE
 
@@ -52,7 +52,7 @@ public:
 geomodelgrids::serial::Query::Query() :
     _squashMinElev(0.0),
     _errorHandler(new geomodelgrids::utils::ErrorHandler),
-    _squash(false) {}
+    _squash(SQUASH_NONE) {}
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -106,28 +106,30 @@ geomodelgrids::serial::Query::initialize(const std::vector<std::string>& modelFi
 void
 geomodelgrids::serial::Query::setSquashMinElev(const double value) {
     _squashMinElev = value;
-    _squash = true;
+    if (_squash == SQUASH_NONE) {
+        _squash = SQUASH_TOP_SURFACE;
+    } // if
 } // setSquashMinElev
 
 
 // ---------------------------------------------------------------------------------------------------------------------
 // Turn squashing on/off.
 void
-geomodelgrids::serial::Query::setSquashing(const bool value) {
+geomodelgrids::serial::Query::setSquashing(const SQUASHING_TYPE value) {
     _squash = value;
 } // setSquashing
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Query for elevation of ground surface at point.
+// Query for elevation of top of model at point.
 double
-geomodelgrids::serial::Query::queryElevation(const double x,
-                                             const double y) {
+geomodelgrids::serial::Query::queryTopElevation(const double x,
+                                                const double y) {
     double elevation = NODATA_VALUE;
     const double zOffset = -1.0e-3;
     for (size_t i = 0; i < _models.size(); ++i) {
         assert(_models[i]);
-        const double elevationTmp = _models[i]->queryElevation(x, y);
+        const double elevationTmp = _models[i]->queryTopElevation(x, y);
         if (_models[i]->contains(x, y, elevationTmp+zOffset)) {
             elevation = elevationTmp;
             break;
@@ -135,7 +137,27 @@ geomodelgrids::serial::Query::queryElevation(const double x,
     } // for
 
     return elevation;
-} // query
+} // queryTopElevation
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Query for elevation of topography/bathymetry at point.
+double
+geomodelgrids::serial::Query::queryTopoBathyElevation(const double x,
+                                                      const double y) {
+    double elevation = NODATA_VALUE;
+    const double zOffset = -1.0e-3;
+    for (size_t i = 0; i < _models.size(); ++i) {
+        assert(_models[i]);
+        const double elevationTmp = _models[i]->queryTopoBathyElevation(x, y);
+        if (_models[i]->contains(x, y, elevationTmp+zOffset)) {
+            elevation = elevationTmp;
+            break;
+        } // if
+    } // for
+
+    return elevation;
+} // queryTopoBathyElevation
 
 
 // ---------------------------------------------------------------------------------------------------------------------
@@ -158,10 +180,24 @@ geomodelgrids::serial::Query::query(double* const values,
         assert(_models[i]);
         if (_models[i]->contains(x, y, z)) {
             double elevationSquash = z;
-            if (_squash && (z > _squashMinElev)) {
-                const double groundElev = _models[i]->queryElevation(x, y);
-                elevationSquash = z + groundElev;
-            } // if
+            switch (_squash) {
+            case SQUASH_NONE:
+                break;
+            case SQUASH_TOP_SURFACE:
+                if (z > _squashMinElev) {
+                    const double topElev = _models[i]->queryTopElevation(x, y);
+                    elevationSquash = z + topElev;
+                } // if
+                break;
+            case SQUASH_TOPOGRAPHY_BATHYMETRY:
+                if (z > _squashMinElev) {
+                    const double groundElev = _models[i]->queryTopoBathyElevation(x, y);
+                    elevationSquash = z + groundElev;
+                } // if
+                break;
+            default:
+                throw std::logic_error("Unknown squashing type.");
+            } // switch
 
             const double* modelValues = _models[i]->query(x, y, elevationSquash);
             values_map_type& modelMap = _valuesIndex[i];
@@ -170,7 +206,7 @@ geomodelgrids::serial::Query::query(double* const values,
             } // for
 
             found = true;
-	    break;
+            break;
         } // if
     } // for
 

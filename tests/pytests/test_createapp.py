@@ -42,8 +42,11 @@ class TestApp(unittest.TestCase):
             "dim_x": float(model_config["domain"]["dim_x"]),
             "dim_y": float(model_config["domain"]["dim_y"]),
             "dim_z": float(model_config["domain"]["dim_z"]),
-            "topography": {
-                "resolution_horiz": float(model_config["topography"]["resolution_horiz"])
+            "top_surface": {
+                "resolution_horiz": float(model_config["top_surface"]["resolution_horiz"])
+            },
+            "topography_bathymetry": {
+                "resolution_horiz": float(model_config["topography_bathymetry"]["resolution_horiz"])
             },
             "blocks": {
                 "top": {
@@ -66,7 +69,7 @@ class TestApp(unittest.TestCase):
             "config": self.CONFIG_FILENAME,
             "show_parameters": False,
             "import_domain": True,
-            "import_topography": False,
+            "import_surfaces": False,
             "import_blocks": False,
             "all": False,
             "show_progress": False,
@@ -80,12 +83,12 @@ class TestApp(unittest.TestCase):
         attrs = h5.attrs
         self._check_attributes(ModelMetadata.__slots__, self.metadata, attrs)
 
-    def test_topography(self):
+    def test_surfaces(self):
         ARGS = {
             "config": self.CONFIG_FILENAME,
             "show_parameters": False,
             "import_domain": True,
-            "import_topography": True,
+            "import_surfaces": True,
             "import_blocks": False,
             "all": False,
             "show_progress": False,
@@ -95,18 +98,18 @@ class TestApp(unittest.TestCase):
         app = App()
         app.main(**ARGS)
 
-        points = self._get_topography_xyz()
-        topographyE = AnalyticDataSrc().get_topography(points)
+        points = self._get_top_surface_xyz()
+        elevationE = AnalyticDataSrc().get_top_surface(points)
 
         h5 = h5py.File(self.metadata["filename"], "r")
-        topography = h5["topography"][:]
+        elevation = h5["top_surface"][:]
 
-        toleranceV = numpy.maximum(self.TOLERANCE, numpy.abs(topographyE)*self.TOLERANCE)
-        valuesOk = numpy.abs(topographyE - topography) < toleranceV
+        toleranceV = numpy.maximum(self.TOLERANCE, numpy.abs(elevationE)*self.TOLERANCE)
+        valuesOk = numpy.abs(elevationE - elevation) < toleranceV
         if numpy.sum(valuesOk.ravel()) != valuesOk.size:
-            print("Mismatch in topography.")
-            print("Expected values", topographyE[~valuesOk])
-            print("Actual values", topography[~valuesOk])
+            print("Mismatch in elevation.")
+            print("Expected values", elevationE[~valuesOk])
+            print("Actual values", elevation[~valuesOk])
             h5.close()
             self.assertEqual(numpy.sum(valuesOk.ravel()), valuesOk.size)
 
@@ -115,7 +118,7 @@ class TestApp(unittest.TestCase):
             "config": self.CONFIG_FILENAME,
             "show_parameters": False,
             "import_domain": True,
-            "import_topography": True,
+            "import_surfaces": True,
             "import_blocks": True,
             "all": False,
             "show_progress": False,
@@ -159,8 +162,8 @@ class TestApp(unittest.TestCase):
             else:
                 self.assertEqual(attrsE[attr], attrs.get(attr), msg=msg)
 
-    def _get_topography_xyz(self):
-        dx = self.metadata["topography"]["resolution_horiz"]
+    def _get_top_surface_xyz(self):
+        dx = self.metadata["top_surface"]["resolution_horiz"]
         x1 = self.metadata["origin_x"] + numpy.arange(0.0, self.metadata["dim_x"]+0.5*dx, dx)
         y1 = self.metadata["origin_y"] + numpy.arange(0.0, self.metadata["dim_y"]+0.5*dx, dx)
         x, y = numpy.meshgrid(x1, y1, indexing='ij')
@@ -174,11 +177,11 @@ class TestApp(unittest.TestCase):
         x1 = self.metadata["origin_x"] + numpy.arange(0.0, self.metadata["dim_x"]+0.5*dx, dx)
         y1 = self.metadata["origin_y"] + numpy.arange(0.0, self.metadata["dim_y"]+0.5*dx, dx)
 
-        # Get topography
+        # Get top surface
         x, y = numpy.meshgrid(x1, y1, indexing='ij')
         z = numpy.zeros(x.shape)
         xyz = numpy.stack((x, y, z), axis=2)
-        topography = AnalyticDataSrc.get_topography(xyz).squeeze()
+        top_surface = AnalyticDataSrc.get_top_surface(xyz).squeeze()
 
         # Create domain points
         dz = block_metadata["resolution_vert"]
@@ -186,11 +189,11 @@ class TestApp(unittest.TestCase):
         z1 = numpy.arange(0.0, block_dimz+0.5*dz, dz)
         x, y, z = numpy.meshgrid(x1, y1, z1, indexing='ij')
 
-        # Adjust domain points to conform to topography
+        # Adjust domain points to conform to top surface
         domain_top = 0.0
         domain_bot = -self.metadata["dim_z"]
         for iz in range(z.shape[-1]):
-            z[:, :, iz] = domain_bot + (topography - domain_bot) / \
+            z[:, :, iz] = domain_bot + (top_surface - domain_bot) / \
                 (domain_top - domain_bot) * (block_metadata["z_top"] - z[:, :, iz] - domain_bot)
 
         xyz = numpy.stack((x, y, z), axis=3)

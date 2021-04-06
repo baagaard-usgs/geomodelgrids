@@ -11,7 +11,7 @@ test_serial_SOURCES = \
 	TestHDF5.cc \
 	TestHyperslab.cc \
 	TestBlock.cc \
-	TestTopography.cc \
+	TestSurface.cc \
 	TestModel.cc \
 	TestQuery.cc \
 	TestCQuery.cc \

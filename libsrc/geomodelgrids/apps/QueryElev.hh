@@ -29,6 +29,7 @@ public:
      *   --output=FILE_OUTPUT
      *   --log=FILE_LOG
      *   --points-coordsys=PROJ|EPSG|WKT
+     *   --surface=SURFACE ["top_surface" (default) | "topography_bathymetry"]
      *
      * @param argc[in] Number of arguments passed.
      * @param argv[in] Array of input arguments.
@@ -68,6 +69,7 @@ private:
     std::string _pointsCRS;
     std::string _outputFilename;
     std::string _logFilename;
+    bool _useTopoBathy;
     bool _showHelp;
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////

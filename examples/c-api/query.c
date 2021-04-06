@@ -109,7 +109,7 @@ main(int argc,
         GEOMODELGRIDS_NODATA_VALUE, GEOMODELGRIDS_NODATA_VALUE,
         GEOMODELGRIDS_NODATA_VALUE, GEOMODELGRIDS_NODATA_VALUE,
     };
-    static const double groundElevE[16] = {
+    static const double surfaceElevE[16] = {
         /* Elevations for one-block-topo points */
         150.046,
         149.775,
@@ -141,8 +141,8 @@ main(int argc,
         const double elevation = points[iPt*spaceDim+2];
         const int err = geomodelgrids_squery_query(query, values, latitude, longitude, elevation);
 
-        /* Query for elevation of ground surface. */
-        const double groundElev = geomodelgrids_squery_queryElevation(query, latitude, longitude);
+        /* Query for elevation of top surface. */
+        const double surfaceElev = geomodelgrids_squery_queryTopElevation(query, latitude, longitude);
 
         /* Use the values returned in the query. In this case we check the values against the expected ones.
          *
@@ -172,13 +172,13 @@ main(int argc,
         } /* for */
 
         /* Check ground surface elevation values. */
-        const double tolerance = 1.0e-06 * fabs(groundElevE[iPt]);
-        if (fabs(groundElev-groundElevE[iPt]) > tolerance) {
+        const double tolerance = 1.0e-06 * fabs(surfaceElevE[iPt]);
+        if (fabs(surfaceElev-surfaceElevE[iPt]) > tolerance) {
             printf("Expected ground surface elevation of %g at point (%g, %g) but got a value of %g.\n",
-                   groundElevE[iPt], latitude, longitude, groundElev);
+                   surfaceElevE[iPt], latitude, longitude, surfaceElev);
         } else {
-            if (groundElev != GEOMODELGRIDS_NODATA_VALUE) {
-                printf("Point (%g, %g), ground surface elevation: %g.\n", latitude, longitude, groundElev);
+            if (surfaceElev != GEOMODELGRIDS_NODATA_VALUE) {
+                printf("Point (%g, %g), ground surface elevation: %g.\n", latitude, longitude, surfaceElev);
             } else {
                 printf("No ground surface elevation for point (%g, %g).\n", latitude, longitude);
             } /* if/else */

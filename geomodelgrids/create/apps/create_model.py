@@ -31,12 +31,12 @@ class App():
                 If True, print parameters to stdout.
             import_domain (bool), default: False
                 If True, write domain information to model.
-            import_topography (bool), default: False
-                If True, write topography information to model.
+            import_surfaces (bool), default: False
+                If True, write surfaces information to model.
             import_blocks (bool), default: False
                 If True, write block information to model.
             all (bool), default: False
-                If True, equivalent to import_domain=True, import_topography=True, import_blocks=True
+                If True, equivalent to import_domain=True, import_surfaces=True, import_blocks=True
             show_progress (bool), default: True
                 If False, print progress to stdout.
             log_filename (str), default: rasterize.log
@@ -66,19 +66,26 @@ class App():
         batch_size = int(self.config["domain"]["batch_size"])
         datasrc.initialize()
 
-        if args.import_topography or args.all:
-            if model.topography.enabled:
-                model.init_topography()
-                for batch in model.topography.get_batches(batch_size):
-                    points = model.topography.generate_points(batch)
-                    elevation = datasrc.get_topography(points)
-                    model.save_topography(elevation, batch)
+        if args.import_surfaces or args.all:
+            if model.top_surface.enabled:
+                model.init_top_surface()
+                for batch in model.top_surface.get_batches(batch_size):
+                    points = model.top_surface.generate_points(batch)
+                    elevation = datasrc.get_top_surface(points)
+                    model.save_top_surface(elevation, batch)
+            if model.topo_bathy.enabled:
+                model.init_topography_bathymetry()
+                for batch in model.topo_bathy.get_batches(batch_size):
+                    points = model.topo_bathy.generate_points(batch)
+                    elevation = datasrc.get_topography_bathymetry(points)
+                    model.save_topography_bathymetry(elevation, batch)
 
         if args.import_blocks or args.all:
+            topo_depth = model.topo_bathy if model.topo_bathy.enabled else model.top_surface
             for block in model.blocks:
                 model.init_block(block)
                 for batch in block.get_batches(batch_size):
-                    values = datasrc.get_values(block, model.topography, batch)
+                    values = datasrc.get_values(block, model.top_surface, topo_depth, batch)
                     model.save_block(block, values, batch)
 
     def initialize(self, config_filenames):
@@ -108,7 +115,7 @@ class App():
         parser.add_argument("--config", action="store", dest="config", required=True)
         parser.add_argument("--show-parameters", action="store_true", dest="show_parameters")
         parser.add_argument("--import-domain", action="store_true", dest="import_domain")
-        parser.add_argument("--import-topography", action="store_true", dest="import_topography")
+        parser.add_argument("--import-surfaces", action="store_true", dest="import_surfaces")
         parser.add_argument("--import-blocks", action="store_true", dest="import_blocks")
 
         parser.add_argument("--all", action="store_true", dest="all")

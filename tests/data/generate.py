@@ -38,7 +38,13 @@ class TestData:
         ("z_top", float),
     )
 
-    @staticmethod
+    filename = None
+    top_surface = None
+    topo_bathy = None
+    blocks = []
+    model = {}
+
+    @ staticmethod
     def _hdf5_type(value, map_fn):
         if type(value) in [list, tuple]:
             value_h5 = list(map(map_fn, value))
@@ -57,13 +63,21 @@ class TestData:
         attrs["keywords"] = [numpy.string_(v) for v in self.model["keywords"]]
         attrs["creator_institution"] = numpy.string_(self.model["creator_institution"])
 
-        # Topography
-        if not self.topography is None:
-            topo_dataset = h5.create_dataset("topography", data=self.topography["elevation"],
-                                             chunks=self.topography["chunk_size"])
-            attrs = topo_dataset.attrs
+        # Surfaces
+        h5.create_group("surfaces")
+        surfaces_group = h5["surfaces"]
+        if not self.top_surface is None:
+            top_dataset = surfaces_group.create_dataset("top_surface", data=self.top_surface["elevation"],
+                                                        chunks=self.top_surface["chunk_size"])
+            attrs = top_dataset.attrs
             for attr_name, map_fn in self.TOPOGRAPHY_ATTRS:
-                attrs[attr_name] = self._hdf5_type(self.topography[attr_name], map_fn)
+                attrs[attr_name] = self._hdf5_type(self.top_surface[attr_name], map_fn)
+        if not self.topo_bathy is None:
+            topobathy_dataset = surfaces_group.create_dataset("topography_bathymetry", data=self.topo_bathy["elevation"],
+                                                              chunks=self.topo_bathy["chunk_size"])
+            attrs = topobathy_dataset.attrs
+            for attr_name, map_fn in self.TOPOGRAPHY_ATTRS:
+                attrs[attr_name] = self._hdf5_type(self.topo_bathy[attr_name], map_fn)
 
         # Blocks
         h5.create_group("blocks")
@@ -76,7 +90,7 @@ class TestData:
                 attrs[attr_name] = self._hdf5_type(block[attr_name], map_fn)
         h5.close()
 
-    @staticmethod
+    @ staticmethod
     def create_groundsurf_xy(model, topography):
         resolution_horiz = topography["resolution_horiz"]
 
@@ -85,7 +99,7 @@ class TestData:
         x, y = numpy.meshgrid(x1, y1, indexing="ij")
         return (x, y)
 
-    @staticmethod
+    @ staticmethod
     def create_block_xyz(model, block):
         resolution_horiz = block["resolution_horiz"]
         resolution_vert = block["resolution_vert"]
@@ -125,7 +139,8 @@ class OneBlockFlat(TestData):
         "dim_z": 5.0e+3,
     }
 
-    topography = None
+    top_surface = None
+    topo_bathy = None
 
     blocks = [
         {
@@ -173,15 +188,17 @@ class OneBlockTopo(TestData):
         "dim_z": 5.0e+3,
     }
 
-    topography = {
+    top_surface = {
         "resolution_horiz": 10.0e+3,
         "chunk_size": (2, 2, 1),
     }
-    x, y = TestData.create_groundsurf_xy(model, topography)
+    x, y = TestData.create_groundsurf_xy(model, top_surface)
     (nx, ny) = x.shape
     elevation = numpy.zeros((nx, ny, 1), dtype=numpy.float32)
     elevation[:, :, 0] = 1.5e+2 + 2.0e-5 * x - 1.2e-5 * y + 5.0e-10 * x * y
-    topography["elevation"] = elevation
+    top_surface["elevation"] = elevation
+
+    topo_bathy = None
 
     blocks = [
         {
@@ -206,7 +223,7 @@ class OneBlockTopo(TestData):
         self.filename = "one-block-topo-bad-topo.h5"
         self.create()
         with h5py.File(self.filename, "a") as h5:
-            h5["topography"].attrs["resolution_horiz"] *= 0.5
+            h5["surfaces"]["top_surface"].attrs["resolution_horiz"] *= 0.5
 
 
 class ThreeBlocksFlat(TestData):
@@ -235,7 +252,8 @@ class ThreeBlocksFlat(TestData):
         "dim_z": 45.0e+3,
     }
 
-    topography = None
+    top_surface = None
+    topo_bathy = None
 
     blocks = [
         {
@@ -299,15 +317,25 @@ class ThreeBlocksTopo(TestData):
         "dim_z": 45.0e+3,
     }
 
-    topography = {
+    top_surface = {
         "resolution_horiz": 5.0e+3,
         "chunk_size": (4, 4, 1),
     }
-    x, y = TestData.create_groundsurf_xy(model, topography)
+    x, y = TestData.create_groundsurf_xy(model, top_surface)
     (nx, ny) = x.shape
     elevation = numpy.zeros((nx, ny, 1), dtype=numpy.float32)
     elevation[:, :, 0] = 1.5e+2 + 2.0e-5 * x - 1.2e-5 * y + 5.0e-10 * x * y
-    topography["elevation"] = elevation
+    top_surface["elevation"] = elevation
+
+    topo_bathy = {
+        "resolution_horiz": 5.0e+3,
+        "chunk_size": (4, 4, 1),
+    }
+    x, y = TestData.create_groundsurf_xy(model, topo_bathy)
+    (nx, ny) = x.shape
+    elevation = numpy.zeros((nx, ny, 1), dtype=numpy.float32)
+    elevation[:, :, 0] = 1.5e+2 + 2.0e-5 * x - 1.2e-5 * y - 5.0e-10 * x * y
+    topo_bathy["elevation"] = elevation
 
     blocks = [
         {
@@ -363,7 +391,7 @@ class ThreeBlocksTopo(TestData):
             blocks = h5["blocks"]
             for attr in blocks["middle"].attrs:
                 del blocks["middle"].attrs[attr]
-            topo = h5["topography"]
+            topo = h5["surfaces"]["top_surface"]
             for attr in topo.attrs:
                 del topo.attrs[attr]
 

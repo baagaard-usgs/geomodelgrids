@@ -40,7 +40,8 @@ class geomodelgrids::apps::TestQuery : public CppUnit::TestFixture {
     CPPUNIT_TEST(testRunHelp);
     CPPUNIT_TEST(testRunOneBlockFlat);
     CPPUNIT_TEST(testRunThreeBlocksTopo);
-    CPPUNIT_TEST(testRunThreeBlocksSquash);
+    CPPUNIT_TEST(testRunThreeBlocksSquashTop);
+    CPPUNIT_TEST(testRunThreeBlocksSquashTopoBathy);
     CPPUNIT_TEST(testRunTwoModels);
     CPPUNIT_TEST(testRunBadInput);
     CPPUNIT_TEST(testRunBadOutput);
@@ -95,8 +96,11 @@ public:
     /// Test run() wth three-blocks-topo.
     void testRunThreeBlocksTopo(void);
 
-    /// Test run() wth three-blocks-topo with squashing.
-    void testRunThreeBlocksSquash(void);
+    /// Test run() wth three-blocks-topo with squashing using top surface
+    void testRunThreeBlocksSquashTop(void);
+
+    /// Test run() wth three-blocks-topo with squashing using topography/bathymetry.
+    void testRunThreeBlocksSquashTopoBathy(void);
 
     /// Test run() wth one-block-flat and three-blocks-topo.
     void testRunTwoModels(void);
@@ -145,7 +149,7 @@ geomodelgrids::apps::TestQuery::testConstructor(void) {
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in points CRS.", std::string("EPSG:4326"), query._pointsCRS);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in squash minimum elevation.", 0.0, query._squashMinElev);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Squash flag.", false, query._squash);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Squash flag.", geomodelgrids::serial::Query::SQUASH_NONE, query._squash);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in help flag.", false, query._showHelp);
 } // testConstructor
 
@@ -243,7 +247,7 @@ geomodelgrids::apps::TestQuery::testParseArgsMinimal(void) {
     const int nargs = 5;
     const char* const args[nargs] = {
         "test",
-	"--values=one,two",
+        "--values=one,two",
         "--models=B",
         "--points=points.in",
         "--output=points.out",
@@ -266,7 +270,7 @@ geomodelgrids::apps::TestQuery::testParseArgsMinimal(void) {
 // Test _parseArgs() with all arguments.
 void
 geomodelgrids::apps::TestQuery::testParseArgsAll(void) {
-    const int nargs = 8;
+    const int nargs = 9;
     const char* const args[nargs] = {
         "test",
         "--values=one,two,three",
@@ -275,6 +279,7 @@ geomodelgrids::apps::TestQuery::testParseArgsAll(void) {
         "--output=points.out",
         "--points-coordsys=EPSG:26910",
         "--squash-min-elev=-2.0e+3",
+        "--squash-surface=top_surface",
         "--log=error.log",
     };
     const size_t numValues = 3;
@@ -292,6 +297,7 @@ geomodelgrids::apps::TestQuery::testParseArgsAll(void) {
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in output.", std::string("points.out"), query._outputFilename);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in points coordsys.", std::string("EPSG:26910"), query._pointsCRS);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in squash min elevation.", -2.0e+3, query._squashMinElev);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in squash surfaace.", geomodelgrids::serial::Query::SQUASH_TOP_SURFACE, query._squash);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in log.", std::string("error.log"), query._logFilename);
     CPPUNIT_ASSERT_MESSAGE("Mismatch in help.", !query._showHelp);
 } // testParseArgsAll
@@ -308,7 +314,7 @@ geomodelgrids::apps::TestQuery::testPrintHelp(void) {
     Query query;
     query._printHelp();
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(876), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(1013), coutHelp.str().length());
 } // testPrintHelp
 
 
@@ -329,7 +335,7 @@ geomodelgrids::apps::TestQuery::testRunHelp(void) {
     query.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(876), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(1013), coutHelp.str().length());
 } // testRunHelp
 
 
@@ -337,7 +343,7 @@ geomodelgrids::apps::TestQuery::testRunHelp(void) {
 // Test run() with one-block-flat.
 void
 geomodelgrids::apps::TestQuery::testRunOneBlockFlat(void) {
-    const int nargs = 7;
+    const int nargs = 8;
     const char* const args[nargs] = {
         "test",
         "--values=two,one",
@@ -345,6 +351,7 @@ geomodelgrids::apps::TestQuery::testRunOneBlockFlat(void) {
         "--points=one-block-flat.in",
         "--output=one-block-flat.out",
         "--points-coordsys=EPSG:4326",
+        "--squash-surface=none",
         "--log=error.log",
     };
     geomodelgrids::testdata::OneBlockFlatPoints pointsOne;
@@ -395,28 +402,59 @@ geomodelgrids::apps::TestQuery::testRunThreeBlocksTopo(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Test run() with three-blocks-topo with squashing.
+// Test run() with three-blocks-topo with squashing using top surface.
 void
-geomodelgrids::apps::TestQuery::testRunThreeBlocksSquash(void) {
+geomodelgrids::apps::TestQuery::testRunThreeBlocksSquashTop(void) {
     const int nargs = 7;
     const char* const args[nargs] = {
         "test",
         "--values=two,one",
         "--models=../../data/three-blocks-topo.h5",
-        "--points=three-blocks-topo.in",
-        "--output=three-blocks-topo.out",
+        "--points=three-blocks-squash-top.in",
+        "--output=three-blocks-squash-top.out",
         "--points-coordsys=EPSG:4326",
         "--squash-min-elev=-3.0e+3"
     };
-    geomodelgrids::testdata::ThreeBlocksSquashPoints pointsThree(-3.0e+3);
-    std::ofstream sout("three-blocks-topo.in");CPPUNIT_ASSERT(sout.is_open() && sout.good());
+    geomodelgrids::testdata::ThreeBlocksSquashTopPoints pointsThree(-3.0e+3);
+    std::ofstream sout("three-blocks-squash-top.in");CPPUNIT_ASSERT(sout.is_open() && sout.good());
     _TestQuery::createPointsFile(sout, pointsThree);
     sout.close();
 
     Query query;
     query.run(nargs, const_cast<char**>(args));
 
-    std::ifstream sin("three-blocks-topo.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
+    std::ifstream sin("three-blocks-squash-top.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
+    std::string comment;
+    std::getline(sin, comment);
+    _TestQuery::checkQuery(sin, pointsThree);
+    sin.close();
+} // testRunThreeBlocksSquashTop
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Test run() with three-blocks-topo with squashing using topography/bathymetry.
+void
+geomodelgrids::apps::TestQuery::testRunThreeBlocksSquashTopoBathy(void) {
+    const int nargs = 8;
+    const char* const args[nargs] = {
+        "test",
+        "--values=two,one",
+        "--models=../../data/three-blocks-topo.h5",
+        "--points=three-blocks-squash-topo-bathy.in",
+        "--output=three-blocks-squash-topo-bathy.out",
+        "--points-coordsys=EPSG:4326",
+        "--squash-min-elev=-3.0e+3",
+        "--squash-surface=topography_bathymetry",
+    };
+    geomodelgrids::testdata::ThreeBlocksSquashTopoBathyPoints pointsThree(-3.0e+3);
+    std::ofstream sout("three-blocks-squash-topo-bathy.in");CPPUNIT_ASSERT(sout.is_open() && sout.good());
+    _TestQuery::createPointsFile(sout, pointsThree);
+    sout.close();
+
+    Query query;
+    query.run(nargs, const_cast<char**>(args));
+
+    std::ifstream sin("three-blocks-squash-topo-bathy.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
     std::string comment;
     std::getline(sin, comment);
     _TestQuery::checkQuery(sin, pointsThree);
@@ -506,7 +544,7 @@ geomodelgrids::apps::_TestQuery::createPointsFile(std::ostream& sout,
     sout << std::fixed << std::setprecision(8);
     for (size_t iPt = 0; iPt < numPoints; ++iPt) {
         for (size_t iDim = 0; iDim < spaceDim; ++iDim) {
-            sout << std::setw(15) << pointsLLE[iPt*spaceDim+iDim];
+            sout << std::setw(16) << pointsLLE[iPt*spaceDim+iDim];
         } // for
         sout << "\n";
     } // for

@@ -52,17 +52,17 @@ class RulesDataSrc(DataSrc):
         self.api = api.EarthVisionAPI(self.model_dir, ev_env)
         self._get_faultblocks_zones()
 
-    def get_topography(self, points):
-        """Query EarthVision model for elevation of ground surface at points.
+    def get_top_surface(self, points):
+        """Query EarthVision model for elevation of top surface at points.
 
         Args:
             points (numpy.array [Nx,Ny])
                 Numpy array with coordinates of points in model coordinates.
         Returns:
-            Numpy array [Nx,Ny] of elevation of ground surface at points.
+            Numpy array [Nx,Ny] of elevation of top surface at points.
         """
-        POINTS_FILENAME = "topography_points.dat"  # Must have .dat suffix.
-        ELEV_FILENAME = "topography_elev.dat"  # Must have .data suffix.
+        POINTS_FILENAME = "top_surface_points.dat"  # Must have .dat suffix.
+        ELEV_FILENAME = "top_surface_elev.dat"  # Must have .dat suffix.
 
         points_abspath = os.path.join(self.model_dir, POINTS_FILENAME)
         elev_abspath = os.path.join(self.model_dir, ELEV_FILENAME)
@@ -71,7 +71,7 @@ class RulesDataSrc(DataSrc):
         numpy.savetxt(points_abspath, points.reshape((-1, points.shape[2])) / scale, fmt="%16.8e")
 
         elev = -1.0e+20 * numpy.ones(points.shape[0:2])
-        for grd_filename in string_to_list(self.config["earthvision"]["topography_2grd"]):
+        for grd_filename in string_to_list(self.config["earthvision"]["top_surface_2grd"]):
             formula = "{filename_out}<elev> = bakint({ev2grd}, {filename_in}<x>, {filename_in}<y>);".format(
                 filename_in=POINTS_FILENAME, filename_out=ELEV_FILENAME, ev2grd=grd_filename)
             elev_grd = self.api.ev_fp(formula, elev_abspath).reshape(points.shape[0:2])
@@ -82,13 +82,46 @@ class RulesDataSrc(DataSrc):
         os.remove(elev_abspath)
         return elev.reshape((elev.shape[0], elev.shape[1], 1))
 
-    def get_values(self, block, topography, batch=None):
+    def get_topography_bathymetry(self, points):
+        """Query EarthVision model for elevation of topoggraphy or bathymetry at points.
+
+        Args:
+            points (numpy.array [Nx,Ny])
+                Numpy array with coordinates of points in model coordinates.
+        Returns:
+            Numpy array [Nx,Ny] of elevation of topography or bathymetry at points.
+        """
+        POINTS_FILENAME = "topography_bathymetry_points.dat"  # Must have .dat suffix.
+        ELEV_FILENAME = "topography__bathymetry elev.dat"  # Must have .dat suffix.
+
+        points_abspath = os.path.join(self.model_dir, POINTS_FILENAME)
+        elev_abspath = os.path.join(self.model_dir, ELEV_FILENAME)
+        scale = units.length_scale(self.config["earthvision"]["xy_units"])
+
+        numpy.savetxt(points_abspath, points.reshape((-1, points.shape[2])) / scale, fmt="%16.8e")
+
+        elev = -1.0e+20 * numpy.ones(points.shape[0:2])
+        for grd_filename in string_to_list(self.config["earthvision"]["topography_bathymetry_2grd"]):
+            formula = "{filename_out}<elev> = bakint({ev2grd}, {filename_in}<x>, {filename_in}<y>);".format(
+                filename_in=POINTS_FILENAME, filename_out=ELEV_FILENAME, ev2grd=grd_filename)
+            elev_grd = self.api.ev_fp(formula, elev_abspath).reshape(points.shape[0:2])
+            elev_grd *= units.length_scale(self.config["earthvision"]["elev_units"])
+            elev = numpy.maximum(elev_grd, elev)
+
+        os.remove(points_abspath)
+        os.remove(elev_abspath)
+        return elev.reshape((elev.shape[0], elev.shape[1], 1))
+
+    def get_values(self, block, top_surface, topo_bathy, batch=None):
         """Query EarthVision model for values at points.
 
         Args:
             block (Block)
                 Block information.
-            topography ()
+            top_surface (Surface)
+                Elevation of top surface of model.
+            topo_bathy (Surface)
+                Elevation of topography or bathymetry used to define depth.
             batch (BatchGenerator3D)
                 Current batch of points in block.
         """
@@ -96,7 +129,7 @@ class RulesDataSrc(DataSrc):
         VALUES_FILENAME = "block_values.dat"  # Must have .data suffix.
 
         points_abspath = os.path.join(self.model_dir, POINTS_FILENAME)
-        points = block.generate_points(topography, batch)
+        points = block.generate_points(top_surface, batch)
 
         scale = units.length_scale(self.config["earthvision"]["xy_units"])
         numpy.savetxt(points_abspath, points.reshape((-1, points.shape[3])) / scale, fmt="%16.8e")
@@ -104,10 +137,10 @@ class RulesDataSrc(DataSrc):
         ev_model = self.config["earthvision"]["geologic_model"]
         data = self.api.ev_label(VALUES_FILENAME, POINTS_FILENAME, ev_model)
 
-        topo_geo = block.get_topography(topography, batch)
+        topo_depth = block.get_topography(topo_bathy, batch)
         depth = numpy.zeros(points.shape[:-1])
         for iz in range(depth.shape[-1]):
-            depth[:, :, iz] = topo_geo - points[:, :, iz, 2]
+            depth[:, :, iz] = topo_depth - points[:, :, iz, 2]
         depth[:, :, 0] -= block.z_top_offset
 
         fn_path = self.config["earthvision"]["rules_fn"].split(".")

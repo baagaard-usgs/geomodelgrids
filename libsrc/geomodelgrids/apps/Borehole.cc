@@ -60,7 +60,7 @@ geomodelgrids::apps::Borehole::run(int argc,
     query.initialize(_modelFilenames, _valueNames, _pointsCRS);
 
     const double groundOffset = -1.0e-6;
-    double groundSurf = query.queryElevation(_location[0], _location[1]);
+    double groundSurf = query.queryTopElevation(_location[0], _location[1]);
     if (groundSurf != 0.0) {
         groundSurf += groundOffset;
     } // if
@@ -68,9 +68,9 @@ geomodelgrids::apps::Borehole::run(int argc,
 
     std::ofstream sout(_outputFilename);
     if (!sout.is_open() && !sout.good()) {
-      std::ostringstream msg;
-      msg << "Could not open output file '" << _outputFilename << "' for writing.";
-      throw std::runtime_error(msg.str().c_str());
+        std::ostringstream msg;
+        msg << "Could not open output file '" << _outputFilename << "' for writing.";
+        throw std::runtime_error(msg.str().c_str());
     } // if
     sout << _createOutputHeader(argc, argv);
 
@@ -81,7 +81,7 @@ geomodelgrids::apps::Borehole::run(int argc,
         const double elevation = groundSurf - _dz*iPt;
         query.query(&values[0], _location[0], _location[1], elevation);
 
-	const double depth = groundSurf - elevation;
+        const double depth = groundSurf - elevation;
         sout << std::setw(14) << elevation << std::setw(14) << depth;
         for (size_t i = 0; i < numQueryValues; ++i) {
             sout << std::setw(14) << values[i];
@@ -180,7 +180,7 @@ geomodelgrids::apps::Borehole::_parseArgs(int argc,
     } // while
 
     if (1 == argc) {
-      _showHelp = true;
+        _showHelp = true;
     } // if
     if (!_showHelp) { // Verify required arguments were provided.
         bool optionsOkay = true;
@@ -215,7 +215,7 @@ void
 geomodelgrids::apps::Borehole::_printHelp(void) {
     std::cout << "Usage: geomodelgrids_borehole "
               << "[--help] [--log=FILE_LOG] --location=X,Y --values=VALUE_0,...,VALUE_N --models=FILE_0,...,FILE_M "
-	      << "--output=FILE_OUTPUT [--max-depth=Z] [--dz=RESOLUTION] [--points-coordsys=PROJ|EPSG|WKT]\n\n"
+              << "--output=FILE_OUTPUT [--max-depth=Z] [--dz=RESOLUTION] [--points-coordsys=PROJ|EPSG|WKT]\n\n"
               << "    --help                           Print help information to stdout and exit.\n"
               << "    --log=FILE_LOG                   Write logging information to FILE_LOG.\n"
               << "    --location=X,Y                   Location of virtual borehole in point coordinate system.\n"
