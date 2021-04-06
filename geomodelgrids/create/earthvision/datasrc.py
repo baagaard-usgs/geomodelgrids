@@ -92,7 +92,7 @@ class RulesDataSrc(DataSrc):
             Numpy array [Nx,Ny] of elevation of topography or bathymetry at points.
         """
         POINTS_FILENAME = "topography_bathymetry_points.dat"  # Must have .dat suffix.
-        ELEV_FILENAME = "topography__bathymetry elev.dat"  # Must have .dat suffix.
+        ELEV_FILENAME = "topography_bathymetry_elev.dat"  # Must have .dat suffix.
 
         points_abspath = os.path.join(self.model_dir, POINTS_FILENAME)
         elev_abspath = os.path.join(self.model_dir, ELEV_FILENAME)
@@ -137,10 +137,10 @@ class RulesDataSrc(DataSrc):
         ev_model = self.config["earthvision"]["geologic_model"]
         data = self.api.ev_label(VALUES_FILENAME, POINTS_FILENAME, ev_model)
 
-        topo_depth = block.get_topography(topo_bathy, batch)
+        topo_bathy_elev = block.get_surface(topo_bathy, batch)
         depth = numpy.zeros(points.shape[:-1])
         for iz in range(depth.shape[-1]):
-            depth[:, :, iz] = topo_depth - points[:, :, iz, 2]
+            depth[:, :, iz] = topo_bathy_elev - points[:, :, iz, 2]
         depth[:, :, 0] -= block.z_top_offset
 
         fn_path = self.config["earthvision"]["rules_fn"].split(".")
