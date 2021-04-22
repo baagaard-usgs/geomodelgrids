@@ -32,7 +32,7 @@ class EarthVisionAPI():
         result = subprocess.run(cmd.split(), cwd=self.model_dir, env=self.env, stdout=subprocess.PIPE, check=True)
         return result.stdout.decode().split("\n")
 
-    def ev_label(self, filename_values, filename_points, filename_model):
+    def ev_label(self, filename_values, filename_points, filename_model, dtype, converters):
         """Run 'ev_label -m FILENAME_MODEL -o FILENAME_VALUES FILE
 
         Args:
@@ -42,19 +42,11 @@ class EarthVisionAPI():
                 Name of file with input points.
             filename_model (str)
                 Name of EarthVision model (.seq) file.
+            dtype (dict)
+                Dictionary containing types for output.
+            converters (dict)
+                Dictionary for converting output to dtype.
         """
-        CONVERTERS = {
-            0: float,
-            1: float,
-            2: float,
-            3: lambda s: s.decode("utf-8").strip('"'),
-            4: lambda s: s.decode("utf-8").strip('"'),
-        }
-        DTYPE = {
-            "names": ("x", "y", "z", "fault_block", "zone"),
-            "formats": ("f4", "f4", "f4", "<U32", "<U32")
-        }
-
         cmd = "ev_label -m {ev_model} -o {filename_out} -suppress VolumeIndex {filename_in}".format(
             filename_in=filename_points, filename_out=filename_values, ev_model=filename_model)
         logger = logging.getLogger(__name__)
@@ -62,7 +54,7 @@ class EarthVisionAPI():
                     cmd, self.model_dir, self.env)
         subprocess.run(cmd.split(), cwd=self.model_dir, env=self.env, check=True)
         values_abspath = os.path.join(self.model_dir, filename_values)
-        return numpy.loadtxt(values_abspath, delimiter="\t", dtype=DTYPE, converters=CONVERTERS)
+        return numpy.loadtxt(values_abspath, delimiter="\t", dtype=dtype, converters=converters)
 
     def ev_fp(self, formula, filename_out=None):
         """Run 'ev_fp < {formula}'.
