@@ -31,7 +31,7 @@ docker run --name geomodelgrids-dev-workspace --rm -t \
 docker run --name geomodelgrids-dev-workspace --rm -it \
     -v geomodelgrids-dev:/opt/geomodelgrids \
     -v $TOOLS_DIR/earthvision-11:/opt/earthvision \
-    -v $HOME/data/cencal-geology:/data/cencal-geology \
+    -v $HOME/data/sfbay-geology:/data/sfbay-geology \
     -v $HOME/data/geomodelgrids/:/data/geomodelgrids \
     registry.gitlab.com/baagaard-usgs/geomodelgrids/geomodelgrids-devenv
 ```

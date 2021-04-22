@@ -127,15 +127,31 @@ class RulesDataSrc(DataSrc):
         """
         POINTS_FILENAME = "block_points.dat"  # Must have .dat suffix.
         VALUES_FILENAME = "block_values.dat"  # Must have .data suffix.
+        DTYPE = {
+            "names": ("x", "y", "z", "fault_block", "zone"),
+            "formats": ("f4", "f4", "f4", "<U32", "<U32")
+        }
+        hscale = units.length_scale(self.config["earthvision"]["xy_units"])
+        vscale = units.length_scale(self.config["earthvision"]["elev_units"])
+        converters = {
+            0: lambda s: hscale*float(s),
+            1: lambda s: hscale*float(s),
+            2: lambda s: vscale*float(s),
+            3: lambda s: s.decode("utf-8").strip('"'),
+            4: lambda s: s.decode("utf-8").strip('"'),
+        }
 
         points_abspath = os.path.join(self.model_dir, POINTS_FILENAME)
         points = block.generate_points(top_surface, batch)
 
-        scale = units.length_scale(self.config["earthvision"]["xy_units"])
-        numpy.savetxt(points_abspath, points.reshape((-1, points.shape[3])) / scale, fmt="%16.8e")
+        ev_points = points.reshape((-1, points.shape[3])).copy()
+        ev_points[:, 0:2] /= hscale
+        ev_points[:, 2] /= vscale
+        numpy.savetxt(points_abspath, ev_points, fmt="%16.8e")
+        del ev_points
 
         ev_model = self.config["earthvision"]["geologic_model"]
-        data = self.api.ev_label(VALUES_FILENAME, POINTS_FILENAME, ev_model)
+        data = self.api.ev_label(VALUES_FILENAME, POINTS_FILENAME, ev_model, DTYPE, converters)
 
         topo_bathy_elev = block.get_surface(topo_bathy, batch)
         depth = numpy.zeros(points.shape[:-1])

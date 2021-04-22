@@ -13,5 +13,11 @@
         "120",
         "--exclude",
         "build/**"
-    ]
+    ],
+    "[markdown]": {
+        "editor.wordWrap": "wordWrapColumn",
+        "editor.wordWrapColumn": 100
+    },
+    "markdown.extension.toc.unorderedList.marker": "+",
+    "markdown.extension.toc.updateOnSave": false
 }

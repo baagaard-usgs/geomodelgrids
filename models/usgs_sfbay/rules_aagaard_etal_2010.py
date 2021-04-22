@@ -34,6 +34,7 @@ base units with Vp and Vs in m/s, density in kg/m**3, and depth in m.
 
 from geomodelgrids.create.core import NODATA_VALUE
 
+
 def default_vs(depth, vp):
     """Default rule for shear wave speed as a function of Vp.
 
@@ -377,7 +378,8 @@ def tertiary_sedimentary_lahondabasin(x, y, depth):
     Returns:
         Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
     """
-    vp = 2.24e+3 + 2.62*depth - 0.74432e-3*depth**2 + 0.0707e-6*depth**3 if depth < 3.0e+3 else 5.32e+3 + 0.027*(depth-3.0e+3)
+    vp = 2.24e+3 + 2.62*depth - 0.74432e-3*depth**2 + 0.0707e-6 * \
+        depth**3 if depth < 3.0e+3 else 5.32e+3 + 0.027*(depth-3.0e+3)
 
     vs = 500.0 + 6.633*depth if depth < 50.0 else default_vs(depth, vp)
 
@@ -450,6 +452,7 @@ def cenozoic_sedimentary_halfmoonbay(x, y, depth):
     qs = 13.0 if vs < 300.0 else default_qs(depth, vs)
     qp = default_qp(depth, qs)
     return (density, vp, vs, qp, qs)
+
 
 def seawater(x, y, depth):
     """Rule for elastic properties in sea water.
