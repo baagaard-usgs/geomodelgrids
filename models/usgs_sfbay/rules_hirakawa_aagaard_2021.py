@@ -21,6 +21,9 @@ from rules_aagaard_etal_2010 import (
     default_qs)
 
 
+MODEL_YAZIMUTH = 323.638
+
+
 def compute_xy_refpoints():
     """Print coordinates of reference points in model coordinate system for subdividing fault blocks.
 
@@ -225,8 +228,8 @@ def valley_sequence_sanleandro(x, y, depth):
     Returns:
         Tuple of density(kg/m**3), Vp(m/s), Vs(m/s), Qp, and Qs
     """
-    (x0, y0) = (75112.0, 113089.0)
-    if is_along_azimuth(x, y, x0, y0, 0.0):
+    (x0, y0) = (92724.2, 285582.4)
+    if is_along_azimuth(x, y, x0, y0, 323.638):
         return brocher2008_great_valley_sequence(x, y, depth)
     else:
         return brocher2005_older_cenozoic_sedimentary(x, y, depth)
@@ -246,8 +249,8 @@ def franciscan_napa(x, y, depth):
     Returns:
         Tuple of density(kg/m**3), Vp(m/s), Vs(m/s), Qp, and Qs
     """
-    (x0, y0) = (95744.0, 191248.5)
-    if is_along_azimuth(x, y, x0, y0, 0.0):
+    (x0, y0) = (62999.3, 360755.6)
+    if is_along_azimuth(x, y, x0, y0, 323.638):
         return franciscan_napa_sonoma(x, y, depth)
     else:
         return brocher2005_older_cenozoic_sedimentary(x, y, depth)
@@ -267,8 +270,8 @@ def cenozoic_napa(x, y, depth):
     Returns:
         Tuple of density(kg/m**3), Vp(m/s), Vs(m/s), Qp, and Qs
     """
-    (x0, y0) = (91820.3, 154382.7)
-    if is_along_azimuth(x, y, x0, y0, 0.0):
+    (x0, y0) = (81696.7, 328741.7)
+    if is_along_azimuth(x, y, x0, y0, 323.638):
         return brocher2005_older_cenozoic_sedimentary(x, y, depth)
     else:
         return cenozoic_walnutcreek(x, y, depth)
@@ -288,8 +291,8 @@ def franciscan_sonoma(x, y, depth):
     Returns:
         Tuple of density(kg/m**3), Vp(m/s), Vs(m/s), Qp, and Qs
     """
-    (x0, y0) = (82997.2, 200500.1)
-    if is_along_azimuth(x, y, x0, y0, 0.0):
+    (x0, y0) = (47249.3, 360648.4)
+    if is_along_azimuth(x, y, x0, y0, 323.638):
         return franciscan_napa_sonoma(x, y, depth)
     else:
         return brocher2008_great_valley_sequence(x, y, depth)
@@ -309,8 +312,8 @@ def cenozoic_sonoma(x, y, depth):
     Returns:
         Tuple of density(kg/m**3), Vp(m/s), Vs(m/s), Qp, and Qs
     """
-    (x0, y0) = (82997.2, 200500.1)
-    if is_along_azimuth(x, y, x0, y0, 0.0):
+    (x0, y0) = (47249.3, 360648.4)
+    if is_along_azimuth(x, y, x0, y0, 323.638):
         return brocher2008_great_valley_sequence(x, y, depth)
     else:
         return brocher2005_older_cenozoic_sedimentary(x, y, depth)
