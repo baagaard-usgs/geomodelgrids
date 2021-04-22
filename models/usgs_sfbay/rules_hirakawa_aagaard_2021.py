@@ -4,6 +4,9 @@ Hirakawa and Aagaard (20XX).
 Hirakawa and Aagaard, B. T. (20XX), , Bulletin of the Seismological Society of
 America, XXX(X), XXXX-XXXX, doi: 10.1785/XXXX.
 
+The x and y coordinates are in the *unrotated* model coordinate system in units of m.
+That is, the xy coordinates match the model CRS specified in the model configuration.
+
 The rules were originally developed with Vp and Vs in km/s, density in
 g/cm**3, and depth in km. Here all rules have been converted to SI
 base units with Vp and Vs in m/s, density in kg/m**3, and depth in m.
@@ -18,9 +21,6 @@ from rules_aagaard_etal_2010 import (
     default_qs)
 
 
-MODEL_YAZIMUTH = 323.638
-MODEL_ORIGIN = (99286.2, 149980.5)
-
 def compute_xy_refpoints():
     """Print coordinates of reference points in model coordinate system for subdividing fault blocks.
 
@@ -32,8 +32,6 @@ def compute_xy_refpoints():
         "cenozoic_napa": (37.96, -122.07),
         "franciscan_sonoma": (38.25, -122.46),
         "cenozoic_sonoma": (38.25, -122.46),
-        "valley_sequence_greatvalley": (38.0, -121.96),
-        "cenozoic_greatvalley": (38.0, -121.96),
     }
     import pyproj
     cs_geo = pyproj.CRS("EPSG:4326")
@@ -41,12 +39,7 @@ def compute_xy_refpoints():
     transformer = pyproj.Transformer.from_crs(cs_geo, cs_model)
     for name, (lon, lat) in REFERENCE_POINTS.items():
         x, y = transformer.transform(lon, lat)
-        xRel = x - MODEL_ORIGIN[0]
-        yRel = y - MODEL_ORIGIN[1]
-        azRad = MODEL_YAZIMUTH / 180.0 * math.pi
-        xModel = xRel*math.cos(azRad) - yRel*math.sin(azRad)
-        yModel = xRel*math.sin(azRad) + yRel*math.cos(azRad)
-        print(f"{name} (x0, y0) = ({xModel:.1f}, {yModel:.1f})")
+        print(f"{name} (x0, y0) = ({x:.1f}, {y:.1f})")
 
 
 def is_along_azimuth(x, y, x0, y0, azimuth):
@@ -153,48 +146,6 @@ def franciscan_napa_sonoma(x, y, depth):
 
     vs = default_vs(depth, vp)
     density = density0 if depth < 3.0e+3 else default_density(depth, vp)
-    qs = 13.0 if vs < 300.0 else default_qs(depth, vs)
-    qp = default_qp(depth, qs)
-    return (density, vp, vs, qp, qs)
-
-
-def greatvalley_delta_sedimentary1(x, y, depth):
-    """
-    Args:
-        x(float)
-            Model x coordinate.
-        y(float)
-            Model y coordinate.
-        depth(float)
-            Depth of location in m.
-
-    Returns:
-        Tuple of density(kg/m**3), Vp(m/s), Vs(m/s), Qp, and Qs
-    """
-    vp = 1.94e+3 + 0.6*(depth)
-    vs = default_vs(depth, vp)
-    density = default_density(depth, vp)
-    qs = 13.0 if vs < 300.0 else default_qs(depth, vs)
-    qp = default_qp(depth, qs)
-    return (density, vp, vs, qp, qs)
-
-
-def greatvalley_delta_sedimentary2(x, y, depth):
-    """
-    Args:
-        x(float)
-            Model x coordinate.
-        y(float)
-            Model y coordinate.
-        depth(float)
-            Depth of location in m.
-
-    Returns:
-        Tuple of density(kg/m**3), Vp(m/s), Vs(m/s), Qp, and Qs
-    """
-    vp = 1.64e+3 + 0.6*(depth)
-    vs = default_vs(depth, vp)
-    density = default_density(depth, vp)
     qs = 13.0 if vs < 300.0 else default_qs(depth, vs)
     qp = default_qp(depth, qs)
     return (density, vp, vs, qp, qs)
@@ -363,45 +314,3 @@ def cenozoic_sonoma(x, y, depth):
         return brocher2008_great_valley_sequence(x, y, depth)
     else:
         return brocher2005_older_cenozoic_sedimentary(x, y, depth)
-
-
-def valley_sequence_greatvalley(x, y, depth):
-    """Rule for elastic properties in zone 'Valley Sequence', block 'Great Valley'
-
-    Args:
-        x(float)
-            Model x coordinate.
-        y(float)
-            Model y coordinate.
-        depth(float)
-            Depth of location in m.
-
-    Returns:
-        Tuple of density(kg/m**3), Vp(m/s), Vs(m/s), Qp, and Qs
-    """
-    (x0, y0) = (102254.0, 152339.2)
-    if is_along_azimuth(x, y, x0, y0, 0.0):
-        return brocher2005_older_cenozoic_sedimentary(x, y, depth)
-    else:
-        return brocher2008_great_valley_sequence(x, y, depth)
-
-
-def cenozoic_greatvalley(x, y, depth):
-    """Rule for elastic properties in zone 'Cenozoic', block 'Great Valley'
-
-    Args:
-        x(float)
-            Model x coordinate.
-        y(float)
-            Model y coordinate.
-        depth(float)
-            Depth of location in m.
-
-    Returns:
-        Tuple of density(kg/m**3), Vp(m/s), Vs(m/s), Qp, and Qs
-    """
-    (x0, y0) = (102254.0, 152339.2)
-    if is_along_azimuth(x, y, x0, y0, 0.0):
-        return greatvalley_delta_sedimentary1(x, y, depth)
-    else:
-        return greatvalley_delta_sedimentary2(x, y, depth)

@@ -89,7 +89,6 @@ def get_rules(fault_block, zone):
             "default": rules_aagaard_etal_2010.great_valley_sequence_sedimentary,
             "San Leandro": rules_hirakawa_aagaard_2021.valley_sequence_sanleandro,
             "Sunol": rules_hirakawa_aagaard_2021.brocher2008_great_valley_sequence,
-            "Great Valley": rules_hirakawa_aagaard_2021.valley_sequence_greatvalley,
         },
         "Great Valley Seq": {
             "default": rules_aagaard_etal_2010.great_valley_sequence_sedimentary,
@@ -106,7 +105,6 @@ def get_rules(fault_block, zone):
         },
         "Cenozoic_Great Valley": {
             "default": rules_aagaard_etal_2010.tertiary_sedimentary_southbay,
-            "Great Valley": rules_hirakawa_aagaard_2021.cenozoic_greatvalley,
         },
         "Cenozoic_Halfmoon": {
             "default": rules_aagaard_etal_2010.cenozoic_sedimentary_halfmoonbay,
