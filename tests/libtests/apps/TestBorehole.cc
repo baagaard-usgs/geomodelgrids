@@ -41,6 +41,7 @@ class geomodelgrids::apps::TestBorehole : public CppUnit::TestFixture {
     CPPUNIT_TEST(testRunOneBlockFlat);
     CPPUNIT_TEST(testRunThreeBlocksTopo);
     CPPUNIT_TEST(testRunBadOutput);
+    CPPUNIT_TEST(testRunBadLocation);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -94,6 +95,9 @@ public:
 
     /// Test run() wth bad output file.
     void testRunBadOutput(void);
+
+    /// Test run() wth bad output location.
+    void testRunBadLocation(void);
 
 }; // class TestBorehole
 CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::apps::TestBorehole);
@@ -227,7 +231,7 @@ geomodelgrids::apps::TestBorehole::testParseArgsMinimal(void) {
     const int nargs = 5;
     const char* const args[nargs] = {
         "test",
-	"--values=one,two",
+        "--values=one,two",
         "--models=A",
         "--location=1.0,2.0",
         "--output=points.out",
@@ -376,7 +380,7 @@ geomodelgrids::apps::TestBorehole::testRunThreeBlocksTopo(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Test run() with bad output.
+// Test run() with bad output specification.
 void
 geomodelgrids::apps::TestBorehole::testRunBadOutput(void) {
     const int nargs = 6;
@@ -396,6 +400,26 @@ geomodelgrids::apps::TestBorehole::testRunBadOutput(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
+// Test run() with bad location.
+void
+geomodelgrids::apps::TestBorehole::testRunBadLocation(void) {
+    const int nargs = 6;
+    const char* const args[nargs] = {
+        "test",
+        "--models=../../data/three-blocks-topo.h5",
+        "--location=35.1,97.7",
+        "--output=badlocation-borehole.out",
+        "--points-coordsys=EPSG:4326",
+        "--values=two,one",
+    };
+    geomodelgrids::testdata::ThreeBlocksTopoBorehole boreholeThree;
+
+    Borehole borehole;
+    CPPUNIT_ASSERT_EQUAL(1, borehole.run(nargs, const_cast<char**>(args)));
+} // testRunBadLocation
+
+
+// ---------------------------------------------------------------------------------------------------------------------
 void
 geomodelgrids::apps::_TestBorehole::checkBorehole(std::istream& sin,
                                                   const geomodelgrids::testdata::ModelPoints& points) {
@@ -404,24 +428,25 @@ geomodelgrids::apps::_TestBorehole::checkBorehole(std::istream& sin,
     const double* const pointsXYZ = points.getXYZ();
     const double* const pointsLLE = points.getLatLonElev();
 
+    std::string comment;
+    std::getline(sin, comment); // Command
+    std::getline(sin, comment); // Column headers
+
     const double groundSurf = pointsLLE[0*spaceDim+2];
     for (size_t iPt = 0; iPt < numPoints; ++iPt) {
         const double x = pointsXYZ[iPt*spaceDim+0];
         const double y = pointsXYZ[iPt*spaceDim+1];
         const double z = pointsXYZ[iPt*spaceDim+2];
 
-        std::string comment;
-        std::getline(sin, comment);
-
         double elev, depth;
-	const double tolerance = 1.0e-6;
+        const double tolerance = 1.0e-6;
         sin >> elev;CPPUNIT_ASSERT_MESSAGE("Could not read elevation in borehole.", sin.good());
-	sin >> depth;CPPUNIT_ASSERT_MESSAGE("Could not read depth in borehole.", sin.good());
+        sin >> depth;CPPUNIT_ASSERT_MESSAGE("Could not read depth in borehole.", sin.good());
 
-	const double elevE = pointsLLE[iPt*spaceDim+2];
-	CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Mismatch in elevation.", elevE, elev, tolerance*fabs(elevE));
-	CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Mismatch in depth.", groundSurf-elevE, depth, tolerance*fabs(groundSurf-elevE));
-	
+        const double elevE = pointsLLE[iPt*spaceDim+2];
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Mismatch in elevation.", elevE, elev, tolerance*fabs(elevE));
+        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Mismatch in depth.", groundSurf-elevE, depth, tolerance*fabs(groundSurf-elevE));
+
         { // Value 'two'
             double value = NODATA_VALUE;
             sin >> value;CPPUNIT_ASSERT_MESSAGE("Could not read value 'two' in output.", sin.good());

@@ -3,6 +3,7 @@
 #include "Borehole.hh" // implementation of class methods
 
 #include "geomodelgrids/serial/Query.hh" // USES Query
+#include "geomodelgrids/utils/constants.hh" // USES NODATA_VALUE
 #include "geomodelgrids/utils/ErrorHandler.hh" // USES ErrorHandler
 
 #include <getopt.h> // USES getopt_long()
@@ -15,7 +16,7 @@
 namespace geomodelgrids {
     namespace apps {
         namespace _Borehole {
-            static const double NOVALUE = 1.0e+20;
+            static const int cwidth = 14;
         } // _Borehole
     } // apps
 } // geomodelgrids
@@ -29,8 +30,8 @@ geomodelgrids::apps::Borehole::Borehole() :
     _maxDepth(5000.0),
     _dz(10.0),
     _showHelp(false) {
-    _location[0] = _Borehole::NOVALUE;
-    _location[1] = _Borehole::NOVALUE;
+    _location[0] = geomodelgrids::NODATA_VALUE;
+    _location[1] = geomodelgrids::NODATA_VALUE;
 } // constructor
 
 
@@ -61,7 +62,10 @@ geomodelgrids::apps::Borehole::run(int argc,
 
     const double groundOffset = -1.0e-6;
     double groundSurf = query.queryTopElevation(_location[0], _location[1]);
-    if (groundSurf != 0.0) {
+    if (groundSurf == geomodelgrids::NODATA_VALUE) {
+        std::cout << "Could not find elevation for location. Point is outside the models." << std::endl;
+        return 1;
+    } else if (groundSurf != 0.0) {
         groundSurf += groundOffset;
     } // if
     const size_t numPoints = size_t(1 + _maxDepth / _dz);
@@ -82,9 +86,10 @@ geomodelgrids::apps::Borehole::run(int argc,
         query.query(&values[0], _location[0], _location[1], elevation);
 
         const double depth = groundSurf - elevation;
-        sout << std::setw(14) << elevation << std::setw(14) << depth;
+        sout << std::setw(_Borehole::cwidth) << elevation
+             << std::setw(_Borehole::cwidth) << depth;
         for (size_t i = 0; i < numQueryValues; ++i) {
-            sout << std::setw(14) << values[i];
+            sout << std::setw(_Borehole::cwidth) << values[i];
         } // for
         sout << "\n";
     } // while
@@ -138,7 +143,7 @@ geomodelgrids::apps::Borehole::_parseArgs(int argc,
             std::istringstream tokenStream(optarg);
             std::string token;
             int index = 0;
-            while (std::getline(tokenStream, token, ',')) {
+            while (std::getline(tokenStream, token, ',') && index < 2) {
                 _location[index++] = std::stod(token);
             } // while
             break;
@@ -197,7 +202,7 @@ geomodelgrids::apps::Borehole::_parseArgs(int argc,
             msg << "    - Missing list of model filenames. Use --models=FILE_0,...,FILE_M\n";
             optionsOkay = false;
         } // if
-        if ((_location[0] == _Borehole::NOVALUE) || (_location[1] == _Borehole::NOVALUE)) {
+        if ((_location[0] == geomodelgrids::NODATA_VALUE) || (_location[1] == geomodelgrids::NODATA_VALUE)) {
             msg << "    - Missing boreole location. Use --location=X,Y\n";
             optionsOkay = false;
         } // if
@@ -240,6 +245,12 @@ geomodelgrids::apps::Borehole::_createOutputHeader(int argc,
     header << "#";
     for (int i = 0; i < argc; ++i) {
         header << " " << argv[i];
+    } // for
+    header << "\n#"
+           << std::setw(_Borehole::cwidth-1) << "Elevation"
+           << std::setw(_Borehole::cwidth) << "Depth";
+    for (size_t i = 0; i < _valueNames.size(); ++i) {
+        header << std::setw(_Borehole::cwidth) << _valueNames[i];
     } // for
     header << "\n";
     return header.str();
