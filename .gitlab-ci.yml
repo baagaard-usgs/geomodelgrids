@@ -69,13 +69,6 @@ debian-testing-job:
     TEST_COVERAGE: "yes"
     PYTHON_COVERAGE: "python3-coverage"
 
-ubuntu-18.04-job:
-  extends: .builder
-  variables:
-    BASE_IMAGE: "testenv-ubuntu-18.04"
-    TEST_COVERAGE: "yes"
-    PYTHON_COVERAGE: "python3-coverage"
-
 ubuntu-20.04-job:
   extends: .builder
   variables:
@@ -109,7 +102,6 @@ centos-8-job:
   variables:
     BASE_IMAGE: "testenv-centos-8"
     TEST_COVERAGE: "no"
-
 
 auto-doc-job:
   stage: auto-documentation
