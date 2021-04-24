@@ -11,6 +11,7 @@ libgeomodelgrids_la_SOURCES = \
 	apps/Query.cc \
 	apps/QueryElev.cc \
 	apps/Borehole.cc \
+	apps/Isosurface.cc \
 	serial/Query.cc \
 	serial/cquery.cc \
 	serial/ModelInfo.cc \
@@ -29,6 +30,17 @@ pkginclude_HEADERS = \
 libgeomodelgrids_la_LIBADD = -lhdf5 -lproj
 libgeomodelgrids_la_LDFLAGS = $(HDF5_LDFLAGS) $(PROJ_LDFLAGS)
 libgeomodelgrids_la_CPPFLAGS = -I$(top_srcdir)/libsrc $(HDF5_INCLUDES) $(PROJ_INCLUDES)
+
+if ENABLE_GDAL
+CPPFLAGS += 
+libgeomodelgrids_la_SOURCES += \
+	utils/GeoTiff.cc
+
+libgeomodelgrids_la_CPPFLAGS += $(GDAL_INCLUDES) -DWITH_GDAL
+libgeomodelgrids_la_LDFLAGS += $(GDAL_LDFLAGS)
+libgeomodelgrids_la_LIBADD += -lgdal
+endif
+
 
 if ENABLE_TESTING
 libgeomodelgrids_la_SOURCES += \

@@ -12,7 +12,7 @@ AC_DEFUN([CIT_GDAL_HEADER], [
   cit_save_cppflags=$CPPFLAGS
   CPPFLAGS="$CPPFLAGS $PROJ_INCLUDES"
   AC_LANG(C++)
-  AC_CHECK_HEADER([gdal.h], [], [
+  AC_CHECK_HEADER([gdal/gdal.h], [], [
     AC_MSG_ERROR([GDAL header not found; try --with-gdal-incdir=<GDAL include dir>])
   ])dnl
   CPPFLAGS=$cit_save_cppflags

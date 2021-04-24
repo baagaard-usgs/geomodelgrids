@@ -11,11 +11,13 @@ namespace geomodelgrids {
         class ModelPoints;
         class OneBlockFlatPoints;
         class OneBlockFlatBorehole;
+        class OneBlockFlatIsosurface;
         class OneBlockTopoPoints;
         class OneBlockSquashPoints;
         class ThreeBlocksFlatPoints;
         class ThreeBlocksTopoPoints;
         class ThreeBlocksTopoBorehole;
+        class ThreeBlocksTopoIsosurface;
         class ThreeBlocksSquashTopPoints;
         class ThreeBlocksSquashTopoBathyPoints;
         class OutsideDomainPoints;
@@ -100,6 +102,30 @@ public:
                            const double y,
                            const double z);
 
+    /** Compute elevation of isosurface for value 'one' at point.
+     *
+     * @param[in] x X coordinate of point.
+     * @parma[in] y Y coordinate of point.
+     * @param[in] isoValue Isosurface value.
+     * @returns z Elevation of 'one' isosurface at point.
+     */
+    static
+    double computeIsosurfaceOne(const double x,
+                                const double y,
+                                const double isoValue);
+
+    /** Compute elevation of isosurface for value 'two' at point.
+     *
+     * @param[in] x X coordinate of point.
+     * @parma[in] y Y coordinate of point.
+     * @param[in] isoValue Isosurface value.
+     * @returns z Elevation of 'two' isosurface at point.
+     */
+    static
+    double computeIsosurfaceTwo(const double x,
+                                const double y,
+                                const double isoValue);
+
     // PROTECTED MEMBERS -----------------------------------------------------------------------------------------------
 protected:
 
@@ -122,6 +148,12 @@ public:
 
     OneBlockFlatBorehole(void);
 }; // OneBlockFlatBorehole
+
+class geomodelgrids::testdata::OneBlockFlatIsosurface : public ModelPoints {
+public:
+
+    OneBlockFlatIsosurface(void);
+}; // OneBlockFlatIsosurface
 
 class geomodelgrids::testdata::OneBlockTopoPoints : public ModelPoints {
 public:
@@ -152,6 +184,12 @@ public:
 
     ThreeBlocksTopoBorehole(void);
 }; // ThreeBlocksTopoBorehole
+
+class geomodelgrids::testdata::ThreeBlocksTopoIsosurface : public ModelPoints {
+public:
+
+    ThreeBlocksTopoIsosurface(void);
+}; // ThreeBlocksTopoIsosurface
 
 class geomodelgrids::testdata::ThreeBlocksSquashTopPoints : public ModelPoints {
 public:

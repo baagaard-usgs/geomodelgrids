@@ -4,6 +4,8 @@
 namespace geomodelgrids {
     namespace utils {
         class CRSTransformer;
+        class GeoTiff;
+        class LineSearch;
 
         class ErrorHandler;
 

@@ -27,6 +27,15 @@ test_apps_LDADD = \
 	-lhdf5 \
 	-lproj
 
+if ENABLE_GDAL
+test_apps_SOURCES += TestIsosurface.cc
+test_apps_LDADD += -lgdal
+
+test_apps_CPPFLAGS += $(GDAL_INCLUDES) -DWITH_GDAL
+test_apps_LDFLAGS += $(GDAL_LDFLAGS)
+endif
+
+
 noinst_tmp = \
 		error.log \
 		one-block-flat.in \

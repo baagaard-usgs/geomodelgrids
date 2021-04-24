@@ -2,7 +2,8 @@ bin_PROGRAMS = \
 	geomodelgrids_info \
 	geomodelgrids_query \
 	geomodelgrids_queryelev \
-	geomodelgrids_borehole
+	geomodelgrids_borehole \
+	geomodelgrids_isosurface
 
 if ENABLE_PYTHON
 bin_SCRIPTS = \
@@ -22,6 +23,9 @@ geomodelgrids_queryelev_LDADD = $(top_builddir)/libsrc/geomodelgrids/libgeomodel
 
 geomodelgrids_borehole_SOURCES = borehole.cc
 geomodelgrids_borehole_LDADD = $(top_builddir)/libsrc/geomodelgrids/libgeomodelgrids.la
+
+geomodelgrids_isosurface_SOURCES = isosurface.cc
+geomodelgrids_isosurface_LDADD = $(top_builddir)/libsrc/geomodelgrids/libgeomodelgrids.la
 
 
 # End of file

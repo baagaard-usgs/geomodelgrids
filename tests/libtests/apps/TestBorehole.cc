@@ -240,8 +240,8 @@ geomodelgrids::apps::TestBorehole::testParseArgsMinimal(void) {
     Borehole borehole;
     borehole._parseArgs(nargs, const_cast<char**>(args));
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of values.", size_t(2), borehole._valueNames.size());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in models.", std::string("one"), borehole._valueNames[0]);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in models.", std::string("two"), borehole._valueNames[1]);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in values.", std::string("one"), borehole._valueNames[0]);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in values.", std::string("two"), borehole._valueNames[1]);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of models.", size_t(1), borehole._modelFilenames.size());
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in models.", std::string("A"), borehole._modelFilenames[0]);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in location x coordinate.", 1.0, borehole._location[0]);

@@ -73,6 +73,14 @@ public:
                            const double destY,
                            const double destZ);
 
+    /** Create CRSTransformer that transforms axis order from geo to xy order.
+     *
+     * @param[in] crsString CRS for coordinate system.
+     * @returns CRSTransformer.
+     */
+    static
+    CRSTransformer* createGeoToXYAxisOrder(const char* crsString);
+
     // PRIVATE MEMBERS -------------------------------------------------------------------------------------------------
 private:
 

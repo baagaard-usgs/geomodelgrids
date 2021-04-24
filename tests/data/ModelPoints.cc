@@ -127,7 +127,26 @@ geomodelgrids::testdata::ModelPoints::computeValueTwo(const double x,
 } // computeValueTwo
 
 
-#include <iostream>
+// ---------------------------------------------------------------------------------------------------------------------
+// Compute elevation of isosurface for value 'one' at point.
+double
+geomodelgrids::testdata::ModelPoints::computeIsosurfaceOne(const double x,
+                                                           const double y,
+                                                           const double isoValue) {
+    return 2.0 * (isoValue - 2.0e+3 - 1.0 * x - 0.4 * y);
+} // computeIsosurfaceOne
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Compute elevation of isosurface for value 'one' at point.
+double
+geomodelgrids::testdata::ModelPoints::computeIsosurfaceTwo(const double x,
+                                                           const double y,
+                                                           const double isoValue) {
+    return 1.0/0.3 * (isoValue + 1.2e+3 - 2.1 * x + 0.9 * y);
+} // computeIsosurfaceTwo
+
+
 // ---------------------------------------------------------------------------------------------------------------------
 void
 geomodelgrids::testdata::_ModelPoints::toXYZ(double* const coordsDest,
@@ -192,6 +211,31 @@ geomodelgrids::testdata::OneBlockFlatPoints::OneBlockFlatPoints(void) :
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
 geomodelgrids::testdata::OneBlockFlatBorehole::OneBlockFlatBorehole(void) :
+    ModelPoints(6) {
+    const size_t numPoints = 6;assert(_numPoints == numPoints);
+    static const double pointsLLE[numPoints*3] = {
+        37.381, -121.581, 0.0,
+        37.381, -121.581, -1.0e+3,
+        37.381, -121.581, -2.0e+3,
+        37.381, -121.581, -3.0e+3,
+        37.381, -121.581, -4.0e+3,
+        37.381, -121.581, -5.0e+3,
+    };_pointsLLE = pointsLLE;
+    _modelCRS = "EPSG:26910";
+
+    _ModelPoints::Domain domain;
+    domain.yAzimuth = 90.0;
+    domain.originX = 590000.0;
+    domain.originY = 4150000.0;
+    domain.zBottom = -5.0e+3;
+    domain.hasTopSurface = false;
+    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
+} // Constructor
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Constructor.
+geomodelgrids::testdata::OneBlockFlatIsosurface::OneBlockFlatIsosurface(void) :
     ModelPoints(6) {
     const size_t numPoints = 6;assert(_numPoints == numPoints);
     static const double pointsLLE[numPoints*3] = {
@@ -330,6 +374,32 @@ geomodelgrids::testdata::ThreeBlocksTopoPoints::ThreeBlocksTopoPoints(void) :
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
 geomodelgrids::testdata::ThreeBlocksTopoBorehole::ThreeBlocksTopoBorehole(void) :
+    ModelPoints(6) {
+    const size_t numPoints = 6;assert(_numPoints == numPoints);
+    const double groundSurf = 151.69036995974;
+    static const double pointsLLE[numPoints*3] = {
+        35.1, -117.7, 0.0 + groundSurf,
+        35.1, -117.7, -5.0e+3 + groundSurf,
+        35.1, -117.7, -10.0e+3 + groundSurf,
+        35.1, -117.7, -15.0e+3 + groundSurf,
+        35.1, -117.7, -20.0e+3 + groundSurf,
+        35.1, -117.7, -25.0e+3 + groundSurf,
+    };_pointsLLE = pointsLLE;
+    _modelCRS = "EPSG:3311";
+
+    _ModelPoints::Domain domain;
+    domain.yAzimuth = 330.0;
+    domain.originX = 200000.0;
+    domain.originY = -400000.0;
+    domain.zBottom = -45.0e+3;
+    domain.hasTopSurface = true;
+    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
+} // constructor
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Constructor.
+geomodelgrids::testdata::ThreeBlocksTopoIsosurface::ThreeBlocksTopoIsosurface(void) :
     ModelPoints(6) {
     const size_t numPoints = 6;assert(_numPoints == numPoints);
     const double groundSurf = 151.69036995974;

@@ -11,6 +11,14 @@ subpkginclude_HEADERS = \
 noinst_HEADERS =
 
 
+if ENABLE_GDAL
+subpkginclude_HEADERS += \
+	GeoTiff.hh
+endif
+
+
+
+
 if ENABLE_TESTING
 subpkginclude_HEADERS += \
 	TestDriver.hh

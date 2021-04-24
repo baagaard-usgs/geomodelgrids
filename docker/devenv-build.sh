@@ -19,7 +19,7 @@ else
 fi
 
 
-${TOP_SRCDIR}/configure --prefix=${INSTALL_DIR} --enable-python --enable-testing --enable-test-coverage \
+${TOP_SRCDIR}/configure --prefix=${INSTALL_DIR} --enable-python --enable-gdal --enable-testing --enable-test-coverage \
 	     CPPFLAGS="-I${HDF5_INCDIR} $CPPFLAGS_OPT" \
 	     LDFLAGS="-L${HDF5_LIBDIR} --coverage" \
 	     CFLAGS="$CFLAGS" \
