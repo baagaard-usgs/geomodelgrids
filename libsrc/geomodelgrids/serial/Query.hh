@@ -18,7 +18,7 @@ class geomodelgrids::serial::Query {
     // PUBLIC ENUMS ///////////////////////////////////////////////////////////////////////////////////////////////////
 public:
 
-    enum SQUASHING_TYPE {
+    enum SquashingEnum {
         SQUASH_NONE=0,
         SQUASH_TOP_SURFACE=1,
         SQUASH_TOPOGRAPHY_BATHYMETRY=2,
@@ -61,7 +61,7 @@ public:
      *
      * @param[in] value Type of squashing.
      */
-    void setSquashing(const SQUASHING_TYPE value);
+    void setSquashing(const SquashingEnum value);
 
     /** Query for elevation of top of model at point.
      *
@@ -115,7 +115,7 @@ private:
     std::vector<values_map_type> _valuesIndex;
     double _squashMinElev;
     geomodelgrids::utils::ErrorHandler* _errorHandler;
-    SQUASHING_TYPE _squash;
+    SquashingEnum _squash;
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
 private:

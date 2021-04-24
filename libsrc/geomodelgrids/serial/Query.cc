@@ -115,7 +115,7 @@ geomodelgrids::serial::Query::setSquashMinElev(const double value) {
 // ---------------------------------------------------------------------------------------------------------------------
 // Turn squashing on/off.
 void
-geomodelgrids::serial::Query::setSquashing(const SQUASHING_TYPE value) {
+geomodelgrids::serial::Query::setSquashing(const SquashingEnum value) {
     _squash = value;
 } // setSquashing
 

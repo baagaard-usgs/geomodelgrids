@@ -117,7 +117,7 @@ geomodelgrids_squery_setSquashing(void* handle,
     } // if
 
     assert(query);
-    geomodelgrids::serial::Query::SQUASHING_TYPE valueEnum = geomodelgrids::serial::Query::SQUASH_NONE;
+    geomodelgrids::serial::Query::SquashingEnum valueEnum = geomodelgrids::serial::Query::SQUASH_NONE;
     switch (value) {
     case GEOMODELGRIDS_SQUASH_NONE:
         valueEnum = geomodelgrids::serial::Query::SQUASH_NONE;

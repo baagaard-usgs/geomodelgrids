@@ -4,7 +4,7 @@
 
 #include "appsfwd.hh" // forward declarations
 
-#include "geomodelgrids/serial/Query.hh" // HASA SQUASHING_TYPE
+#include "geomodelgrids/serial/Query.hh" // HASA SquashingEnum
 
 #include <vector> // HASA std::std::vector
 #include <string> // HASA std::string
@@ -75,7 +75,7 @@ private:
     std::string _outputFilename;
     std::string _logFilename;
     double _squashMinElev;
-    geomodelgrids::serial::Query::SQUASHING_TYPE _squash;
+    geomodelgrids::serial::Query::SquashingEnum _squash;
     bool _showHelp;
 
     // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
