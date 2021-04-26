@@ -60,7 +60,9 @@ geomodelgrids::utils::TestDriver::run(int argc,
         } else {
             for (size_t i = 0; i < _tests.size(); ++i) {
                 const CppUnit::Test* testCase = _findTest(test, _tests[i]);
-                runner.addTest(const_cast<CppUnit::Test*>(testCase));
+                if (testCase) {
+                    runner.addTest(const_cast<CppUnit::Test*>(testCase));
+                } // if
             } // for
         } // if/else
         runner.run(controller);
@@ -169,8 +171,8 @@ geomodelgrids::utils::TestDriver::_findTest(const CppUnit::Test* test,
     if (!test->getChildTestCount()) { return NULL; }
 
     for (int i = 0; i < test->getChildTestCount(); ++i) {
-        const CppUnit::Test* found = _findTest(test->getChildTestAt(i), name);
-        if (found) { return found; }
+        const CppUnit::Test* testCase = _findTest(test->getChildTestAt(i), name);
+        if (testCase) { return testCase; }
     } // for
 
     return NULL;
