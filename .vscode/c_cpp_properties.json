@@ -4,6 +4,7 @@
             "name": "macos-clang",
             "includePath": [
                 "${workspaceFolder}/libsrc",
+                "${workspaceFolder}/tests/data",
                 "${GEOMODELGRIDS_BUILDDIR}",
                 "${PYTHON_INCDIR}",
                 "${MPI_INCDIR}",
