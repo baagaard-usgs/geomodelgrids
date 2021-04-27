@@ -25,7 +25,29 @@ namespace geomodelgrids {
 } // geomodelgrids
 
 class geomodelgrids::testdata::ModelPoints {
-    // PUBLIC METHODS --------------------------------------------------------------------------------------------------
+    // PUBLIC STRUCT ------------------------------------------------------------------------------
+public:
+
+    struct Domain {
+        double originX;
+        double originY;
+        double yAzimuth;
+        double zBottom;
+        bool hasTopSurface;
+        bool hasTopoBathy;
+
+        Domain(void) :
+            originX(0.0),
+            originY(0.0),
+            yAzimuth(0.0),
+            zBottom(0.0),
+            hasTopSurface(false),
+            hasTopoBathy(false) {}
+
+
+    };
+
+    // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
     /// Default constructor.
@@ -33,6 +55,12 @@ public:
 
     /// Destructor.
     ~ModelPoints(void);
+
+    /** Get domain metadata.
+     *
+     * @returns Domain metadata.
+     */
+    const Domain& getDomain(void) const;
 
     /** Get number of points.
      *
@@ -137,9 +165,10 @@ public:
     // PROTECTED MEMBERS -----------------------------------------------------------------------------------------------
 protected:
 
-    const size_t _numPoints;
+    Domain _domain;
     const double* _pointsLLE;
     double*  _pointsXYZ;
+    const size_t _numPoints;
     const char* _inCRS;
     const char* _modelCRS;
 

@@ -31,6 +31,8 @@ class geomodelgrids::apps::TestIsosurface : public CppUnit::TestFixture {
     CPPUNIT_TEST(testParseNoArgs);
     CPPUNIT_TEST(testParseArgsHelp);
     CPPUNIT_TEST(testParseArgsNoBBox);
+    CPPUNIT_TEST(testParseArgsNoResolution);
+    CPPUNIT_TEST(testParseArgsNoMaxDepth);
     CPPUNIT_TEST(testParseArgsNoIsosurface);
     CPPUNIT_TEST(testParseArgsNoModels);
     CPPUNIT_TEST(testParseArgsNoOutput);
@@ -61,10 +63,16 @@ public:
     /// Test _parseArgs() with --help.
     void testParseArgsHelp(void);
 
-    /// Test _parseArgs() missing --location.
+    /// Test _parseArgs() missing --bbox.
     void testParseArgsNoBBox(void);
 
-    /// Test _parseArgs() missing --values.
+    /// Test _parseArgs() missing --hresolution.
+    void testParseArgsNoResolution(void);
+
+    /// Test _parseArgs() missing --max-depth.
+    void testParseArgsNoMaxDepth(void);
+
+    /// Test _parseArgs() missing --isosurface.
     void testParseArgsNoIsosurface(void);
 
     /// Test _parseArgs() missing --models.
@@ -117,9 +125,7 @@ public:
     void checkIsosurface(const char* filename,
                          const double isoOne,
                          const double isoTwo,
-                         const geomodelgrids::testdata::ModelPoints& points,
-                         const double zBottom,
-                         const bool hasTopoBathy);
+                         const geomodelgrids::testdata::ModelPoints& points);
 
 }; // _TestIsosurface
 
@@ -188,7 +194,7 @@ geomodelgrids::apps::TestIsosurface::testParseArgsHelp(void) {
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Test _parseArgs() without --location.
+// Test _parseArgs() without --bbox.
 void
 geomodelgrids::apps::TestIsosurface::testParseArgsNoBBox(void) {
     const int nargs = 6;
@@ -203,11 +209,49 @@ geomodelgrids::apps::TestIsosurface::testParseArgsNoBBox(void) {
 
     Isosurface isosurface;
     CPPUNIT_ASSERT_THROW(isosurface._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
-} // testParseArgsNoPBBox
+} // testParseArgsNoBBox
 
 
 // ---------------------------------------------------------------------------------------------------------------------
-// Test _parseArgs() without --values.
+// Test _parseArgs() without --hresolution.
+void
+geomodelgrids::apps::TestIsosurface::testParseArgsNoResolution(void) {
+    const int nargs = 6;
+    const char* const args[nargs] = {
+        "test",
+        "--bbox=0.0,1.0,0.0,1.0",
+        "--isosurface=one,1.0",
+        "--max-depth=2.0",
+        "--models=one.h5",
+        "--output=one.out",
+    };
+
+    Isosurface isosurface;
+    CPPUNIT_ASSERT_THROW(isosurface._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
+} // testParseArgsNoResolution
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Test _parseArgs() without --max-depth.
+void
+geomodelgrids::apps::TestIsosurface::testParseArgsNoMaxDepth(void) {
+    const int nargs = 6;
+    const char* const args[nargs] = {
+        "test",
+        "--bbox=0.0,1.0,0.0,1.0",
+        "--hresolution=0.5",
+        "--isosurface=one,1.0",
+        "--models=one.h5",
+        "--output=one.out",
+    };
+
+    Isosurface isosurface;
+    CPPUNIT_ASSERT_THROW(isosurface._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
+} // testParseArgsNoMaxDepth
+
+
+// ---------------------------------------------------------------------------------------------------------------------
+// Test _parseArgs() without --isosurface.
 void
 geomodelgrids::apps::TestIsosurface::testParseArgsNoIsosurface(void) {
     const int nargs = 6;
@@ -270,8 +314,8 @@ geomodelgrids::apps::TestIsosurface::testParseArgsBadValues(void) {
     const int nargs = 9;
     const char* const args[nargs] = {
         "test",
-        "--bbox=0.0,-1.0,1.0,-3.0",
-        "--hresolution=0.5",
+        "--bbox=-1.0,0.0,1.0,-3.0",
+        "--hresolution=-0.5",
         "--vresolution=-0.5",
         "--isosurface=one",
         "--max-depth=-2.0",
@@ -457,8 +501,7 @@ geomodelgrids::apps::TestIsosurface::testRunOneBlockFlat(void) {
     Isosurface isosurface;
     isosurface.run(nargs, const_cast<char**>(args));
 
-    const bool hasTopoBathy = false;
-    _TestIsosurface::checkIsosurface("one-block-flat-isosurface.tiff", 25.0e+3, 10.0e+3, isosurfaceOne, -5.0e+3, hasTopoBathy);
+    _TestIsosurface::checkIsosurface("one-block-flat-isosurface.tiff", 25.0e+3, 10.0e+3, isosurfaceOne);
     std::ifstream slog("error.log");CPPUNIT_ASSERT(slog.is_open() && slog.good());
 } // testRunOneBlockFlat
 
@@ -467,7 +510,7 @@ geomodelgrids::apps::TestIsosurface::testRunOneBlockFlat(void) {
 // Test run() with three-blocks-topo.
 void
 geomodelgrids::apps::TestIsosurface::testRunThreeBlocksTopo(void) {
-    const int nargs = 12;
+    const int nargs = 13;
     const char* const args[nargs] = {
         "test",
         "--models=../../data/three-blocks-topo.h5",
@@ -477,6 +520,7 @@ geomodelgrids::apps::TestIsosurface::testRunThreeBlocksTopo(void) {
         "--isosurface=one,12.0e+4",
         "--isosurface=two,40.0e+3",
         "--max-depth=45.0e+3",
+        "--depth-reference=topography_bathymetry",
         "--prefer-deep",
         "--output=three-blocks-topo-isosurface.tiff",
         "--bbox-coordsys=EPSG:4326",
@@ -487,8 +531,7 @@ geomodelgrids::apps::TestIsosurface::testRunThreeBlocksTopo(void) {
     Isosurface isosurface;
     isosurface.run(nargs, const_cast<char**>(args));
 
-    const bool hasTopoBathy = true;
-    _TestIsosurface::checkIsosurface("three-blocks-topo-isosurface.tiff", 12.0e+4, 40.0e+3, isosurfaceThree, -45.0e+3, hasTopoBathy);
+    _TestIsosurface::checkIsosurface("three-blocks-topo-isosurface.tiff", 12.0e+4, 40.0e+3, isosurfaceThree);
     std::ifstream slog("error.log");CPPUNIT_ASSERT(slog.is_open() && slog.good());
 } // testRunThreeBlocksTopo
 
@@ -525,13 +568,12 @@ void
 geomodelgrids::apps::_TestIsosurface::checkIsosurface(const char* filename,
                                                       const double isoOne,
                                                       const double isoTwo,
-                                                      const geomodelgrids::testdata::ModelPoints& points,
-                                                      const double zBottom,
-                                                      const bool hasTopoBathy) {
+                                                      const geomodelgrids::testdata::ModelPoints& points) {
     const size_t spaceDim = 3;
     const size_t numPoints = points.getNumPoints();
     const double* const pointsXYZ = points.getXYZ();
     const double* const pointsLLE = points.getLatLonElev();
+    const geomodelgrids::testdata::ModelPoints::Domain& domain = points.getDomain();
 
     geomodelgrids::utils::GeoTiff reader;
     reader.read(filename);
@@ -552,10 +594,10 @@ geomodelgrids::apps::_TestIsosurface::checkIsosurface(const char* filename,
             const double x = pointsXYZ[iPt*spaceDim+0];
             const double y = pointsXYZ[iPt*spaceDim+1];
 
-            const double topElev = (hasTopoBathy) ? points.computeTopoBathyElevation(x, y) : 0.0;
+            const double topElev = (domain.hasTopoBathy) ? points.computeTopoBathyElevation(x, y) : 0.0;
 
             { // Value 'one'
-                const double valueE = topElev - points.computeIsosurfaceOne(x, y, isoOne, topElev, zBottom);
+                const double valueE = topElev - points.computeIsosurfaceOne(x, y, isoOne, topElev, domain.zBottom);
                 const double value = data[iY*numX*numIsosurfaces + iX*numIsosurfaces + 0];
 
                 std::ostringstream msg;
@@ -566,7 +608,7 @@ geomodelgrids::apps::_TestIsosurface::checkIsosurface(const char* filename,
             } // Value 'one'
 
             { // Value 'two'
-                const double valueE = topElev - points.computeIsosurfaceTwo(x, y, isoTwo, topElev, zBottom);
+                const double valueE = topElev - points.computeIsosurfaceTwo(x, y, isoTwo, topElev, domain.zBottom);
                 const double value = data[iY*numX*numIsosurfaces + iX*numIsosurfaces + 1];
 
                 std::ostringstream msg;
