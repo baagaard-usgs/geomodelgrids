@@ -113,7 +113,7 @@ double
 geomodelgrids::testdata::ModelPoints::computeValueOne(const double x,
                                                       const double y,
                                                       const double z) {
-    return 2.0e+3 + 1.0 * x + 0.4 * y - 0.5 * z;
+    return 2.0e+3 + 0.3 * x + 0.4 * y - 4.0 * z;
 } // computeValueOne
 
 
@@ -123,7 +123,7 @@ double
 geomodelgrids::testdata::ModelPoints::computeValueTwo(const double x,
                                                       const double y,
                                                       const double z) {
-    return -1.2e+3 + 2.1 * x - 0.9 * y + 0.3 * z;
+    return -1.2e+3 + 0.1 * x - 0.2 * y - 4.8 * z;
 } // computeValueTwo
 
 
@@ -132,8 +132,11 @@ geomodelgrids::testdata::ModelPoints::computeValueTwo(const double x,
 double
 geomodelgrids::testdata::ModelPoints::computeIsosurfaceOne(const double x,
                                                            const double y,
-                                                           const double isoValue) {
-    return 2.0 * (isoValue - 2.0e+3 - 1.0 * x - 0.4 * y);
+                                                           const double isoValue,
+                                                           const double zTop,
+                                                           const double zBottom) {
+    const double zModel = -1.0/4.0 * (isoValue - 2.0e+3 - 0.3 * x - 0.4 * y);
+    return zTop - zModel * (zTop - zBottom) / zBottom;
 } // computeIsosurfaceOne
 
 
@@ -142,8 +145,11 @@ geomodelgrids::testdata::ModelPoints::computeIsosurfaceOne(const double x,
 double
 geomodelgrids::testdata::ModelPoints::computeIsosurfaceTwo(const double x,
                                                            const double y,
-                                                           const double isoValue) {
-    return 1.0/0.3 * (isoValue + 1.2e+3 - 2.1 * x + 0.9 * y);
+                                                           const double isoValue,
+                                                           const double zTop,
+                                                           const double zBottom) {
+    const double zModel = -1.0/4.8 * (isoValue + 1.2e+3 - 0.1 * x + 0.2 * y);
+    return zTop - zModel * (zTop - zBottom) / zBottom;
 } // computeIsosurfaceTwo
 
 
@@ -239,12 +245,12 @@ geomodelgrids::testdata::OneBlockFlatIsosurface::OneBlockFlatIsosurface(void) :
     ModelPoints(6) {
     const size_t numPoints = 6;assert(_numPoints == numPoints);
     static const double pointsLLE[numPoints*3] = {
-        37.381, -121.581, 0.0,
-        37.381, -121.581, -1.0e+3,
-        37.381, -121.581, -2.0e+3,
-        37.381, -121.581, -3.0e+3,
-        37.381, -121.581, -4.0e+3,
-        37.381, -121.581, -5.0e+3,
+        37.325, -121.775, 0.0,
+        37.325, -121.725, 0.0,
+        37.325, -121.675, 0.0,
+        37.375, -121.775, 0.0,
+        37.375, -121.725, 0.0,
+        37.375, -121.675, 0.0,
     };_pointsLLE = pointsLLE;
     _modelCRS = "EPSG:26910";
 
@@ -400,16 +406,17 @@ geomodelgrids::testdata::ThreeBlocksTopoBorehole::ThreeBlocksTopoBorehole(void) 
 // ---------------------------------------------------------------------------------------------------------------------
 // Constructor.
 geomodelgrids::testdata::ThreeBlocksTopoIsosurface::ThreeBlocksTopoIsosurface(void) :
-    ModelPoints(6) {
-    const size_t numPoints = 6;assert(_numPoints == numPoints);
-    const double groundSurf = 151.69036995974;
+    ModelPoints(8) {
+    const size_t numPoints = 8;assert(_numPoints == numPoints);
     static const double pointsLLE[numPoints*3] = {
-        35.1, -117.7, 0.0 + groundSurf,
-        35.1, -117.7, -5.0e+3 + groundSurf,
-        35.1, -117.7, -10.0e+3 + groundSurf,
-        35.1, -117.7, -15.0e+3 + groundSurf,
-        35.1, -117.7, -20.0e+3 + groundSurf,
-        35.1, -117.7, -25.0e+3 + groundSurf,
+        34.65, -117.65, 0.0,
+        34.65, -117.55, 0.0,
+        34.65, -117.45, 0.0,
+        34.65, -117.35, 0.0,
+        34.75, -117.65, 0.0,
+        34.75, -117.55, 0.0,
+        34.75, -117.45, 0.0,
+        34.75, -117.35, 0.0,
     };_pointsLLE = pointsLLE;
     _modelCRS = "EPSG:3311";
 

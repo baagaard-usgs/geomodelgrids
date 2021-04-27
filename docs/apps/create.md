@@ -1,15 +1,27 @@
 # geomodelgrids_create_model
 
-The `geomodelgrids_create_model` command line program is used to generate a model from a data source. Currently, only the EarthVision data source is implemented.
+The `geomodelgrids_create_model` command line program is used to generate a model from a data source.
+Currently, only the EarthVision data source is implemented.
 
-The model is generated in pieces, looping over the blocks and batches of points within a block. This allows arbitrarily large models to be generated on computers with limited memory.
+The model is generated in pieces, looping over the blocks and batches of points within a block.
+This allows arbitrarily large models to be generated on computers with limited memory.
 
 ## Synopsis
 
 Optional command line arguments are in square brackets.
 
 ```
-geomodelgrids_create_model [--help] --config=CONFIG [--show-parameters] [--import-domain] [--import-surfaces] [--import-blocks] [--all] [--quiet] [--log=LOG_FILENAME] [--debug]
+geomodelgrids_create_model
+  [--help]
+  --config=CONFIG
+  [--show-parameters]
+  [--import-domain]
+  [--import-surfaces]
+  [--import-blocks]
+  [--all]
+  [--quiet]
+  [--log=LOG_FILENAME]
+  [--debug]
 ```
 
 ### Required arguments
@@ -117,5 +129,6 @@ Metadata for blocks in the model.
 
 ### Examples
 
-The `models` directory contains model configuration files for the San Francisco Bay 3D seismic velocity model (detailed and regional domains) that is generated from an EarthVision 3D geologic model. The models include a top surface (topography and ocean surface) and topography/bathymetry (topography and ocean bottom).
+The `models/usgs_sfbay` directory contains model configuration files for the San Francisco Bay 3D seismic velocity model (detailed and regional domains) that is generated from an EarthVision 3D geologic model.
+The models include a top surface (topography and ocean surface) and topography/bathymetry (topography and ocean bottom).
 

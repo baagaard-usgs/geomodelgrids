@@ -107,24 +107,32 @@ public:
      * @param[in] x X coordinate of point.
      * @parma[in] y Y coordinate of point.
      * @param[in] isoValue Isosurface value.
+     * @param[in] zTop Elevation of top surface.
+     * @param[in] zBottom Elevation of domain bottom.
      * @returns z Elevation of 'one' isosurface at point.
      */
     static
     double computeIsosurfaceOne(const double x,
                                 const double y,
-                                const double isoValue);
+                                const double isoValue,
+                                const double zTop,
+                                const double zBottom);
 
     /** Compute elevation of isosurface for value 'two' at point.
      *
      * @param[in] x X coordinate of point.
      * @parma[in] y Y coordinate of point.
      * @param[in] isoValue Isosurface value.
+     * @param[in] zTop Elevation of top surface.
+     * @param[in] zBottom Elevation of domain bottom.
      * @returns z Elevation of 'two' isosurface at point.
      */
     static
     double computeIsosurfaceTwo(const double x,
                                 const double y,
-                                const double isoValue);
+                                const double isoValue,
+                                const double zTop,
+                                const double zBottom);
 
     // PROTECTED MEMBERS -----------------------------------------------------------------------------------------------
 protected:

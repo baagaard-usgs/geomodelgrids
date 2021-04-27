@@ -7,7 +7,14 @@ The `geomodelgrids_info` command line program is used to print information about
 Optional command line arguments are in square brackets.
 
 ```
-geomodelgrids_info [--help] --models=FILE_0,...,FILE_M [--verify] [--description] [--coordsys] [--values] [--blocks] [--all]
+geomodelgrids_info [--help]
+  --models=FILE_0,...,FILE_M
+  [--verify]
+  [--description]
+  [--coordsys]
+  [--values]
+  [--blocks]
+  [--all]
 ```
 
 ### Required arguments

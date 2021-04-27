@@ -4,6 +4,22 @@ import h5py
 import numpy
 
 
+def calc_top_surface(x, y):
+    return 1.5e+2 + 2.0e-5 * x - 1.2e-5 * y + 5.0e-10 * x * y
+
+
+def calc_topo_bathy(x, y):
+    return 1.5e+2 + 2.0e-5 * x - 1.2e-5 * y - 5.0e-10 * x * y
+
+
+def calc_one(x, y, z):
+    return 2.0e+3 + 0.3 * x + 0.4 * y - 4.0 * z
+
+
+def calc_two(x, y, z):
+    return -1.2e+3 + 0.1 * x - 0.2 * y - 4.8 * z
+
+
 class TestData:
 
     MODEL_ATTRS = (
@@ -157,8 +173,8 @@ class OneBlockFlat(TestData):
         (nx, ny, nz) = x.shape
         nvalues = len(model["data_values"])
         data = numpy.zeros((nx, ny, nz, nvalues), dtype=numpy.float32)
-        data[:, :, :, 0] = 2.0e+3 + 1.0 * x + 0.4 * y - 0.5 * z
-        data[:, :, :, 1] = -1.2e+3 + 2.1 * x - 0.9 * y + 0.3 * z
+        data[:, :, :, 0] = calc_one(x, y, z)
+        data[:, :, :, 1] = calc_two(x, y, z)
         block["data"] = data
 
 
@@ -195,7 +211,7 @@ class OneBlockTopo(TestData):
     x, y = TestData.create_groundsurf_xy(model, top_surface)
     (nx, ny) = x.shape
     elevation = numpy.zeros((nx, ny, 1), dtype=numpy.float32)
-    elevation[:, :, 0] = 1.5e+2 + 2.0e-5 * x - 1.2e-5 * y + 5.0e-10 * x * y
+    elevation[:, :, 0] = calc_top_surface(x, y)
     top_surface["elevation"] = elevation
 
     topo_bathy = None
@@ -215,8 +231,8 @@ class OneBlockTopo(TestData):
         (nx, ny, nz) = x.shape
         nvalues = len(model["data_values"])
         data = numpy.zeros((nx, ny, nz, nvalues), dtype=numpy.float32)
-        data[:, :, :, 0] = 2.0e+3 + 1.0 * x + 0.4 * y - 0.5 * z
-        data[:, :, :, 1] = -1.2e+3 + 2.1 * x - 0.9 * y + 0.3 * z
+        data[:, :, :, 0] = calc_one(x, y, z)
+        data[:, :, :, 1] = calc_two(x, y, z)
         block["data"] = data
 
     def bad_topo_metadata(self):
@@ -286,8 +302,8 @@ class ThreeBlocksFlat(TestData):
         (nx, ny, nz) = x.shape
         nvalues = len(model["data_values"])
         data = numpy.zeros((nx, ny, nz, nvalues), dtype=numpy.float32)
-        data[:, :, :, 0] = 2.0e+3 + 1.0 * x + 0.4 * y - 0.5 * z
-        data[:, :, :, 1] = -1.2e+3 + 2.1 * x - 0.9 * y + 0.3 * z
+        data[:, :, :, 0] = calc_one(x, y, z)
+        data[:, :, :, 1] = calc_two(x, y, z)
         block["data"] = data
 
 
@@ -324,7 +340,7 @@ class ThreeBlocksTopo(TestData):
     x, y = TestData.create_groundsurf_xy(model, top_surface)
     (nx, ny) = x.shape
     elevation = numpy.zeros((nx, ny, 1), dtype=numpy.float32)
-    elevation[:, :, 0] = 1.5e+2 + 2.0e-5 * x - 1.2e-5 * y + 5.0e-10 * x * y
+    elevation[:, :, 0] = calc_top_surface(x, y)
     top_surface["elevation"] = elevation
 
     topo_bathy = {
@@ -334,7 +350,7 @@ class ThreeBlocksTopo(TestData):
     x, y = TestData.create_groundsurf_xy(model, topo_bathy)
     (nx, ny) = x.shape
     elevation = numpy.zeros((nx, ny, 1), dtype=numpy.float32)
-    elevation[:, :, 0] = 1.5e+2 + 2.0e-5 * x - 1.2e-5 * y - 5.0e-10 * x * y
+    elevation[:, :, 0] = calc_topo_bathy(x, y)
     topo_bathy["elevation"] = elevation
 
     blocks = [
@@ -368,8 +384,8 @@ class ThreeBlocksTopo(TestData):
         (nx, ny, nz) = x.shape
         nvalues = len(model["data_values"])
         data = numpy.zeros((nx, ny, nz, nvalues), dtype=numpy.float32)
-        data[:, :, :, 0] = 2.0e+3 + 1.0 * x + 0.4 * y - 0.5 * z
-        data[:, :, :, 1] = -1.2e+3 + 2.1 * x - 0.9 * y + 0.3 * z
+        data[:, :, :, 0] = calc_one(x, y, z)
+        data[:, :, :, 1] = calc_two(x, y, z)
         block["data"] = data
 
     def bad_block_metadata(self):
