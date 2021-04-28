@@ -69,6 +69,8 @@ libsrc/
         ├── CRSTransformer.hh
         ├── ErrorHandler.cc
         ├── ErrorHandler.hh
+        ├── GeoTiff.cc
+        ├── GeoTiff.hh
         ├── Makefile.am
         ├── TestDriver.cc
         ├── TestDriver.hh
