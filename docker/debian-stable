@@ -27,6 +27,8 @@ RUN apt-get update \
 	sqlite3 \
 	libsqlite3-0 \
 	libsqlite3-dev \
+        gdal-bin \
+        libgdal-dev \
 	gdb \
 	valgrind \
 	lcov \

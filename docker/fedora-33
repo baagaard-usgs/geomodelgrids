@@ -36,6 +36,8 @@ RUN dnf install -y \
     proj \
     proj-devel \
     proj-datumgrid \
+    gdal \
+    gdal-devel \
     lcov \
     gdb \
     valgrind \

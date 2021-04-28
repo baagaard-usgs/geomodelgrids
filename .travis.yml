@@ -12,25 +12,25 @@ jobs:
   include:
     - name: debian-stable
       os: linux
-      env: BASE_IMAGE=registry.gitlab.com/baagaard-usgs/geomodelgrids/testenv-debian-stable TEST_COVERAGE=yes PYTHON_COVERAGE=python3-coverage
+      env: BASE_IMAGE=registry.gitlab.com/baagaard-usgs/geomodelgrids/testenv-debian-stable TEST_COVERAGE=yes PYTHON_COVERAGE=python3-coverage ENABLE_GDAL=yes
     - name: debian-stable-valgrind
       os: linux
-      env: BASE_IMAGE=registry.gitlab.com/baagaard-usgs/geomodelgrids/testenv-debian-stable ENABLE_VALGRIND=yes
+      env: BASE_IMAGE=registry.gitlab.com/baagaard-usgs/geomodelgrids/testenv-debian-stable ENABLE_VALGRIND=yes ENABLE_GDAL=yes
     - name: debian-testing
       os: linux
-      env: BASE_IMAGE=registry.gitlab.com/baagaard-usgs/geomodelgrids/testenv-debian-testing TEST_COVERAGE=yes PYTHON_COVERAGE=python3-coverage
+      env: BASE_IMAGE=registry.gitlab.com/baagaard-usgs/geomodelgrids/testenv-debian-testing TEST_COVERAGE=yes PYTHON_COVERAGE=python3-coverage ENABLE_GDAL=yes
     - name: ubuntu-20.04
       os: linux
-      env: BASE_IMAGE=registry.gitlab.com/baagaard-usgs/geomodelgrids/testenv-ubuntu-20.04 TEST_COVERAGE=yes PYTHON_COVERAGE=python3-coverage
+      env: BASE_IMAGE=registry.gitlab.com/baagaard-usgs/geomodelgrids/testenv-ubuntu-20.04 TEST_COVERAGE=yes PYTHON_COVERAGE=python3-coverage ENABLE_GDAL=yes
     - name: ubuntu-20.10
       os: linux
-      env: BASE_IMAGE=registry.gitlab.com/baagaard-usgs/geomodelgrids/testenv-ubuntu-20.10 TEST_COVERAGE=yes PYTHON_COVERAGE=python3-coverage
+      env: BASE_IMAGE=registry.gitlab.com/baagaard-usgs/geomodelgrids/testenv-ubuntu-20.10 TEST_COVERAGE=yes PYTHON_COVERAGE=python3-coverage ENABLE_GDAL=yes
     - name: fedora:32
       os: linux
-      env: BASE_IMAGE=registry.gitlab.com/baagaard-usgs/geomodelgrids/testenv-fedora-32 TEST_COVERAGE=yes PYTHON_COVERAGE=coverage3
+      env: BASE_IMAGE=registry.gitlab.com/baagaard-usgs/geomodelgrids/testenv-fedora-32 TEST_COVERAGE=yes PYTHON_COVERAGE=coverage3 ENABLE_GDAL=yes
     - name: fedora:33
       os: linux
-      env: BASE_IMAGE=registry.gitlab.com/baagaard-usgs/geomodelgrids/testenv-fedora-33 TEST_COVERAGE=yes PYTHON_COVERAGE=coverage3
+      env: BASE_IMAGE=registry.gitlab.com/baagaard-usgs/geomodelgrids/testenv-fedora-33 TEST_COVERAGE=yes PYTHON_COVERAGE=coverage3 ENABLE_GDAL=yes
     - name: centos-8
       os: linux
       env: BASE_IMAGE=registry.gitlab.com/baagaard-usgs/geomodelgrids/testenv-centos-8
@@ -45,7 +45,7 @@ git:
   depth: 100
 
 install:
-  - docker build -t geomodelgrids-testenv --build-arg BASE_IMAGE=$BASE_IMAGE --build-arg TEST_COVERAGE=$TEST_COVERAGE --build-arg PYTHON_COVERAGE=$PYTHON_COVERAGE --build-arg ENABLE_VALGRIND=$ENABLE_VALGRIND --target build -f docker/geomodelgrids-testenv .
+  - docker build -t geomodelgrids-testenv --build-arg BASE_IMAGE=$BASE_IMAGE --build-arg TEST_COVERAGE=$TEST_COVERAGE --build-arg PYTHON_COVERAGE=$PYTHON_COVERAGE --build-arg ENABLE_GDAL=$ENABLE_GDAL --build-arg ENABLE_VALGRIND=$ENABLE_VALGRIND --target build -f docker/geomodelgrids-testenv .
 
 script:
   - ci_env=`bash <(curl -s https://codecov.io/env)`
