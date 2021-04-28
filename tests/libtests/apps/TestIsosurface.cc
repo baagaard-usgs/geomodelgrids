@@ -591,14 +591,17 @@ geomodelgrids::apps::_TestIsosurface::checkIsosurface(const char* filename,
     const double tolerance = 1.0e-4;
     for (size_t iY = 0, iPt = 0; iY < numY; ++iY) {
         for (size_t iX = 0; iX < numX; ++iX, iPt++) {
+            const size_t row = numY - iY - 1;
+            const size_t col = iX;
             const double x = pointsXYZ[iPt*spaceDim+0];
             const double y = pointsXYZ[iPt*spaceDim+1];
 
             const double topElev = (domain.hasTopoBathy) ? points.computeTopoBathyElevation(x, y) : 0.0;
 
             { // Value 'one'
+                const size_t iValue = 0;
                 const double valueE = topElev - points.computeIsosurfaceOne(x, y, isoOne, topElev, domain.zBottom);
-                const double value = data[iY*numX*numIsosurfaces + iX*numIsosurfaces + 0];
+                const double value = data[iValue*numY*numX + row*numX + col];
 
                 std::ostringstream msg;
                 msg << "Mismatch for isosurface 'one' for point ("
@@ -608,8 +611,9 @@ geomodelgrids::apps::_TestIsosurface::checkIsosurface(const char* filename,
             } // Value 'one'
 
             { // Value 'two'
+                const size_t iValue = 1;
                 const double valueE = topElev - points.computeIsosurfaceTwo(x, y, isoTwo, topElev, domain.zBottom);
-                const double value = data[iY*numX*numIsosurfaces + iX*numIsosurfaces + 1];
+                const double value = data[iValue*numY*numX + row*numX + col];
 
                 std::ostringstream msg;
                 msg << "Mismatch for isosurface 'two' for point ("

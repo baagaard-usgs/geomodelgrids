@@ -170,13 +170,9 @@ geomodelgrids::utils::GeoTiff::create(const char* filename) {
 // ------------------------------------------------------------------------------------------------
 void
 geomodelgrids::utils::GeoTiff::write(void) {
-    const int numRowsWrite = 1;
-    const size_t rowSize = _numCols * _numBands;
-    for (size_t iRow = 0; iRow < _numRows; ++iRow) {
-        CPLErr err = _dataset->RasterIO(GF_Write, 0, _numRows-iRow-1, _numCols, numRowsWrite, &_buffer[iRow*rowSize],
-                                        _numCols, numRowsWrite, GDT_Float32, _numBands, NULL, 0, 0, 0, NULL);
-        if (err != CE_None) { throw std::runtime_error("Error while writing row of raster bands."); }
-    } // for
+    CPLErr err = _dataset->RasterIO(GF_Write, 0, 0, _numCols, _numRows, _buffer,
+                                    _numCols, _numRows, GDT_Float32, _numBands, NULL, 0, 0, 0, NULL);
+    if (err != CE_None) { throw std::runtime_error("Error while writing row of raster bands."); }
 }
 
 
@@ -205,13 +201,9 @@ geomodelgrids::utils::GeoTiff::read(const char* filename) {
         const size_t bufferSize = _numCols * _numRows * _numBands;
         _buffer = (bufferSize > 0) ? new float[bufferSize] : NULL;assert(_buffer);
 
-        const int numRowsRead = 1;
-        const size_t rowSize = _numCols * _numBands;
-        for (size_t iRow = 0; iRow < _numRows; ++iRow) {
-            CPLErr err = _dataset->RasterIO(GF_Read, 0, _numRows-iRow-1, _numCols, numRowsRead, &_buffer[iRow*rowSize],
-                                            _numCols, numRowsRead, GDT_Float32, _numBands, NULL, 0, 0, 0, NULL);
-            if (err != CE_None) { throw std::runtime_error("Error while reading row of raster bands."); }
-        } // for
+        err = _dataset->RasterIO(GF_Read, 0, 0, _numCols, _numRows, _buffer, _numCols, _numRows,
+                                 GDT_Float32, _numBands, NULL, 0, 0, 0, NULL);
+        if (err != CE_None) { throw std::runtime_error("Error while reading row of raster bands."); }
     } catch (const std::exception& err) {
         this->close();
         std::ostringstream msg;

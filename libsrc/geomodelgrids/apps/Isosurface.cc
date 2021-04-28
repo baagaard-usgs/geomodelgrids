@@ -187,16 +187,18 @@ geomodelgrids::apps::Isosurface::run(int argc,
     std::vector<double> values(numIsosurfaces);
     float* buffer = writer.getBands();
     for (size_t iY = 0, iPt = 0; iY < numY; ++iY) {
+        const size_t row = numY - iY - 1;
         const double y = _minY + (iY + 0.5) * _horizRes;
         double xCRS, yCRS;
 
         for (size_t iX = 0; iX < numX; ++iX, ++iPt) {
+            const size_t col = iX;
             const double x = _minX + (iX + 0.5) * _horizRes;
 
             toXYOrder->inverse_transform(&xCRS, &yCRS, NULL, x, y, 0.0);
             isosurfacer.query(&values[0], xCRS, yCRS);
             for (size_t iValue = 0; iValue < numIsosurfaces; ++iValue) {
-                buffer[iPt*numIsosurfaces+iValue] = values[iValue];
+                buffer[iValue*numY*numX + row*numX + col] = values[iValue];
             } // for
         } // for
     } // for
