@@ -59,7 +59,7 @@ def get_rules(fault_block, zone):
         "Kjf_Napa_Somoma": {
             "default": rules_aagaard_etal_2010.franciscan_napa_sonoma,
             "Napa": rules_hirakawa_aagaard_2021.franciscan_napa,
-            "Sonoma": rules_hirakawa_aagaard_2021.franciscan_sonoma,
+            "Sonoma": rules_aagaard_etal_2010.franciscan_napa_sonoma,
         },
         "Kjf_Bay Block": {
             "default": rules_aagaard_etal_2010.franciscan_napa_sonoma,
@@ -100,7 +100,7 @@ def get_rules(fault_block, zone):
             "default": rules_aagaard_etal_2010.tertiary_sedimentary_southbay,
             "Napa": rules_hirakawa_aagaard_2021.cenozoic_napa,
             "Sonoma": rules_hirakawa_aagaard_2021.cenozoic_sonoma,
-            "Alexander": rules_hirakawa_aagaard_2021.brocher2005_older_cenozoic_sedimentary,
+            "Alexander": rules_hirakawa_aagaard_2021.brocher2008_great_valley_sequence,
             "W Diablo Range": rules_hirakawa_aagaard_2021.quaternary_livermore,
         },
         "Cenozoic_Great Valley": {
