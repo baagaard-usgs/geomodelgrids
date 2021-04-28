@@ -11,7 +11,7 @@
 #include <string> // USES std::string
 
 class geomodelgrids::utils::TestDriver {
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
     /// Constructor
@@ -35,7 +35,7 @@ public:
     int run(int argc,
             char* argv[]);
 
-    // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE METHODS ----------------------------------------------------------------------------
 private:
 
     /** Parse command line arguments.
@@ -64,14 +64,14 @@ private:
     const CppUnit::Test* _findTest(const CppUnit::Test* const test,
                                    const std::string& name);
 
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE MEMBERS ----------------------------------------------------------------------------
 private:
 
     std::vector<std::string> _tests;
     bool _showHelp;
     bool _listTests;
 
-    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ----------------------------------------------------------------------------
 private:
 
     TestDriver(const TestDriver&); ///< Not implemented

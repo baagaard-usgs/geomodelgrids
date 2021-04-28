@@ -15,8 +15,7 @@ class geomodelgrids::utils::ErrorHandler {
 
 public:
 
-    // PUBLIC ENUMS
-    // //////////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC ENUMS -------------------------------------------------------------------------------
 
     /// Enumerated type for error status.
     enum StatusEnum {
@@ -27,8 +26,7 @@ public:
 
 public:
 
-    // PUBLIC METHODS
-    // ////////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS -----------------------------------------------------------------------------
 
     /// Constructor
     ErrorHandler(void);
@@ -95,14 +93,14 @@ public:
 
 private:
 
-    // PRIVATE METHODS ////////////////////////////////////////////////////
+    // PRIVATE METHODS ----------------------------------------------------------------------------
 
     ErrorHandler(const ErrorHandler& h); ///< Not implemented
     const ErrorHandler& operator=(const ErrorHandler& h); ///< Not implemented
 
 private:
 
-    // PRIVATE MEMBERS ////////////////////////////////////////////////////
+    // PRIVATE MEMBERS ----------------------------------------------------------------------------
 
     std::string _message; ///< Message associated with error/warning
     std::string _logFilename; ///< Name of log file

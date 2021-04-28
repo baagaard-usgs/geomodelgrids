@@ -16,7 +16,7 @@ namespace geomodelgrids {
 } // geomodelgrids
 
 class geomodelgrids::serial::TestModelInfo : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+    // CPPUNIT TEST SUITE -------------------------------------------------------------------------
     CPPUNIT_TEST_SUITE(TestModelInfo);
 
     CPPUNIT_TEST(testConstructor);
@@ -25,7 +25,7 @@ class geomodelgrids::serial::TestModelInfo : public CppUnit::TestFixture {
 
     CPPUNIT_TEST_SUITE_END();
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
     /// Test constructor.
@@ -40,7 +40,7 @@ public:
 }; // class TestModelInfo
 CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::serial::TestModelInfo);
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test constructor.
 void
 geomodelgrids::serial::TestModelInfo::testConstructor(void) {
@@ -61,7 +61,7 @@ geomodelgrids::serial::TestModelInfo::testConstructor(void) {
 } // testConstructor
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test getters.
 void
 geomodelgrids::serial::TestModelInfo::testAccessors(void) {
@@ -123,7 +123,7 @@ geomodelgrids::serial::TestModelInfo::testAccessors(void) {
 } // testAccessors
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test load().
 void
 geomodelgrids::serial::TestModelInfo::testLoad(void) {

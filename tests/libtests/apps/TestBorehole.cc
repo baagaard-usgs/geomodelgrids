@@ -23,7 +23,7 @@ namespace geomodelgrids {
 } // geomodelgrids
 
 class geomodelgrids::apps::TestBorehole : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+    // CPPUNIT TEST SUITE -------------------------------------------------------------------------
     CPPUNIT_TEST_SUITE(TestBorehole);
 
     CPPUNIT_TEST(testConstructor);
@@ -45,7 +45,7 @@ class geomodelgrids::apps::TestBorehole : public CppUnit::TestFixture {
 
     CPPUNIT_TEST_SUITE_END();
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
     /// Setup test.
@@ -102,7 +102,7 @@ public:
 }; // class TestBorehole
 CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::apps::TestBorehole);
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 namespace geomodelgrids {
     namespace apps {
         class _TestBorehole;
@@ -117,15 +117,14 @@ public:
                        const geomodelgrids::testdata::ModelPoints& points);
 
 }; // _TestBorehole
-
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 void
 geomodelgrids::apps::TestBorehole::setUp(void) {
     optind = 1; // reset parsing of argc and argv
 } // setUp
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test constructor.
 void
 geomodelgrids::apps::TestBorehole::testConstructor(void) {
@@ -138,7 +137,7 @@ geomodelgrids::apps::TestBorehole::testConstructor(void) {
 } // testConstructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with no args.
 void
 geomodelgrids::apps::TestBorehole::testParseNoArgs(void) {
@@ -151,7 +150,7 @@ geomodelgrids::apps::TestBorehole::testParseNoArgs(void) {
 } // testParseNoArgs
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with --help.
 void
 geomodelgrids::apps::TestBorehole::testParseArgsHelp(void) {
@@ -164,7 +163,7 @@ geomodelgrids::apps::TestBorehole::testParseArgsHelp(void) {
 } // testParseArgsHelp
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() without --location.
 void
 geomodelgrids::apps::TestBorehole::testParseArgsNoLocation(void) {
@@ -176,7 +175,7 @@ geomodelgrids::apps::TestBorehole::testParseArgsNoLocation(void) {
 } // testParseArgsNoPoints
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() without --values.
 void
 geomodelgrids::apps::TestBorehole::testParseArgsNoValues(void) {
@@ -188,7 +187,7 @@ geomodelgrids::apps::TestBorehole::testParseArgsNoValues(void) {
 } // testParseArgsNoModels
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() without --models.
 void
 geomodelgrids::apps::TestBorehole::testParseArgsNoModels(void) {
@@ -200,7 +199,7 @@ geomodelgrids::apps::TestBorehole::testParseArgsNoModels(void) {
 } // testParseArgsNoModels
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() without --output.
 void
 geomodelgrids::apps::TestBorehole::testParseArgsNoOutput(void) {
@@ -212,7 +211,7 @@ geomodelgrids::apps::TestBorehole::testParseArgsNoOutput(void) {
 } // testParseArgsNoOutput
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with wrong arguments.
 void
 geomodelgrids::apps::TestBorehole::testParseArgsWrong(void) {
@@ -224,7 +223,7 @@ geomodelgrids::apps::TestBorehole::testParseArgsWrong(void) {
 } // testParseArgsWrong
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with required arguments.
 void
 geomodelgrids::apps::TestBorehole::testParseArgsMinimal(void) {
@@ -251,7 +250,7 @@ geomodelgrids::apps::TestBorehole::testParseArgsMinimal(void) {
 } // testParseArgsMinimal
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with all arguments.
 void
 geomodelgrids::apps::TestBorehole::testParseArgsAll(void) {
@@ -289,7 +288,7 @@ geomodelgrids::apps::TestBorehole::testParseArgsAll(void) {
 } // testParseArgsAll
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _printHelp().
 void
 geomodelgrids::apps::TestBorehole::testPrintHelp(void) {
@@ -325,7 +324,7 @@ geomodelgrids::apps::TestBorehole::testRunHelp(void) {
 } // testRunHelp
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test run() with one-block-flat.
 void
 geomodelgrids::apps::TestBorehole::testRunOneBlockFlat(void) {
@@ -353,7 +352,7 @@ geomodelgrids::apps::TestBorehole::testRunOneBlockFlat(void) {
 } // testRunOneBlockFlat
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test run() with three-blocks-topo.
 void
 geomodelgrids::apps::TestBorehole::testRunThreeBlocksTopo(void) {
@@ -379,7 +378,7 @@ geomodelgrids::apps::TestBorehole::testRunThreeBlocksTopo(void) {
 } // testRunThreeBlocksTopo
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test run() with bad output specification.
 void
 geomodelgrids::apps::TestBorehole::testRunBadOutput(void) {
@@ -399,7 +398,7 @@ geomodelgrids::apps::TestBorehole::testRunBadOutput(void) {
 } // testRunBadOutput
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test run() with bad location.
 void
 geomodelgrids::apps::TestBorehole::testRunBadLocation(void) {
@@ -419,7 +418,7 @@ geomodelgrids::apps::TestBorehole::testRunBadLocation(void) {
 } // testRunBadLocation
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 void
 geomodelgrids::apps::_TestBorehole::checkBorehole(std::istream& sin,
                                                   const geomodelgrids::testdata::ModelPoints& points) {

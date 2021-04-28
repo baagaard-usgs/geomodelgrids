@@ -4,7 +4,7 @@
 #if !defined(geomodelgrids_serial_modelinfo_hh)
 #define geomodelgrids_serial_modelinfo_hh
 
-// Include directives ---------------------------------------------------
+// Include directives -----------------------------------------------------------------------------
 #include "serialfwd.hh" // forward declarations
 
 #include <vector> // HASA std::std::vector
@@ -13,7 +13,7 @@
 class geomodelgrids::serial::ModelInfo {
     friend class TestModelInfo; // Unit testing
 
-    // PUBLIC METHODS --------------------------------------------------------------------------------------------------
+    // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
     /// Default constructor.
@@ -98,7 +98,7 @@ public:
      */
     void load(geomodelgrids::serial::HDF5* const h5);
 
-    // PRIVATE MEMBERS ------------------------------------------------------
+    // PRIVATE MEMBERS ----------------------------------------------------------------------------
 private:
 
     std::string _title; ///< Title of model.
@@ -113,6 +113,12 @@ private:
     std::vector<std::string> _references; ///< References for model.
     std::string _doi; ///< Digital Object Identifier for model.
     std::string _version; ///< ModelInfo version.
+
+    // NOT IMPLEMENTED ----------------------------------------------------------------------------
+private:
+
+    ModelInfo(const ModelInfo&); ///< Not implemented
+    const ModelInfo& operator=(const ModelInfo&); ///< Not implemented
 
 }; // ModelInfo
 

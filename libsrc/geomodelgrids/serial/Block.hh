@@ -12,7 +12,7 @@
 class geomodelgrids::serial::Block {
     friend class TestBlock; // Unit testing
 
-    // PUBLIC METHODS --------------------------------------------------------------------------------------------------
+    // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
     /** Default constructor.
@@ -110,7 +110,7 @@ public:
     bool compare(const Block* a,
                  const Block* b);
 
-    // PRIVATE MEMBERS -------------------------------------------------------------------------------------------------
+    // PRIVATE MEMBERS ----------------------------------------------------------------------------
 private:
 
     std::string _name; ///< Name of block.
@@ -122,6 +122,12 @@ private:
     size_t _numValues; ///< Number of values stored at each grid point.
     size_t _dims[3]; ///< Number of points along grid in each coordinate dimension [x, y, z].
     size_t _hyperslabDims[4]; ///< Dimensions of hyperslab.
+
+    // NOT IMPLEMENTED ----------------------------------------------------------------------------
+private:
+
+    Block(const Block&); ///< Not implemented
+    const Block& operator=(const Block&); ///< Not implemented
 
 }; // Block
 

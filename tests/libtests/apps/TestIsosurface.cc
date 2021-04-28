@@ -24,7 +24,7 @@ namespace geomodelgrids {
 } // geomodelgrids
 
 class geomodelgrids::apps::TestIsosurface : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+    // CPPUNIT TEST SUITE -------------------------------------------------------------------------
     CPPUNIT_TEST_SUITE(TestIsosurface);
 
     CPPUNIT_TEST(testConstructor);
@@ -48,7 +48,7 @@ class geomodelgrids::apps::TestIsosurface : public CppUnit::TestFixture {
 
     CPPUNIT_TEST_SUITE_END();
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
     /// Setup test.
@@ -111,7 +111,7 @@ public:
 }; // class TestIsosurface
 CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::apps::TestIsosurface);
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 namespace geomodelgrids {
     namespace apps {
         class _TestIsosurface;
@@ -129,14 +129,14 @@ public:
 
 }; // _TestIsosurface
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 void
 geomodelgrids::apps::TestIsosurface::setUp(void) {
     optind = 1; // reset parsing of argc and argv
 } // setUp
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test constructor.
 void
 geomodelgrids::apps::TestIsosurface::testConstructor(void) {
@@ -167,7 +167,7 @@ geomodelgrids::apps::TestIsosurface::testConstructor(void) {
 } // testConstructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with no args.
 void
 geomodelgrids::apps::TestIsosurface::testParseNoArgs(void) {
@@ -180,7 +180,7 @@ geomodelgrids::apps::TestIsosurface::testParseNoArgs(void) {
 } // testParseNoArgs
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with --help.
 void
 geomodelgrids::apps::TestIsosurface::testParseArgsHelp(void) {
@@ -193,7 +193,7 @@ geomodelgrids::apps::TestIsosurface::testParseArgsHelp(void) {
 } // testParseArgsHelp
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() without --bbox.
 void
 geomodelgrids::apps::TestIsosurface::testParseArgsNoBBox(void) {
@@ -212,7 +212,7 @@ geomodelgrids::apps::TestIsosurface::testParseArgsNoBBox(void) {
 } // testParseArgsNoBBox
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() without --hresolution.
 void
 geomodelgrids::apps::TestIsosurface::testParseArgsNoResolution(void) {
@@ -231,7 +231,7 @@ geomodelgrids::apps::TestIsosurface::testParseArgsNoResolution(void) {
 } // testParseArgsNoResolution
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() without --max-depth.
 void
 geomodelgrids::apps::TestIsosurface::testParseArgsNoMaxDepth(void) {
@@ -250,7 +250,7 @@ geomodelgrids::apps::TestIsosurface::testParseArgsNoMaxDepth(void) {
 } // testParseArgsNoMaxDepth
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() without --isosurface.
 void
 geomodelgrids::apps::TestIsosurface::testParseArgsNoIsosurface(void) {
@@ -269,7 +269,7 @@ geomodelgrids::apps::TestIsosurface::testParseArgsNoIsosurface(void) {
 } // testParseArgsNoIsosurface
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() without --models.
 void
 geomodelgrids::apps::TestIsosurface::testParseArgsNoModels(void) {
@@ -288,7 +288,7 @@ geomodelgrids::apps::TestIsosurface::testParseArgsNoModels(void) {
 } // testParseArgsNoModels
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() without --output.
 void
 geomodelgrids::apps::TestIsosurface::testParseArgsNoOutput(void) {
@@ -307,7 +307,7 @@ geomodelgrids::apps::TestIsosurface::testParseArgsNoOutput(void) {
 } // testParseArgsNoOutput
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with bad values.
 void
 geomodelgrids::apps::TestIsosurface::testParseArgsBadValues(void) {
@@ -329,7 +329,7 @@ geomodelgrids::apps::TestIsosurface::testParseArgsBadValues(void) {
 } // testParseArgsNoOutput
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with wrong arguments.
 void
 geomodelgrids::apps::TestIsosurface::testParseArgsWrong(void) {
@@ -341,7 +341,7 @@ geomodelgrids::apps::TestIsosurface::testParseArgsWrong(void) {
 } // testParseArgsWrong
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with required arguments.
 void
 geomodelgrids::apps::TestIsosurface::testParseArgsMinimal(void) {
@@ -388,7 +388,7 @@ geomodelgrids::apps::TestIsosurface::testParseArgsMinimal(void) {
 } // testParseArgsMinimal
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with all arguments.
 void
 geomodelgrids::apps::TestIsosurface::testParseArgsAll(void) {
@@ -442,7 +442,7 @@ geomodelgrids::apps::TestIsosurface::testParseArgsAll(void) {
 } // testParseArgsAll
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _printHelp().
 void
 geomodelgrids::apps::TestIsosurface::testPrintHelp(void) {
@@ -478,7 +478,7 @@ geomodelgrids::apps::TestIsosurface::testRunHelp(void) {
 } // testRunHelp
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test run() with one-block-flat.
 void
 geomodelgrids::apps::TestIsosurface::testRunOneBlockFlat(void) {
@@ -506,7 +506,7 @@ geomodelgrids::apps::TestIsosurface::testRunOneBlockFlat(void) {
 } // testRunOneBlockFlat
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test run() with three-blocks-topo.
 void
 geomodelgrids::apps::TestIsosurface::testRunThreeBlocksTopo(void) {
@@ -536,7 +536,7 @@ geomodelgrids::apps::TestIsosurface::testRunThreeBlocksTopo(void) {
 } // testRunThreeBlocksTopo
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test run() with bad output specification.
 void
 geomodelgrids::apps::TestIsosurface::testRunBadOutput(void) {
@@ -563,7 +563,7 @@ geomodelgrids::apps::TestIsosurface::testRunBadOutput(void) {
 } // testRunBadOutput
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 void
 geomodelgrids::apps::_TestIsosurface::checkIsosurface(const char* filename,
                                                       const double isoOne,

@@ -57,7 +57,7 @@ public:
 }; // class TestErrorHandler
 CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::utils::TestErrorHandler);
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test constructor.
 void
 geomodelgrids::utils::TestErrorHandler::testConstructor(void) {
@@ -69,7 +69,7 @@ geomodelgrids::utils::TestErrorHandler::testConstructor(void) {
 } // testConstructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test set/getLogFilename().
 void
 geomodelgrids::utils::TestErrorHandler::testLogFilename(void) {
@@ -84,7 +84,7 @@ geomodelgrids::utils::TestErrorHandler::testLogFilename(void) {
 } // testLogFilename
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test resetStatus(), and getStatus().
 void
 geomodelgrids::utils::TestErrorHandler::testStatus(void) {
@@ -99,7 +99,7 @@ geomodelgrids::utils::TestErrorHandler::testStatus(void) {
 } // testStatus
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test getMessage().
 void
 geomodelgrids::utils::TestErrorHandler::testGetMessage(void) {
@@ -114,7 +114,7 @@ geomodelgrids::utils::TestErrorHandler::testGetMessage(void) {
 } // testGetMessage
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test setError().
 void
 geomodelgrids::utils::TestErrorHandler::testSetError(void) {
@@ -128,7 +128,7 @@ geomodelgrids::utils::TestErrorHandler::testSetError(void) {
 } // testSetError
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test setWarning().
 void
 geomodelgrids::utils::TestErrorHandler::testSetWarning(void) {
@@ -142,7 +142,7 @@ geomodelgrids::utils::TestErrorHandler::testSetWarning(void) {
 } // testSetWarning
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test logMessage().
 void
 geomodelgrids::utils::TestErrorHandler::testLogMessage(void) {

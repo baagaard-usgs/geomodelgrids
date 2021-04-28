@@ -54,7 +54,7 @@ private:
 }; // class TestCErrorHandler
 CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::utils::TestCErrorHandler);
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Create test subject.
 void
 geomodelgrids::utils::TestCErrorHandler::setUp(void) {
@@ -62,7 +62,7 @@ geomodelgrids::utils::TestCErrorHandler::setUp(void) {
 } // setUp
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destroy test subject.
 void
 geomodelgrids::utils::TestCErrorHandler::tearDown(void) {
@@ -70,7 +70,7 @@ geomodelgrids::utils::TestCErrorHandler::tearDown(void) {
 } // tearDown
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test set/getLogFilename().
 void
 geomodelgrids::utils::TestCErrorHandler::testLogFilename(void) {
@@ -86,7 +86,7 @@ geomodelgrids::utils::TestCErrorHandler::testLogFilename(void) {
 } // testLogFilename
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test resetStatus(), and getStatus().
 void
 geomodelgrids::utils::TestCErrorHandler::testStatus(void) {
@@ -113,7 +113,7 @@ geomodelgrids::utils::TestCErrorHandler::testStatus(void) {
 } // testStatus
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test getMessage().
 void
 geomodelgrids::utils::TestCErrorHandler::testGetMessage(void) {

@@ -15,7 +15,7 @@
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream, std::istringstream
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 namespace geomodelgrids {
     namespace serial {
         class _Query;
@@ -47,7 +47,7 @@ public:
 
 }; // _Query
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor
 geomodelgrids::serial::Query::Query() :
     _squashMinElev(0.0),
@@ -55,7 +55,7 @@ geomodelgrids::serial::Query::Query() :
     _squash(SQUASH_NONE) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
 geomodelgrids::serial::Query::~Query(void) {
     for (size_t i = 0; i < _models.size(); ++i) {
@@ -65,7 +65,7 @@ geomodelgrids::serial::Query::~Query(void) {
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get error handler.
 geomodelgrids::utils::ErrorHandler&
 geomodelgrids::serial::Query::getErrorHandler(void) {
@@ -74,7 +74,7 @@ geomodelgrids::serial::Query::getErrorHandler(void) {
 } // getErrorHandler
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Do setup for querying.
 void
 geomodelgrids::serial::Query::initialize(const std::vector<std::string>& modelFilenames,
@@ -101,7 +101,7 @@ geomodelgrids::serial::Query::initialize(const std::vector<std::string>& modelFi
 } // initialize
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Turn on squashing and set minimum z for squashing.
 void
 geomodelgrids::serial::Query::setSquashMinElev(const double value) {
@@ -112,7 +112,7 @@ geomodelgrids::serial::Query::setSquashMinElev(const double value) {
 } // setSquashMinElev
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Turn squashing on/off.
 void
 geomodelgrids::serial::Query::setSquashing(const SquashingEnum value) {
@@ -120,7 +120,7 @@ geomodelgrids::serial::Query::setSquashing(const SquashingEnum value) {
 } // setSquashing
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Query for elevation of top of model at point.
 double
 geomodelgrids::serial::Query::queryTopElevation(const double x,
@@ -140,7 +140,7 @@ geomodelgrids::serial::Query::queryTopElevation(const double x,
 } // queryTopElevation
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Query for elevation of topography/bathymetry at point.
 double
 geomodelgrids::serial::Query::queryTopoBathyElevation(const double x,
@@ -160,7 +160,7 @@ geomodelgrids::serial::Query::queryTopoBathyElevation(const double x,
 } // queryTopoBathyElevation
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Query at point.
 int
 geomodelgrids::serial::Query::query(double* const values,
@@ -214,7 +214,7 @@ geomodelgrids::serial::Query::query(double* const values,
 } // query
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Cleanup after querying.
 void
 geomodelgrids::serial::Query::finalize(void) {
@@ -225,7 +225,7 @@ geomodelgrids::serial::Query::finalize(void) {
 } // finalize
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 std::vector<std::string>
 geomodelgrids::serial::_Query::toLower(const std::vector<std::string>& strings) {
     const size_t numStrings = strings.size();
@@ -239,14 +239,14 @@ geomodelgrids::serial::_Query::toLower(const std::vector<std::string>& strings) 
 } // toLower
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 unsigned char
 geomodelgrids::serial::_Query::tolower(unsigned char c) {
     return std::tolower(c);
 } // tolower
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 geomodelgrids::serial::Query::values_map_type
 geomodelgrids::serial::_Query::createModelValuesIndex(const geomodelgrids::serial::Model& model,
                                                       const std::vector<std::string>& queryNamesLower) {

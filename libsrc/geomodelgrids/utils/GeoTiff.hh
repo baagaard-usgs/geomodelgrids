@@ -16,7 +16,7 @@ class geomodelgrids::utils::GeoTiff {
 
 public:
 
-    // PUBLIC METHODS --------------------------------------------------------------------------------------------------
+    // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
     /// Default constructor.
@@ -140,6 +140,12 @@ private:
     size_t _numBands; ///< Number of raster bands.
     std::string _crs; ///< CRS for image data.
     double _transform[6]; ///< Geographic transformation.
+
+    // NOT IMPLEMENTED ----------------------------------------------------------------------------
+private:
+
+    GeoTiff(const GeoTiff&); ///< Not implemented
+    const GeoTiff& operator=(const GeoTiff&); ///< Not implemented
 
 }; // GeoTiff
 

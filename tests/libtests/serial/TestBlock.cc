@@ -20,7 +20,7 @@ namespace geomodelgrids {
 } // geomodelgrids
 
 class geomodelgrids::serial::TestBlock : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+    // CPPUNIT TEST SUITE -------------------------------------------------------------------------
     CPPUNIT_TEST_SUITE(TestBlock);
 
     CPPUNIT_TEST(testConstructor);
@@ -31,7 +31,7 @@ class geomodelgrids::serial::TestBlock : public CppUnit::TestFixture {
 
     CPPUNIT_TEST_SUITE_END();
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
     /// Test constructor.
@@ -52,7 +52,7 @@ public:
 }; // class TestBlock
 CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::serial::TestBlock);
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test constructor.
 void
 geomodelgrids::serial::TestBlock::testConstructor(void) {
@@ -71,7 +71,7 @@ geomodelgrids::serial::TestBlock::testConstructor(void) {
 } // testConstructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test getters.
 void
 geomodelgrids::serial::TestBlock::testAccessors(void) {
@@ -101,7 +101,7 @@ geomodelgrids::serial::TestBlock::testAccessors(void) {
 } // testAccessors
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test setHyperslabDims.
 void
 geomodelgrids::serial::TestBlock::testSetHyperslabDims(void) {
@@ -128,7 +128,7 @@ geomodelgrids::serial::TestBlock::testSetHyperslabDims(void) {
 } // testSetHyperslabDims
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test loadMetadata().
 void
 geomodelgrids::serial::TestBlock::testLoadMetadata(void) {
@@ -158,7 +158,7 @@ geomodelgrids::serial::TestBlock::testLoadMetadata(void) {
 } // testLoadMetadata
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test query().
 void
 geomodelgrids::serial::TestBlock::testQuery(void) {

@@ -15,7 +15,7 @@ class geomodelgrids::serial::Query {
     friend class TestCQuery; // unit testing
     friend class _Query; // Helper class
 
-    // PUBLIC ENUMS ///////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC ENUMS -------------------------------------------------------------------------------
 public:
 
     enum SquashingEnum {
@@ -24,7 +24,7 @@ public:
         SQUASH_TOPOGRAPHY_BATHYMETRY=2,
     };
 
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
     /// Constructor
@@ -99,15 +99,15 @@ public:
     /// Cleanup after querying.
     void finalize(void);
 
-    // PRIVATE TYPEDEFS ////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE TYPEDEFS ---------------------------------------------------------------------------
 private:
 
     typedef std::map<size_t, size_t> values_map_type;
 
-    // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE METHODS ----------------------------------------------------------------------------
 private:
 
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE MEMBERS ----------------------------------------------------------------------------
 private:
 
     std::vector<geomodelgrids::serial::Model*> _models;
@@ -117,7 +117,7 @@ private:
     geomodelgrids::utils::ErrorHandler* _errorHandler;
     SquashingEnum _squash;
 
-    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ----------------------------------------------------------------------------
 private:
 
     Query(const Query&); ///< Not implemented

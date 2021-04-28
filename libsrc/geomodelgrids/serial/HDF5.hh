@@ -4,7 +4,6 @@
 #if !defined(geomodelgrids_serial_hdf5_hh)
 #define geomodelgrids_serial_hdf5_hh
 
-// Include directives ---------------------------------------------------
 #include "serialfwd.hh" // forward declarations
 
 #include <hdf5.h> // USES hid_t
@@ -14,12 +13,12 @@
 class geomodelgrids::serial::HDF5 {
     friend class TestHDF5; // Unit testing
 
-    // PUBLIC CONSTANTS ------------------------------------------------------------------------------------------------
+    // PUBLIC CONSTANTS ---------------------------------------------------------------------------
 public:
 
     static const hid_t H5_NULL;
 
-    // PUBLIC METHODS --------------------------------------------------------------------------------------------------
+    // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
     /// Default constructor.
@@ -35,8 +34,8 @@ public:
      * The cache should be large enough to fit at least as many chunks as there are in a hyperslab.
      * HDF5 uses a default cache size of 1 MB. We use a default of 16 MB.
      *
-     * The number of slots should be a prime number at least 10 times the number of chunks that can fit into the cache;
-     * usually 100 times that number of chunks provides maximum performance.
+     * The number of slots should be a prime number at least 10 times the number of chunks that can
+     * fit into the cache; usually 100 times that number of chunks provides maximum performance.
      * HDF5 uses a default of 521. We use a default of 63997.
      *
      * Chunk preemption policy for this dataset; value between 0 and 1 (default is 0.75).
@@ -156,13 +155,19 @@ public:
                               int ndims,
                               hid_t datatype);
 
-    // PRIVATE MEMBERS ------------------------------------------------------
+    // PRIVATE MEMBERS ----------------------------------------------------------------------------
 private:
 
     hid_t _file; ///< HDF5 file
     size_t _cacheSize; ///< Dataset cache size (in bytes).
     size_t _cacheNumSlots; ///< Number of chunk slots in dataset cache.
     double _cachePreemption; ///< Preemption policy value for cache.
+
+    // NOT IMPLEMENTED ----------------------------------------------------------------------------
+private:
+
+    HDF5(const HDF5&); ///< Not implemented
+    const HDF5& operator=(const HDF5&); ///< Not implemented
 
 }; // HDF5
 

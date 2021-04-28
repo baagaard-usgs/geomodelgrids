@@ -20,7 +20,7 @@ namespace geomodelgrids {
 } // geomodelgrids
 
 class geomodelgrids::serial::TestQuery : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+    // CPPUNIT TEST SUITE -------------------------------------------------------------------------
     CPPUNIT_TEST_SUITE(TestQuery);
 
     CPPUNIT_TEST(testConstructor);
@@ -35,7 +35,7 @@ class geomodelgrids::serial::TestQuery : public CppUnit::TestFixture {
 
     CPPUNIT_TEST_SUITE_END();
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
     /// Test constructor.
@@ -68,7 +68,7 @@ public:
 }; // class TestQuery
 CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::serial::TestQuery);
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test constructor.
 void
 geomodelgrids::serial::TestQuery::testConstructor(void) {
@@ -80,7 +80,7 @@ geomodelgrids::serial::TestQuery::testConstructor(void) {
 } // testConstructor
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test setters.
 void
 geomodelgrids::serial::TestQuery::testAccessors(void) {
@@ -97,7 +97,7 @@ geomodelgrids::serial::TestQuery::testAccessors(void) {
 } // testAccessors
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test initialize().
 void
 geomodelgrids::serial::TestQuery::testInitialize(void) {
@@ -140,7 +140,7 @@ geomodelgrids::serial::TestQuery::testInitialize(void) {
 } // testInitialize
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test queryTopElevation().
 void
 geomodelgrids::serial::TestQuery::testQueryTopElevation(void) {
@@ -214,7 +214,7 @@ geomodelgrids::serial::TestQuery::testQueryTopElevation(void) {
 } // testQueryTopElevation
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test queryTopoBathyElevation().
 void
 geomodelgrids::serial::TestQuery::testQueryTopoBathyElevation(void) {
@@ -270,7 +270,7 @@ geomodelgrids::serial::TestQuery::testQueryTopoBathyElevation(void) {
 } // testQueryTopoBathyElevation
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test query() for model with flat ground surface.
 void
 geomodelgrids::serial::TestQuery::testQueryFlat(void) {
@@ -375,7 +375,7 @@ geomodelgrids::serial::TestQuery::testQueryFlat(void) {
 } // testQueryFlat
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test query() for model with topography.
 void
 geomodelgrids::serial::TestQuery::testQueryTopo(void) {
@@ -479,7 +479,7 @@ geomodelgrids::serial::TestQuery::testQueryTopo(void) {
 } // testQueryTopo
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test query() for model using top surface for squashing.
 void
 geomodelgrids::serial::TestQuery::testQuerySquashTop(void) {
@@ -588,7 +588,7 @@ geomodelgrids::serial::TestQuery::testQuerySquashTop(void) {
 } // TestQuerySquashTop
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test query() for model using topography/bathymetry for squashing.
 void
 geomodelgrids::serial::TestQuery::testQuerySquashTopoBathy(void) {

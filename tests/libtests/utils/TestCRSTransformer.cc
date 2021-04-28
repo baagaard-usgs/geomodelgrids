@@ -45,7 +45,7 @@ public:
 }; // class TestCRSTransformer
 CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::utils::TestCRSTransformer);
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test constructor.
 void
 geomodelgrids::utils::TestCRSTransformer::testConstructor(void) {
@@ -56,7 +56,7 @@ geomodelgrids::utils::TestCRSTransformer::testConstructor(void) {
 } // testConstructor
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test setters.
 void
 geomodelgrids::utils::TestCRSTransformer::testAccessors(void) {
@@ -78,7 +78,7 @@ geomodelgrids::utils::TestCRSTransformer::testAccessors(void) {
 } // testAccessors
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test initialize().
 void
 geomodelgrids::utils::TestCRSTransformer::testInitialize(void) {
@@ -92,7 +92,7 @@ geomodelgrids::utils::TestCRSTransformer::testInitialize(void) {
 } // testInitialize
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test transform().
 void
 geomodelgrids::utils::TestCRSTransformer::testTransform(void) {

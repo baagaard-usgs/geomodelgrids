@@ -13,7 +13,7 @@
 class geomodelgrids::utils::CRSTransformer {
     friend class TestCRSTransformer; // Unit testing
 
-    // PUBLIC METHODS --------------------------------------------------------------------------------------------------
+    // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
     /// Default constructor.
@@ -81,12 +81,18 @@ public:
     static
     CRSTransformer* createGeoToXYAxisOrder(const char* crsString);
 
-    // PRIVATE MEMBERS -------------------------------------------------------------------------------------------------
+    // PRIVATE MEMBERS ----------------------------------------------------------------------------
 private:
 
     std::string _srcString;
     std::string _destString;
     PJ* _proj;
+
+    // NOT IMPLEMENTED ----------------------------------------------------------------------------
+private:
+
+    CRSTransformer(const CRSTransformer&); ///< Not implemented
+    const CRSTransformer& operator=(const CRSTransformer&); ///< Not implemented
 
 }; // CRSTransformer
 

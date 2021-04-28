@@ -5,7 +5,7 @@
 #include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 geomodelgrids::utils::CRSTransformer::CRSTransformer(void) :
     _srcString("EPSG:4326"), // latitude/longitude WGS84
@@ -13,7 +13,7 @@ geomodelgrids::utils::CRSTransformer::CRSTransformer(void) :
     _proj(NULL) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
 geomodelgrids::utils::CRSTransformer::~CRSTransformer(void) {
     if (_proj) {
@@ -22,7 +22,7 @@ geomodelgrids::utils::CRSTransformer::~CRSTransformer(void) {
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set source coordinate system.
 void
 geomodelgrids::utils::CRSTransformer::setSrc(const char* value) {
@@ -30,7 +30,7 @@ geomodelgrids::utils::CRSTransformer::setSrc(const char* value) {
 } // setSrc
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set destination coordinate system.
 void
 geomodelgrids::utils::CRSTransformer::setDest(const char* value) {
@@ -38,7 +38,7 @@ geomodelgrids::utils::CRSTransformer::setDest(const char* value) {
 } // setDest
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Initialize CRS transformation.
 void
 geomodelgrids::utils::CRSTransformer::initialize(void) {
@@ -55,7 +55,7 @@ geomodelgrids::utils::CRSTransformer::initialize(void) {
 } // initialize
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Compute from src CRS to dest CRS.
 void
 geomodelgrids::utils::CRSTransformer::transform(double* destX,
@@ -77,7 +77,7 @@ geomodelgrids::utils::CRSTransformer::transform(double* destX,
 } // transform
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Compute from src CRS to dest CRS.
 void
 geomodelgrids::utils::CRSTransformer::inverse_transform(double* srcX,
@@ -99,7 +99,7 @@ geomodelgrids::utils::CRSTransformer::inverse_transform(double* srcX,
 } // transform
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get boundary box in x/y order from bounding box in CRS.
 geomodelgrids::utils::CRSTransformer*
 geomodelgrids::utils::CRSTransformer::createGeoToXYAxisOrder(const char* crsString) {

@@ -11,7 +11,7 @@
 class geomodelgrids::serial::Surface {
     friend class TestSurface; // Unit testing
 
-    // PUBLIC METHODS --------------------------------------------------------------------------------------------------
+    // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
     /** Default constructor.
@@ -67,7 +67,7 @@ public:
     double query(const double x,
                  const double y);
 
-    // PRIVATE MEMBERS -------------------------------------------------------------------------------------------------
+    // PRIVATE MEMBERS ----------------------------------------------------------------------------
 private:
 
     geomodelgrids::serial::Hyperslab* _hyperslab; ///< Hyperslab of data in model.
@@ -75,6 +75,12 @@ private:
     double _resolutionHoriz; ///< Horizontal resolution (m).
     size_t _dims[2]; ///< Number of points along grid in each x and y dimension [x, y].
     size_t _hyperslabDims[3]; ///< Dimensions of hyperslab.
+
+    // NOT IMPLEMENTED ----------------------------------------------------------------------------
+private:
+
+    Surface(const Surface&); ///< Not implemented
+    const Surface& operator=(const Surface&); ///< Not implemented
 
 }; // Surface
 

@@ -11,7 +11,7 @@
 #include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 geomodelgrids::serial::Block::Block(const char* name) :
     _name(name),
@@ -33,7 +33,7 @@ geomodelgrids::serial::Block::Block(const char* name) :
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
 geomodelgrids::serial::Block::~Block(void) {
     delete _hyperslab;_hyperslab = NULL;
@@ -41,7 +41,7 @@ geomodelgrids::serial::Block::~Block(void) {
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Load metadata.
 void
 geomodelgrids::serial::Block::loadMetadata(geomodelgrids::serial::HDF5* const h5) {
@@ -95,7 +95,7 @@ geomodelgrids::serial::Block::loadMetadata(geomodelgrids::serial::HDF5* const h5
 } // loadMetadata
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get name of block.
 const std::string&
 geomodelgrids::serial::Block::getName(void) const {
@@ -103,7 +103,7 @@ geomodelgrids::serial::Block::getName(void) const {
 } // getName
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get horizontal resolution.
 double
 geomodelgrids::serial::Block::getResolutionHoriz(void) const {
@@ -111,7 +111,7 @@ geomodelgrids::serial::Block::getResolutionHoriz(void) const {
 } // getResolutionHoriz
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get vertical resolution.
 double
 geomodelgrids::serial::Block::getResolutionVert(void) const {
@@ -119,7 +119,7 @@ geomodelgrids::serial::Block::getResolutionVert(void) const {
 } // getResolutionVert
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get elevation of top of block in topological space.
 double
 geomodelgrids::serial::Block::getZTop(void) const {
@@ -127,7 +127,7 @@ geomodelgrids::serial::Block::getZTop(void) const {
 } // getZTop
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get elevation of bottom of block in topological space.
 double
 geomodelgrids::serial::Block::getZBottom(void) const {
@@ -135,7 +135,7 @@ geomodelgrids::serial::Block::getZBottom(void) const {
 } // getZBottom
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get number of values along each grid dimension.
 const size_t*
 geomodelgrids::serial::Block::getDims(void) const {
@@ -143,7 +143,7 @@ geomodelgrids::serial::Block::getDims(void) const {
 } // getDims
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get number of values stored at each grid point.
 size_t
 geomodelgrids::serial::Block::getNumValues(void) const {
@@ -151,7 +151,7 @@ geomodelgrids::serial::Block::getNumValues(void) const {
 } // getNumValues
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set hyperslab size.
 void
 geomodelgrids::serial::Block::setHyperslabDims(const size_t dims[],
@@ -171,7 +171,7 @@ geomodelgrids::serial::Block::setHyperslabDims(const size_t dims[],
 } // setHyperslabDims
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Prepare for querying.
 void
 geomodelgrids::serial::Block::openQuery(geomodelgrids::serial::HDF5* const h5) {
@@ -187,7 +187,7 @@ geomodelgrids::serial::Block::openQuery(geomodelgrids::serial::HDF5* const h5) {
 } // openQuery
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Query for values at a point using bilinear interpolation.
 const double*
 geomodelgrids::serial::Block::query(const double x,
@@ -209,7 +209,7 @@ geomodelgrids::serial::Block::query(const double x,
 } // query
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Cleanup after querying.
 void
 geomodelgrids::serial::Block::closeQuery(void) {
@@ -218,7 +218,7 @@ geomodelgrids::serial::Block::closeQuery(void) {
 } // closeQuery
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Compare order of blocks by z_top (descending order).
 bool
 geomodelgrids::serial::Block::compare(const Block* a,

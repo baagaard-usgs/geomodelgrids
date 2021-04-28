@@ -11,7 +11,7 @@
 #include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 geomodelgrids::serial::Surface::Surface(const char* const name) :
     _hyperslab(NULL),
@@ -26,14 +26,14 @@ geomodelgrids::serial::Surface::Surface(const char* const name) :
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
 geomodelgrids::serial::Surface::~Surface(void) {
     delete _hyperslab;_hyperslab = NULL;
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Load metadata.
 void
 geomodelgrids::serial::Surface::loadMetadata(geomodelgrids::serial::HDF5* const h5) {
@@ -65,7 +65,7 @@ geomodelgrids::serial::Surface::loadMetadata(geomodelgrids::serial::HDF5* const 
 } // loadMetadata
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get horizontal resolution.
 double
 geomodelgrids::serial::Surface::getResolutionHoriz(void) const {
@@ -73,7 +73,7 @@ geomodelgrids::serial::Surface::getResolutionHoriz(void) const {
 } // getResolutionHoriz
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get number of values along each grid dimension.
 const size_t*
 geomodelgrids::serial::Surface::getDims(void) const {
@@ -81,7 +81,7 @@ geomodelgrids::serial::Surface::getDims(void) const {
 } // getDims
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set hyperslab size.
 void
 geomodelgrids::serial::Surface::setHyperslabDims(const size_t dims[],
@@ -101,7 +101,7 @@ geomodelgrids::serial::Surface::setHyperslabDims(const size_t dims[],
 } // setHyperslabDims
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Prepare for querying.
 void
 geomodelgrids::serial::Surface::openQuery(geomodelgrids::serial::HDF5* const h5) {
@@ -115,7 +115,7 @@ geomodelgrids::serial::Surface::openQuery(geomodelgrids::serial::HDF5* const h5)
 } // openQuery
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Cleanup after querying.
 void
 geomodelgrids::serial::Surface::closeQuery(void) {
@@ -123,7 +123,7 @@ geomodelgrids::serial::Surface::closeQuery(void) {
 } // closeQuery
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Query for values at a point using bilinear interpolation.
 double
 geomodelgrids::serial::Surface::query(const double x,

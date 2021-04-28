@@ -8,7 +8,7 @@ extern "C" {
 
 #include <cassert> // USES assert
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set filename for logging and enable logging.
 void
 geomodelgrids_cerrorhandler_setLogFilename(void* handle,
@@ -20,7 +20,7 @@ geomodelgrids_cerrorhandler_setLogFilename(void* handle,
 } // setLogFilename
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get filename used in logging.
 const char* const
 geomodelgrids_cerrorhandler_getLogFilename(void* handle) {
@@ -31,7 +31,7 @@ geomodelgrids_cerrorhandler_getLogFilename(void* handle) {
 } // getLogFilename
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Turn logging on/off.
 void
 geomodelgrids_cerrorhandler_setLoggingOn(void* handle,
@@ -43,7 +43,7 @@ geomodelgrids_cerrorhandler_setLoggingOn(void* handle,
 } // setLoggingOn
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Reset error status and clear any error message.
 void
 geomodelgrids_cerrorhandler_resetStatus(void* handle) {
@@ -54,7 +54,7 @@ geomodelgrids_cerrorhandler_resetStatus(void* handle) {
 } // resetStatus
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get status.
 enum GeomodelgridsStatusEnum
 geomodelgrids_cerrorhandler_getStatus(void* handle) {
@@ -79,7 +79,7 @@ geomodelgrids_cerrorhandler_getStatus(void* handle) {
 } // getStatus
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get warning/error message.
 const char*
 geomodelgrids_cerrorhandler_getMessage(void* handle) {

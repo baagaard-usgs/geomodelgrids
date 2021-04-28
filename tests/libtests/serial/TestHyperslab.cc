@@ -21,7 +21,7 @@ namespace geomodelgrids {
 } // geomodelgrids
 
 class geomodelgrids::serial::TestHyperslab : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+    // CPPUNIT TEST SUITE -------------------------------------------------------------------------
     CPPUNIT_TEST_SUITE(TestHyperslab);
 
     CPPUNIT_TEST(testConstructor2D);
@@ -33,7 +33,7 @@ class geomodelgrids::serial::TestHyperslab : public CppUnit::TestFixture {
 
     CPPUNIT_TEST_SUITE_END();
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
     /// Set up test data.
@@ -60,7 +60,7 @@ public:
     /// Test interpolate in 2D.
     void testInterpolate3D(void);
 
-    // PRIVATE MEMBERS ///////////////////////////////////////////////////////
+    // PRIVATE MEMBERS ----------------------------------------------------------------------------
 private:
 
     geomodelgrids::serial::HDF5 _h5;
@@ -68,7 +68,7 @@ private:
 }; // class TestHyperslab
 CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::serial::TestHyperslab);
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set up test data.
 void
 geomodelgrids::serial::TestHyperslab::setUp(void) {
@@ -76,7 +76,7 @@ geomodelgrids::serial::TestHyperslab::setUp(void) {
 } // setUp
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Tear down test data.
 void
 geomodelgrids::serial::TestHyperslab::tearDown(void) {
@@ -84,7 +84,7 @@ geomodelgrids::serial::TestHyperslab::tearDown(void) {
 } // tearDown
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test constructor in 2D.
 void
 geomodelgrids::serial::TestHyperslab::testConstructor2D(void) {
@@ -113,7 +113,7 @@ geomodelgrids::serial::TestHyperslab::testConstructor2D(void) {
 } // testConstructor2D
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test constructor in 3D.
 void
 geomodelgrids::serial::TestHyperslab::testConstructor3D(void) {
@@ -142,7 +142,7 @@ geomodelgrids::serial::TestHyperslab::testConstructor3D(void) {
 } // testConstructor3D
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test constructor with oversize dimensions in 3D.
 void
 geomodelgrids::serial::TestHyperslab::testConstructorOversize3D(void) {
@@ -171,7 +171,7 @@ geomodelgrids::serial::TestHyperslab::testConstructorOversize3D(void) {
 } // testConstructorOversize3D
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test constructor with bad dims.
 void
 geomodelgrids::serial::TestHyperslab::testConstructorBadDims(void) {
@@ -183,7 +183,7 @@ geomodelgrids::serial::TestHyperslab::testConstructorBadDims(void) {
 } // testConstructorBadDims
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test interpolate in 2D.
 void
 geomodelgrids::serial::TestHyperslab::testInterpolate2D(void) {
@@ -225,7 +225,7 @@ geomodelgrids::serial::TestHyperslab::testInterpolate2D(void) {
 } // testInterplate2D
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test interpolate in 3D.
 void
 geomodelgrids::serial::TestHyperslab::testInterpolate3D(void) {
