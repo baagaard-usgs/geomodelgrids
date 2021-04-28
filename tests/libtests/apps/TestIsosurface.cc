@@ -586,6 +586,14 @@ geomodelgrids::apps::_TestIsosurface::checkIsosurface(const char* filename,
     double minX = 0.0, maxX = 0.0, minY = 0.0, maxY = 0.0;
     reader.getBBox(&minX, &maxX, &minY, &maxY);
 
+    const std::vector<std::string>& bandLabels = reader.getBandLabels();
+    std::ostringstream label;
+    label << "one=" << isoOne;
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in label for band 'one'.", label.str(), bandLabels[0]);
+    label.str("");
+    label << "two=" << isoTwo;
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in label for band 'two'.", label.str(), bandLabels[1]);
+
     const float* data = reader.getBands();
 
     const double tolerance = 1.0e-4;

@@ -7,6 +7,7 @@
 #include "utilsfwd.hh" // forward declarations
 
 #include <string> // HASA std::string
+#include <vector> // HASA std::vector
 
 class GDALDriver;
 class GDALDataset;
@@ -31,11 +32,23 @@ public:
      */
     void setNumRows(const size_t numRows);
 
+    /** Get number of rows in image.
+     *
+     * @returns Number of rows in image.
+     */
+    size_t getNumRows(void) const;
+
     /** Set number of rows in image.
      *
      * @param[in] numCols Number of columns in image.
      */
     void setNumCols(const size_t numCols);
+
+    /** Get number of rows in image.
+     *
+     * @returns Number of columns in image.
+     */
+    size_t getNumCols(void) const;
 
     /** Set number of rows in image.
      *
@@ -45,21 +58,21 @@ public:
 
     /** Get number of rows in image.
      *
-     * @returns Number of rows in image.
-     */
-    size_t getNumRows(void) const;
-
-    /** Get number of rows in image.
-     *
-     * @returns Number of columns in image.
-     */
-    size_t getNumCols(void) const;
-
-    /** Get number of rows in image.
-     *
      * @returns Number of bands in image.
      */
     size_t getNumBands(void) const;
+
+    /** Set labels of raster bands.
+     *
+     * @param[in] labels Labels for raster bands.
+     */
+    void setBandLabels(const std::vector<std::string>& labels);
+
+    /** Get labels of raster bands.
+     *
+     * @param[in] labels Labels for raster bands.
+     */
+    const std::vector<std::string>& getBandLabels(void) const;
 
     /** Set coordinate system.
      *
@@ -101,6 +114,12 @@ public:
                  double* minY,
                  double* maxY);
 
+    /** Set no data value.
+     *
+     * @param[in] value Value indicating no data for pixel.
+     */
+    void setNoDataValue(const float value);
+
     /** Get buffer for raster bands.
      *
      * Image data is pixel sequential [row, column, band].
@@ -135,9 +154,11 @@ private:
     GDALDriver* _driver; ///< GDAL driver.
     GDALDataset* _dataset; ///< GDAL dataset.
     float* _buffer; ///< Raster bands.
+    float _noDataValue; ///< Value indicating no data.
     size_t _numCols; ///< Number of columns in image.
     size_t _numRows; ///< Number of rows in image.
     size_t _numBands; ///< Number of raster bands.
+    std::vector<std::string> _bandLabels; ///< Labels of raster bands.
     std::string _crs; ///< CRS for image data.
     double _transform[6]; ///< Geographic transformation.
 

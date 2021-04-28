@@ -14,6 +14,7 @@ geomodelgrids::utils::GeoTiff::GeoTiff(void) :
     _driver(NULL),
     _dataset(NULL),
     _buffer(NULL),
+    _noDataValue(-1.0e+20),
     _numCols(0),
     _numRows(0),
     _numBands(0) {
@@ -83,6 +84,26 @@ geomodelgrids::utils::GeoTiff::getNumBands(void) const {
 
 // ------------------------------------------------------------------------------------------------
 void
+geomodelgrids::utils::GeoTiff::setBandLabels(const std::vector<std::string>& labels) {
+    if (labels.size() != _numBands) {
+        std::ostringstream msg;
+        msg << "Number of raster band labels (" << labels.size() << ") must match the number of raster bands ("
+            << _numBands << ").";
+        throw std::invalid_argument(msg.str());
+    } // if
+    _bandLabels = labels;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+const std::vector<std::string>&
+geomodelgrids::utils::GeoTiff::getBandLabels(void) const {
+    return _bandLabels;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+void
 geomodelgrids::utils::GeoTiff::setCRS(const char* value) {
     if (!value || (strlen(value) == 0)) {
         throw std::invalid_argument("CRS string must be a PROJ, WKT, or EPGS code.");
@@ -133,6 +154,13 @@ geomodelgrids::utils::GeoTiff::getBBox(double* minX,
 
 
 // ------------------------------------------------------------------------------------------------
+void
+geomodelgrids::utils::GeoTiff::setNoDataValue(const float value) {
+    _noDataValue = value;
+}
+
+
+// ------------------------------------------------------------------------------------------------
 float*
 geomodelgrids::utils::GeoTiff::getBands(void) {
     if (!_buffer) { _buffer = new float[_numCols * _numRows * _numBands]; }
@@ -148,22 +176,34 @@ geomodelgrids::utils::GeoTiff::create(const char* filename) {
     if (!_driver) {
         throw std::runtime_error("Could not get GDAL GeoTiff driver.");
     } // if
-    _dataset = _driver->Create(filename, _numCols, _numRows, _numBands, GDT_Float32, NULL);
+
+    char** options = NULL;
+    options = CSLSetNameValue(options, "COMPRESS", "DEFLATE");
+    _dataset = _driver->Create(filename, _numCols, _numRows, _numBands, GDT_Float32, options);
+    CSLDestroy(options);options = NULL;
     if (!_dataset) {
         std::ostringstream msg;
         msg << "Could not open GeoTiff file '" << filename << "'.";
         throw std::runtime_error(msg.str().c_str());
     } // if
 
-    // COMPRESS=DEFLATE, PREDICTOR=1 (default),
-
+    // Set projection
     PJ_CONTEXT* context = NULL;
-    const char** options = NULL;
     PJ* proj = proj_create(context, _crs.c_str());
     _dataset->SetProjection(proj_as_wkt(context, proj, PJ_WKT1_GDAL, options));
     proj_destroy(proj);proj = NULL;
 
+    // Set geographic transformation.
     _dataset->SetGeoTransform(_transform);
+
+    // Set band labels.
+    assert(_bandLabels.size() == size_t(_dataset->GetRasterCount()));
+    for (size_t i = 0; i < _bandLabels.size(); ++i) {
+        GDALRasterBand* band = _dataset->GetRasterBand(i+1);
+        assert(band);
+        band->SetDescription(_bandLabels[i].c_str());
+        band->SetNoDataValue(_noDataValue);
+    } // for
 }
 
 
@@ -197,6 +237,15 @@ geomodelgrids::utils::GeoTiff::read(const char* filename) {
         if ((_transform[2] != 0.0) || (_transform[4] != 0.0)) {
             throw std::runtime_error("Unsupported geographic transformsion.");
         } // if
+
+        _bandLabels.resize(_numBands);
+        for (size_t i = 0; i < _numBands; ++i) {
+            GDALRasterBand* band = _dataset->GetRasterBand(i+1);
+            const char* label = band->GetDescription();
+            if (label) {
+                _bandLabels[i] = label;
+            } // if
+        } // for
 
         const size_t bufferSize = _numCols * _numRows * _numBands;
         _buffer = (bufferSize > 0) ? new float[bufferSize] : NULL;assert(_buffer);

@@ -176,12 +176,21 @@ geomodelgrids::apps::Isosurface::run(int argc,
     const size_t numY = size_t((_maxY + 0.5*_horizRes - _minY) / _horizRes);
     const size_t numIsosurfaces = _isosurfaces.size();
 
+    std::vector<std::string> bandLabels(numIsosurfaces);
+    for (size_t i = 0; i < numIsosurfaces; ++i) {
+        std::ostringstream label;
+        label << _isosurfaces[i].first << "=" << _isosurfaces[i].second;
+        bandLabels[i] = label.str();
+    } // for
+
     geomodelgrids::utils::GeoTiff writer;
     writer.setNumCols(numX);
     writer.setNumRows(numY);
     writer.setNumBands(numIsosurfaces);
+    writer.setBandLabels(bandLabels);
     writer.setCRS(_bboxCRS.c_str());
     writer.setBBox(_minX, _maxX, _minY, _maxY);
+    writer.setNoDataValue(geomodelgrids::NODATA_VALUE);
     writer.create(_outputFilename.c_str());
 
     std::vector<double> values(numIsosurfaces);
