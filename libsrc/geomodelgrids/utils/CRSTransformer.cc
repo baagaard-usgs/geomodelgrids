@@ -5,7 +5,7 @@
 #include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 geomodelgrids::utils::CRSTransformer::CRSTransformer(void) :
     _srcString("EPSG:4326"), // latitude/longitude WGS84
@@ -13,7 +13,7 @@ geomodelgrids::utils::CRSTransformer::CRSTransformer(void) :
     _proj(NULL) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
 geomodelgrids::utils::CRSTransformer::~CRSTransformer(void) {
     if (_proj) {
@@ -22,7 +22,7 @@ geomodelgrids::utils::CRSTransformer::~CRSTransformer(void) {
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set source coordinate system.
 void
 geomodelgrids::utils::CRSTransformer::setSrc(const char* value) {
@@ -30,7 +30,7 @@ geomodelgrids::utils::CRSTransformer::setSrc(const char* value) {
 } // setSrc
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set destination coordinate system.
 void
 geomodelgrids::utils::CRSTransformer::setDest(const char* value) {
@@ -38,7 +38,7 @@ geomodelgrids::utils::CRSTransformer::setDest(const char* value) {
 } // setDest
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Initialize CRS transformation.
 void
 geomodelgrids::utils::CRSTransformer::initialize(void) {
@@ -55,7 +55,7 @@ geomodelgrids::utils::CRSTransformer::initialize(void) {
 } // initialize
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Compute from src CRS to dest CRS.
 void
 geomodelgrids::utils::CRSTransformer::transform(double* destX,
@@ -77,7 +77,7 @@ geomodelgrids::utils::CRSTransformer::transform(double* destX,
 } // transform
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Compute from src CRS to dest CRS.
 void
 geomodelgrids::utils::CRSTransformer::inverse_transform(double* srcX,
@@ -97,6 +97,43 @@ geomodelgrids::utils::CRSTransformer::inverse_transform(double* srcX,
         *srcZ = xyzSrc.xyzt.z;
     } // if
 } // transform
+
+
+// ------------------------------------------------------------------------------------------------
+// Get boundary box in x/y order from bounding box in CRS.
+geomodelgrids::utils::CRSTransformer*
+geomodelgrids::utils::CRSTransformer::createGeoToXYAxisOrder(const char* crsString) {
+    PJ_CONTEXT* context = NULL;
+    PJ* projGeo = proj_create(context, crsString);
+    if (!projGeo) {
+        std::stringstream msg;
+        msg << "Error creating CRS from '" << crsString << "'.\n"
+            << proj_errno_string(proj_errno(projGeo));
+        throw std::runtime_error(msg.str());
+    } // if
+    PJ* projXY = proj_normalize_for_visualization(context, projGeo);
+    if (!projXY) {
+        proj_destroy(projGeo);
+
+        std::stringstream msg;
+        msg << "Error creating normalized CRS from '" << crsString << "'.\n"
+            << proj_errno_string(proj_errno(projGeo));
+        throw std::runtime_error(msg.str());
+    }
+    PJ* transform = proj_create_crs_to_crs_from_pj(context, projGeo, projXY, NULL, NULL);
+    proj_destroy(projGeo);
+    proj_destroy(projXY);
+    if (!transform) {
+        std::stringstream msg;
+        msg << "Error geo to xy transformation for CRS from '" << crsString << "'.\n"
+            << proj_errno_string(proj_errno(transform));
+        throw std::runtime_error(msg.str());
+    } // if
+    CRSTransformer* transformer = new CRSTransformer();
+    transformer->_proj = transform;
+
+    return transformer;
+}
 
 
 // End of file

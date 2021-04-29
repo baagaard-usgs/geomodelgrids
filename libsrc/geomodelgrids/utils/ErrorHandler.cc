@@ -5,10 +5,10 @@
 #include <fstream> // USES std::ofstream
 #include <cassert> // USES assert()
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 const char* geomodelgrids::utils::ErrorHandler::_NULLFILE = "/dev/null";
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 geomodelgrids::utils::ErrorHandler::ErrorHandler(void) :
     _message(""),
     _logFilename(_NULLFILE),
@@ -17,7 +17,7 @@ geomodelgrids::utils::ErrorHandler::ErrorHandler(void) :
 {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 geomodelgrids::utils::ErrorHandler::~ErrorHandler(void) {
     if (_log) {
         _log->close();
@@ -26,7 +26,7 @@ geomodelgrids::utils::ErrorHandler::~ErrorHandler(void) {
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set filename for logging.
 void
 geomodelgrids::utils::ErrorHandler::setLogFilename(const char* filename) {
@@ -42,7 +42,7 @@ geomodelgrids::utils::ErrorHandler::setLogFilename(const char* filename) {
 } // setLogFilename
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get filename for logging.
 const char* const
 geomodelgrids::utils::ErrorHandler::getLogFilename(void) const {
@@ -50,7 +50,7 @@ geomodelgrids::utils::ErrorHandler::getLogFilename(void) const {
 } // getLogFilename
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Turn logging on/off.
 void
 geomodelgrids::utils::ErrorHandler::setLoggingOn(const bool turnOn) {
@@ -66,7 +66,7 @@ geomodelgrids::utils::ErrorHandler::setLoggingOn(const bool turnOn) {
 } // setLoggingOn
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Reset error status and message.
 void
 geomodelgrids::utils::ErrorHandler::resetStatus(void) {
@@ -75,7 +75,7 @@ geomodelgrids::utils::ErrorHandler::resetStatus(void) {
 } // resetStatus
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get status.
 geomodelgrids::utils::ErrorHandler::StatusEnum
 geomodelgrids::utils::ErrorHandler::getStatus(void) const {
@@ -83,7 +83,7 @@ geomodelgrids::utils::ErrorHandler::getStatus(void) const {
 } // getStatus
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get warning/error message.
 const char*
 geomodelgrids::utils::ErrorHandler::getMessage(void) const {
@@ -91,7 +91,7 @@ geomodelgrids::utils::ErrorHandler::getMessage(void) const {
 } // getMessage
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set status to error and store error message.
 void
 geomodelgrids::utils::ErrorHandler::setError(const char* msg) {
@@ -100,7 +100,7 @@ geomodelgrids::utils::ErrorHandler::setError(const char* msg) {
 } // setError
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set status to warning and store warning message.
 void
 geomodelgrids::utils::ErrorHandler::setWarning(const char* msg) {
@@ -109,7 +109,7 @@ geomodelgrids::utils::ErrorHandler::setWarning(const char* msg) {
 } // setWarning
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Write message to log file.
 void
 geomodelgrids::utils::ErrorHandler::logMessage(const char* msg) {

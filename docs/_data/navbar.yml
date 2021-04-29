@@ -23,6 +23,8 @@ toc:
         url: /apps/queryelev.html
       - page: geomodelgrids_borehole
         url: /apps/borehole.html
+      - page: geomodelgrids_isosurface
+        url: /apps/isosurface.html
       - page: geomodelgrids_create_model
         url: /apps/create.html
   - title: Python scripting

@@ -15,16 +15,16 @@ class geomodelgrids::serial::Query {
     friend class TestCQuery; // unit testing
     friend class _Query; // Helper class
 
-    // PUBLIC ENUMS ///////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC ENUMS -------------------------------------------------------------------------------
 public:
 
-    enum SQUASHING_TYPE {
+    enum SquashingEnum {
         SQUASH_NONE=0,
         SQUASH_TOP_SURFACE=1,
         SQUASH_TOPOGRAPHY_BATHYMETRY=2,
     };
 
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
     /// Constructor
@@ -61,7 +61,7 @@ public:
      *
      * @param[in] value Type of squashing.
      */
-    void setSquashing(const SQUASHING_TYPE value);
+    void setSquashing(const SquashingEnum value);
 
     /** Query for elevation of top of model at point.
      *
@@ -99,15 +99,15 @@ public:
     /// Cleanup after querying.
     void finalize(void);
 
-    // PRIVATE TYPEDEFS ////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE TYPEDEFS ---------------------------------------------------------------------------
 private:
 
     typedef std::map<size_t, size_t> values_map_type;
 
-    // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE METHODS ----------------------------------------------------------------------------
 private:
 
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE MEMBERS ----------------------------------------------------------------------------
 private:
 
     std::vector<geomodelgrids::serial::Model*> _models;
@@ -115,9 +115,9 @@ private:
     std::vector<values_map_type> _valuesIndex;
     double _squashMinElev;
     geomodelgrids::utils::ErrorHandler* _errorHandler;
-    SQUASHING_TYPE _squash;
+    SquashingEnum _squash;
 
-    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ----------------------------------------------------------------------------
 private:
 
     Query(const Query&); ///< Not implemented

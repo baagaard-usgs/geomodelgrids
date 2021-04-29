@@ -4,6 +4,7 @@
             "name": "macos-clang",
             "includePath": [
                 "${workspaceFolder}/libsrc",
+                "${workspaceFolder}/tests/data",
                 "${GEOMODELGRIDS_BUILDDIR}",
                 "${PYTHON_INCDIR}",
                 "${MPI_INCDIR}",
@@ -11,7 +12,9 @@
                 "${PROJ_INCDIR}",
                 "${CPPUNIT_INCDIR}"
             ],
-            "defines": [],
+            "defines": [
+                "WITH_GDAL"
+            ],
             "macFrameworkPath": [
                 "/Library/Developer/CommandLineTools/SDKs/MacOSX10.14.sdk/System/Library/Frameworks"
             ],

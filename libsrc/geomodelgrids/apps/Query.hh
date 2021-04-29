@@ -4,7 +4,7 @@
 
 #include "appsfwd.hh" // forward declarations
 
-#include "geomodelgrids/serial/Query.hh" // HASA SQUASHING_TYPE
+#include "geomodelgrids/serial/Query.hh" // HASA SquashingEnum
 
 #include <vector> // HASA std::std::vector
 #include <string> // HASA std::string
@@ -12,7 +12,7 @@
 class geomodelgrids::apps::Query {
     friend class TestQuery; // unit testing
 
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Constructor
@@ -43,7 +43,7 @@ public:
     int run(int argc,
             char* argv[]);
 
-    // PRIVATE METHODS /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
 private:
 
     /** Parse command line arguments.
@@ -65,7 +65,7 @@ private:
     std::string _createOutputHeader(int argc,
                                     char* argv[]);
 
-    // PRIVATE MEMBERS /////////////////////////////////////////////////////////////////////////////////////////////////
+    // PRIVATE MEMBERS ////////////////////////////////////////////////////////////////////////////
 private:
 
     std::vector<std::string> _modelFilenames;
@@ -75,10 +75,10 @@ private:
     std::string _outputFilename;
     std::string _logFilename;
     double _squashMinElev;
-    geomodelgrids::serial::Query::SQUASHING_TYPE _squash;
+    geomodelgrids::serial::Query::SquashingEnum _squash;
     bool _showHelp;
 
-    // NOT IMPLEMENTED /////////////////////////////////////////////////////////////////////////////////////////////////
+    // NOT IMPLEMENTED ////////////////////////////////////////////////////////////////////////////
 private:
 
     Query(const Query&); ///< Not implemented

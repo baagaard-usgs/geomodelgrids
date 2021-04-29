@@ -23,7 +23,7 @@ namespace geomodelgrids {
 } // geomodelgrids
 
 class geomodelgrids::apps::TestQueryElev : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+    // CPPUNIT TEST SUITE -------------------------------------------------------------------------
     CPPUNIT_TEST_SUITE(TestQueryElev);
 
     CPPUNIT_TEST(testConstructor);
@@ -45,7 +45,7 @@ class geomodelgrids::apps::TestQueryElev : public CppUnit::TestFixture {
 
     CPPUNIT_TEST_SUITE_END();
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
     /// Setup test.
@@ -102,7 +102,7 @@ public:
 }; // class TestQueryElev
 CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::apps::TestQueryElev);
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 namespace geomodelgrids {
     namespace apps {
         class _TestQueryElev;
@@ -124,14 +124,14 @@ public:
 
 }; // _TestQueryElev
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 void
 geomodelgrids::apps::TestQueryElev::setUp(void) {
     optind = 1; // reset parsing of argc and argv
 } // setUp
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test constructor.
 void
 geomodelgrids::apps::TestQueryElev::testConstructor(void) {
@@ -142,7 +142,7 @@ geomodelgrids::apps::TestQueryElev::testConstructor(void) {
 } // testConstructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with no args.
 void
 geomodelgrids::apps::TestQueryElev::testParseNoArgs(void) {
@@ -155,7 +155,7 @@ geomodelgrids::apps::TestQueryElev::testParseNoArgs(void) {
 } // testParseNoArgs
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with --help.
 void
 geomodelgrids::apps::TestQueryElev::testParseArgsHelp(void) {
@@ -168,7 +168,7 @@ geomodelgrids::apps::TestQueryElev::testParseArgsHelp(void) {
 } // testParseArgsHelp
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() without --points.
 void
 geomodelgrids::apps::TestQueryElev::testParseArgsNoPoints(void) {
@@ -180,7 +180,7 @@ geomodelgrids::apps::TestQueryElev::testParseArgsNoPoints(void) {
 } // testParseArgsNoPoints
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() without --models.
 void
 geomodelgrids::apps::TestQueryElev::testParseArgsNoModels(void) {
@@ -192,7 +192,7 @@ geomodelgrids::apps::TestQueryElev::testParseArgsNoModels(void) {
 } // testParseArgsNoModels
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() without --output.
 void
 geomodelgrids::apps::TestQueryElev::testParseArgsNoOutput(void) {
@@ -204,7 +204,7 @@ geomodelgrids::apps::TestQueryElev::testParseArgsNoOutput(void) {
 } // testParseArgsNoOutput
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with wrong arguments.
 void
 geomodelgrids::apps::TestQueryElev::testParseArgsWrong(void) {
@@ -216,7 +216,7 @@ geomodelgrids::apps::TestQueryElev::testParseArgsWrong(void) {
 } // testParseArgsWrong
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with required arguments.
 void
 geomodelgrids::apps::TestQueryElev::testParseArgsMinimal(void) {
@@ -238,7 +238,7 @@ geomodelgrids::apps::TestQueryElev::testParseArgsMinimal(void) {
 } // testParseArgsMinimal
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with all arguments.
 void
 geomodelgrids::apps::TestQueryElev::testParseArgsAll(void) {
@@ -266,7 +266,7 @@ geomodelgrids::apps::TestQueryElev::testParseArgsAll(void) {
 } // testParseArgsAll
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _printHelp().
 void
 geomodelgrids::apps::TestQueryElev::testPrintHelp(void) {
@@ -281,7 +281,7 @@ geomodelgrids::apps::TestQueryElev::testPrintHelp(void) {
 } // testPrintHelp
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test run() with help.
 void
 geomodelgrids::apps::TestQueryElev::testRunHelp(void) {
@@ -302,7 +302,7 @@ geomodelgrids::apps::TestQueryElev::testRunHelp(void) {
 } // testRunHelp
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test run() with one-block-flat.
 void
 geomodelgrids::apps::TestQueryElev::testRunOneBlockFlat(void) {
@@ -334,7 +334,7 @@ geomodelgrids::apps::TestQueryElev::testRunOneBlockFlat(void) {
 } // testRunOneBlockFlat
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test run() with three-blocks-topo with top surface.
 void
 geomodelgrids::apps::TestQueryElev::testRunThreeBlocksTop(void) {
@@ -364,7 +364,7 @@ geomodelgrids::apps::TestQueryElev::testRunThreeBlocksTop(void) {
 } // testRunThreeBlocksTop
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test run() with one-block-flat and three-blocks-topo.
 void
 geomodelgrids::apps::TestQueryElev::testRunTwoModels(void) {
@@ -397,7 +397,7 @@ geomodelgrids::apps::TestQueryElev::testRunTwoModels(void) {
 } // testRunTwoModels
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test run() with bad input.
 void
 geomodelgrids::apps::TestQueryElev::testRunBadInput(void) {
@@ -414,7 +414,7 @@ geomodelgrids::apps::TestQueryElev::testRunBadInput(void) {
 } // testRunBadInput
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test run() with bad output.
 void
 geomodelgrids::apps::TestQueryElev::testRunBadOutput(void) {
@@ -431,7 +431,7 @@ geomodelgrids::apps::TestQueryElev::testRunBadOutput(void) {
 } // testRunBadOutput
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 void
 geomodelgrids::apps::_TestQueryElev::createPointsFile(std::ostream& sout,
                                                       const geomodelgrids::testdata::ModelPoints& points) {
@@ -449,7 +449,7 @@ geomodelgrids::apps::_TestQueryElev::createPointsFile(std::ostream& sout,
 } // createPointsFile
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 void
 geomodelgrids::apps::_TestQueryElev::checkQuery(std::istream& sin,
                                                 const geomodelgrids::testdata::ModelPoints& points,

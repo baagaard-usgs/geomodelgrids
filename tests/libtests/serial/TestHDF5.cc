@@ -19,7 +19,7 @@ namespace geomodelgrids {
 } // geomodelgrids
 
 class geomodelgrids::serial::TestHDF5 : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+    // CPPUNIT TEST SUITE -------------------------------------------------------------------------
     CPPUNIT_TEST_SUITE(TestHDF5);
 
     CPPUNIT_TEST(testConstructor);
@@ -35,7 +35,7 @@ class geomodelgrids::serial::TestHDF5 : public CppUnit::TestFixture {
 
     CPPUNIT_TEST_SUITE_END();
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
     /// Setup test.
@@ -82,7 +82,7 @@ private:
 }; // class TestHDF5
 CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::serial::TestHDF5);
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Setup test.
 void
 geomodelgrids::serial::TestHDF5::setUp(void) {
@@ -92,7 +92,7 @@ geomodelgrids::serial::TestHDF5::setUp(void) {
 } // setUp
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Clean up after test.
 void
 geomodelgrids::serial::TestHDF5::tearDown(void) {
@@ -101,7 +101,7 @@ geomodelgrids::serial::TestHDF5::tearDown(void) {
 } // tearDown
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test constructor.
 void
 geomodelgrids::serial::TestHDF5::testConstructor(void) {
@@ -116,7 +116,7 @@ geomodelgrids::serial::TestHDF5::testConstructor(void) {
 } // testConstructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test open(), isOpen(), close().
 void
 geomodelgrids::serial::TestHDF5::testOpenClose(void) {
@@ -146,7 +146,7 @@ geomodelgrids::serial::TestHDF5::testOpenClose(void) {
 } // testOpenClose
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test getters.
 void
 geomodelgrids::serial::TestHDF5::testAccessors(void) {
@@ -164,7 +164,7 @@ geomodelgrids::serial::TestHDF5::testAccessors(void) {
 } // testAccessors
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test getDatasetDims().
 void
 geomodelgrids::serial::TestHDF5::testGetDatasetDims(void) {
@@ -188,7 +188,7 @@ geomodelgrids::serial::TestHDF5::testGetDatasetDims(void) {
 } // testGetDatasetDims
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test getGroupDatasets().
 void
 geomodelgrids::serial::TestHDF5::testGetGroupDatasets(void) {
@@ -219,7 +219,7 @@ geomodelgrids::serial::TestHDF5::testGetGroupDatasets(void) {
 } // testGetGroupDatasets
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test hasAttribute.
 void
 geomodelgrids::serial::TestHDF5::testHasAttribute(void) {
@@ -236,7 +236,7 @@ geomodelgrids::serial::TestHDF5::testHasAttribute(void) {
 } // testReadAttribute
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test readAttribute.
 void
 geomodelgrids::serial::TestHDF5::testReadAttribute(void) {
@@ -256,7 +256,7 @@ geomodelgrids::serial::TestHDF5::testReadAttribute(void) {
 } // testReadAttribute
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test readAttributeString().
 void
 geomodelgrids::serial::TestHDF5::testReadAttributeString(void) {
@@ -273,7 +273,7 @@ geomodelgrids::serial::TestHDF5::testReadAttributeString(void) {
 } // testReadAttributeString
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test readAttributeStringArray().
 void
 geomodelgrids::serial::TestHDF5::testReadAttributeStringArray(void) {
@@ -295,7 +295,7 @@ geomodelgrids::serial::TestHDF5::testReadAttributeStringArray(void) {
 } // testReadAttributeStringArray
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test readDatasetHyperslab().
 void
 geomodelgrids::serial::TestHDF5::testReadDatasetHyperslab(void) {

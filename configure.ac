@@ -20,6 +20,13 @@ AC_ARG_ENABLE([python],
 	[enable_python=no])
 AM_CONDITIONAL([ENABLE_PYTHON], [test "$enable_python" = yes])
 
+# GDAL
+AC_ARG_ENABLE([gdal],
+	[  --enable-gdal         Enable GDAL support for writing GeoTiff files [[default=no]]],
+	[if test "$enableval" = yes ; then enable_gdal=yes; else enable_gdal=no; fi],
+	[enable_gdal=no])
+AM_CONDITIONAL([ENABLE_GDAL], [test "$enable_gdal" = yes])
+
 # TESTING
 AC_ARG_ENABLE([testing],
 	[  --enable-testing        Enable Python and C++ (requires cppunit) unit testing [[default=no]]],
@@ -98,6 +105,20 @@ AC_ARG_WITH([hdf5-libdir],
 	[with_hdf5_libdir=no])
 AC_SUBST(with_hdf5_libdir)
 
+# GDAL
+AC_ARG_WITH([gdal-incdir],
+    [AC_HELP_STRING([--with-gdal-incdir],
+        [location of gdal header files @<:@default=no@:>@])],
+	[with_gdal_incdir=$withval],
+	[with_gdal_incdir=no])
+AC_SUBST(with_gdal_incdir)
+AC_ARG_WITH([gdal-libdir],
+    [AC_HELP_STRING([--with-gdal-libdir],
+        [location of gdal library @<:@default=no@:>@])],
+	[with_gdal_libdir=$withval],
+	[with_gdal_libdir=no])
+AC_SUBST(with_gdal_libdir)
+
 # ----------------------------------------------------------------------
 # BASIC TOOLS
 # ----------------------------------------------------------------------
@@ -130,6 +151,7 @@ CIT_PROJ6_LIB
 AC_SUBST(PROJ_INCLUDES)
 AC_SUBST(PROJ_LDFLAGS)
 
+# HDF5
 if test "$with_hdf5_incdir" != no; then
   HDF5_INCLUDES="-I$with_hdf5_incdir"
 fi
@@ -140,6 +162,23 @@ CIT_HDF5_HEADER
 CIT_HDF5_LIB
 AC_SUBST(HDF5_INCLUDES)
 AC_SUBST(HDF5_LDFLAGS)
+
+# GDAL
+if test "$enable_gdal" = "yes" ; then
+  # Require C++-11
+  AX_CXX_COMPILE_STDCXX(11)
+
+  if test "$with_gdal_incdir" != no; then
+    GDAL_INCLUDES="-I$with_gdal_incdir"
+  fi
+  if test "$with_gdal_libdir" != no; then
+    GDAL_LDFLAGS="-L$with_gdal_libdir"
+  fi
+  CIT_GDAL_HEADER
+  CIT_GDAL_LIB
+  AC_SUBST(GDAL_INCLUDES)
+  AC_SUBST(GDAL_LDFLAGS)
+fi
 
 # Python
 if test "$enable_python" = "yes" ; then

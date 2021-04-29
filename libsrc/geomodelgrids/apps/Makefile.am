@@ -6,6 +6,7 @@ subpkginclude_HEADERS = \
 	Query.hh \
 	QueryElev.hh \
 	Borehole.hh \
+	Isosurface.hh \
 	appsfwd.hh
 
 noinst_HEADERS =

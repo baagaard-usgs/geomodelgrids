@@ -17,7 +17,7 @@ namespace geomodelgrids {
 } // geomodelgrids
 
 class geomodelgrids::apps::TestInfo : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+    // CPPUNIT TEST SUITE -------------------------------------------------------------------------
     CPPUNIT_TEST_SUITE(TestInfo);
 
     CPPUNIT_TEST(testConstructor);
@@ -43,7 +43,7 @@ class geomodelgrids::apps::TestInfo : public CppUnit::TestFixture {
 
     CPPUNIT_TEST_SUITE_END();
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
     /// Setup test.
@@ -112,14 +112,14 @@ public:
 }; // class TestInfo
 CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::apps::TestInfo);
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 void
 geomodelgrids::apps::TestInfo::setUp(void) {
     optind = 1; // reset parsing of argc and argv
 } // setUp
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test constructor.
 void
 geomodelgrids::apps::TestInfo::testConstructor(void) {
@@ -134,7 +134,7 @@ geomodelgrids::apps::TestInfo::testConstructor(void) {
 } // testConstructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with no arguments.
 void
 geomodelgrids::apps::TestInfo::testParseArgsNone(void) {
@@ -147,7 +147,7 @@ geomodelgrids::apps::TestInfo::testParseArgsNone(void) {
 } // testParseArgsNone
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with --help.
 void
 geomodelgrids::apps::TestInfo::testParseArgsHelp(void) {
@@ -160,7 +160,7 @@ geomodelgrids::apps::TestInfo::testParseArgsHelp(void) {
 } // testParseArgsHelp
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with missing required arguments.
 void
 geomodelgrids::apps::TestInfo::testParseArgsMissing(void) {
@@ -172,7 +172,7 @@ geomodelgrids::apps::TestInfo::testParseArgsMissing(void) {
 } // testParseArgsMissing
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with wrong arguments.
 void
 geomodelgrids::apps::TestInfo::testParseArgsWrong(void) {
@@ -184,7 +184,7 @@ geomodelgrids::apps::TestInfo::testParseArgsWrong(void) {
 } // testParseArgsWrong
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with --description.
 void
 geomodelgrids::apps::TestInfo::testParseArgsDescription(void) {
@@ -202,7 +202,7 @@ geomodelgrids::apps::TestInfo::testParseArgsDescription(void) {
 } // testParseArgsDescription
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with --coordsys.
 void
 geomodelgrids::apps::TestInfo::testParseArgsCoordSys(void) {
@@ -220,7 +220,7 @@ geomodelgrids::apps::TestInfo::testParseArgsCoordSys(void) {
 } // testParseArgsCoordSys
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with --values.
 void
 geomodelgrids::apps::TestInfo::testParseArgsValues(void) {
@@ -238,7 +238,7 @@ geomodelgrids::apps::TestInfo::testParseArgsValues(void) {
 } // testParseArgsValues
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with --blocks.
 void
 geomodelgrids::apps::TestInfo::testParseArgsBlocks(void) {
@@ -256,7 +256,7 @@ geomodelgrids::apps::TestInfo::testParseArgsBlocks(void) {
 } // testParseArgsBlocks
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with --verify.
 void
 geomodelgrids::apps::TestInfo::testParseArgsVerify(void) {
@@ -274,7 +274,7 @@ geomodelgrids::apps::TestInfo::testParseArgsVerify(void) {
 } // testParseArgsBlocks
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with --all.
 void
 geomodelgrids::apps::TestInfo::testParseArgsAll(void) {
@@ -292,7 +292,7 @@ geomodelgrids::apps::TestInfo::testParseArgsAll(void) {
 } // testParseArgsAll
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _parseArgs() with --description --coordsys --values --blocks.
 void
 geomodelgrids::apps::TestInfo::testParseArgsMany(void) {
@@ -316,7 +316,7 @@ geomodelgrids::apps::TestInfo::testParseArgsMany(void) {
 } // testParseArgsMany
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _printHelp().
 void
 geomodelgrids::apps::TestInfo::testPrintHelp(void) {
@@ -331,7 +331,7 @@ geomodelgrids::apps::TestInfo::testPrintHelp(void) {
 } // testPrintHelp
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test run() with help.
 void
 geomodelgrids::apps::TestInfo::testRunHelp(void) {
@@ -352,7 +352,7 @@ geomodelgrids::apps::TestInfo::testRunHelp(void) {
 } // testRunHelp
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test run() with one-block-flat.
 void
 geomodelgrids::apps::TestInfo::testRunOneBlockFlat(void) {
@@ -378,7 +378,7 @@ geomodelgrids::apps::TestInfo::testRunOneBlockFlat(void) {
 } // testRunOneBlockFlat
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test run() with three-blocks-topo.
 void
 geomodelgrids::apps::TestInfo::testRunThreeBlocksTopo(void) {
@@ -404,7 +404,7 @@ geomodelgrids::apps::TestInfo::testRunThreeBlocksTopo(void) {
 } // testRunThreeBlocksTopo
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test run() with one-block-flat and three-blocks-topo.
 void
 geomodelgrids::apps::TestInfo::testRunTwoModels(void) {
@@ -427,7 +427,7 @@ geomodelgrids::apps::TestInfo::testRunTwoModels(void) {
 } // testRunTwoModels
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test run() wth bad model metadata.
 void
 geomodelgrids::apps::TestInfo::testRunBadMetadata(void) {
@@ -449,7 +449,7 @@ geomodelgrids::apps::TestInfo::testRunBadMetadata(void) {
 }
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test run() wth bad top surface size.
 void
 geomodelgrids::apps::TestInfo::testRunBadTopSurface(void) {
@@ -471,7 +471,7 @@ geomodelgrids::apps::TestInfo::testRunBadTopSurface(void) {
 }
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test run() wth bad block size.
 void
 geomodelgrids::apps::TestInfo::testRunBadBlock(void) {

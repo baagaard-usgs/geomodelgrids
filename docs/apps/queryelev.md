@@ -9,7 +9,12 @@ The elevation will be interpolated from the raster surface grid using bilinear i
 Optional command line arguments are in square brackets.
 
 ```
-geomodelgrids_queryelev [--help] [--log=FILE_LOG] --models=FILE_0,...,FILE_M --points=FILE_POINTS  --output=FILE_OUTPUT [--surface=SURFACE] [--points-coordsys=PROJ|EPSG|WKT]
+geomodelgrids_queryelev [--help] [--log=FILE_LOG]
+  --models=FILE_0,...,FILE_M
+  --points=FILE_POINTS
+  --output=FILE_OUTPUT
+  [--surface=SURFACE]
+  [--points-coordsys=PROJ|EPSG|WKT]
 ```
 
 ### Required arguments
@@ -38,7 +43,10 @@ The input files for these examples are located in `tests/data`.
 Query the model `one-block-topo.h5` for the elevation of the ground surface at three points given in file `one-block-flat_elev.in` with the output written to file `one-block-flat_elev.out`. We use the default coordinate system for the input points, which is latitude and longitude in the WGS84 horizontal datum. The elevation of the ground surface is given in meters above the WGS84 ellipsoid.
 
 ```bash
-geomodelgrids_queryelev --models=tests/data/one-block-topo.h5 --points=tests/data/one-block-topo_elev.in  --output=tests/data/one-block-flat_elev.out
+geomodelgrids_queryelev \
+--models=tests/data/one-block-topo.h5 \
+--points=tests/data/one-block-topo_elev.in \
+--output=tests/data/one-block-flat_elev.out
 
 # Input: one-block-topo_elev.in
 37.455  -121.941
@@ -50,4 +58,4 @@ geomodelgrids_queryelev --models=tests/data/one-block-topo.h5 --points=tests/dat
   3.745500e+01 -1.219410e+02  1.500461e+02
   3.747900e+01 -1.217340e+02  1.497750e+02
   3.738100e+01 -1.215810e+02  1.500231e+02
-  ```
+```

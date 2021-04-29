@@ -4,7 +4,6 @@
 #if !defined(geomodelgrids_serial_model_hh)
 #define geomodelgrids_serial_model_hh
 
-// Include directives ---------------------------------------------------
 #include "serialfwd.hh" // forward declarations
 #include "geomodelgrids/utils/utilsfwd.hh" // HOLDSA CRSTransformer
 
@@ -14,7 +13,7 @@
 class geomodelgrids::serial::Model {
     friend class TestModel; // Unit testing
 
-    // PUBLIC ENUMS ----------------------------------------------------------------------------------------------------
+    // PUBLIC ENUMS -------------------------------------------------------------------------------
 public:
 
     enum ModelMode {
@@ -23,7 +22,7 @@ public:
         READ_WRITE_TRUNCATE=2,
     }; // ModelEnum
 
-    // PUBLIC METHODS --------------------------------------------------------------------------------------------------
+    // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
     /// Default constructor.
@@ -157,7 +156,7 @@ public:
                         const double y,
                         const double z);
 
-    // PRIVATE MEMBERS -------------------------------------------------------------------------------------------------
+    // PRIVATE MEMBERS ----------------------------------------------------------------------------
 private:
 
     /** Convert xyz in input CRS to xyz in model CRS.
@@ -187,7 +186,7 @@ private:
                                              const double y,
                                              const double z) const;
 
-    // PRIVATE METHODS -------------------------------------------------------------------------------------------------
+    // PRIVATE METHODS ----------------------------------------------------------------------------
 private:
 
     std::vector<std::string> _valueNames; ///< Names of values in model.
@@ -204,6 +203,12 @@ private:
     geomodelgrids::serial::Surface* _surfaceTopoBathy; ///< Model topography/bathymetry.
     geomodelgrids::utils::CRSTransformer* _crsTransformer; ///< Coordinate system transformer.
     std::vector<geomodelgrids::serial::Block*> _blocks; ///< Model blocks.
+
+    // NOT IMPLEMENTED ----------------------------------------------------------------------------
+private:
+
+    Model(const Model&); ///< Not implemented
+    const Model& operator=(const Model&); ///< Not implemented
 
 }; // Model
 

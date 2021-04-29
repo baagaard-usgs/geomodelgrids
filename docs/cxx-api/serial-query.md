@@ -4,7 +4,7 @@
 
 ## Enumerated types
 
-### SQUASHING_TYPE
+### SquashingEnum
 
 - **SQUASH_NONE** No squashing.
 - **SQUASH_TOP_SURFACE** Squash relative to the top surface of the model.
@@ -16,7 +16,7 @@
 + [getErrorHandler()](#geterrorhandler)
 + [initialize(const std::vector\<std::string\>& modelFilenames, const std::vector\<std::string\>& valueNames, const std::string inputCRSString)](#initializeconst-stdvector-modelfilename-const-stdvector-valuenames-const-stdstring-inputcrsstring)
 + [setSquashMinElev(const double value)](#setsquashminelevconst-double-value)
-+ [setSquashing(const SQUASHING_TYPE value)](#setsquashingconst-squashing-type-value)
++ [setSquashing(const SquashingEnum value)](#setsquashingconst-squashing-enum-value)
 + [queryTopElevation(const double x, const double y)](#double-querytopelevationconst-double-x-const-double-y)
 + [queryTopoBathyElevation(const double x, const double y)](#double-querytopobathyelevationconst-double-x-const-double-y)
 + [query(const double* values, const double x, const double y, const double z)](#queryconst-double-values-const-double-x-const-double-y-const-double-z)
@@ -51,7 +51,7 @@ This option is used to adjust (squash) topography to sea level above `value`. Be
 * **value**[in] Minimum elevation (m) for squashing topography.
 
 
-### setSquashing(const SQUASHING_TYPE value)
+### setSquashing(const SquashingEnum value)
 
 Set type of squashing.
 

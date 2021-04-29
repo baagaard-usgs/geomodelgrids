@@ -15,7 +15,7 @@
 #define CALL_MEMBER_FN(object,ptrToMember)  ((object).*(ptrToMember))
 #endif
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 class geomodelgrids::serial::_Hyperslab {
 public:
 
@@ -70,7 +70,7 @@ private:
 
 }; // _Hyperslab
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 geomodelgrids::serial::Hyperslab::Hyperslab(geomodelgrids::serial::HDF5* const h5,
                                             const char* path,
@@ -109,7 +109,7 @@ geomodelgrids::serial::Hyperslab::Hyperslab(geomodelgrids::serial::HDF5* const h
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
 geomodelgrids::serial::Hyperslab::~Hyperslab(void) {
     delete[] _origin;_origin = NULL;
@@ -121,7 +121,7 @@ geomodelgrids::serial::Hyperslab::~Hyperslab(void) {
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Compute values at point using bilinear interpolation.
 void
 geomodelgrids::serial::Hyperslab::interpolate(double* const values,
@@ -132,7 +132,7 @@ geomodelgrids::serial::Hyperslab::interpolate(double* const values,
 } // interpolate
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor.
 geomodelgrids::serial::_Hyperslab::_Hyperslab(geomodelgrids::serial::Hyperslab& hyperslab) :
     _hyperslab(hyperslab) {
@@ -148,11 +148,11 @@ geomodelgrids::serial::_Hyperslab::_Hyperslab(geomodelgrids::serial::Hyperslab& 
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 geomodelgrids::serial::_Hyperslab::~_Hyperslab(void) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get values for hyperslab containing target point.
 void
 geomodelgrids::serial::_Hyperslab::getSlab(const double indexFloat[]) {
@@ -191,7 +191,7 @@ geomodelgrids::serial::_Hyperslab::getSlab(const double indexFloat[]) {
 } // getSlab
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 void
 geomodelgrids::serial::_Hyperslab::interpolate(double* const values,
                                                const double indexFloat[]) {
@@ -200,7 +200,7 @@ geomodelgrids::serial::_Hyperslab::interpolate(double* const values,
 } // interpolate
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 void
 geomodelgrids::serial::_Hyperslab::_interpolate2D(double* const values,
                                                   const double indexFloat[]) {
@@ -275,7 +275,7 @@ geomodelgrids::serial::_Hyperslab::_interpolate2D(double* const values,
 } // interpolate2D
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 void
 geomodelgrids::serial::_Hyperslab::_interpolate3D(double* const values,
                                                   const double indexFloat[]) {

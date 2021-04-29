@@ -8,17 +8,16 @@
 #include <cassert> // USES assert()
 
 #if H5_VERSION_GE(1,12,0)
-  #define GEOMODELGRIDS_HDF5_USE_API_112
+#define GEOMODELGRIDS_HDF5_USE_API_112
 #else
 #if H5_VERSION_GE(1,8,0)
-  #define GEOMODELGRIDS_HDF5_USE_API_18
+#define GEOMODELGRIDS_HDF5_USE_API_18
 #endif
 #endif
-
 
 const hid_t geomodelgrids::serial::HDF5::H5_NULL = -1;
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 namespace geomodelgrids {
     namespace serial {
         struct _HDF5Access;
@@ -52,7 +51,7 @@ struct geomodelgrids::serial::_HDF5Access {
 
 };
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 geomodelgrids::serial::HDF5::HDF5(void) :
     _file(H5_NULL),
@@ -62,14 +61,14 @@ geomodelgrids::serial::HDF5::HDF5(void) :
 {} // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
 geomodelgrids::serial::HDF5::~HDF5(void) {
     close();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set chunk caching parameters.
 void
 geomodelgrids::serial::HDF5::setCache(const size_t cacheSize,
@@ -81,7 +80,7 @@ geomodelgrids::serial::HDF5::setCache(const size_t cacheSize,
 } // setDatasetCache
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Open HDF5 file.
 void
 geomodelgrids::serial::HDF5::open(const char* filename,
@@ -118,7 +117,7 @@ geomodelgrids::serial::HDF5::open(const char* filename,
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Close HDF5 file.
 void
 geomodelgrids::serial::HDF5::close(void) {
@@ -132,7 +131,7 @@ geomodelgrids::serial::HDF5::close(void) {
 } // close
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Check if HDF5 file is open.
 bool
 geomodelgrids::serial::HDF5::isOpen(void) const {
@@ -140,7 +139,7 @@ geomodelgrids::serial::HDF5::isOpen(void) const {
 } // isOpen
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Check if HDF5 file has group.
 bool
 geomodelgrids::serial::HDF5::hasGroup(const char* name) {
@@ -153,9 +152,9 @@ geomodelgrids::serial::HDF5::hasGroup(const char* name) {
         h5access.object = H5Oopen(_file, name, H5P_DEFAULT);assert(h5access.object >= 0);
         H5O_info_t info;
 #if defined(GEOMODELGRIDS_HDF5_USE_API_112)
-    herr_t err = H5Oget_info(h5access.object, &info, H5O_INFO_ALL);
+        herr_t err = H5Oget_info(h5access.object, &info, H5O_INFO_ALL);
 #else
-    herr_t err = H5Oget_info(h5access.object, &info);
+        herr_t err = H5Oget_info(h5access.object, &info);
 #endif
         assert(err >= 0);
         if (H5O_TYPE_GROUP == info.type) {
@@ -167,7 +166,7 @@ geomodelgrids::serial::HDF5::hasGroup(const char* name) {
 } // hasGroup
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Check if HDF5 file has dataset.
 bool
 geomodelgrids::serial::HDF5::hasDataset(const char* name) {
@@ -180,9 +179,9 @@ geomodelgrids::serial::HDF5::hasDataset(const char* name) {
         h5access.object = H5Oopen(_file, name, H5P_DEFAULT);assert(h5access.object >= 0);
         H5O_info_t info;
 #if defined(GEOMODELGRIDS_HDF5_USE_API_112)
-    herr_t err = H5Oget_info(h5access.object, &info, H5O_INFO_ALL);
+        herr_t err = H5Oget_info(h5access.object, &info, H5O_INFO_ALL);
 #else
-    herr_t err = H5Oget_info(h5access.object, &info);
+        herr_t err = H5Oget_info(h5access.object, &info);
 #endif
         assert(err >= 0);
         if (H5O_TYPE_DATASET == info.type) {
@@ -194,7 +193,7 @@ geomodelgrids::serial::HDF5::hasDataset(const char* name) {
 } // hasDataset
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get topology metadata.
 void
 geomodelgrids::serial::HDF5::getDatasetDims(hsize_t** dims,
@@ -229,7 +228,7 @@ geomodelgrids::serial::HDF5::getDatasetDims(hsize_t** dims,
 } // getDatasetDims
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get names of datasets in group.
 void
 geomodelgrids::serial::HDF5::getGroupDatasets(std::vector<std::string>* names,
@@ -271,7 +270,7 @@ geomodelgrids::serial::HDF5::getGroupDatasets(std::vector<std::string>* names,
 } // getGroupDatasets
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Check if HDF5 file has attribute.
 bool
 geomodelgrids::serial::HDF5::hasAttribute(const char* path,
@@ -284,7 +283,7 @@ geomodelgrids::serial::HDF5::hasAttribute(const char* path,
 } // hasAttribute
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Read scalar attribute.
 void
 geomodelgrids::serial::HDF5::readAttribute(const char* path,
@@ -312,7 +311,7 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
 } // readAttribute
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Read string attribute.
 std::string
 geomodelgrids::serial::HDF5::readAttribute(const char* path,
@@ -364,7 +363,7 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
 } // readAttribute
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Read strings attribute.
 void
 geomodelgrids::serial::HDF5::readAttribute(const char* path,
@@ -436,7 +435,7 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
 } // readAttribute
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Read dataset slice.
 void
 geomodelgrids::serial::HDF5::readDatasetHyperslab(void* values,

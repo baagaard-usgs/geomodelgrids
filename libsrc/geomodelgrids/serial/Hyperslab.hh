@@ -23,7 +23,7 @@ class geomodelgrids::serial::Hyperslab {
     friend class _Hyperslab; // Helper class for getting slab.
     friend class TestHyperslab; // Unit testing
 
-    // PUBLIC METHODS --------------------------------------------------------------------------------------------------
+    // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
     /** Constructor.
@@ -49,7 +49,7 @@ public:
     void interpolate(double* const values,
                      const double indexFloat[]);
 
-    // PRIVATE MEMBERS -------------------------------------------------------------------------------------------------
+    // PRIVATE MEMBERS ----------------------------------------------------------------------------
 private:
 
     geomodelgrids::serial::HDF5* const _h5; ///< HDF5 data.
@@ -62,6 +62,13 @@ private:
     double* _values; ///< Hyperslab values.
 
     geomodelgrids::serial::_Hyperslab* _hyperslab; ///< Helper object.
+
+    // NOT IMPLEMENTED ----------------------------------------------------------------------------
+private:
+
+    Hyperslab(const Hyperslab&); ///< Not implemented
+    const Hyperslab& operator=(const Hyperslab&); ///< Not implemented
+
 }; // Hyperslab
 
 #endif // geomodelgrids_serial_hyperslab_hh

@@ -15,7 +15,7 @@
 #include <cassert> // USES assert()
 #include <sstream> // USES std::ostringstream, std::istringstream
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 namespace geomodelgrids {
     namespace apps {
         namespace _Info {
@@ -39,7 +39,7 @@ namespace geomodelgrids {
     } // apps
 } // geomodelgrids
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor
 geomodelgrids::apps::Info::Info() :
     _showHelp(false),
@@ -51,12 +51,12 @@ geomodelgrids::apps::Info::Info() :
     _doVerification(false) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
 geomodelgrids::apps::Info::~Info(void) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Run info application.
 int
 geomodelgrids::apps::Info::run(int argc,
@@ -100,7 +100,7 @@ geomodelgrids::apps::Info::run(int argc,
 } // run
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Parse command line arguments.
 void
 geomodelgrids::apps::Info::_parseArgs(int argc,
@@ -182,7 +182,7 @@ geomodelgrids::apps::Info::_parseArgs(int argc,
 } // _parseArgs
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Print help information.
 void
 geomodelgrids::apps::Info::_printHelp(void) {
@@ -201,7 +201,7 @@ geomodelgrids::apps::Info::_printHelp(void) {
 } // _printHelp
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Print model description.
 void
 geomodelgrids::apps::Info::_printDescription(geomodelgrids::serial::Model* const model) {
@@ -230,7 +230,7 @@ geomodelgrids::apps::Info::_printDescription(geomodelgrids::serial::Model* const
 } // _printDescription
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Print model coordinate system.
 void
 geomodelgrids::apps::Info::_printCoordSys(geomodelgrids::serial::Model* const model) {
@@ -247,7 +247,7 @@ geomodelgrids::apps::Info::_printCoordSys(geomodelgrids::serial::Model* const mo
 } // _printCoordSys
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Print model coordinate system.
 void
 geomodelgrids::apps::Info::_printValues(geomodelgrids::serial::Model* const model) {
@@ -265,7 +265,7 @@ geomodelgrids::apps::Info::_printValues(geomodelgrids::serial::Model* const mode
 } // _printValues
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Print description of model blocks.
 void
 geomodelgrids::apps::Info::_printBlocks(geomodelgrids::serial::Model* const model) {
@@ -314,7 +314,7 @@ geomodelgrids::apps::Info::_printBlocks(geomodelgrids::serial::Model* const mode
 } // _printBlocks
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Verify presence of metadata and consistency of model.
 void
 geomodelgrids::apps::Info::_verify(geomodelgrids::serial::Model* const model) {
@@ -361,7 +361,7 @@ geomodelgrids::apps::Info::_verify(geomodelgrids::serial::Model* const model) {
 } // _verify
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 std::string
 geomodelgrids::apps::_Info::join(const std::vector<std::string>& values,
                                  const std::string& delimiter) {
@@ -377,7 +377,7 @@ geomodelgrids::apps::_Info::join(const std::vector<std::string>& values,
 } // join
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 std::string
 geomodelgrids::apps::_Info::indent(const size_t level,
                                    const size_t width) {
@@ -387,7 +387,7 @@ geomodelgrids::apps::_Info::indent(const size_t level,
 } // indent
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 void
 geomodelgrids::apps::_Info::verifySurface(const geomodelgrids::serial::Surface* surface,
                                           const geomodelgrids::serial::Model* model,
@@ -418,7 +418,7 @@ geomodelgrids::apps::_Info::verifySurface(const geomodelgrids::serial::Surface* 
 }
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 void
 geomodelgrids::apps::_Info::verifyBlock(geomodelgrids::serial::Block* block,
                                         const geomodelgrids::serial::Model* model) {
@@ -464,7 +464,7 @@ geomodelgrids::apps::_Info::verifyBlock(geomodelgrids::serial::Block* block,
 }
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Verify blocks span vertical dimension of domain. Blocks are ordered top to bottom.
 void
 geomodelgrids::apps::_Info::verifyBlocksZ(const std::vector<geomodelgrids::serial::Block*>& blocks,

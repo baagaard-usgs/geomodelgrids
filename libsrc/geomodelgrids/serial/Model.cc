@@ -15,7 +15,7 @@
 #include <cassert> // USES assert()
 #include <cmath> // USES M_PI, cos(), sin()
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 geomodelgrids::serial::Model::Model(void) :
     _modelCRSString(""),
@@ -34,14 +34,14 @@ geomodelgrids::serial::Model::Model(void) :
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
 geomodelgrids::serial::Model::~Model(void) {
     this->close();
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Set CRS of query input points.
 void
 geomodelgrids::serial::Model::setInputCRS(const std::string& value) {
@@ -49,7 +49,7 @@ geomodelgrids::serial::Model::setInputCRS(const std::string& value) {
 } // setInputCRS
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Open Model file.
 void
 geomodelgrids::serial::Model::open(const char* filename,
@@ -79,7 +79,7 @@ geomodelgrids::serial::Model::open(const char* filename,
 } // open
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Close Model file.
 void
 geomodelgrids::serial::Model::close(void) {
@@ -111,7 +111,7 @@ geomodelgrids::serial::Model::close(void) {
 } // close
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Load metadata.
 void
 geomodelgrids::serial::Model::loadMetadata(void) {
@@ -240,7 +240,7 @@ geomodelgrids::serial::Model::loadMetadata(void) {
 } // loadMetadata
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Initialize.
 void
 geomodelgrids::serial::Model::initialize(void) {
@@ -263,7 +263,7 @@ geomodelgrids::serial::Model::initialize(void) {
 } // initialize
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get names of values in model.
 const std::vector<std::string>&
 geomodelgrids::serial::Model::getValueNames(void) const {
@@ -271,7 +271,7 @@ geomodelgrids::serial::Model::getValueNames(void) const {
 } // getValueNames
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get names of units in model.
 const std::vector<std::string>&
 geomodelgrids::serial::Model::getValueUnits(void) const {
@@ -279,7 +279,7 @@ geomodelgrids::serial::Model::getValueUnits(void) const {
 } // getValueUnits
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get model dimensions.
 const double*
 geomodelgrids::serial::Model::getDims(void) const {
@@ -287,7 +287,7 @@ geomodelgrids::serial::Model::getDims(void) const {
 } // getDims
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get coordinates of model origin.
 const double*
 geomodelgrids::serial::Model::getOrigin(void) const {
@@ -295,7 +295,7 @@ geomodelgrids::serial::Model::getOrigin(void) const {
 } // getOrigin
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get azimuth of y coordinate axies.
 const double
 geomodelgrids::serial::Model::getYAzimuth(void) const {
@@ -303,7 +303,7 @@ geomodelgrids::serial::Model::getYAzimuth(void) const {
 } // getYAzimuth
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get CRS for model.
 const std::string&
 geomodelgrids::serial::Model::getCRSString(void) const {
@@ -311,7 +311,7 @@ geomodelgrids::serial::Model::getCRSString(void) const {
 } // getCRSTransformer
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get model description information.
 const geomodelgrids::serial::ModelInfo*
 geomodelgrids::serial::Model::getInfo(void) const {
@@ -319,7 +319,7 @@ geomodelgrids::serial::Model::getInfo(void) const {
 } // getInfo
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get model topography.
 const geomodelgrids::serial::Surface*
 geomodelgrids::serial::Model::getTopSurface(void) const {
@@ -327,7 +327,7 @@ geomodelgrids::serial::Model::getTopSurface(void) const {
 } // getTopSurface
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get model topography/bathymetry.
 const geomodelgrids::serial::Surface*
 geomodelgrids::serial::Model::getTopoBathy(void) const {
@@ -335,7 +335,7 @@ geomodelgrids::serial::Model::getTopoBathy(void) const {
 } // getTopoBathy
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get model description.
 const std::vector<geomodelgrids::serial::Block*>&
 geomodelgrids::serial::Model::getBlocks(void) const {
@@ -343,7 +343,7 @@ geomodelgrids::serial::Model::getBlocks(void) const {
 } // getBlocks
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Does model
 bool
 geomodelgrids::serial::Model::contains(const double x,
@@ -365,7 +365,7 @@ geomodelgrids::serial::Model::contains(const double x,
 } // contains
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Query for elevation of top of model at point using bilinear interpolation.
 double
 geomodelgrids::serial::Model::queryTopElevation(const double x,
@@ -395,7 +395,7 @@ geomodelgrids::serial::Model::queryTopElevation(const double x,
 } // queryTopElevation
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Query for elevation of topography/bathymetry at point using bilinear interpolation.
 double
 geomodelgrids::serial::Model::queryTopoBathyElevation(const double x,
@@ -425,7 +425,7 @@ geomodelgrids::serial::Model::queryTopoBathyElevation(const double x,
 } // queryTopoBathyElevation
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get model description.
 const double*
 geomodelgrids::serial::Model::query(const double x,
@@ -442,7 +442,7 @@ geomodelgrids::serial::Model::query(const double x,
 } // query
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 void
 geomodelgrids::serial::Model::_toModelXYZ(double* xModel,
                                           double* yModel,
@@ -477,7 +477,7 @@ geomodelgrids::serial::Model::_toModelXYZ(double* xModel,
 } // _toModelXYZ
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 geomodelgrids::serial::Block*
 geomodelgrids::serial::Model::_findBlock(const double x,
                                          const double y,

@@ -31,6 +31,8 @@ RUN apt-get update \
       proj-bin \
       proj-data \
       libproj-dev \
+      gdal-bin \
+      libgdal-dev \
       lcov \
       gdb \
       valgrind \

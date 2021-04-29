@@ -14,7 +14,7 @@ extern "C" {
 #include <sstream> // USES std::ostringstream, std::istringstream
 #include <iomanip> // USES io manipulators
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Create query object.
 void*
 geomodelgrids_squery_create(void) {
@@ -23,7 +23,7 @@ geomodelgrids_squery_create(void) {
 } // create
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destroy query object.
 void
 geomodelgrids_squery_destroy(void** handle) {
@@ -34,7 +34,7 @@ geomodelgrids_squery_destroy(void** handle) {
 } // destroy
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get error handler.
 void*
 geomodelgrids_squery_getErrorHandler(void* handle) {
@@ -48,7 +48,7 @@ geomodelgrids_squery_getErrorHandler(void* handle) {
 } // getErrorHandler
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Do setup for querying.
 int
 geomodelgrids_squery_initialize(void* handle,
@@ -87,7 +87,7 @@ geomodelgrids_squery_initialize(void* handle,
 } // initialize
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Turn on squashing and set minimum z for squashing.
 int
 geomodelgrids_squery_setSquashMinElev(void* handle,
@@ -105,7 +105,7 @@ geomodelgrids_squery_setSquashMinElev(void* handle,
 } // setSquashMinElev
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Turn squashing on/off.
 int
 geomodelgrids_squery_setSquashing(void* handle,
@@ -117,7 +117,7 @@ geomodelgrids_squery_setSquashing(void* handle,
     } // if
 
     assert(query);
-    geomodelgrids::serial::Query::SQUASHING_TYPE valueEnum = geomodelgrids::serial::Query::SQUASH_NONE;
+    geomodelgrids::serial::Query::SquashingEnum valueEnum = geomodelgrids::serial::Query::SQUASH_NONE;
     switch (value) {
     case GEOMODELGRIDS_SQUASH_NONE:
         valueEnum = geomodelgrids::serial::Query::SQUASH_NONE;
@@ -139,7 +139,7 @@ geomodelgrids_squery_setSquashing(void* handle,
 } // setSquashing
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Query for elevation of top of model at point.
 double
 geomodelgrids_squery_queryTopElevation(void* handle,
@@ -183,7 +183,7 @@ geomodelgrids_squery_queryTopElevation(void* handle,
 } // queryTopElevation
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Query for elevation of topography/bathymetry at point.
 double
 geomodelgrids_squery_queryTopoBathyElevation(void* handle,
@@ -227,7 +227,7 @@ geomodelgrids_squery_queryTopoBathyElevation(void* handle,
 } // queryTopoBathyElevation
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Query at point.
 int
 geomodelgrids_squery_query(void* handle,
@@ -270,7 +270,7 @@ geomodelgrids_squery_query(void* handle,
 } // query
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Cleanup after querying.
 int
 geomodelgrids_squery_finalize(void* handle) {

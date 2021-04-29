@@ -9,52 +9,49 @@
 
 namespace geomodelgrids {
     namespace testdata {
-        class _ModelPoints;
+        class _ModelPoints {
+public:
+
+            static
+            void toXYZ(double* const coordsDest,
+                       const char* destString,
+                       const char* srcString,
+                       const double* coordsSrc,
+                       const size_t numPoints,
+                       const ModelPoints::Domain& domain);
+
+        };
     } // testdata
 } // geomodelgrids
 
-class geomodelgrids::testdata::_ModelPoints {
-    // PUBLIC METHODS //////////////////////////////////////////////////////////////////////////////////////////////////
-public:
-
-    struct Domain {
-        double originX;
-        double originY;
-        double yAzimuth;
-        double zBottom;
-        bool hasTopSurface;
-    };
-
-    static
-    void toXYZ(double* const coordsDest,
-               const char* destString,
-               const char* srcString,
-               const double* coordsSrc,
-               const size_t numPoints,
-               const Domain& domain);
-
-}; // class _Models
-
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Default constructor.
 geomodelgrids::testdata::ModelPoints::ModelPoints(const size_t numPoints) :
-    _numPoints(numPoints),
     _pointsLLE(NULL),
     _pointsXYZ(new double[numPoints*3]),
+    _numPoints(numPoints),
     _inCRS("EPSG:4326"),
     _modelCRS(NULL) {
     assert(_pointsXYZ);
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor.
 geomodelgrids::testdata::ModelPoints::~ModelPoints(void) {
     delete[] _pointsXYZ;_pointsXYZ = NULL;
 } // destructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+// Get domain metadata.
+const geomodelgrids::testdata::ModelPoints::Domain&
+geomodelgrids::testdata::ModelPoints::getDomain(void) const {
+    return _domain;
+}
+
+
+// ------------------------------------------------------------------------------------------------
 // Get number of points.
 size_t
 geomodelgrids::testdata::ModelPoints::getNumPoints(void) const {
@@ -62,7 +59,7 @@ geomodelgrids::testdata::ModelPoints::getNumPoints(void) const {
 } // getNumPoints
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get CRS for longitude, latitude, and elevation=.
 const char*
 geomodelgrids::testdata::ModelPoints::getCRSLatLonElev(void) const {
@@ -70,7 +67,7 @@ geomodelgrids::testdata::ModelPoints::getCRSLatLonElev(void) const {
 } // getCRSLatLonElev
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Get geographic coordinates of sample points.
 const double*
 geomodelgrids::testdata::ModelPoints::getLatLonElev(void) const {
@@ -78,7 +75,7 @@ geomodelgrids::testdata::ModelPoints::getLatLonElev(void) const {
 } // getLatLonElev
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 /** Get model coordinates of sample points.
  *
  * @returns Coordinates (x, y, z) of sample points.
@@ -89,7 +86,7 @@ geomodelgrids::testdata::ModelPoints::getXYZ(void) const {
 } // getXYZ
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Compute elevation of top surface at point.
 double
 geomodelgrids::testdata::ModelPoints::computeTopElevation(const double x,
@@ -98,7 +95,7 @@ geomodelgrids::testdata::ModelPoints::computeTopElevation(const double x,
 } // computeTopElevation
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Compute elevation of topography/bathymetry at point.
 double
 geomodelgrids::testdata::ModelPoints::computeTopoBathyElevation(const double x,
@@ -107,35 +104,60 @@ geomodelgrids::testdata::ModelPoints::computeTopoBathyElevation(const double x,
 } // computeTopoBathyElevation
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Compute value 'one' at point.
 double
 geomodelgrids::testdata::ModelPoints::computeValueOne(const double x,
                                                       const double y,
                                                       const double z) {
-    return 2.0e+3 + 1.0 * x + 0.4 * y - 0.5 * z;
+    return 2.0e+3 + 0.3 * x + 0.4 * y - 4.0 * z;
 } // computeValueOne
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Compute value 'two' at point.
 double
 geomodelgrids::testdata::ModelPoints::computeValueTwo(const double x,
                                                       const double y,
                                                       const double z) {
-    return -1.2e+3 + 2.1 * x - 0.9 * y + 0.3 * z;
+    return -1.2e+3 + 0.1 * x - 0.2 * y - 4.8 * z;
 } // computeValueTwo
 
 
-#include <iostream>
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+// Compute elevation of isosurface for value 'one' at point.
+double
+geomodelgrids::testdata::ModelPoints::computeIsosurfaceOne(const double x,
+                                                           const double y,
+                                                           const double isoValue,
+                                                           const double zTop,
+                                                           const double zBottom) {
+    const double zModel = -1.0/4.0 * (isoValue - 2.0e+3 - 0.3 * x - 0.4 * y);
+    return zTop - zModel * (zTop - zBottom) / zBottom;
+} // computeIsosurfaceOne
+
+
+// ------------------------------------------------------------------------------------------------
+// Compute elevation of isosurface for value 'one' at point.
+double
+geomodelgrids::testdata::ModelPoints::computeIsosurfaceTwo(const double x,
+                                                           const double y,
+                                                           const double isoValue,
+                                                           const double zTop,
+                                                           const double zBottom) {
+    const double zModel = -1.0/4.8 * (isoValue + 1.2e+3 - 0.1 * x + 0.2 * y);
+    return zTop - zModel * (zTop - zBottom) / zBottom;
+} // computeIsosurfaceTwo
+
+
+// ------------------------------------------------------------------------------------------------
 void
 geomodelgrids::testdata::_ModelPoints::toXYZ(double* const coordsDest,
                                              const char* destString,
                                              const char* srcString,
                                              const double* coordsSrc,
                                              const size_t numPoints,
-                                             const Domain& domain) {
+                                             const ModelPoints::Domain& domain) {
     assert(coordsDest);
     assert(destString);
     assert(srcString);
@@ -165,7 +187,7 @@ geomodelgrids::testdata::_ModelPoints::toXYZ(double* const coordsDest,
 } // toXYZ
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor.
 geomodelgrids::testdata::OneBlockFlatPoints::OneBlockFlatPoints(void) :
     ModelPoints(5) {
@@ -179,17 +201,15 @@ geomodelgrids::testdata::OneBlockFlatPoints::OneBlockFlatPoints(void) :
     };_pointsLLE = pointsLLE;
     _modelCRS = "EPSG:26910";
 
-    _ModelPoints::Domain domain;
-    domain.yAzimuth = 90.0;
-    domain.originX = 590000.0;
-    domain.originY = 4150000.0;
-    domain.zBottom = -5.0e+3;
-    domain.hasTopSurface = false;
-    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
+    _domain.yAzimuth = 90.0;
+    _domain.originX = 590000.0;
+    _domain.originY = 4150000.0;
+    _domain.zBottom = -5.0e+3;
+    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, _domain);
 } // Constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor.
 geomodelgrids::testdata::OneBlockFlatBorehole::OneBlockFlatBorehole(void) :
     ModelPoints(6) {
@@ -204,17 +224,38 @@ geomodelgrids::testdata::OneBlockFlatBorehole::OneBlockFlatBorehole(void) :
     };_pointsLLE = pointsLLE;
     _modelCRS = "EPSG:26910";
 
-    _ModelPoints::Domain domain;
-    domain.yAzimuth = 90.0;
-    domain.originX = 590000.0;
-    domain.originY = 4150000.0;
-    domain.zBottom = -5.0e+3;
-    domain.hasTopSurface = false;
-    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
+    _domain.yAzimuth = 90.0;
+    _domain.originX = 590000.0;
+    _domain.originY = 4150000.0;
+    _domain.zBottom = -5.0e+3;
+    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, _domain);
 } // Constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+// Constructor.
+geomodelgrids::testdata::OneBlockFlatIsosurface::OneBlockFlatIsosurface(void) :
+    ModelPoints(6) {
+    const size_t numPoints = 6;assert(_numPoints == numPoints);
+    static const double pointsLLE[numPoints*3] = {
+        37.325, -121.775, 0.0,
+        37.325, -121.725, 0.0,
+        37.325, -121.675, 0.0,
+        37.375, -121.775, 0.0,
+        37.375, -121.725, 0.0,
+        37.375, -121.675, 0.0,
+    };_pointsLLE = pointsLLE;
+    _modelCRS = "EPSG:26910";
+
+    _domain.yAzimuth = 90.0;
+    _domain.originX = 590000.0;
+    _domain.originY = 4150000.0;
+    _domain.zBottom = -5.0e+3;
+    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, _domain);
+} // Constructor
+
+
+// ------------------------------------------------------------------------------------------------
 // Constructor.
 geomodelgrids::testdata::OneBlockTopoPoints::OneBlockTopoPoints(void) :
     ModelPoints(5) {
@@ -228,17 +269,16 @@ geomodelgrids::testdata::OneBlockTopoPoints::OneBlockTopoPoints(void) :
     };_pointsLLE = pointsLLE;
     _modelCRS = "EPSG:26910";
 
-    _ModelPoints::Domain domain;
-    domain.yAzimuth = 90.0;
-    domain.originX = 590000.0;
-    domain.originY = 4150000.0;
-    domain.zBottom = -5.0e+3;
-    domain.hasTopSurface = true;
-    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
+    _domain.yAzimuth = 90.0;
+    _domain.originX = 590000.0;
+    _domain.originY = 4150000.0;
+    _domain.zBottom = -5.0e+3;
+    _domain.hasTopSurface = true;
+    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, _domain);
 } // Constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor.
 geomodelgrids::testdata::OneBlockSquashPoints::OneBlockSquashPoints(const double squashMinElev) :
     ModelPoints(5) {
@@ -252,14 +292,13 @@ geomodelgrids::testdata::OneBlockSquashPoints::OneBlockSquashPoints(const double
     };_pointsLLE = pointsLLE;
     _modelCRS = "EPSG:26910";
 
-    _ModelPoints::Domain domain;
-    domain.yAzimuth = 90.0;
-    domain.originX = 590000.0;
-    domain.originY = 4150000.0;
-    domain.zBottom = -5.0e+3;
-    domain.hasTopSurface = true;
+    _domain.yAzimuth = 90.0;
+    _domain.originX = 590000.0;
+    _domain.originY = 4150000.0;
+    _domain.zBottom = -5.0e+3;
+    _domain.hasTopSurface = true;
 
-    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
+    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, _domain);
 
     // Adjust elevation before recomputing model coordinates (x, y, z).
     double pointsLLESquash[numPoints*3];
@@ -273,11 +312,11 @@ geomodelgrids::testdata::OneBlockSquashPoints::OneBlockSquashPoints(const double
         pointsLLESquash[i*3+1] = pointsLLE[i*3+1];
         pointsLLESquash[i*3+2] = (elevOrig > squashMinElev) ? elevOrig + elevTopSurface : elevOrig;
     } // for
-    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLESquash, numPoints, domain);
+    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLESquash, numPoints, _domain);
 } // Constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor.
 geomodelgrids::testdata::ThreeBlocksFlatPoints::ThreeBlocksFlatPoints(void) :
     ModelPoints(6) {
@@ -292,17 +331,15 @@ geomodelgrids::testdata::ThreeBlocksFlatPoints::ThreeBlocksFlatPoints(void) :
     };_pointsLLE = pointsLLE;
     _modelCRS = "EPSG:3311";
 
-    _ModelPoints::Domain domain;
-    domain.yAzimuth = 330.0;
-    domain.originX = 200000.0;
-    domain.originY = -400000.0;
-    domain.zBottom = -45.0e+3;
-    domain.hasTopSurface = false;
-    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
+    _domain.yAzimuth = 330.0;
+    _domain.originX = 200000.0;
+    _domain.originY = -400000.0;
+    _domain.zBottom = -45.0e+3;
+    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, _domain);
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor.
 geomodelgrids::testdata::ThreeBlocksTopoPoints::ThreeBlocksTopoPoints(void) :
     ModelPoints(6) {
@@ -317,17 +354,17 @@ geomodelgrids::testdata::ThreeBlocksTopoPoints::ThreeBlocksTopoPoints(void) :
     };_pointsLLE = pointsLLE;
     _modelCRS = "EPSG:3311";
 
-    _ModelPoints::Domain domain;
-    domain.yAzimuth = 330.0;
-    domain.originX = 200000.0;
-    domain.originY = -400000.0;
-    domain.zBottom = -45.0e+3;
-    domain.hasTopSurface = true;
-    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
+    _domain.yAzimuth = 330.0;
+    _domain.originX = 200000.0;
+    _domain.originY = -400000.0;
+    _domain.zBottom = -45.0e+3;
+    _domain.hasTopSurface = true;
+    _domain.hasTopoBathy = true;
+    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, _domain);
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor.
 geomodelgrids::testdata::ThreeBlocksTopoBorehole::ThreeBlocksTopoBorehole(void) :
     ModelPoints(6) {
@@ -343,17 +380,44 @@ geomodelgrids::testdata::ThreeBlocksTopoBorehole::ThreeBlocksTopoBorehole(void) 
     };_pointsLLE = pointsLLE;
     _modelCRS = "EPSG:3311";
 
-    _ModelPoints::Domain domain;
-    domain.yAzimuth = 330.0;
-    domain.originX = 200000.0;
-    domain.originY = -400000.0;
-    domain.zBottom = -45.0e+3;
-    domain.hasTopSurface = true;
-    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
+    _domain.yAzimuth = 330.0;
+    _domain.originX = 200000.0;
+    _domain.originY = -400000.0;
+    _domain.zBottom = -45.0e+3;
+    _domain.hasTopSurface = true;
+    _domain.hasTopoBathy = true;
+    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, _domain);
 } // constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
+// Constructor.
+geomodelgrids::testdata::ThreeBlocksTopoIsosurface::ThreeBlocksTopoIsosurface(void) :
+    ModelPoints(8) {
+    const size_t numPoints = 8;assert(_numPoints == numPoints);
+    static const double pointsLLE[numPoints*3] = {
+        34.65, -117.65, 0.0,
+        34.65, -117.55, 0.0,
+        34.65, -117.45, 0.0,
+        34.65, -117.35, 0.0,
+        34.75, -117.65, 0.0,
+        34.75, -117.55, 0.0,
+        34.75, -117.45, 0.0,
+        34.75, -117.35, 0.0,
+    };_pointsLLE = pointsLLE;
+    _modelCRS = "EPSG:3311";
+
+    _domain.yAzimuth = 330.0;
+    _domain.originX = 200000.0;
+    _domain.originY = -400000.0;
+    _domain.zBottom = -45.0e+3;
+    _domain.hasTopSurface = true;
+    _domain.hasTopoBathy = true;
+    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, _domain);
+} // constructor
+
+
+// ------------------------------------------------------------------------------------------------
 // Constructor.
 geomodelgrids::testdata::ThreeBlocksSquashTopPoints::ThreeBlocksSquashTopPoints(const double squashMinElev) :
     ModelPoints(6) {
@@ -368,14 +432,13 @@ geomodelgrids::testdata::ThreeBlocksSquashTopPoints::ThreeBlocksSquashTopPoints(
     };_pointsLLE = pointsLLE;
     _modelCRS = "EPSG:3311";
 
-    _ModelPoints::Domain domain;
-    domain.yAzimuth = 330.0;
-    domain.originX = 200000.0;
-    domain.originY = -400000.0;
-    domain.zBottom = -45.0e+3;
-    domain.hasTopSurface = true;
-
-    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
+    _domain.yAzimuth = 330.0;
+    _domain.originX = 200000.0;
+    _domain.originY = -400000.0;
+    _domain.zBottom = -45.0e+3;
+    _domain.hasTopSurface = true;
+    _domain.hasTopoBathy = true;
+    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, _domain);
 
     // Adjust elevation before recomputing model coordinates (x, y, z).
     double pointsLLESquash[numPoints*3];
@@ -389,11 +452,11 @@ geomodelgrids::testdata::ThreeBlocksSquashTopPoints::ThreeBlocksSquashTopPoints(
         pointsLLESquash[i*3+1] = pointsLLE[i*3+1];
         pointsLLESquash[i*3+2] = (elevOrig > squashMinElev) ? elevOrig + elevGround : elevOrig;
     } // for
-    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLESquash, numPoints, domain);
+    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLESquash, numPoints, _domain);
 } // Constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor.
 geomodelgrids::testdata::ThreeBlocksSquashTopoBathyPoints::ThreeBlocksSquashTopoBathyPoints(const double squashMinElev) :
     ModelPoints(6) {
@@ -408,14 +471,13 @@ geomodelgrids::testdata::ThreeBlocksSquashTopoBathyPoints::ThreeBlocksSquashTopo
     };_pointsLLE = pointsLLE;
     _modelCRS = "EPSG:3311";
 
-    _ModelPoints::Domain domain;
-    domain.yAzimuth = 330.0;
-    domain.originX = 200000.0;
-    domain.originY = -400000.0;
-    domain.zBottom = -45.0e+3;
-    domain.hasTopSurface = true;
-
-    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
+    _domain.yAzimuth = 330.0;
+    _domain.originX = 200000.0;
+    _domain.originY = -400000.0;
+    _domain.zBottom = -45.0e+3;
+    _domain.hasTopSurface = true;
+    _domain.hasTopoBathy = true;
+    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, _domain);
 
     // Adjust elevation before recomputing model coordinates (x, y, z).
     double pointsLLESquash[numPoints*3];
@@ -429,11 +491,11 @@ geomodelgrids::testdata::ThreeBlocksSquashTopoBathyPoints::ThreeBlocksSquashTopo
         pointsLLESquash[i*3+1] = pointsLLE[i*3+1];
         pointsLLESquash[i*3+2] = (elevOrig > squashMinElev) ? elevOrig + elevTopoBathy : elevOrig;
     } // for
-    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLESquash, numPoints, domain);
+    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLESquash, numPoints, _domain);
 } // Constructor
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor.
 geomodelgrids::testdata::OutsideDomainPoints::OutsideDomainPoints(void) :
     ModelPoints(5) {
@@ -447,13 +509,11 @@ geomodelgrids::testdata::OutsideDomainPoints::OutsideDomainPoints(void) :
     };_pointsLLE = pointsLLE;
     _modelCRS = "EPSG:3311";
 
-    _ModelPoints::Domain domain;
-    domain.yAzimuth = 330.0;
-    domain.originX = 200000.0;
-    domain.originY = -400000.0;
-    domain.zBottom = -45.0e+3;
-    domain.hasTopSurface = false;
-    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, domain);
+    _domain.yAzimuth = 330.0;
+    _domain.originX = 200000.0;
+    _domain.originY = -400000.0;
+    _domain.zBottom = -45.0e+3;
+    _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLE, numPoints, _domain);
 } // constructor
 
 

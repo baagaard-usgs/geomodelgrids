@@ -22,7 +22,7 @@ namespace geomodelgrids {
 } // geomodelgrids
 
 class geomodelgrids::serial::TestModel : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
+    // CPPUNIT TEST SUITE -------------------------------------------------------------------------
     CPPUNIT_TEST_SUITE(TestModel);
 
     CPPUNIT_TEST(testConstructor);
@@ -39,7 +39,7 @@ class geomodelgrids::serial::TestModel : public CppUnit::TestFixture {
 
     CPPUNIT_TEST_SUITE_END();
 
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+    // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
     /// Test constructor.
@@ -78,7 +78,7 @@ public:
 }; // class TestModel
 CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::serial::TestModel);
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test constructor.
 void
 geomodelgrids::serial::TestModel::testConstructor(void) {
@@ -102,7 +102,7 @@ geomodelgrids::serial::TestModel::testConstructor(void) {
 } // testConstructor
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test getters.
 void
 geomodelgrids::serial::TestModel::testAccessors(void) {
@@ -177,7 +177,7 @@ geomodelgrids::serial::TestModel::testAccessors(void) {
 } // testAccessors
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test open() and close().
 void
 geomodelgrids::serial::TestModel::testOpenClose(void) {
@@ -197,7 +197,7 @@ geomodelgrids::serial::TestModel::testOpenClose(void) {
 } // testOpenClose
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test loadMetadata().
 void
 geomodelgrids::serial::TestModel::testLoadMetadata(void) {
@@ -286,7 +286,7 @@ geomodelgrids::serial::TestModel::testLoadMetadata(void) {
 } // testLoadMetadata
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test initialize().
 void
 geomodelgrids::serial::TestModel::testInitialize(void) {

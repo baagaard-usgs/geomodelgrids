@@ -17,19 +17,19 @@
 #include <getopt.h> // USES getopt_long()
 #include <sstream> // USES std::ostringstream, std::istringstream
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Constructor
 geomodelgrids::utils::TestDriver::TestDriver() :
     _showHelp(false),
     _listTests(false) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Destructor
 geomodelgrids::utils::TestDriver::~TestDriver(void) {}
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Run info application.
 int
 geomodelgrids::utils::TestDriver::run(int argc,
@@ -60,7 +60,9 @@ geomodelgrids::utils::TestDriver::run(int argc,
         } else {
             for (size_t i = 0; i < _tests.size(); ++i) {
                 const CppUnit::Test* testCase = _findTest(test, _tests[i]);
-                runner.addTest(const_cast<CppUnit::Test*>(testCase));
+                if (testCase) {
+                    runner.addTest(const_cast<CppUnit::Test*>(testCase));
+                } // if
             } // for
         } // if/else
         runner.run(controller);
@@ -77,7 +79,7 @@ geomodelgrids::utils::TestDriver::run(int argc,
 } // run
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Parse command line arguments.
 void
 geomodelgrids::utils::TestDriver::_parseArgs(int argc,
@@ -125,7 +127,7 @@ geomodelgrids::utils::TestDriver::_parseArgs(int argc,
 } // _parseArgs
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Print help information.
 void
 geomodelgrids::utils::TestDriver::_printHelp(void) {
@@ -138,7 +140,7 @@ geomodelgrids::utils::TestDriver::_printHelp(void) {
 } // _printHelp
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 /** List test hierarchy.
  *
  * @param[in] test Test to list.
@@ -154,7 +156,7 @@ geomodelgrids::utils::TestDriver::_printTests(const CppUnit::Test* const test) {
 } // _printTests
 
 
-// ---------------------------------------------------------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 /** Find test matching name in test hierarchy.
  *
  * @param[in] test Test hierarchy.
@@ -169,8 +171,8 @@ geomodelgrids::utils::TestDriver::_findTest(const CppUnit::Test* test,
     if (!test->getChildTestCount()) { return NULL; }
 
     for (int i = 0; i < test->getChildTestCount(); ++i) {
-        const CppUnit::Test* found = _findTest(test->getChildTestAt(i), name);
-        if (found) { return found; }
+        const CppUnit::Test* testCase = _findTest(test->getChildTestAt(i), name);
+        if (testCase) { return testCase; }
     } // for
 
     return NULL;
