@@ -292,7 +292,7 @@ geomodelgrids::serial::TestQuery::testQueryFlat(void) {
     Query query;
     query.initialize(filenames, valueNames, crs);
 
-    const double tolerance = 1.0e-5;
+    const double tolerance = 2.0e-5;
     { // One Block Flat
         const size_t numPoints = pointsOne.getNumPoints();
         const double* pointsLLE = pointsOne.getLatLonElev();

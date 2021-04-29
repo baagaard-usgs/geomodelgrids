@@ -376,7 +376,7 @@ geomodelgrids::serial::TestCQuery::testQueryFlat(void) {
     int err = geomodelgrids_squery_initialize(handle, filenames, numModels, valueNames, numValues, crs.c_str());
     CPPUNIT_ASSERT(!err);
 
-    const double tolerance = 1.0e-5;
+    const double tolerance = 2.0e-5;
     { // One Block Flat
         const size_t numPoints = pointsOne.getNumPoints();
         const double* pointsLLE = pointsOne.getLatLonElev();
