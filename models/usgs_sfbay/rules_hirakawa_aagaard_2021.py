@@ -253,7 +253,7 @@ def franciscan_napa(x, y, depth):
     if is_along_azimuth(x, y, x0, y0, 323.638):
         return franciscan_napa_sonoma(x, y, depth)
     else:
-        return brocher2005_older_cenozoic_sedimentary(x, y, depth)
+        return brocher2008_great_valley_sequence(x, y, depth)
 
 
 def cenozoic_napa(x, y, depth):
