@@ -12,6 +12,14 @@
 #include <cassert> // USES assert()
 #include <iostream> // USES std::cout
 
+namespace geomodelgrids {
+    namespace apps {
+        namespace _QueryElev {
+            static const int cwidth = 14;
+            static const int precision = 6;
+        } // _Query
+    } // apps
+} // geomodelgrids
 // ------------------------------------------------------------------------------------------------
 // Constructor
 geomodelgrids::apps::QueryElev::QueryElev() :
@@ -64,7 +72,7 @@ geomodelgrids::apps::QueryElev::run(int argc,
     } // if
 
     sout << _createOutputHeader(argc, argv);
-    sout << std::scientific << std::setprecision(6);
+    sout << std::scientific << std::setprecision(_QueryElev::precision);
     while (true) {
         double srcX, srcY;
         sin >> srcX >> srcY;
@@ -74,9 +82,9 @@ geomodelgrids::apps::QueryElev::run(int argc,
 
         const double elev = (_useTopoBathy) ? query.queryTopoBathyElevation(srcX, srcY) : query.queryTopElevation(srcX, srcY);
 
-        sout << std::setw(14) << srcX
-             << std::setw(14) << srcY
-             << std::setw(14) << elev
+        sout << std::setw(_QueryElev::cwidth) << srcX
+             << std::setw(_QueryElev::cwidth) << srcY
+             << std::setw(_QueryElev::cwidth) << elev
              << "\n";
     } // while
 
@@ -208,7 +216,10 @@ geomodelgrids::apps::QueryElev::_createOutputHeader(int argc,
     for (int i = 0; i < argc; ++i) {
         header << " " << argv[i];
     } // for
-    header << "\n";
+    header << "\n#"
+           << std::setw(_QueryElev::cwidth-1) << "x"
+           << std::setw(_QueryElev::cwidth) << "y"
+           << std::setw(_QueryElev::cwidth) << "elevation\n";
     return header.str();
 } // _createOutputHeader
 
