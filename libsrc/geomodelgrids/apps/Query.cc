@@ -12,6 +12,15 @@
 #include <cassert> // USES assert()
 #include <iostream> // USES std::cout
 
+namespace geomodelgrids {
+    namespace apps {
+        namespace _Query {
+            static const int cwidth = 14;
+            static const int precision = 6;
+        } // _Query
+    } // apps
+} // geomodelgrids
+
 // ------------------------------------------------------------------------------------------------
 // Constructor
 geomodelgrids::apps::Query::Query() :
@@ -70,7 +79,7 @@ geomodelgrids::apps::Query::run(int argc,
     sout << _createOutputHeader(argc, argv);
     const size_t numQueryValues = _valueNames.size();
     std::vector<double> values(numQueryValues);
-    sout << std::scientific << std::setprecision(6);
+    sout << std::scientific << std::setprecision(_Query::precision);
     while (true) {
         double srcX, srcY, srcZ;
         sin >> srcX >> srcY >> srcZ;
@@ -80,11 +89,11 @@ geomodelgrids::apps::Query::run(int argc,
 
         query.query(&values[0], srcX, srcY, srcZ);
 
-        sout << std::setw(14) << srcX
-             << std::setw(14) << srcY
-             << std::setw(14) << srcZ;
+        sout << std::setw(_Query::cwidth) << srcX
+             << std::setw(_Query::cwidth) << srcY
+             << std::setw(_Query::cwidth) << srcZ;
         for (size_t i = 0; i < numQueryValues; ++i) {
-            sout << std::setw(14) << values[i];
+            sout << std::setw(_Query::cwidth) << values[i];
         } // for
         sout << "\n";
     } // while
@@ -244,6 +253,13 @@ geomodelgrids::apps::Query::_createOutputHeader(int argc,
     header << "#";
     for (int i = 0; i < argc; ++i) {
         header << " " << argv[i];
+    } // for
+    header << "\n#"
+           << std::setw(_Query::cwidth-1) << "x"
+           << std::setw(_Query::cwidth) << "y"
+           << std::setw(_Query::cwidth) << "z";
+    for (size_t i = 0; i < _valueNames.size(); ++i) {
+        header << std::setw(_Query::cwidth) << _valueNames[i];
     } // for
     header << "\n";
     return header.str();

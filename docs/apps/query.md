@@ -63,6 +63,7 @@ geomodelgrids_query \
 
 # Output: one-block-flat_latlon.out, latitude (deg), longitude (deg), elevation (m), two (m/s)
 # geomodelgrids_query --models=one-block-flat.h5 --points=one-block-flat_latlon.in --output=one-block-flat_latlon.out --values=two
+#            x             y             z           two
   3.745500e+01 -1.219410e+02  0.000000e+00 -1.520064e+03
   3.747900e+01 -1.217340e+02 -5.000000e+03  1.853648e+04
   3.738100e+01 -1.215810e+02 -3.000000e+03  7.266073e+03
@@ -89,6 +90,7 @@ geomodelgrids_query \
 
 # Output: one-block-flat_utm.out, easting (m), northing (m), elevation (m), one (m), two (m/s)
 # geomodelgrids_query --models=one-block-flat.h5 --points=one-block-flat_utm.in --output=one-block-flat_utm.out --values=one,two --points-coordsys=EPSG:26910
+#            x             y             z           one           two
   5.936626e+05  4.145875e+06  0.000000e+00  4.702445e+03 -1.520065e+03
   6.119356e+05  4.148764e+06 -5.000000e+03  3.114499e+04  1.853648e+04
   6.256277e+05  4.138084e+06 -3.000000e+03  3.182592e+04  7.266073e+03
