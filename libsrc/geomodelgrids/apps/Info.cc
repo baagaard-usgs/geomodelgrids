@@ -450,13 +450,15 @@ geomodelgrids::apps::_Info::verifyBlock(geomodelgrids::serial::Block* block,
     const geomodelgrids::serial::Surface* surfaceTop = model->getTopSurface();
     if (surfaceTop) {
         const double topoResolution = surfaceTop->getResolutionHoriz();
-        const int num_skip = int(0.01 + resolution / topoResolution);
-        if (fabs(num_skip * topoResolution - resolution) > tolerance) {
-            if (ok) { std::cout << "FAIL\n"; }
-            std::cout << _Info::indent(3) << "Horizontal resolution of block '" << block->getName() << "' ("
-                      << resolution << ") is not an integer multiple of the topography resolution (" << topoResolution
-                      << ").\n";
-            ok = false;
+        if (topoResolution > 0.0) {
+            const int num_skip = int(0.01 + resolution / topoResolution);
+            if (fabs(num_skip * topoResolution - resolution) > tolerance) {
+                if (ok) { std::cout << "FAIL\n"; }
+                std::cout << _Info::indent(3) << "Horizontal resolution of block '" << block->getName() << "' ("
+                          << resolution << ") is not an integer multiple of the topography resolution (" << topoResolution
+                          << ").\n";
+                ok = false;
+            } // if
         } // if
     } // if
 

@@ -580,7 +580,6 @@ geomodelgrids::apps::_TestIsosurface::checkIsosurface(const char* filename,
 
     const size_t numX = reader.getNumCols();
     const size_t numY = reader.getNumRows();
-    const size_t numIsosurfaces = reader.getNumBands();
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in image size.", numPoints, numX*numY);
 
     double minX = 0.0, maxX = 0.0, minY = 0.0, maxY = 0.0;

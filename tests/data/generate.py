@@ -407,9 +407,9 @@ class ThreeBlocksTopo(TestData):
             blocks = h5["blocks"]
             for attr in blocks["middle"].attrs:
                 del blocks["middle"].attrs[attr]
-            topo = h5["surfaces"]["top_surface"]
-            for attr in topo.attrs:
-                del topo.attrs[attr]
+            top = h5["surfaces"]["top_surface"]
+            for attr in top.attrs:
+                del top.attrs[attr]
 
 
 # ==============================================================================
