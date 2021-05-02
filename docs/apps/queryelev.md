@@ -55,6 +55,7 @@ geomodelgrids_queryelev \
 
 # Output: one-block-topo_latlon.out, latitude (deg), longitude (deg), elevation (m)
 # geomodelgrids_queryelev --models=tests/data/one-block-topo.h5 --points=tests/data/one-block-topo_elev.in --output=tests/data/one-block-flat_elev.out
+#            x             y     elevation
   3.745500e+01 -1.219410e+02  1.500461e+02
   3.747900e+01 -1.217340e+02  1.497750e+02
   3.738100e+01 -1.215810e+02  1.500231e+02

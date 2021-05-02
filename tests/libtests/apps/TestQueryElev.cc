@@ -113,13 +113,15 @@ class geomodelgrids::apps::_TestQueryElev {
 public:
 
     static
+    void readHeader(std::istream& sin);
+
+    static
     void createPointsFile(std::ostream& sout,
                           const geomodelgrids::testdata::ModelPoints& points);
 
     static
     void checkQuery(std::istream& sin,
                     const geomodelgrids::testdata::ModelPoints& points,
-                    const bool hasTopSurface,
                     const double elevScale=1.0);
 
 }; // _TestQueryElev
@@ -324,10 +326,8 @@ geomodelgrids::apps::TestQueryElev::testRunOneBlockFlat(void) {
     query.run(nargs, const_cast<char**>(args));
 
     std::ifstream sin("one-block-flat.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
-    std::string comment;
-    std::getline(sin, comment);
-    bool hasTopSurface = false;
-    _TestQueryElev::checkQuery(sin, pointsOne, hasTopSurface);
+    _TestQueryElev::readHeader(sin);
+    _TestQueryElev::checkQuery(sin, pointsOne);
     sin.close();
 
     std::ifstream slog("error.log");CPPUNIT_ASSERT(slog.is_open() && slog.good());
@@ -354,12 +354,10 @@ geomodelgrids::apps::TestQueryElev::testRunThreeBlocksTop(void) {
     QueryElev query;
     query.run(nargs, const_cast<char**>(args));
 
-    std::ifstream sin("three-blocks-top.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
-    std::string comment;
-    std::getline(sin, comment);
-    const bool hasTopSurface = true;
     const double elevScale = 1.0e-3;
-    _TestQueryElev::checkQuery(sin, pointsThree, hasTopSurface, elevScale);
+    std::ifstream sin("three-blocks-top.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
+    _TestQueryElev::readHeader(sin);
+    _TestQueryElev::checkQuery(sin, pointsThree, elevScale);
     sin.close();
 } // testRunThreeBlocksTop
 
@@ -387,12 +385,10 @@ geomodelgrids::apps::TestQueryElev::testRunTwoModels(void) {
     query.run(nargs, const_cast<char**>(args));
 
     std::ifstream sin("two-models.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
-    std::string comment;
-    std::getline(sin, comment);
-    bool hasTopSurface = false;
-    _TestQueryElev::checkQuery(sin, pointsOne, hasTopSurface);
-    hasTopSurface = true;
-    _TestQueryElev::checkQuery(sin, pointsThree, hasTopSurface);
+    _TestQueryElev::readHeader(sin);
+    _TestQueryElev::checkQuery(sin, pointsOne);
+    _TestQueryElev::checkQuery(sin, pointsThree);
+
     sin.close();
 } // testRunTwoModels
 
@@ -451,14 +447,24 @@ geomodelgrids::apps::_TestQueryElev::createPointsFile(std::ostream& sout,
 
 // ------------------------------------------------------------------------------------------------
 void
+geomodelgrids::apps::_TestQueryElev::readHeader(std::istream& sin) {
+    std::string comment;
+    std::getline(sin, comment);
+    std::getline(sin, comment);
+}
+
+
+// ------------------------------------------------------------------------------------------------
+void
 geomodelgrids::apps::_TestQueryElev::checkQuery(std::istream& sin,
                                                 const geomodelgrids::testdata::ModelPoints& points,
-                                                const bool hasTopSurface,
                                                 const double elevScale) {
     const size_t spaceDim = 3;
     const size_t numPoints = points.getNumPoints();
     const double* const pointsXYZ = points.getXYZ();
     const double* const pointsLLE = points.getLatLonElev();
+    const geomodelgrids::testdata::ModelPoints::Domain& domain = points.getDomain();
+    const bool hasTopSurface = domain.hasTopSurface;
 
     for (size_t iPt = 0; iPt < numPoints; ++iPt) {
         const double x = pointsXYZ[iPt*spaceDim+0];
