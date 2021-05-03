@@ -7,7 +7,7 @@ dist_check_SCRIPTS = test_geomodelgrids.py
 dist_noinst_PYTHON = \
 	test_driver.py \
 	test_units.py \
-	test_batch py \
+	test_batch.py \
 	test_createapp.py
 
 

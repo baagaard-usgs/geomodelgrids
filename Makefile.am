@@ -29,8 +29,20 @@ EXTRA_DIST = \
 	code.json \
 	developer/autopep8.cfg \
 	developer/uncrustify.cfg \
-	docker/debian-stable-gcc8 \
-	docker/geomodelgrids-testenv
+	docker/README.md \
+	docker/build_binary.py \
+	docker/builder.py \
+	docker/update_testenv.py \
+	docker/debian-stable \
+	docker/debian-testing \
+	docker/ubuntu-20.04 \
+	docker/ubuntu-20.10 \
+	docker/fedora-32 \
+	docker/fedora-33 \
+	docker/centos-8 \
+	docker/geomodelgrids-testenv \
+	docker/geomodelgrids-devenv \
+	docker/geomodelgrids-userenv
 
 
 .PHONY: coverage-libtests coverage-html clean-coverage

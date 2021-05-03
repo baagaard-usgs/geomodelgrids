@@ -22,6 +22,7 @@ RUN apt-get update \
       git \
       ca-certificates \
       libcppunit-dev \
+      hdf5-tools \
       libhdf5-dev \
       sqlite3 \
       libsqlite3-0 \
@@ -31,7 +32,9 @@ RUN apt-get update \
       libproj-dev \
       vim-common \
       vim-runtime \
-      vim-nox
+      vim-nox \
+      less
+
 
 COPY docker/certs/ /usr/local/share/ca-certificates
 RUN update-ca-certificates
