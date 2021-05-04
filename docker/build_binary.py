@@ -97,7 +97,7 @@ class GCC(Package):
     BUILD_DIR = "gcc-build"
     SRC_DIR = f"gcc-{VERSION}"
 
-    EXTRAS = (
+    EXTRAS = {
         "gmp": {
             "version": "6.2.1",
             "tarball": "gmp-{version}.tar.bz2",
@@ -105,7 +105,7 @@ class GCC(Package):
             },
          "mpc": {
              "version": "1.2.1",
-             "tarball": "mpi-{version}.tar.gz",
+             "tarball": "mpc-{version}.tar.gz",
              "url": "https://mirrors.kernel.org/gnu/mpc/{tarball}",
              },
           "mpfr": {
@@ -113,7 +113,7 @@ class GCC(Package):
               "tarball": "mpfr-{version}.tar.gz",
               "url": "https://mirrors.kernel.org/gnu/mpfr/{tarball}",
               }
-            )
+            }
     
 
     def configure(self):
@@ -129,7 +129,7 @@ class GCC(Package):
         self.download()
         self.extract_tarball()
 
-        gcc_src = f"gcc-{VERSION}"
+        gcc_src = f"gcc-{self.VERSION}"
         for label,pkg in self.EXTRAS.items():
             tarball = pkg["tarball"].format(version=pkg["version"])
             url = pkg["url"].format(version=pkg["version"], tarball=tarball)
@@ -137,8 +137,8 @@ class GCC(Package):
             self.download(url=url, tarball=tarball)
             self.extract_tarball(path=gcc_src, tarball=tarball)
 
-            link_src = os.path.join(gcc_sc, f"{label}-{pkg['version']}")
-            link_dest = os.path.join(gcc_sc, label)
+            link_src = f"{label}-{pkg['version']}"
+            link_dest = os.path.join(gcc_src, label)
             os.symlink(link_src, link_dest)
 
         self.configure()
@@ -318,7 +318,7 @@ class App(object):
         )
 
         parser = argparse.ArgumentParser(description=DESCRIPTION)
-        parser.add_argument("--install-dir", action="store", dest="install_dir", help="Install directory.")
+        parser.add_argument("--install-dir", action="store", dest="install_dir", required=True, help="Install directory.")
 
         parser.add_argument("--gcc", action="store_true", dest="install_gcc", help="Install gcc.")
         parser.add_argument("--sqlite", action="store_true", dest="install_sqlite", help="Install sqlite.")
