@@ -21,22 +21,26 @@ import requests
 import shutil
 import subprocess
 import tarfile
-import pkg_resources
 
 
 # --------------------------------------------------------------------------------------------------
 class Package(object):
+    VERSION = None
+    TARBALL = None
+    URL = None
+    SRC_DIR = None
+    BUILD_DIR = None
 
     def __init__(self, install_dir, env, show_progress=True):
         self.install_dir = install_dir
         self.env = env
         self.nthreads = multiprocessing.cpu_count()
         self.show_progress = show_progress
-    
+
     def install(self):
         self.download()
         self.extract_tarball()
-        self.configure()
+        self.configure(args=None)
         self.build()
 
     def download(self, url=None, tarball=None):
@@ -74,7 +78,7 @@ class Package(object):
     def build(self):
         cwd = os.path.abspath(os.curdir)
         print(f"CWD={cwd}")
-        os.chdir(self.BUILD_DIR)        
+        os.chdir(self.BUILD_DIR)
         self._run_cmd(["make", f"-j{self.nthreads}"])
         self._run_cmd(["make", "install"])
         os.chdir(cwd)
@@ -82,13 +86,13 @@ class Package(object):
 
     def _run_cmd(self, cmd):
         self._status("Running {} ...".format(" ".join(cmd)))
-        result = subprocess.run(cmd, env=self.env, check=True)
+        subprocess.run(cmd, env=self.env, check=True)
 
     def _status(self, msg):
         if self.show_progress:
             print(msg)
-    
-    
+
+
 # --------------------------------------------------------------------------------------------------
 class GCC(Package):
     VERSION = "10.3.0"
@@ -102,35 +106,33 @@ class GCC(Package):
             "version": "6.2.1",
             "tarball": "gmp-{version}.tar.bz2",
             "url": "https://mirrors.kernel.org/gnu/gmp/{tarball}",
-            },
-         "mpc": {
-             "version": "1.2.1",
-             "tarball": "mpc-{version}.tar.gz",
-             "url": "https://mirrors.kernel.org/gnu/mpc/{tarball}",
-             },
-          "mpfr": {
-              "version": "4.1.0",
-              "tarball": "mpfr-{version}.tar.gz",
-              "url": "https://mirrors.kernel.org/gnu/mpfr/{tarball}",
-              }
-            }
-    
+        },
+        "mpc": {
+            "version": "1.2.1",
+            "tarball": "mpc-{version}.tar.gz",
+            "url": "https://mirrors.kernel.org/gnu/mpc/{tarball}",
+        },
+        "mpfr": {
+            "version": "4.1.0",
+            "tarball": "mpfr-{version}.tar.gz",
+            "url": "https://mirrors.kernel.org/gnu/mpfr/{tarball}",
+        }
+    }
 
     def configure(self):
         ARGS = [
             f"--prefix={self.install_dir}",
             "--enable-languages=c,c++",
             "--disable-multilib",
-            ]
+        ]
         super().configure(ARGS)
-
 
     def install(self):
         self.download()
         self.extract_tarball()
 
         gcc_src = f"gcc-{self.VERSION}"
-        for label,pkg in self.EXTRAS.items():
+        for label, pkg in self.EXTRAS.items():
             tarball = pkg["tarball"].format(version=pkg["version"])
             url = pkg["url"].format(version=pkg["version"], tarball=tarball)
 
@@ -143,21 +145,22 @@ class GCC(Package):
 
         self.configure()
         self.build()
-        
+
 # --------------------------------------------------------------------------------------------------
+
+
 class Sqlite(Package):
     VERSION = "3350500"
     TARBALL = f"sqlite-autoconf-{VERSION}.tar.gz"
     URL = f"https://www.sqlite.org/2021/{TARBALL}"
     BUILD_DIR = "sqlite-build"
     SRC_DIR = f"sqlite-autoconf-{VERSION}"
-    
 
     def configure(self):
         ARGS = [
             f"--prefix={self.install_dir}",
             "--enable-shared",
-            ]
+        ]
         super().configure(ARGS)
 
 
@@ -168,13 +171,49 @@ class Tiff(Package):
     URL = f"http://download.osgeo.org/libtiff/{TARBALL}"
     BUILD_DIR = "tiff-build"
     SRC_DIR = f"tiff-{VERSION}"
-    
 
     def configure(self):
         ARGS = [
             f"--prefix={self.install_dir}",
             "--enable-shared",
-            ]
+        ]
+        super().configure(ARGS)
+
+
+# --------------------------------------------------------------------------------------------------
+class OpenSSL(Package):
+    VERSION = "1.1.1k"
+    TARBALL = f"openssl-{VERSION}.tar.gz"
+    URL = f"https://www.openssl.org/source/{TARBALL}"
+    SRC_DIR = f"openssl-{VERSION}"
+    BUILD_DIR = SRC_DIR
+
+    def configure(self):
+        ARGS = [
+            f"--prefix={self.install_dir}",
+            f"--openssldir={self.install_dir}/share/openssl",
+            "shared",
+        ]
+        cwd = os.path.abspath(os.curdir)
+        os.chdir(self.SRC_DIR)
+        configure = os.path.join(".", "config")
+        self._run_cmd([configure] + ARGS)
+        os.chdir(cwd)
+
+
+# --------------------------------------------------------------------------------------------------
+class Curl(Package):
+    VERSION = "7.76.1"
+    TARBALL = f"curl-{VERSION}.tar.gz"
+    URL = f"https://curl.se/download/{TARBALL}"
+    BUILD_DIR = "curl-build"
+    SRC_DIR = f"curl-{VERSION}"
+
+    def configure(self):
+        ARGS = [
+            f"--prefix={self.install_dir}",
+            "--enable-shared",
+        ]
         super().configure(ARGS)
 
 
@@ -186,7 +225,6 @@ class Proj(Package):
     BUILD_DIR = "proj-build"
     SRC_DIR = f"proj-{VERSION}"
 
-
     def configure(self):
         ARGS = [
             f"--prefix={self.install_dir}",
@@ -195,16 +233,15 @@ class Proj(Package):
             f"SQLITE3_LIBS=-L{self.install_dir}/lib -lsqlite3",
             f"TIFF_CFLAGS=-I{self.install_dir}/include",
             f"TIFF_LIBS=-L{self.install_dir}/lib -ltiff",
-            ]
+        ]
         super().configure(ARGS)
-        
 
     def install(self):
         super().install()
 
-        cmd = ["projsync", "--system-directory", "--bbox -128.0,34.0,-118.0,42.0"]
+        cmd = ["projsync", "--system-directory", "--bbox", "-128.0,34.0,-118.0,42.0"]
         self._run_cmd(cmd)
-        
+
 
 # --------------------------------------------------------------------------------------------------
 class HDF5(Package):
@@ -213,30 +250,28 @@ class HDF5(Package):
     URL = f"https://www.sqlite.org/2021/{TARBALL}"
     BUILD_DIR = "hdf5-build"
     SRC_DIR = f"hdf5-{VERSION}"
-    
 
     def configure(self):
         ARGS = [
             f"--prefix={self.install_dir}",
             "--enable-shared",
             "--disable-static",
-            ]
+        ]
         super().configure(ARGS)
 
 
 # --------------------------------------------------------------------------------------------------
 class GeoModelGrids(Package):
     BUILD_DIR = "geomodelgrids-build"
-    
+
     def install(self):
-        self.VERSION = pkg_resources.get_distribution("geomodelgrids").version
         self.SRC_DIR = f"geomodelgrids-{self.VERSION}"
         self.TARBALL = f"geomodelgrids-{self.VERSION}.tar.gz"
 
         self.extract_tarball()
         self.configure()
         self.build()
-    
+
     def configure(self):
         ARGS = [
             f"--prefix={self.install_dir}",
@@ -244,7 +279,7 @@ class GeoModelGrids(Package):
             "--disable-python",
             "--disable-gdal",
             "--disable-testing",
-            ]
+        ]
         super().configure(ARGS)
 
 
@@ -284,17 +319,22 @@ class App(object):
 
     def __init__(self):
         self.show_progress = True
-    
+
     def main(self, **kwargs):
         args = argparse.Namespace(**kwargs) if kwargs else self._parse_command_line()
         self.show_progress = args.show_progress
         self.install_dir = os.path.abspath(args.install_dir)
+        GeoModelGrids.VERSION = args.version
         self._set_env()
 
         if (args.install_gcc or args.all) and platform.system() == "Linux":
             self._install(GCC)
         if args.install_sqlite or args.all:
             self._install(Sqlite)
+        if args.install_openssl or args.all:
+            self._install(OpenSSL)
+        if args.install_curl or args.all:
+            self._install(Curl)
         if args.install_tiff or args.all:
             self._install(Tiff)
         if args.install_proj or args.all:
@@ -309,7 +349,7 @@ class App(object):
             self._create_setup()
         if args.create_tarball or args.all:
             self._create_tarball()
-            
+
     def _parse_command_line(self):
         """Parse command line arguments.
         """
@@ -318,18 +358,24 @@ class App(object):
         )
 
         parser = argparse.ArgumentParser(description=DESCRIPTION)
-        parser.add_argument("--install-dir", action="store", dest="install_dir", required=True, help="Install directory.")
+        parser.add_argument("--install-dir", action="store", dest="install_dir",
+                            required=True, help="Install directory.")
+        parser.add_argument("--version", action="store", dest="version",
+                            required=True, help="Set version tag.")
 
         parser.add_argument("--gcc", action="store_true", dest="install_gcc", help="Install gcc.")
         parser.add_argument("--sqlite", action="store_true", dest="install_sqlite", help="Install sqlite.")
         parser.add_argument("--tiff", action="store_true", dest="install_tiff", help="Install libtiff.")
+        parser.add_argument("--openssl", action="store_true", dest="install_openssl", help="Install openssl.")
+        parser.add_argument("--curl", action="store_true", dest="install_curl", help="Install libcurl.")
         parser.add_argument("--proj", action="store_true", dest="install_proj", help="Install proj.")
         parser.add_argument("--hdf5", action="store_true", dest="install_hdf5", help="Install HDF5.")
         parser.add_argument("--geomodelgrids", action="store_true", dest="install_gmg", help="Install GeoModelGrids.")
         parser.add_argument("--create-setup", action="store_true", dest="create_setup", help="Create setup.sh.")
-        parser.add_argument("--update-linking", action="store_true", dest="update_linking", help="Update Darwin linking.")
+        parser.add_argument("--update-linking", action="store_true",
+                            dest="update_linking", help="Update Darwin linking.")
         parser.add_argument("--create-tarball", action="store_true", dest="create_tarball", help="Create tarball.")
-        
+
         parser.add_argument("--all", action="store_true", dest="all", help="Run all steps.")
         parser.add_argument("--quiet", action="store_false", dest="show_progress", default=True)
         args = parser.parse_args()
@@ -347,19 +393,21 @@ class App(object):
             "LDFLAGS": f"-L{self.install_dir}/lib",
             "CFLAGS": "-O3",
             "CXXFLAGS": "-O3",
-            }
+        }
         if platform.system() == "Darwin":
             self.env.update({
                 "CC": "clang",
                 "CXX": "clang++",
-                })
+            })
         elif platform.system() == "Linux":
             self.env.update({
                 "CC": "gcc",
                 "CXX": "g++",
-                })
+                "LDFLAGS": f"-L{self.install_dir}/lib -L{self.install_dir}/lib64",
+                "LD_LIBRARY_PATH": f"{self.install_dir}/lib:{self.install_dir}/lib64",
+            })
         else:
-            raise ValueError(f"Unknown platform '{system.platform()}'.")
+            raise ValueError(f"Unknown platform '{platform.system()}'.")
 
     def _create_setup(self):
         filename = os.path.join(self.install_dir, "setup.sh")
@@ -373,26 +421,32 @@ class App(object):
                 '    echo "    source setup.sh"',
                 '',
                 'else',
-                '    export PATH="$gmg:bin:/bin:/usr/bin:/sbin:/usr/sbin:$PATH"',
+                '    export PATH="$gmg/bin:/bin:/usr/bin:/sbin:/usr/sbin:$PATH"',
+            ]
+            if platform.system() == "Linux":
+                lines += [
+                    '    export LD_LIBRARY_PATH="$gmg/lib:$gmg/lib64:${LD_LIBRARY_PATH}"',
+                ]
+            lines += [
                 '    echo "Ready to run GeoModelGrids!"',
                 'fi',
-                ]
+            ]
             fout.write("\n".join(lines))
 
     def _create_tarball(self):
+        version = GeoModelGrids.VERSION
+
         if platform.system() == "Darwin":
             arch = "Darwin-{}".format(platform.mac_ver()[0])
         elif platform.system() == "Linux":
-            arch = "Linux-{}".format(platform.machine())
-
-        version = pkg_resources.get_distribution("geomodelgrids").version
-        tarball = f"geomodelgrids-{arch}-{version}.tar.gz"
+            arch = "Linux_{}".format(platform.machine())
+        tarball = f"geomodelgrids-{version}-{arch}.tar.gz"
 
         shutil.copytree(f"geomodelgrids-{version}", os.path.join(self.install_dir, "src"))
         with tarfile.open(tarball, mode="w:gz") as tfile:
             tfile.add(self.install_dir, arcname=f"geomodelgrids-{arch}-{version}")
-            
-            
+
+
 # --------------------------------------------------------------------------------------------------
 if __name__ == "__main__":
     App().main()
