@@ -8,26 +8,26 @@ $ ruby --version
 ```
 
 2. **Optional** Set location for gems
-```
-$ export GEM_HOME=PATH_TO_USER_GEMS
-$ export PATH=$PATH:$GEM_HOME/bin
+```bash
+export GEM_HOME=PATH_TO_USER_GEMS
+export PATH=$PATH:$GEM_HOME/bin
 ```
 
 3. Install bundler
 ```
-$ gem install bundler
+gem install bundler
 ```
 
 4. Install local gems
 ```
-$ cd groundmotion-processing/docs
-$ bundle install
+cd docs
+bundle install
 ```
 
 5. Run Jekyll site locally
 ```
-$ cd groundmotion-processing/docs
-$ bundle exec jekyll serve
+cd docs
+bundle exec jekyll serve
 ```
 
 ## Jekyll documentation
