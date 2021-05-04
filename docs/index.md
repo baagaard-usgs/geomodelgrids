@@ -13,8 +13,8 @@ resolution.
   desktops to large clusters.
 * Support variable resolution models that include topography.
 
-# Target Use Cases
+# Use Cases
 
-* Storing and querying 3D seismic velocity models for computer
-simulations of earthquake ground motions.
+There are many possible use cases.
+Our first target use case is storing and querying 3D seismic velocity models for simulation and analysis of earthquake ground motions.
 
