@@ -437,14 +437,14 @@ class App(object):
         version = GeoModelGrids.VERSION
 
         if platform.system() == "Darwin":
-            arch = "Darwin-{}".format(platform.mac_ver()[0])
+            arch = "Darwin_{}".format(platform.machine())
         elif platform.system() == "Linux":
             arch = "Linux_{}".format(platform.machine())
         tarball = f"geomodelgrids-{version}-{arch}.tar.gz"
 
         shutil.copytree(f"geomodelgrids-{version}", os.path.join(self.install_dir, "src"))
         with tarfile.open(tarball, mode="w:gz") as tfile:
-            tfile.add(self.install_dir, arcname=f"geomodelgrids-{arch}-{version}")
+            tfile.add(self.install_dir, arcname=f"geomodelgrids-{version}-{arch}")
 
 
 # --------------------------------------------------------------------------------------------------
