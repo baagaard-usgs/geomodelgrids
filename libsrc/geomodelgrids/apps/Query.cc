@@ -255,9 +255,9 @@ geomodelgrids::apps::Query::_createOutputHeader(int argc,
         header << " " << argv[i];
     } // for
     header << "\n#"
-           << std::setw(_Query::cwidth-1) << "x"
-           << std::setw(_Query::cwidth) << "y"
-           << std::setw(_Query::cwidth) << "z";
+           << std::setw(_Query::cwidth-1) << "x0"
+           << std::setw(_Query::cwidth) << "x1"
+           << std::setw(_Query::cwidth) << "x2";
     for (size_t i = 0; i < _valueNames.size(); ++i) {
         header << std::setw(_Query::cwidth) << _valueNames[i];
     } // for

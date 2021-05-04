@@ -217,8 +217,8 @@ geomodelgrids::apps::QueryElev::_createOutputHeader(int argc,
         header << " " << argv[i];
     } // for
     header << "\n#"
-           << std::setw(_QueryElev::cwidth-1) << "x"
-           << std::setw(_QueryElev::cwidth) << "y"
+           << std::setw(_QueryElev::cwidth-1) << "x0"
+           << std::setw(_QueryElev::cwidth) << "x1"
            << std::setw(_QueryElev::cwidth) << "elevation\n";
     return header.str();
 } // _createOutputHeader
