@@ -52,6 +52,12 @@ class RulesDataSrc(DataSrc):
         self.api = api.EarthVisionAPI(self.model_dir, ev_env)
         self._get_faultblocks_zones()
 
+    def get_metadata(self):
+        return {
+            "fault_block_ids": self.faultblock_ids,
+            "zone_ids": self.zone_ids,
+        }
+
     def get_top_surface(self, points):
         """Query EarthVision model for elevation of top surface at points.
 

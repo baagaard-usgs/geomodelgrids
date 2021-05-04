@@ -3,8 +3,8 @@
 
 import logging
 import math
-from dataclasses import dataclass
-from typing import List
+from dataclasses import dataclass, field
+from typing import List, Dict
 
 import numpy
 
@@ -251,38 +251,6 @@ class Block():
 class ModelMetadata:
     """Metadata describing model.
     """
-    __slots__ = [
-        # Description
-        "title",
-        "id",
-        "description",
-        "keywords",
-        "version",
-
-        # Attribution
-        "creator_name",
-        "creator_institution",
-        "creator_email",
-        "acknowledgements",
-        "authors",
-        "references",
-        "doi",
-
-        # Data
-        "data_values",
-        "data_units",
-
-        # Coordinate system
-        "crs",
-        "origin_x",
-        "origin_y",
-        "y_azimuth",
-
-        # Domain dimension
-        "dim_x",
-        "dim_y",
-        "dim_z",
-    ]
     # Description
     title: str
     id: str
@@ -313,6 +281,9 @@ class ModelMetadata:
     dim_x: float
     dim_y: float
     dim_z: float
+
+    # Auxiliary data
+    auxiliary: Dict[str, dict]
 
     def __init__(self, config):
         """Constructor.
@@ -375,6 +346,12 @@ class ModelMetadata:
         self.dim_y = float(config["domain"]["dim_y"])
         self.dim_z = float(config["domain"]["dim_z"])
 
+        # Auxilary data
+        if "auxiliary" in config:
+            self.auxiliary = config["auxiliary"]
+        else:
+            self.auxiliary = {}
+
 
 class Model():
     """Georeferenced model composed of logical grids, potentially warped by topography.
@@ -391,24 +368,7 @@ class Model():
 
         self.metadata = None
 
-        self.initialize(config)
-
-    def initialize(self, config):
-        """Setup model.
-
-        Args:
-            config (dict)
-                Model configuration.
-        """
-        self.metadata = ModelMetadata(config)
-
-        for name in string_to_list(config["domain"]["blocks"]):
-            block = Block(name, self.metadata, config[name])
-            self.blocks.append(block)
-
-        self.storage = HDF5Storage(config["geomodelgrids"]["filename"])
-        self.top_surface = Surface("top_surface", self.metadata, config["top_surface"], self.storage)
-        self.topo_bathy = Surface("topography_bathymetry", self.metadata, config["topography_bathymetry"], self.storage)
+        self._initialize(config)
 
     def save_domain(self):
         """Write domain information to storage."""
@@ -467,6 +427,23 @@ class Model():
                 Current batch of points in domain corresponding to elevation data.
         """
         self.storage.save_block(block, values, batch)
+
+    def _initialize(self, config):
+        """Setup model.
+
+        Args:
+            config (dict)
+                Model configuration.
+        """
+        self.metadata = ModelMetadata(config)
+
+        for name in string_to_list(config["domain"]["blocks"]):
+            block = Block(name, self.metadata, config[name])
+            self.blocks.append(block)
+
+        self.storage = HDF5Storage(config["geomodelgrids"]["filename"])
+        self.top_surface = Surface("top_surface", self.metadata, config["top_surface"], self.storage)
+        self.topo_bathy = Surface("topography_bathymetry", self.metadata, config["topography_bathymetry"], self.storage)
 
 
 # End of file

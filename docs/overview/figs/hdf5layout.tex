@@ -77,7 +77,7 @@ font={\bfseries},
   \node (model) [root] {Root (Model)};
 
   % Model attributes
-  \node (model-attrs) [below=of model.center, attributes, subset-right, yshift=-15.0em] {%
+  \node (model-attrs) [below=of model.center, attributes, subset-right, yshift=-17.0em] {%
     \begin{attributes}
     \item title (string)
     \item id (string)
@@ -102,6 +102,8 @@ font={\bfseries},
     \item dim\_x (float)
     \item dim\_y (float)
     \item dim\_z (float)
+    \item \
+    \item auxiliary (string)
     \end{attributes}
   };
   \draw[arrowto] (model.south) |- (model-attrs.west);
@@ -109,10 +111,11 @@ font={\bfseries},
   % Model attributes annotation
   \draw [annotation-brace] ($(model-attrs.north east)+(0.3,0)$) -- ++(0,-2.5) node [annotation] {Model description};
   \draw [annotation-brace] ($(model-attrs.north east)+(0.3,-3.1)$) -- ++(0,-3.3) node [annotation] {Contact and attribution information};
-  \draw [annotation-brace] ($(model-attrs.north east)+(0.3,-7.0)$) -- ($(model-attrs.south east)+(0.3,0)$) node [annotation] {Model data, coordinate system, and dimensions};
+  \draw [annotation-brace] ($(model-attrs.north east)+(0.3,-7.0)$) -- ($(model-attrs.south east)+(0.3,1.0)$) node [annotation] {Model data, coordinate system, and dimensions};
+  \draw [annotation-brace] ($(model-attrs.south east)+(0.3,+0.5)$) -- ($(model-attrs.south east)+(0.3,0.0)$) node [annotation] {Optional model specific metadata};
   
   % Surfaces
-  \node (surfaces) [below=of model-attrs.west, group, yshift=-16.0em] {surfaces};
+  \node (surfaces) [below=of model-attrs.west, group, yshift=-17.0em] {surfaces};
   \draw[arrowto] (model.south) |- (surfaces.west);
 
   \node (top-surface) [below=of surfaces.south, dataset, subset-right, yshift=-0em] {top\_surface [$N_x \times N_y$] (optional)};

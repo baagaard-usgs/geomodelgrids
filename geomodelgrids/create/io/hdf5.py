@@ -29,6 +29,7 @@ class HDF5Storage():
         ("dim_x", float),
         ("dim_y", float),
         ("dim_z", float),
+        ("auxiliary", dict),
     )
     SURFACE_ATTRS = (
         ("resolution_horiz", float),
@@ -63,6 +64,9 @@ class HDF5Storage():
                 raise ValueError(f"Expected type '{typeE}' for domain attribute '{attr}'. Got type '{type(value)}'")
             if isinstance(value, list) and isinstance(value[0], str):
                 attrs[attr] = [numpy.string_(v) for v in value]
+            elif isinstance(value, dict):
+                import json
+                attrs[attr] = numpy.string_(json.dumps(value, sort_keys=True))
             else:
                 attrs[attr] = value
         h5.close()

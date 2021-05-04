@@ -49,6 +49,7 @@ The model is stored in an HDF5 file. If the top surface of the model is not a fl
 * **references** *(array of strings)* Publications describing the model.
 * **doi** *(string)* Digital Object Identifier for model.
 * **version** *(string)* Version of model.
+* **auxiliary** *(string, optional)* Auxiliary metadata in json format.
 
 ### Model Data
 

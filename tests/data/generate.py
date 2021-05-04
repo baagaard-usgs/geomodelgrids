@@ -2,6 +2,7 @@
 
 import h5py
 import numpy
+import json
 
 
 def calc_top_surface(x, y):
@@ -18,6 +19,10 @@ def calc_one(x, y, z):
 
 def calc_two(x, y, z):
     return -1.2e+3 + 0.1 * x - 0.2 * y - 4.8 * z
+
+
+def dict_as_str(value):
+    return numpy.string_(json.dumps(value, sort_keys=True))
 
 
 class TestData:
@@ -78,6 +83,8 @@ class TestData:
         # Create fixed-length string attributes
         attrs["keywords"] = [numpy.string_(v) for v in self.model["keywords"]]
         attrs["creator_institution"] = numpy.string_(self.model["creator_institution"])
+        if "auxiliary" in self.model:
+            attrs["auxiliary"] = dict_as_str(self.model["auxiliary"])
 
         # Surfaces
         h5.create_group("surfaces")
@@ -153,6 +160,7 @@ class OneBlockFlat(TestData):
         "dim_x": 30.0e+3,
         "dim_y": 40.0e+3,
         "dim_z": 5.0e+3,
+        "auxiliary": {0: "zero", 1: "one", },
     }
 
     top_surface = None

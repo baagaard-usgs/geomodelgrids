@@ -20,7 +20,8 @@ geomodelgrids::serial::ModelInfo::ModelInfo(void) :
     _creatorInstitution(""),
     _acknowledgements(""),
     _doi(""),
-    _version("")
+    _version(""),
+    _auxiliary("")
 {} // constructor
 
 
@@ -30,10 +31,6 @@ geomodelgrids::serial::ModelInfo::~ModelInfo(void) {}
 
 
 // ------------------------------------------------------------------------------------------------
-/** Get title.
- *
- * @returns Title of model.
- */
 const std::string&
 geomodelgrids::serial::ModelInfo::getTitle(void) const {
     return _title;
@@ -41,10 +38,6 @@ geomodelgrids::serial::ModelInfo::getTitle(void) const {
 
 
 // ------------------------------------------------------------------------------------------------
-/** Get identifier.
- *
- * @returns Model identifier.
- */
 const std::string&
 geomodelgrids::serial::ModelInfo::getId(void) const {
     return _id;
@@ -52,7 +45,6 @@ geomodelgrids::serial::ModelInfo::getId(void) const {
 
 
 // ------------------------------------------------------------------------------------------------
-// Get model description.
 const std::string&
 geomodelgrids::serial::ModelInfo::getDescription(void) const {
     return _description;
@@ -60,10 +52,6 @@ geomodelgrids::serial::ModelInfo::getDescription(void) const {
 
 
 // ------------------------------------------------------------------------------------------------
-/** Get keywords describing model.
- *
- * @returns Array of keywords.
- */
 const std::vector<std::string>&
 geomodelgrids::serial::ModelInfo::getKeywords(void) const {
     return _keywords;
@@ -71,10 +59,6 @@ geomodelgrids::serial::ModelInfo::getKeywords(void) const {
 
 
 // ------------------------------------------------------------------------------------------------
-/** Get name of creator.
- *
- * @returns Name of creator.
- */
 const std::string&
 geomodelgrids::serial::ModelInfo::getCreatorName(void) const {
     return _creatorName;
@@ -82,10 +66,6 @@ geomodelgrids::serial::ModelInfo::getCreatorName(void) const {
 
 
 // ------------------------------------------------------------------------------------------------
-/** Get email of creator.
- *
- * @returns Email of creator.
- */
 const std::string&
 geomodelgrids::serial::ModelInfo::getCreatorEmail(void) const {
     return _creatorEmail;
@@ -93,10 +73,6 @@ geomodelgrids::serial::ModelInfo::getCreatorEmail(void) const {
 
 
 // ------------------------------------------------------------------------------------------------
-/** Get institution of creator.
- *
- * @returns Institution of creator.
- */
 const std::string&
 geomodelgrids::serial::ModelInfo::getCreatorInstitution(void) const {
     return _creatorInstitution;
@@ -104,10 +80,6 @@ geomodelgrids::serial::ModelInfo::getCreatorInstitution(void) const {
 
 
 // ------------------------------------------------------------------------------------------------
-/** Get acknowledgments.
- *
- * @returns Acknowledgments for model.
- */
 const std::string&
 geomodelgrids::serial::ModelInfo::getAcknowledgements(void) const {
     return _acknowledgements;
@@ -115,10 +87,6 @@ geomodelgrids::serial::ModelInfo::getAcknowledgements(void) const {
 
 
 // ------------------------------------------------------------------------------------------------
-/** Get authors of model.
- *
- * @returns Array of author names.
- */
 const std::vector<std::string>&
 geomodelgrids::serial::ModelInfo::getAuthors(void) const {
     return _authors;
@@ -126,10 +94,6 @@ geomodelgrids::serial::ModelInfo::getAuthors(void) const {
 
 
 // ------------------------------------------------------------------------------------------------
-/** Get references associaed with model.
- *
- * @returns Array of references.
- */
 const std::vector<std::string>&
 geomodelgrids::serial::ModelInfo::getReferences(void) const {
     return _references;
@@ -137,10 +101,6 @@ geomodelgrids::serial::ModelInfo::getReferences(void) const {
 
 
 // ------------------------------------------------------------------------------------------------
-/** Get DOI for model.
- *
- * @returns Digital Object Identifier.
- */
 const std::string&
 geomodelgrids::serial::ModelInfo::getDOI(void) const {
     return _doi;
@@ -148,11 +108,17 @@ geomodelgrids::serial::ModelInfo::getDOI(void) const {
 
 
 // ------------------------------------------------------------------------------------------------
-// Get model version.
 const std::string&
 geomodelgrids::serial::ModelInfo::getVersion(void) const {
     return _version;
 } // getVersion
+
+
+// ------------------------------------------------------------------------------------------------
+const std::string&
+geomodelgrids::serial::ModelInfo::getAuxiliary(void) const {
+    return _auxiliary;
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -249,6 +215,10 @@ geomodelgrids::serial::ModelInfo::load(geomodelgrids::serial::HDF5* const h5) {
         msg << indent << "    /version\n";
         missingAttributes = true;
     } // if/else
+
+    if (h5->hasAttribute("/", "auxiliary")) {
+        _auxiliary = h5->readAttribute("/", "auxiliary");
+    } // if
 
     if (missingAttributes) { throw std::runtime_error(msg.str().c_str()); }
 } // load
