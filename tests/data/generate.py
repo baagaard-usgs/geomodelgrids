@@ -419,6 +419,12 @@ class ThreeBlocksTopo(TestData):
             for attr in top.attrs:
                 del top.attrs[attr]
 
+    def inconsistent_units(self):
+        self.filename = "three-blocks-topo-inconsistent-units.h5"
+        self.create()
+        with h5py.File(self.filename, "a") as h5:
+            h5.attrs["data_units"] = ["km", "km/s"]
+
 
 # ==============================================================================
 if __name__ == "__main__":
@@ -429,6 +435,7 @@ if __name__ == "__main__":
     OneBlockTopo().bad_topo_metadata()
     ThreeBlocksTopo().bad_block_metadata()
     ThreeBlocksTopo().missing_metadata()
+    ThreeBlocksTopo().inconsistent_units()
 
 
 # End of file

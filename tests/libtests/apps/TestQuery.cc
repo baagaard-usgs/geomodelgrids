@@ -45,6 +45,7 @@ class geomodelgrids::apps::TestQuery : public CppUnit::TestFixture {
     CPPUNIT_TEST(testRunTwoModels);
     CPPUNIT_TEST(testRunBadInput);
     CPPUNIT_TEST(testRunBadOutput);
+    CPPUNIT_TEST(testRunInconsistentUnits);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -110,6 +111,9 @@ public:
 
     /// Test run() wth bad output.
     void testRunBadOutput(void);
+
+    /// Test run() wth inconsistent units.
+    void testRunInconsistentUnits(void);
 
 }; // class TestQuery
 CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::apps::TestQuery);
@@ -528,6 +532,25 @@ geomodelgrids::apps::TestQuery::testRunBadOutput(void) {
     CPPUNIT_ASSERT_THROW(query.run(nargs, const_cast<char**>(args)), std::runtime_error);
 
 } // testRunBadOutput
+
+
+// ------------------------------------------------------------------------------------------------
+// Test run() with inconsistent units.
+void
+geomodelgrids::apps::TestQuery::testRunInconsistentUnits(void) {
+    const int nargs = 6;
+    const char* const args[nargs] = {
+        "test",
+        "--models=../../data/one-block-flat.h5,../../data/three-blocks-topo-inconsistent-units.h5",
+        "--points=two-models.in",
+        "--output=two-models.out",
+        "--points-coordsys=EPSG:4326",
+        "--values=two,one",
+    };
+    Query query;
+    CPPUNIT_ASSERT_THROW(query.run(nargs, const_cast<char**>(args)), std::runtime_error);
+
+} // testRunInconsistentUnits
 
 
 // ------------------------------------------------------------------------------------------------

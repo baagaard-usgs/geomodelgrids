@@ -42,6 +42,19 @@ public:
     geomodelgrids::serial::Query::values_map_type createModelValuesIndex(const geomodelgrids::serial::Model& model,
                                                                          const std::vector<std::string>& queryNamesLower);
 
+    /** Check consistency of units in model.
+     *
+     * @param[in] valueUnits Map from index of query value to units.
+     * @param[in] modelValueIndex Map from index of query value to index of model value.
+     * @param[in] modelValues Names of model values.
+     * @param[in] modelUnitsLower Units of model values (lowercase).
+     */
+    static
+    void checkUnits(std::map<size_t, std::string>* valueUnits,
+                    std::map<size_t, size_t>& modelValueIndex,
+                    const std::vector<std::string>& modelValues,
+                    const std::vector<std::string>& modelUnitsLower);
+
     static
     unsigned char tolower(unsigned char c);
 
@@ -89,14 +102,19 @@ geomodelgrids::serial::Query::initialize(const std::vector<std::string>& modelFi
     const size_t numModels = modelFilenames.size();
     _models.resize(numModels);
     _valuesIndex.resize(numModels);
-    for (size_t i = 0; i < numModels; ++i) {
-        _models[i] = new geomodelgrids::serial::Model();assert(_models[i]);
-        _models[i]->setInputCRS(inputCRSString);
-        _models[i]->open(modelFilenames[i].c_str(), geomodelgrids::serial::Model::READ);
-        _models[i]->loadMetadata();
-        _models[i]->initialize();
+    std::map<size_t, std::string> valueUnits;
+    for (size_t iModel = 0; iModel < numModels; ++iModel) {
+        _models[iModel] = new geomodelgrids::serial::Model();assert(_models[iModel]);
+        _models[iModel]->setInputCRS(inputCRSString);
+        _models[iModel]->open(modelFilenames[iModel].c_str(), geomodelgrids::serial::Model::READ);
+        _models[iModel]->loadMetadata();
+        _models[iModel]->initialize();
 
-        _valuesIndex[i] = _Query::createModelValuesIndex(*_models[i], _valuesLowercase);
+        _valuesIndex[iModel] = _Query::createModelValuesIndex(*_models[iModel], _valuesLowercase);
+
+        const std::vector<std::string>& modelValues = _models[iModel]->getValueNames();
+        const std::vector<std::string>& modelUnitsLower = _Query::toLower(_models[iModel]->getValueUnits());
+        _Query::checkUnits(&valueUnits, _valuesIndex[iModel], modelValues, modelUnitsLower);
     } // for
 } // initialize
 
@@ -274,6 +292,29 @@ geomodelgrids::serial::_Query::createModelValuesIndex(const geomodelgrids::seria
 
     return valuesIndex;
 } // createModelValuesIndex
+
+
+// ------------------------------------------------------------------------------------------------
+void
+geomodelgrids::serial::_Query::checkUnits(std::map<size_t,std::string>* valueUnits,
+                                          std::map<size_t, size_t>& valuesIndex,
+                                          const std::vector<std::string>& modelValues,
+                                          const std::vector<std::string>& modelUnits) {
+    assert(valueUnits);
+
+    for (size_t iValue = 0; iValue < valuesIndex.size(); ++iValue) {
+        const size_t indexModel = valuesIndex[iValue];
+        if (valueUnits->count(iValue) == 0) {
+            (*valueUnits)[iValue] = modelUnits[indexModel];
+        } else if ((*valueUnits)[iValue] != modelUnits[indexModel]) {
+            std::ostringstream msg;
+            msg << "Inconsistent units among models for value '" << modelValues[indexModel] << "'. "
+                << "Inconsistent units are '" << (*valueUnits)[iValue] << "' and '"
+                << modelUnits[indexModel] << "'.";
+            throw std::runtime_error(msg.str());
+        } // if/else
+    } // for
+}
 
 
 // End of file
