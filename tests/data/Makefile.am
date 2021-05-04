@@ -11,7 +11,8 @@ dist_noinst_DATA = \
 	three-blocks-topo.h5 \
 	one-block-topo-bad-topo.h5 \
 	three-blocks-topo-bad-blocks.h5 \
-	three-blocks-topo-missing-metadata.h5
+	three-blocks-topo-missing-metadata.h5 \
+	three-blocks-topo-inconsistent-units.h5
 
 
 # 'export' the input files by performing a mock install
