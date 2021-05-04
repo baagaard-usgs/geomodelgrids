@@ -41,7 +41,7 @@ AC_ARG_ENABLE([test-coverage],
 	[enable_test_coverage=no])
 AC_ARG_WITH([python-coverage],
     [AC_HELP_STRING([--with-python-coverage],
-        [set executable for python-coverage @<:@default=python3-coverage@:>@])],
+        [Specify executable for python-coverage @<:@default=python3-coverage@:>@])],
 	[python_coverage=$withval],
 	[python_coverage="python3-coverage"])
 AC_SUBST(python_coverage)
@@ -66,13 +66,13 @@ AC_ARG_ENABLE([spatialdata],
 # CPPUNIT
 AC_ARG_WITH([cppunit-incdir],
     [AC_HELP_STRING([--with-cppunit-incdir],
-        [location of cppunit header files @<:@default=no@:>@])],
+        [Specify location of cppunit header files @<:@default=no@:>@])],
 	[with_cppunit_incdir=$withval],
 	[with_cppunit_incdir=no])
 AC_SUBST(with_cppunit_incdir)
 AC_ARG_WITH([cppunit-libdir],
     [AC_HELP_STRING([--with-cppunit-libdir],
-        [location of cppunit library @<:@default=no@:>@])],
+        [Specify location of cppunit library @<:@default=no@:>@])],
 	[with_cppunit_libdir=$withval],
 	[with_cppunit_libdir=no])
 AC_SUBST(with_cppunit_libdir)
@@ -80,13 +80,13 @@ AC_SUBST(with_cppunit_libdir)
 # PROJ
 AC_ARG_WITH([proj-incdir],
     [AC_HELP_STRING([--with-proj-incdir],
-        [location of proj header files @<:@default=no@:>@])],
+        [Specify location of proj header files @<:@default=no@:>@])],
 	[with_proj_incdir=$withval],
 	[with_proj_incdir=no])
 AC_SUBST(with_proj_incdir)
 AC_ARG_WITH([proj-libdir],
     [AC_HELP_STRING([--with-proj-libdir],
-        [location of proj library @<:@default=no@:>@])],
+        [Specify location of proj library @<:@default=no@:>@])],
 	[with_proj_libdir=$withval],
 	[with_proj_libdir=no])
 AC_SUBST(with_proj_libdir)
@@ -94,13 +94,13 @@ AC_SUBST(with_proj_libdir)
 # HDF5
 AC_ARG_WITH([hdf5-incdir],
     [AC_HELP_STRING([--with-hdf5-incdir],
-        [location of hdf5 header files @<:@default=no@:>@])],
+        [Specify location of hdf5 header files @<:@default=no@:>@])],
 	[with_hdf5_incdir=$withval],
 	[with_hdf5_incdir=no])
 AC_SUBST(with_hdf5_incdir)
 AC_ARG_WITH([hdf5-libdir],
     [AC_HELP_STRING([--with-hdf5-libdir],
-        [location of hdf5 library @<:@default=no@:>@])],
+        [Specify location of hdf5 library @<:@default=no@:>@])],
 	[with_hdf5_libdir=$withval],
 	[with_hdf5_libdir=no])
 AC_SUBST(with_hdf5_libdir)
@@ -108,13 +108,13 @@ AC_SUBST(with_hdf5_libdir)
 # GDAL
 AC_ARG_WITH([gdal-incdir],
     [AC_HELP_STRING([--with-gdal-incdir],
-        [location of gdal header files @<:@default=no@:>@])],
+        [Specify location of gdal header files @<:@default=no@:>@])],
 	[with_gdal_incdir=$withval],
 	[with_gdal_incdir=no])
 AC_SUBST(with_gdal_incdir)
 AC_ARG_WITH([gdal-libdir],
     [AC_HELP_STRING([--with-gdal-libdir],
-        [location of gdal library @<:@default=no@:>@])],
+        [Specify location of gdal library @<:@default=no@:>@])],
 	[with_gdal_libdir=$withval],
 	[with_gdal_libdir=no])
 AC_SUBST(with_gdal_libdir)

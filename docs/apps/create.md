@@ -1,5 +1,7 @@
 # geomodelgrids_create_model
 
+Note: This application requires Python 3.7 or later and is not included in the binary package.
+
 The `geomodelgrids_create_model` command line program is used to generate a model from a data source.
 Currently, only the EarthVision data source is implemented.
 

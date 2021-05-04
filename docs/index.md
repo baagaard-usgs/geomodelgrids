@@ -2,7 +2,7 @@
 
 The GeoModelGrids project focuses on storing and querying
 georeferenced raster-based models. The models are composed of blocks,
-where each block is a uniform grid with a potentially different
+in which each block is a uniform grid with a potentially different
 resolution.
 
 # Motivation
