@@ -6,6 +6,7 @@ import os
 
 import h5py
 import numpy
+import json
 
 from geomodelgrids.create.apps.create_model import App
 from geomodelgrids.create.core.model import ModelMetadata
@@ -19,6 +20,7 @@ class TestApp(unittest.TestCase):
 
     def setUp(self):
         model_config = config.get_config([self.CONFIG_FILENAME])
+        auxiliary = {"int_value": 1, "float_value": 2.0, "str_value": "abc"}
         self.metadata = {
             "filename": model_config["geomodelgrids"]["filename"],
             "title": model_config["geomodelgrids"]["title"],
@@ -42,6 +44,7 @@ class TestApp(unittest.TestCase):
             "dim_x": float(model_config["domain"]["dim_x"]),
             "dim_y": float(model_config["domain"]["dim_y"]),
             "dim_z": float(model_config["domain"]["dim_z"]),
+            "auxiliary": numpy.string_(json.dumps(auxiliary, sort_keys=True)),
             "top_surface": {
                 "resolution_horiz": float(model_config["top_surface"]["resolution_horiz"])
             },
@@ -81,7 +84,7 @@ class TestApp(unittest.TestCase):
 
         h5 = h5py.File(self.metadata["filename"], "r")
         attrs = h5.attrs
-        self._check_attributes(ModelMetadata.__slots__, self.metadata, attrs)
+        self._check_attributes(ModelMetadata.__dataclass_fields__, self.metadata, attrs)
 
     def test_surfaces(self):
         ARGS = {

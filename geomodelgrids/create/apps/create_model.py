@@ -58,13 +58,14 @@ class App():
         data_path = self.config["geomodelgrids"]["data_source"].split(".")
         data_obj = getattr(import_module(".".join(data_path[:-1])), data_path[-1])
         datasrc = data_obj(self.config)
+        datasrc.initialize()
         model = core.model.Model(self.config)
+        model.metadata.auxiliary.update(datasrc.get_metadata())
 
         if args.import_domain or args.all:
             model.save_domain()
 
         batch_size = int(self.config["domain"]["batch_size"])
-        datasrc.initialize()
 
         if args.import_surfaces or args.all:
             if model.top_surface.enabled:

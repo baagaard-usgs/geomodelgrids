@@ -94,6 +94,12 @@ public:
      */
     const std::string& getVersion(void) const;
 
+    /** Get auxiliary information.
+     *
+     * @returns Json as string.
+     */
+    const std::string& getAuxiliary(void) const;
+
     /** Load metadata.
      */
     void load(geomodelgrids::serial::HDF5* const h5);
@@ -113,6 +119,7 @@ private:
     std::vector<std::string> _references; ///< References for model.
     std::string _doi; ///< Digital Object Identifier for model.
     std::string _version; ///< ModelInfo version.
+    std::string _auxiliary; ///< Auxiliary information (optional).
 
     // NOT IMPLEMENTED ----------------------------------------------------------------------------
 private:

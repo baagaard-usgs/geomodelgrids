@@ -18,6 +18,13 @@ class DataSrc(ABC):
         """
         return
 
+    def get_metadata(self):
+        """Get any additional metadata provided by data source.
+
+        @returns Dict
+        """
+        return {}
+
     @abstractmethod
     def get_top_surface(self, points):
         """Query model for elevation of top surface at points.

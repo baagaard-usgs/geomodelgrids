@@ -224,6 +224,10 @@ geomodelgrids::apps::Info::_printDescription(geomodelgrids::serial::Model* const
     std::cout << _Info::indent(1) << "Acknowledgements: " << info->getAcknowledgements() << "\n";
     std::cout << _Info::indent(1) << "DOI: " << info->getDOI() << "\n";
     std::cout << _Info::indent(1) << "Version: " << info->getVersion() << "\n";
+    const std::string& auxiliary = info->getAuxiliary();
+    if (!auxiliary.empty()) {
+        std::cout << _Info::indent(1) << "Auxiliary information: " << auxiliary << "\n";
+    } // if
 
     const double* dims = model->getDims();
     std::cout << _Info::indent(1) << "Dimensions of model (m): x=" << dims[0] << ", y="<< dims[1] << ", z=" << dims[2] << "\n";

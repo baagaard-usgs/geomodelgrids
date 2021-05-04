@@ -22,6 +22,13 @@ class AnalyticDataSrc(DataSrc):
         """
         super().__init__()
 
+    def get_metadata(self):
+        return {
+            "int_value": 1,
+            "float_value": 2.0,
+            "str_value": "abc",
+        }
+
     @staticmethod
     def get_top_surface(points):
         """Get elevation of top surface using analytical function.
