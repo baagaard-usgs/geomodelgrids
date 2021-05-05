@@ -5,10 +5,13 @@
   * gcc (Linux only)
   * sqlite3
   * libtiff
+  * openssl
+  * libcurl
   * proj
   * hdf5
 2. Install geomodelgrids
 3. Create setup.sh
+4. Update linking (Darwin only)
 4. Create tarball.
 """
 
@@ -40,7 +43,7 @@ class Package(object):
     def install(self):
         self.download()
         self.extract_tarball()
-        self.configure(args=None)
+        self.configure()
         self.build()
 
     def download(self, url=None, tarball=None):
@@ -65,7 +68,7 @@ class Package(object):
         tfile = tarfile.open(tarball, mode="r:*")
         tfile.extractall(path=path)
 
-    def configure(self, args):
+    def configure(self, args=[]):
         if not os.path.exists(self.BUILD_DIR):
             os.mkdir(self.BUILD_DIR)
         cwd = os.path.abspath(os.curdir)
@@ -247,7 +250,7 @@ class Proj(Package):
 class HDF5(Package):
     VERSION = "1.12.0"
     TARBALL = f"hdf5-{VERSION}.tar.gz"
-    URL = f"https://www.sqlite.org/2021/{TARBALL}"
+    URL = f"https://hdf-wordpress-1.s3.amazonaws.com/wp-content/uploads/manual/HDF5/HDF5_1_12_0/source/{TARBALL}"
     BUILD_DIR = "hdf5-build"
     SRC_DIR = f"hdf5-{VERSION}"
 
@@ -350,6 +353,100 @@ class App(object):
         if args.create_tarball or args.all:
             self._create_tarball()
 
+    def _install(self, cls):
+        dep = cls(self.install_dir, self.env, show_progress=self.show_progress)
+        dep.install()
+
+    def _set_env(self):
+        self.env = {
+            "PATH": f"{self.install_dir}/bin:/usr/bin:/bin:/usr/sbin:/sbin",
+            "CPPFLAGS": f"-I{self.install_dir}/include -DNDEBUG",
+            "LDFLAGS": f"-L{self.install_dir}/lib",
+            "CFLAGS": "-O3",
+            "CXXFLAGS": "-O3",
+        }
+        if platform.system() == "Darwin":
+            self.env.update({
+                "CC": "clang",
+                "CXX": "clang++",
+            })
+        elif platform.system() == "Linux":
+            self.env.update({
+                "CC": "gcc",
+                "CXX": "g++",
+                "LDFLAGS": f"-L{self.install_dir}/lib -L{self.install_dir}/lib64",
+                "LD_LIBRARY_PATH": f"{self.install_dir}/lib:{self.install_dir}/lib64",
+            })
+        else:
+            raise ValueError(f"Unknown platform '{platform.system()}'.")
+
+    def _create_setup(self):
+        self._status("Creating setup.sh ...")
+        filename = os.path.join(self.install_dir, "setup.sh")
+        with open(filename, "w") as fout:
+            lines = [
+                'gmg=`pwd`',
+                '',
+                'if test ! -f bin/geomodelgrids_query; then',
+                '    echo "ERROR: Source this script from the top-level geomodelgrids directory."',
+                '    echo "    cd [directory constaining setup.sh]"',
+                '    echo "    source setup.sh"',
+                '',
+                'else',
+                '    export PATH="$gmg/bin:/bin:/usr/bin:/sbin:/usr/sbin:$PATH"',
+            ]
+            if platform.system() == "Linux":
+                lines += [
+                    '    export LD_LIBRARY_PATH="$gmg/lib:$gmg/lib64:${LD_LIBRARY_PATH}"',
+                ]
+            lines += [
+                '    echo "Ready to run GeoModelGrids!"',
+                'fi',
+            ]
+            fout.write("\n".join(lines))
+
+    def _create_tarball(self):
+        def exclude(tarinfo):
+            EXCLUDE = (
+                "gcc",
+                "g++",
+                "gcov",
+                "gcov-dump",
+                "gcov-tool",
+                "cpp",
+                "cc",
+                "c++",
+                "lto-dump",
+                )
+            filepath = tarinfo.name
+            if os.path.splitext(filepath)[1] == ".a":
+                return None
+            filename = os.path.split(filepath)[1]
+            if filename in EXCLUDE:
+                return None
+            if filename.startswith("x86_64-pc-linux-gnu"):
+                return None
+            if filename.startswith("libasan") or \
+              filename.startswith("libtsan") or \
+              filename.startswith("libubsan") or \
+              filename.startswith("liblsan"):
+                return None
+            if os.path.split(filepath)[0].endswith("libexec"):
+                return None
+            return tarinfo
+        self._status("Creating tarball ...")
+        version = GeoModelGrids.VERSION
+
+        if platform.system() == "Darwin":
+            arch = "Darwin_{}".format(platform.machine())
+        elif platform.system() == "Linux":
+            arch = "Linux_{}".format(platform.machine())
+        tarball = f"geomodelgrids-{version}-{arch}.tar.gz"
+
+        shutil.copytree(f"geomodelgrids-{version}", os.path.join(self.install_dir, "src"))
+        with tarfile.open(tarball, mode="w:gz") as tfile:
+            tfile.add(self.install_dir, arcname=f"geomodelgrids-{version}-{arch}", filter=exclude)
+
     def _parse_command_line(self):
         """Parse command line arguments.
         """
@@ -382,69 +479,9 @@ class App(object):
 
         return args
 
-    def _install(self, cls):
-        dep = cls(self.install_dir, self.env, show_progress=self.show_progress)
-        dep.install()
-
-    def _set_env(self):
-        self.env = {
-            "PATH": f"{self.install_dir}/bin:/usr/bin:/bin:/usr/sbin:/sbin",
-            "CPPFLAGS": f"-I{self.install_dir}/include -DNDEBUG",
-            "LDFLAGS": f"-L{self.install_dir}/lib",
-            "CFLAGS": "-O3",
-            "CXXFLAGS": "-O3",
-        }
-        if platform.system() == "Darwin":
-            self.env.update({
-                "CC": "clang",
-                "CXX": "clang++",
-            })
-        elif platform.system() == "Linux":
-            self.env.update({
-                "CC": "gcc",
-                "CXX": "g++",
-                "LDFLAGS": f"-L{self.install_dir}/lib -L{self.install_dir}/lib64",
-                "LD_LIBRARY_PATH": f"{self.install_dir}/lib:{self.install_dir}/lib64",
-            })
-        else:
-            raise ValueError(f"Unknown platform '{platform.system()}'.")
-
-    def _create_setup(self):
-        filename = os.path.join(self.install_dir, "setup.sh")
-        with open(filename, "w") as fout:
-            lines = [
-                'gmg=`pwd`',
-                '',
-                'if test ! -f bin/geomodelgrids_query; then',
-                '    echo "ERROR: Source this script from the top-level geomodelgrids directory."',
-                '    echo "    cd [directory constaining setup.sh]"',
-                '    echo "    source setup.sh"',
-                '',
-                'else',
-                '    export PATH="$gmg/bin:/bin:/usr/bin:/sbin:/usr/sbin:$PATH"',
-            ]
-            if platform.system() == "Linux":
-                lines += [
-                    '    export LD_LIBRARY_PATH="$gmg/lib:$gmg/lib64:${LD_LIBRARY_PATH}"',
-                ]
-            lines += [
-                '    echo "Ready to run GeoModelGrids!"',
-                'fi',
-            ]
-            fout.write("\n".join(lines))
-
-    def _create_tarball(self):
-        version = GeoModelGrids.VERSION
-
-        if platform.system() == "Darwin":
-            arch = "Darwin_{}".format(platform.machine())
-        elif platform.system() == "Linux":
-            arch = "Linux_{}".format(platform.machine())
-        tarball = f"geomodelgrids-{version}-{arch}.tar.gz"
-
-        shutil.copytree(f"geomodelgrids-{version}", os.path.join(self.install_dir, "src"))
-        with tarfile.open(tarball, mode="w:gz") as tfile:
-            tfile.add(self.install_dir, arcname=f"geomodelgrids-{version}-{arch}")
+    def _status(self, msg):
+        if self.show_progress:
+            print(msg)
 
 
 # --------------------------------------------------------------------------------------------------

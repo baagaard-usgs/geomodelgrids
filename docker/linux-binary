@@ -24,7 +24,6 @@ RUN yum install -y \
     vim-runtime \
     centos-release-scl
 RUN yum install -y rh-python38
-RUN scl enable rh-python38 -- python3 -m pip install requests
 
 COPY docker/certs/ /usr/share/pki/ca-trust-source/anchors
 RUN update-ca-trust enable
