@@ -195,7 +195,7 @@ geomodelgrids::apps::Info::_printHelp(void) {
               << "    --coordsys                   Display model coordinate system.\n"
               << "    --values                     Display names and units of values stored in the model.\n"
               << "    --blocks                     Display description of blocks.\n"
-              << "    --all                        Display description, coordinate system, values, and blocks"
+              << "    --all                        Display description, coordinate system, values, and blocks\n"
               << "    --verify                     Verify model conforms to GeoModelGrids specifications."
               << std::endl;
 } // _printHelp
