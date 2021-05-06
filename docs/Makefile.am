@@ -37,6 +37,7 @@ EXTRA_DIST = \
 	figs/palettes/palette_usgs.tex \
 	getting-started/install.md \
 	getting-started/running.md \
+	getting-started/release-notes.md \
 	images/USGSsimple.png \
 	models/seismic_graymer_delta.md \
 	overview/features.md \
@@ -45,8 +46,8 @@ EXTRA_DIST = \
 	overview/figs/coordsys.tex \
 	overview/figs/gridmapping.png \
 	overview/figs/hdf5layout.png \
-	overview/figs/hdf5layout.tex
-	overview/plot_gridmapping.py*
+	overview/figs/hdf5layout.tex \
+	overview/figs/plot_gridmapping.py \
 	scripting/scripting.md \
 	scripting/data-structures.md \
 	scripting/create.md \

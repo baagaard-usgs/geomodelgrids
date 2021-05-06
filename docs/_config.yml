@@ -4,6 +4,7 @@ baseurl: /geomodelgrids
 aux_links:
   "GitHub repository":
     - "//github.com/baagaard-usgs/geomodelgrids"
+repository: baagaard-usgs/geomodelgrids
 
 color_scheme: usgs_lightbg
 heading_anchors: false
