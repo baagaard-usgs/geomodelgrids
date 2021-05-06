@@ -5,6 +5,8 @@ autom4te.cache
 aux-config
 docker
 !docker/certs
+!docker/build_binary.py
+!docker/pip.conf
 build
 models/plotting/data
 models/plotting/plots

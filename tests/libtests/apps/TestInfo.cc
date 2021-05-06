@@ -327,7 +327,7 @@ geomodelgrids::apps::TestInfo::testPrintHelp(void) {
     Info info;
     info._printHelp();
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(727), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(728), coutHelp.str().length());
 } // testPrintHelp
 
 
@@ -348,7 +348,7 @@ geomodelgrids::apps::TestInfo::testRunHelp(void) {
     info.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(727), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(728), coutHelp.str().length());
 } // testRunHelp
 
 

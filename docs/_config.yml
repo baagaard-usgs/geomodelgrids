@@ -4,10 +4,11 @@ baseurl: /geomodelgrids
 aux_links:
   "GitHub repository":
     - "//github.com/baagaard-usgs/geomodelgrids"
+repository: baagaard-usgs/geomodelgrids
 
 color_scheme: usgs_lightbg
 heading_anchors: false
 search_enabled: true
 
 title_image: images/USGSsimple.png
-software_version: 0.2.0
+software_version: 1.0.0rc1

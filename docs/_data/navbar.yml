@@ -9,6 +9,8 @@ toc:
         url: /overview/storage-layout.html
   - title: Getting Started
     subitems:
+      - page: Release notes
+        url: /getting-started/release-notes.html
       - page: Installation
         url: /getting-started/install.html
       - page: Running the code

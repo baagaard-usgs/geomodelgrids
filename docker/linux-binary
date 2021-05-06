@@ -1,0 +1,74 @@
+FROM centos:7 as os-update
+LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
+
+RUN yum install -y \
+    gcc \
+    gcc-c++ \
+    make \
+    file \
+    which \
+    diffutils \
+    gettext \
+    git \
+    uncrustify \
+    gnupg2 \
+    automake \
+    autoconf \
+    libtool \
+    openssh \
+    openssl \
+    zlib-devel \
+    libffi-devel \
+    ca-certificates \
+    vim-common \
+    vim-runtime \
+    centos-release-scl
+RUN yum install -y rh-python38
+
+COPY docker/certs/ /usr/share/pki/ca-trust-source/anchors
+RUN update-ca-trust enable
+
+# ------------------------------------------------------------------------------
+from os-update as build-setup
+
+# Create 'gmg-user' user
+ENV GMG_USER gmg-user
+RUN useradd --create-home --shell /bin/bash $GMG_USER
+ENV STORAGE_DIR=/opt/geomodelgrids
+ENV INSTALL_DIR=$STORAGE_DIR/dest  HOME=/home/$GMG_USER
+
+RUN mkdir ${STORAGE_DIR} \
+  && chown ${GMG_USER} ${STORAGE_DIR} \
+  && chgrp ${GMG_USER} ${STORAGE_DIR}
+USER ${GMG_USER}
+
+RUN mkdir -p ~/.config/pip \
+  && echo "[global]" > $HOME/.config/pip/pip.conf \
+  && echo "trusted-host = pypi.org files.pythonhosted.org" >> $HOME/.config/pip/pip.conf \
+  && scl enable rh-python38 -- python3 -m pip install requests --user
+
+WORKDIR $STORAGE_DIR
+
+# To build up to here:
+# docker build -t geomodelgrids-binaryenv -f docker/linux-binary --target build-setup .
+#
+# To build binary manually making use of persistent storage
+# docker run -ti --rm --name geomodelgrids-binary-workspace -v geomodelgrids-binary:/opt/geomodelgrids geomodelgrids-binaryenv
+# docker cp TARBALL geomodelgrids-binary-workspace:/opt/geomodelgrids/build
+# docker cp docker/build_binary.py geomodelgrids-binary-workspace:/opt/geomodelgrids/build
+# svn enable rh-python38 -- /opt/geomodelgrids/src/docker/build_binary.py --install-dir=$INSTALL_DIR --version=X.X.X --all
+
+# ------------------------------------------------------------------------------
+from build-setup as build-binary
+
+COPY --chown=gmg-user:gmg-user docker/build_binary.py ${BUILD_DIR}
+
+WORKDIR $BUILD_DIR
+
+RUN mv ${SRC_DIR}/geomodelgrids-*.tar.gz ${BUILD_DIR}
+RUN scl enable rh-python38 -- ${SRC_DIR}/docker/build_binary.py --install-dir=${INSTALL_DIR} --version=1.0.0rc1 --gcc
+RUN scl enable rh-python38 -- ${SRC_DIR}/docker/build_binary.py --install-dir=${INSTALL_DIR} --version=1.0.0rc1 --tiff --sqlite --openssl --curl --proj --hdf5
+RUN scl enable rh-python38 -- ${SRC_DIR}/docker/build_binary.py --install-dir=${INSTALL_DIR} --version=1.0.0rc1 --geomodelgrids --create-setup --create-tarball
+
+
+CMD /bin/bash
