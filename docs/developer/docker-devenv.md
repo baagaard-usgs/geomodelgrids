@@ -25,7 +25,7 @@ This creates a copy of the repository in your GitHub account.
 
 On your local machine, create a Docker volume for persistent storage.
 
-```
+```{code-block} bash
 docker volume create geomodelgrids-dev
 ```
 
@@ -37,7 +37,7 @@ Running the command below will:
 2. Mount the docker volume with persistent storage at `/opt/geomodelgrids`. 
 3. The `geomodelgrids-devenv` Docker image will be downloaded from the GitLab registry <registry.gitlab.com/baagaard-usgs/geomodelgrids>.
 
-```
+```{code-block} bash
 # Without EarthVision
 docker run --name geomodelgrids-dev-workspace --rm -it \
     -v geomodelgrids-dev:/opt/geomodelgrids \
@@ -56,7 +56,7 @@ docker run --name geomodelgrids-dev-workspace --rm -it \
 
 We will use the directory following directory structure for the persistent storage.
 
-```
+```{code-block} bash
 /opt/geomodelgrids
     ├── src
     ├── build
@@ -78,7 +78,7 @@ We will use the directory following directory structure for the persistent stora
 This directory structure is setup for both a debugging version for development (debug directory) and an optimized version for performance testing (opt directory).
 For now, we will only setup the debugging version.
 
-```
+```{code-block} bash
 cd /opt/geomodelgrids
 mkdir -p ${TOP_BUILDDIR}
 mkdir -p ${INSTALL_DIR}
@@ -88,14 +88,14 @@ mkdir -p ${INSTALL_DIR}
 
 This creates a local copy of the repository in the persistent storage volume of the GeoModelGrids development container.
 
-```
+```{code-block} bash
 cd /opt/geomodelgrids
 git clone --recursive https://github.com/GITHUB_USERNAME/geomodelgrids.git src
 ```
 
 ### Configure and build for development
 
-```
+```{code-block} bash
 cd ${TOP_BUILDDIR}
 pushd ${TOP_SRCDIR} && autoreconf -if && popd
 ${TOP_SRCDIR}/configure \
@@ -134,14 +134,16 @@ Additionally, we recommend also installing the following extensions:
 
 Whenever you need to restart the `geomodelgrids-dev-workspace` Docker container, simply run
 
-```bash
+```{code-block} bash
 # Without EarthVision
 docker run --name geomodelgrids-dev-workspace --rm -it \
     -v geomodelgrids-dev:/opt/geomodelgrids \
     registry.gitlab.com/baagaard-usgs/geomodelgrids/geomodelgrids-devenv
 ```
 
-**Tip**: Make sure Docker is running before you start the container.
+:::{tip}
+Make sure Docker is running before you start the container.
+:::
 
 ### Attach VS Code to the Docker container
 

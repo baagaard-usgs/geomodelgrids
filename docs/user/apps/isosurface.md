@@ -1,6 +1,8 @@
 # geomodelgrids_isosurface
 
-**Note**: This application requires the GDAL library and is not included in the binary package.
+:::{note}
+This application requires the GDAL library and is not included in the binary package.
+:::
 
 The `geomodelgrids_isosurface` command line program is used to generate horizontal isosurfaces for model values.
 The isosurface values are the depth from the reference surface; the default surface is `topography_bathymetry`.
@@ -65,7 +67,7 @@ We specify a horizontal resolution of 0.1 degrees and a vertical resolution of 5
 We specify the maximum search depth to be 45 km, which corresponds to the base of the model.
 The model for this example is located in `tests/data`.
 
-```bash
+```{code-block} bash
 geomodelgrids_isosurface \
 --models=tests/data/three-blocks-topo.h5 \
 --bbox=34.6,34.8,-117.7,-117.3 \
@@ -77,6 +79,7 @@ geomodelgrids_isosurface \
 --depth-reference=topography_bathymetry \
 --output=tests/data/three-blocks-topo-isosurface.tiff \
 --bbox-coordsys=EPSG:4326
+```
 
 # We can see the metadata by running gdalinfo on the resulting GeoTiff file.
 gdalinfo tests/data/three-blocks-topo-isosurface.tiff

@@ -1,64 +1,73 @@
 EXTRA_DIST = \
-	Gemfile \
-	Metadata.md \
-	README.md \
-	_config.yml \
-	_data/navbar.yml \
+	build.sh \
+	conf.py \
+	files \
 	index.md \
-	apps/borehole.md \
-	apps/create.md \
-	apps/info.md \
-	apps/isosurface.md \
-	apps/query.md \
-	apps/queryelev.md \
-	c-api/example-query.md \
-	c-api/serial.md \
-	c-api/serial-query.md \
-	c-api/utils-errorhandler.md \
-	c-api/parallel.md \
-	cxx-api/example-query.md \
-	cxx-api/serial.md \
-	cxx-api/serial-block.md \
-	cxx-api/serial-hdf5.md \
-	cxx-api/serial-hyperslab.md \
-	cxx-api/serial-model.md \
-	cxx-api/serial-modelinfo.md \
-	cxx-api/serial-query.md \
-	cxx-api/serial-surface.md \
-	cxx-api/parallel.md \
-	cxx-api/utils.md \
-	cxx-api/utils-crstransformer.md \
-	cxx-api/utils-errorhandler.md \
-	cxx-api/utils-testdriver.md \
+	requirements.txt \
+	_static/images/USGSsimple.png \
+	_templates/navbar-usgs.html \
+	developer/index.md \
 	developer/code-layout.md \
 	developer/docker-devenv.md \
 	figs/palettes/palette_general.tex \
 	figs/palettes/palette_mmi.tex \
 	figs/palettes/palette_usgs.tex \
+	figs/palettes/view_colors.tex \
+	getting-started/index.md \
 	getting-started/install.md \
-	getting-started/running.md \
 	getting-started/release-notes.md \
-	images/USGSsimple.png \
-	models/seismic_graymer_delta.md \
-	overview/features.md \
-	overview/storage-layout.md \
-	overview/figs/coordsys.png \
-	overview/figs/coordsys.tex \
-	overview/figs/gridmapping.png \
-	overview/figs/hdf5layout.png \
-	overview/figs/hdf5layout.tex \
-	overview/figs/plot_gridmapping.py \
-	scripting/scripting.md \
-	scripting/data-structures.md \
-	scripting/create.md \
-	scripting/create/apps-create-model.md \
-	scripting/create/core-block.md \
-	scripting/create/core-datasrc.md \
-	scripting/create/core-model.md \
-	scripting/create/core-surface.md \
-	scripting/create/earthvision-api.md \
-	scripting/create/earthvision-datasrc.md \
-	scripting/create/io-hdf5.md 
+	getting-started/running.md \
+	intro/index.md \
+	intro/overview.md \
+	intro/storage-layout.md \
+	intro/figs/coordsys.png \
+	intro/figs/coordsys.tex \
+	intro/figs/gridmapping.pdf \
+	intro/figs/gridmapping.png \
+	intro/figs/hdf5layout.pdf \
+	intro/figs/hdf5layout.png \
+	intro/figs/hdf5layout.tex \
+	intro/figs/plot_gridmapping.py \
+	user/apps/index.md \
+	user/apps/borehole.md \
+	user/apps/create.md \
+	user/apps/info.md \
+	user/apps/isosurface.md \
+	user/apps/query-elev.md \
+	user/apps/query.md \
+	user/c-api/index.md \
+	user/c-api/example-query.md \
+	user/c-api/parallel.md \
+	user/c-api/serial-query.md \
+	user/c-api/serial.md \
+	user/c-api/utils-errorhandler.md \
+	user/cxx-api/index.md \
+	user/cxx-api/example-query.md \
+	user/cxx-api/parallel.md \
+	user/cxx-api/serial-block.md \
+	user/cxx-api/serial-hdf5.md \
+	user/cxx-api/serial-hyperslab.md \
+	user/cxx-api/serial-model.md \
+	user/cxx-api/serial-modelinfo.md \
+	user/cxx-api/serial-query.md \
+	user/cxx-api/serial-surface.md \
+	user/cxx-api/serial.md \
+	user/cxx-api/utils-crstransformer.md \
+	user/cxx-api/utils-errorhandler.md \
+	user/cxx-api/utils-testdriver.md \
+	user/cxx-api/utils.md \
+	user/scripting/index.md \
+	user/scripting/data-structures.md \
+	user/scripting/scripting.md \
+	user/scripting/create/index.md \
+	user/scripting/create/apps-create-model.md \
+	user/scripting/create/core-block.md \
+	user/scripting/create/core-datasrc.md \
+	user/scripting/create/core-model.md \
+	user/scripting/create/core-surface.md \
+	user/scripting/create/earthvision-api.md \
+	user/scripting/create/earthvision-datasrc.md \
+	user/scripting/create/io-hdf5.md
 
 
 # End of file

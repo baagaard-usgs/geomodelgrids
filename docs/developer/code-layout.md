@@ -11,7 +11,7 @@
 
 The `geomodelgrids_create_model` file is a Python script that uses the Python API. All of the other files are C++ files that use the C++ API.
 
-```bash
+```{code-block} bash
 bin
 ├── Makefile.am
 ├── borehole.cc
@@ -26,7 +26,7 @@ bin
 
 The `apps` directory contains the code for the command line programs. The `serial` directory contains the code for the C/C++ serial API. The `utils` directory contains general C/C++ API utilities.
 
-```bash
+```{code-block} bash
 libsrc/
 ├── Makefile.am
 └── geomodelgrids
@@ -82,7 +82,7 @@ libsrc/
 
 ## Python interface
 
-```bash
+```{code-block} bash
 geomodelgrids
 ├── __init__.py
 └── create

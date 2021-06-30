@@ -4,20 +4,11 @@ See [examples/c-api/query.c](https://github.com/baagaard-usgs/geomodelgrids/blob
 
 We first show a complete example in a single code block and then discuss the individual pieces.
 
-+ [Source code](#source-code) (single block)
-+ [Header files](#header-files)
-+ [Set query parameters](#set-query-parameters)
-+ [Create and initialize the query](#create-and-initialize-the-query)
-+ [Setup error handler](#setup-error-handler)
-+ [Set points to query](#set-points-for-query)
-+ [Query model](#query-model)
-+ [Cleanup after query](#cleanup-after-query)
-
 ## Source code
 
 In this example, we hardwire the parameters for convenience. See the [C++ query application](https://github.com/baagaard-usgs/geomodelgrids/blob/master/libsrc/geomodelgrids/apps/Query.cc) for a more sophisticated interface.
 
-```c
+```{code-block} c
 #include "geomodelgrids/serial/cquery.h"
 #include "geomodelgrids/utils/cerrorhandler.h"
 
@@ -88,7 +79,7 @@ int main(int argc, char* argv[]) {
 
 We include the header files for the query and error handler interfaces.
 
-```c
+```{code-block} c
 #include "geomodelgrids/serial/cquery.h"
 #include "geomodelgrids/utils/cerrorhandler.h"
 ```
@@ -97,25 +88,31 @@ We include the header files for the query and error handler interfaces.
 
 As mentioned earlier, in this example we hardwire all of the query parameters using local variables.
 
-Set the parameters indicating which model to query. Multiple models can be queries and they will be accessed in the order given.
+Set the parameters indicating which model to query.
+Multiple models can be queries and they will be accessed in the order given.
 
-```c
+```{code-block} c
 static const size_t numModels = 1;
 static const char* const filenames[1] = {
    "../../tests/data/one-block-topo.h5",
 };
 ```
 
-Set the parameters for the values to be returned in queries. The order specified is the order in which they will be returned in queries.
+Set the parameters for the values to be returned in queries.
+The order specified is the order in which they will be returned in queries.
 
-```c
+```{code-block} c
 static const size_t numValues = 2;
 static const char* const valueNames[2] = { "two", "one" };
 ```
 
-Set the coordinate system that is used for the points passed to the query function. The coordinate system is specified using a string corresponding to any coordinate reference system (CRS) recognized by the [Proj library](https://proj.org). This includes EPGS codes, Proj parameters, and Well-Known Text (WKT). In this case, we specify the coordinates as longitude, latitude, elevation in the WGS horizontal datum, which corresponds to `EPSG:4326`. Elevation is meters above the WGS84 ellipsoid. 
+Set the coordinate system that is used for the points passed to the query function.
+The coordinate system is specified using a string corresponding to any coordinate reference system (CRS) recognized by the [Proj library](https://proj.org).
+This includes EPGS codes, Proj parameters, and Well-Known Text (WKT).
+In this case, we specify the coordinates as longitude, latitude, elevation in the WGS horizontal datum, which corresponds to `EPSG:4326`.
+Elevation is meters above the WGS84 ellipsoid. 
 
-```c
+```{code-block} c
 static const char* const crs = "EPSG:4326";
 static const size_t spaceDim = 3;
 ```
@@ -124,7 +121,7 @@ static const size_t spaceDim = 3;
 
 We create the query object and initialize it with the query parameters.
 
-```c
+```{code-block} c
 void* query = geomodelgrids_squery_create();
 int err = geomodelgrids_squery_initialize(query, filenames, numModels, valueNames, numValues, crs);
 ```
@@ -133,16 +130,17 @@ int err = geomodelgrids_squery_initialize(query, filenames, numModels, valueName
 
 We get the error handler from the query object and set the name of the log file where warnings and errors will be written.
 
-```c
+```{code-block} c
 void* errorHandler = geomodelgrids_squery_getErrorHandler(query);
 geomodelgrids_cerrorhandler_setLogFilename(errorHandler, "error.log");
 ```
 
 ### Set points for query
 
-In this example, we hardwire the query points using a local variable. The coordinate system is the one specified by the `crs` variable.
+In this example, we hardwire the query points using a local variable.
+The coordinate system is the one specified by the `crs` variable.
 
-```c
+```{code-block} c
 static const size_t numPoints = 5;
 static const double points[5*3] = {
    37.455, -121.941, 0.0,
@@ -155,9 +153,11 @@ static const double points[5*3] = {
 
 ### Query model
 
-We query the model looping over the points. We must preallocate the array holding the values returned in the queries. We do not do anything with the values returned as indicated by the comment at the end of the `for` loop.
+We query the model looping over the points.
+We must preallocate the array holding the values returned in the queries.
+We do not do anything with the values returned as indicated by the comment at the end of the `for` loop.
 
-```c
+```{code-block} c
 double values[numValues];
 for (size_t iPt = 0; iPt < numPoints; ++iPt) {
     const double latitude = points[iPt*spaceDim+0];
@@ -176,7 +176,7 @@ for (size_t iPt = 0; iPt < numPoints; ++iPt) {
 
 After using the query object, we must destroy it.
 
-```c
+```{code-block} c
 geomodelgrids_squery_destroy(&query);
 ```
 
