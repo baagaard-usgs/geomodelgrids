@@ -81,8 +81,11 @@ geomodelgrids_isosurface \
 --bbox-coordsys=EPSG:4326
 ```
 
-# We can see the metadata by running gdalinfo on the resulting GeoTiff file.
+We can see the metadata by running gdalinfo on the resulting GeoTiff file.
+```{code-block} bash
 gdalinfo tests/data/three-blocks-topo-isosurface.tiff
+
+# Output
 Driver: GTiff/GeoTIFF
 Files: tests/data/three-blocks-topo-isosurface.tiff
 Size is 4, 2
