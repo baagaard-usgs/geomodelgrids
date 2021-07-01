@@ -7,11 +7,14 @@ There are two basic means of installing the GeoModelGrids software.
 
 The binary packages provide the command line programs. If you want to use the C/C++ API in your own code, then we recommend building from source to insure compatibility of the compiled code.
 For anyone wanting to contribute to GeoModelGrids software development, we offer a Docker development environment.
-See [Developer Environment]({{"/developer/docker-devenv.html" | relative_url}}) for more information.
+See [Developer Environment](../developer/docker-devenv.md) for more information.
 
 ## Installing the binary package
 
-**Note**: The binary package contains the query library and command line programs for accessing GeoModelGrids files. It does not contain the Python code to create GeoModelGrids files.
+:::{note}
+The binary package contains the query library and command line programs for accessing GeoModelGrids files.
+It does not contain the Python code to create GeoModelGrids files.
+:::
 
 Binary packages are provided for Linux (GLIBC 2.17 and later; use `ldd --version` to check your version of GLIBC) and macOS (10.14 and later).
 The macOS binary package has not been tested on machines with Apple silicon processors.
@@ -20,7 +23,7 @@ The binary packages are 200MB+ in size; the large size is a result of the inclus
 
 Open a terminal window and \item Open a terminal window and change to the directory where you want to place the binary distribution.
 
-```bash
+```{code-block} bash
 cd  $HOME
 mkdir geomodelgrids
 cd geomodelgrids
@@ -30,7 +33,7 @@ Download the Linux or macOS tarball from GeoModelGrids GitHub [releases](https:/
 
 Unpack the tarball.
 
-```bash
+```{code-block} bash
 # Linux 64-bit
 $ tar -xf geomodelgrids-1.0.0-Linux_x86_64.tar.gz
 
@@ -40,7 +43,7 @@ $ tar -xf geomodelgrids-1.0.0-Darwin_x86_64.tar.gz
 
 Set environment variables. The provided `setup.sh` script in the top-level directory script only works if you are using bash shell. If you are using adifferent shell, you will need to alter how the environment variables are set in `setup.sh`.
 
-```bash
+```{code-block} bash
 # Linux 64-bit
 cd geomodelgrids-1.0.0-Linux_x86_64
 
@@ -50,19 +53,25 @@ cd geomodelgrids-1.0.0-Darwin_x86_64
 source setup.sh
 ```
 
-**IMPORTANT**: You will need to either source the `setup.sh` script each time you open a new bash shell (terminal) window and want to use GeoModelGrids or add the environment variables to your shell setup script (for example, `.bashrc`).
+:::{important}
+You will need to either source the `setup.sh` script each time you open a new bash shell (terminal) window and want to use GeoModelGrids or add the environment variables to your shell setup script (for example, `.bashrc`).
+:::
 
-**WARNING**: The binary distribution contains the GeoModelGrids software and all of its dependencies (Proj4, HDF5, OpenSSL, sqlite, curl, and tiff).
+:::{warning}
+The binary distribution contains the GeoModelGrids software and all of its dependencies (Proj4, HDF5, OpenSSL, sqlite, curl, and tiff).
 If you have any of this software already installed on your system, you need to be careful in setting up your environment so that preexisting software does not conflict with the GeoModelGrids binary.
 By default the `setup.sh` script will prepend to the `PATH` (for Linux and macOS) and `LD_LIBRARY_PATH` (for Linux) environment variables.
 This will prevent most conflicts.
+:::
 
 ## Installing from source
 
 ### Prerequisites
 
 Most Linux distributions can provide all of the prerequisites via the package manager.
-On macOS systems the operating system supplies with XCode command line tools installed supply the compiler, Sqlite, libtiff, openssl, and libcurl. You can use a package manager to install Proj.4, HDF5, and CppUnit (if desired) or build them from source. You can also use the `build_binary.py` Python script in the `docker` directory of the GeoModelGrids source code to install the software and any prerequisites that you do not have.
+On macOS systems the operating system supplies with XCode command line tools installed supply the compiler, Sqlite, libtiff, openssl, and libcurl.
+You can use a package manager to install Proj.4, HDF5, and CppUnit (if desired) or build them from source.
+You can also use the `build_binary.py` Python script in the `docker` directory of the GeoModelGrids source code to install the software and any prerequisites that you do not have.
 
 * C/C++ compiler supporting C++11
 * HDF5 (version 1.10.0 or later)
@@ -81,9 +90,9 @@ On macOS systems the operating system supplies with XCode command line tools ins
 We highly recommend building in a separate directory from the source tree.
 In the following configuration, we will unpack the source code in `$HOME/src`, build the source code in `$HOME/build/geomodelgrids`, and install the code to `$HOME/geomodelgrids`.
 
- Download the source code for the latest release from GeoModelGrids GitHub [release]([https://github.com/baagaard-usgs/geomodelgrids/releases) and unpack the tarball.
+ Download the source code for the latest release from GeoModelGrids GitHub [release](https://github.com/baagaard-usgs/geomodelgrids/releases) and unpack the tarball.
 
- ```bash
+ ```{code-block} bash
  mkdir $HOME/src
  mv geomodelgrids-1.0.0.tar.gz $HOME/src
  cd $HOME/src
@@ -107,9 +116,10 @@ Useful configure options (run `configure --help` to see all options):
 * `--with-gdal-incdir` Specify location of gdal header files [default=no]
 * `--with-gdal-libdir` Specify location of gdal library [default=no]
 
-Creating GeoModelGrids files using `geomodelgrids_create_model` requires Python and configuring with `--enable-python`. Generating horizontal isosurfaces using `geomodelgrids_isosurface` requires the GDAL library and configuring with `--enable-gdal`.
+Creating GeoModelGrids files using `geomodelgrids_create_model` requires Python and configuring with `--enable-python`.
+Generating horizontal isosurfaces using `geomodelgrids_isosurface` requires the GDAL library and configuring with `--enable-gdal`.
 
-```bash
+```{code-block} bash
 mkdir -p $HOME/build/geomodelgrids
 cd $HOME/build/geomodelgrids
 
@@ -127,19 +137,20 @@ $HOME/src/geomodelgrids-1.0.0/configure --prefix=$HOME/geomodelgrids \
 
 ### Building and installing
 
-```bash
+```{code-block} bash
 make && make install
 ```
 
 ### Running tests (optional)
 
-If GeoModelGrids is configured with `--enable-testing` (requires CppUnit), then the test suite can be run via `make check`. If GeoModelGrids was configured with Python enabled, then `make check` will also run the unit tests for the Python code.
+If GeoModelGrids is configured with `--enable-testing` (requires CppUnit), then the test suite can be run via `make check`.
+If GeoModelGrids was configured with Python enabled, then `make check` will also run the unit tests for the Python code.
 
 ### Setting environment variables
 
 Set environment variables for use of the bash shell:
 
-```bash
+```{code-block} bash
 PATH=$HOME/geomodelgrids/bin:$PATH
 export LD_LIBRARY_PATH=$HOME/geomodelgrids/lib:$LD_LIBRARY_PATH
 ```
