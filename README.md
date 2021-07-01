@@ -1,18 +1,16 @@
 # GeoModelGrids
 
-[![MIT License](https://img.shields.io/badge/license-MIT-blue.svg)](https://github.com/baagaard-usgs/geomodelgrids/blob/master/LICENSE)
-[![Build Status](https://travis-ci.org/baagaard-usgs/geomodelgrids.svg?branch=master)](https://travis-ci.org/baagaard-usgs/geomodelgrids)
-[![codecov](https://codecov.io/gh/baagaard-usgs/geomodelgrids/branch/master/graph/badge.svg)](https://codecov.io/gh/baagaard-usgs/geomodelgrids)
+[![CC0-1.0 License](https://img.shields.io/badge/License-CC0%201.0-lightgrey.svg)](https://github.com/baagaard-usgs/geomodelgrids/blob/main/LICENSE.md)
+[![codecov](https://codecov.io/gh/baagaard-usgs/geomodelgrids/branch/main/graph/badge.svg)](https://codecov.io/gh/baagaard-usgs/geomodelgrids)
 
 
 ## Description
 
-Geographic referenced grid-based models composed of blocks with
-different grid resolutions.
+Georeferenced grid-based models composed of blocks with different grid resolutions.
 
 ## Documentation
 
-[Online Documentation](https://baagaard-usgs.github.io/geomodelgrids)
+[Online Documentation](https://geomodelgrids.readthedocs.io)
 
 ## Features
 
@@ -22,8 +20,7 @@ different grid resolutions.
 
 ## Release Notes
 
-See [CHANGES](CHANGES.md) for a complete list of changes for each
-release.
+See [CHANGES](CHANGES.md) for a complete list of changes for each release.
 
 ## Authors
 

@@ -21,7 +21,7 @@ project = 'GeoModelGrids'
 author = 'Brad T. Aagaard'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.0'
+release = '1.0.0rc2'
 
 
 # -- General configuration ---------------------------------------------------
@@ -69,6 +69,9 @@ html_theme_options = {
     ],
     "navbar_start": ["navbar-usgs","navbar-logo"],
     "footer_items": ["last-updated"],
+}
+html_sidebars = {
+    "**": ["search-field", "sidebar-nav-bs"]
 }
 
 numfig = True

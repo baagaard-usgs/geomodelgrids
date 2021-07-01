@@ -1,9 +1,19 @@
 # GeoModelGrids
 
+## Description
+
+Georeferenced grid-based models composed of blocks with different grid resolutions.
+
+```{include} ../LICENSE.md
+```
+```{include} ../DISCLAIMER.md
+```
+
+
 ```{toctree}
 ---
-maxdepth: 2
 caption: Table of Contents
+hidden: True
 ---
 intro/index.md
 getting-started/index.md
