@@ -31,7 +31,10 @@ class Surface():
                 True if use of surface is enabled, False otherwise.
                 Keys:
                     - use_surface: Model uses surface
-                    - resolution_horiz: Horizontal resolution in m
+                    - x_resolution: Resolution in x-direction (m) if uniform resolution in x-direction.
+                    - x_coordiantes: Array of x coordinates (m) if variable resolution in x-direction.
+                    - y_resolution: Resolution in y-direction (m) if uniform resolution in y-direction.
+                    - y_coordiantes: Array of y coordinates (m) if variable resolution in y-direction.
                     - chunk_size: Dimensions of dataset chunk (should be about 10Kb - 1Mb)
             storage (HDF5Storage)
                 Storage interface.
@@ -39,7 +42,19 @@ class Surface():
         self.name = name
         self.model_metadata = model_metadata
         self.enabled = "True" == config["use_surface"]
-        self.resolution_horiz = float(config["resolution_horiz"]) if self.enabled else None
+        if "x_resolution" in config:
+            self.x_resolution = float(config["x_resolution"]) if self.enabled else None
+            self.x_coordinates = None
+        else:
+            self.x_resolution = None
+            self.x_coordinates = tuple(map(float, string_to_list(config["x_coordinates"]))) if self.enabled else None
+        if "y_resolution" in config:
+            self.y_resolution = float(config["y_resolution"]) if self.enabled else None
+            self.y_coordinates = None
+        else:
+            self.y_resolution = None
+            self.y_coordinates = tuple(map(float, string_to_list(config["y_coordinates"]))) if self.enabled else None
+
         self.chunk_size = tuple(map(int, string_to_list(config["chunk_size"]))) if self.enabled else None
         self.storage = storage
 
@@ -49,8 +64,8 @@ class Surface():
         Returns:
             Tuple of number of points along each dimension (num_x, num_y).
         """
-        num_x = 1 + int(self.model_metadata.dim_x / self.resolution_horiz)
-        num_y = 1 + int(self.model_metadata.dim_y / self.resolution_horiz)
+        num_x = 1 + int(self.model_metadata.dim_x / self.x_resolution) if self.x_resolution else len(self.x_coordinates)
+        num_y = 1 + int(self.model_metadata.dim_y / self.y_resolution) if self.y_resolution else len(self.y_coordinates)
         return (num_x, num_y, 1)
 
     def get_batches(self, batch_size):
@@ -94,9 +109,14 @@ class Surface():
             y_start = 0
             y_end = num_y
 
-        dx = self.resolution_horiz
-        x1 = numpy.linspace(0.0, dx * (num_x - 1), num_x)[x_start:x_end]
-        y1 = numpy.linspace(0.0, dx * (num_y - 1), num_y)[y_start:y_end]
+        if self.x_resolution:
+            x1 = numpy.linspace(0.0, self.x_resolution * (num_x - 1), num_x)[x_start:x_end]
+        else:
+            x1 = self.x_coordinates[x_start:x_end]
+        if self.y_resolution:
+            y1 = numpy.linspace(0.0, self.y_resolution * (num_y - 1), num_y)[y_start:y_end]
+        else:
+            y1 = self.y_coordinates[y_start:y_end]
         x, y = numpy.meshgrid(x1, y1, indexing="ij")
         z = numpy.zeros(x.shape)
 
@@ -108,6 +128,18 @@ class Surface():
         xyz_model[:, :, 1] = self.model_metadata.origin_y - xyz_geo[:, :, 0] * \
             math.sin(az_rad) + xyz_geo[:, :, 1] * math.cos(az_rad)
         return xyz_model
+
+    def get_attributes(self):
+        attrs = []
+        if self.x_resolution:
+            attrs.append(("x_resolution", float))
+        else:
+            attrs.append(("x_coordinates", tuple))
+        if self.y_resolution:
+            attrs.append(("y_resolution", float))
+        else:
+            attrs.append(("y_coordinates", tuple))
+        return attrs
 
 
 class Block():
@@ -121,23 +153,47 @@ class Block():
             name (str)
                 Name of block.
             model_metadata (ModelMetadata)
-                Metadata for model domain associated with block.
+                Metadata for model domain containing the block.
             config (dict)
                 Block parameters as dictionary.
                 Keys:
-                    - resolution_horiz: horizontal resolution (m)
-                    - resolution_vert: vertical resolution (m)
-                    - z_top: Elevation of top of block (m)
-                    - z_bot: Elevation of bottom of block (m)
-                    - z_top_offset: Vertical offset of top set of points below top of block (m)
+                    - x_resolution: Resolution in x-direction (m) if uniform resolution in x-direction.
+                    - x_coordiantes: Array of x coordinates (m) if variable resolution in x-direction.
+                    - y_resolution: Resolution in y-direction (m) if uniform resolution in y-direction.
+                    - y_coordiantes: Array of y coordinates (m) if variable resolution in y-direction.
+                    - z_resolution: Resolution in z-direction (m) if uniform resolution in z-direction.
+                    - z_top: Elevation of top of block (m) if uniform resolution in z-direction.
+                    - z_bot: Elevation of bottom of block (m) if uniform resolution in z-direction.
+                    - z_coordiantes: Array of z coordinates (m) if variable resolution in z-direction.
+                    - z_top_offset: Vertical offset of top set of points below top of block (m) (used to avoid roundoff errors).
                     - chunk_size: Dimensions of dataset chunk (should be about 10Kb - 1Mb)
         """
         self.name = name
         self.model_metadata = model_metadata
-        self.resolution_horiz = float(config["resolution_horiz"])
-        self.resolution_vert = float(config["resolution_vert"])
-        self.z_top = float(config["z_top"])
-        self.z_bot = float(config["z_bot"])
+
+        if "x_resolution" in config:
+            self.x_resolution = float(config["x_resolution"])
+            self.x_coordinates = None
+        else:
+            self.x_resolution = None
+            self.x_coordinates = tuple(map(float, string_to_list(config["x_coordinates"])))
+        if "y_resolution" in config:
+            self.y_resolution = float(config["y_resolution"])
+            self.y_coordinates = None
+        else:
+            self.y_resolution = None
+            self.y_coordinates = tuple(map(float, string_to_list(config["y_coordinates"])))
+        if "z_resolution" in config:
+            self.z_resolution = float(config["z_resolution"])
+            self.z_coordinates = None
+            self.z_top = float(config["z_top"])
+            self.z_bot = float(config["z_bot"])
+        else:
+            self.z_resolution = None
+            self.z_coordinates = tuple(map(float, string_to_list(config["z_coordinates"])))
+            self.z_top = numpy.max(self.z_coordinates)
+            self.z_bot = numpy.min(self.z_coordinates)
+
         self.z_top_offset = float(config["z_top_offset"])
         self.chunk_size = tuple(map(int, string_to_list(config["chunk_size"])))
 
@@ -147,9 +203,18 @@ class Block():
         Returns:
             Tuple of number of points along each dimension (num_x, num_y, num_z).
         """
-        num_x = 1 + int(self.model_metadata.dim_x / self.resolution_horiz)
-        num_y = 1 + int(self.model_metadata.dim_y / self.resolution_horiz)
-        num_z = 1 + int((self.z_top - self.z_bot) / self.resolution_vert)
+        if self.x_resolution:
+            num_x = 1 + int(self.model_metadata.dim_x / self.x_resolution)
+        else:
+            num_x = len(self.x_coordinates)
+        if self.y_resolution:
+            num_y = 1 + int(self.model_metadata.dim_y / self.y_resolution)
+        else:
+            num_y = len(self.y_coordinates)
+        if self.z_resolution:
+            num_z = 1 + int((self.z_top - self.z_bot) / self.z_resolution)
+        else:
+            num_z = len(self.z_coordinates)
         return (num_x, num_y, num_z)
 
     def get_batches(self, batch_size):
@@ -187,9 +252,18 @@ class Block():
             z_start = 0
             z_end = 0
 
-        x1 = numpy.linspace(0.0, self.resolution_horiz * (num_x - 1), num_x)[x_start:x_end]
-        y1 = numpy.linspace(0.0, self.resolution_horiz * (num_y - 1), num_y)[y_start:y_end]
-        z1 = numpy.linspace(0.0, self.resolution_vert * (num_z - 1), num_z)[z_start:z_end]
+        if self.x_resolution:
+            x1 = numpy.linspace(0.0, self.x_resolution * (num_x - 1), num_x)[x_start:x_end]
+        else:
+            x1 = self.x_coordinates[x_start:x_end]
+        if self.y_resolution:
+            y1 = numpy.linspace(0.0, self.y_resolution * (num_y - 1), num_y)[y_start:y_end]
+        else:
+            y1 = self.y_coordinates[y_start:y_end]
+        if self.z_resolution:
+            z1 = numpy.linspace(0.0, self.z_resolution * (num_z - 1), num_z)[z_start:z_end]
+        else:
+            z1 = self.z_coordinates[z_start:z_end]
         x, y, z = numpy.meshgrid(x1, y1, z1, indexing="ij")
 
         domain_top = 0.0
@@ -231,23 +305,90 @@ class Block():
                 self.x_range = x_range
                 self.y_range = y_range
 
-        block_skip = int(0.01 + self.resolution_horiz / surface.resolution_horiz)
-        if math.fabs(block_skip * surface.resolution_horiz - self.resolution_horiz) > TOLERANCE:
-            raise ValueError("Block resolution ({}) must be a integer multiple of the surface resolution ({})".format(
-                self.resolution_horiz, surface.resolution_horiz))
+        def _get_slice_uniform(block_resolution, surfae_dim, surface_resolution, batch_range):
+            block_skip = int(0.01 + block_resolution / surface_resolution)
+            if math.fabs(block_skip * surface_resolution - block_resolution) > TOLERANCE:
+                raise ValueError(
+                    f"Block resolution ({block_resolution}) must be a integer multiple of the surface resolution ({surface_resolution})")
+            if batch:
+                surf_range = (block_skip * batch_range[0], block_skip * batch_range[1])
+                indices = numpy.arange(0, surf_range[1]-surf_range[0], step=block_skip, dtype=numpy.int)
+            else:
+                surf_range = None
+                indices = numpy.arange(0, surfae_dim+0.5, step=block_skip, dtype=numpy.int)
+            return (surf_range, indices)
+
+        def _get_slice_variable(block_coordinates, surface_coordinates, batch_range):
+            if batch:
+                block_values = block_coordinates[batch_range[0]:batch_range[1]]
+                scoords_sorted = numpy.array(surface_coordinates)
+                scoords_sorted.sort()
+                indices = scoords_sorted.searchsorted(block_values)
+                for index, block_coord in zip(indices, block_values):
+                    if math.fabs(scoords_sorted[index] - block_coord) > TOLERANCE:
+                        raise ValueError(
+                            f"Could not find surface coordinate matching block coordinate ({block_coord}).")
+                indices -= indices[0]
+                surf_range = (numpy.min(indices), numpy.max(indices)+1)
+            else:
+                scoords_sorted = numpy.array(surface_coordinates)
+                scoords_sorted.sort()
+                indices = scoords_sorted.searchsorted(block_coordinates)
+                for index, block_coord in zip(indices, block_coordinates):
+                    if abs(scoords_sorted[index] - block_coord) > TOLERANCE:
+                        raise ValueError(
+                            f"Could not find surface coordinate matching block coordinate ({block_coord}).")
+                surf_range = (numpy.min(indices), numpy.max(indices)+1)
+            return (surf_range, indices)
+
+        if self.x_resolution and not surface.x_resolution:
+            raise ValueError("Cannot use uniform x-resolution block with variable x-resolution surface.")
+        elif self.x_coordinates and not surface.x_coordinates:
+            raise ValueError("Cannot use variable x-resolution block with uniform x-resolution surface.")
+        if self.y_resolution and not surface.y_resolution:
+            raise ValueError("Cannot use uniform y-resolution block with variable y-resolution surface.")
+        elif self.y_coordinates and not surface.y_coordinates:
+            raise ValueError("Cannot use variable y-resolution block with uniform y-resolution surface.")
+
+        surface_dims = surface.get_dims()
+        if self.x_resolution:
+            (surf_xrange, x_indices) = _get_slice_uniform(self.x_resolution, surface_dims[0],
+                                                          surface.x_resolution, batch.x_range)
+        else:
+            (surf_xrange, x_indices) = _get_slice_variable(self.x_coordinates, surface.x_coordinates, batch.x_range)
+        if self.y_resolution:
+            (surf_yrange, y_indices) = _get_slice_uniform(self.y_resolution, surface_dims[1],
+                                                          surface.y_resolution, batch.y_range)
+        else:
+            (surf_yrange, y_indices) = _get_slice_variable(self.y_coordinates, surface.y_coordinates, batch.y_range)
 
         if batch:
-            x_range = (block_skip * batch.x_range[0], block_skip * batch.x_range[1])
-            y_range = (block_skip * batch.y_range[0], block_skip * batch.y_range[1])
-            surface_batch = BatchSurface(x_range, y_range)
+            surface_batch = BatchSurface(surf_xrange, surf_yrange)
         else:
             surface_batch = None
 
         elevation = surface.storage.load_surface(surface, surface_batch)
-        return numpy.float64(elevation[::block_skip, ::block_skip, 0].squeeze())
+        return numpy.float64(elevation[numpy.ix_(x_indices, y_indices, [0])].squeeze())
+
+    def get_attributes(self):
+        attrs = []
+        if self.x_resolution:
+            attrs.append(("x_resolution", float))
+        else:
+            attrs.append(("x_coordinates", tuple))
+        if self.y_resolution:
+            attrs.append(("y_resolution", float))
+        else:
+            attrs.append(("y_coordinates", tuple))
+        if self.z_resolution:
+            attrs.append(("z_resolution", float))
+            attrs.append(("z_top", float))
+        else:
+            attrs.append(("z_coordinates", tuple))
+        return attrs
 
 
-@dataclass
+@ dataclass
 class ModelMetadata:
     """Metadata describing model.
     """
@@ -256,16 +397,21 @@ class ModelMetadata:
     id: str
     description: str
     keywords: List[str]
+    history: str
+    comment: str
     version: str
 
     # Attribution
     creator_name: str
     creator_institution: str
     creator_email: str
-    acknowledgements: str
+    acknowledgement: str
     authors: List[str]
     references: List[str]
-    doi: str
+    repository_name: str
+    repository_url: str
+    repository_doi: str
+    license: str
 
     # Data
     data_values: List[str]
@@ -296,14 +442,19 @@ class ModelMetadata:
                     - id: Model id.
                     - description: Description of model.
                     - keywords: List of keywords describing model.
+                    - history: Description of model creation.
+                    - comment: Additional comments about model.
                     - version: Model version number.
                     - creator_name: Name of person creating GeoModelGrids model.
                     - creator_email: Email of creator.
                     - creator_institution: Institution of creator.
-                    - acknowledgements: acknowledgements for model.
+                    - acknowledgement: Acknowledgement for model.
                     - authors: List of model authors.
                     - references: List of references for model.
-                    - doi: Digital Object Identifier
+                    - repository_name: Name of repository holding model.
+                    - repository_url: URL of repository.
+                    - repository_doi: Digital Object Identifier for repository.
+                    - license: Name of the license for model.
                     - coordsys
                         - crs
                         - origin_x
@@ -321,15 +472,20 @@ class ModelMetadata:
         self.id = config["geomodelgrids"]["id"]
         self.description = config["geomodelgrids"]["description"]
         self.keywords = string_to_list(config["geomodelgrids"]["keywords"])
+        self.history = config["geomodelgrids"]["history"]
+        self.comment = config["geomodelgrids"]["comment"]
         self.version = config["geomodelgrids"]["version"]
 
         self.creator_name = config["geomodelgrids"]["creator_name"]
         self.creator_email = config["geomodelgrids"]["creator_email"]
         self.creator_institution = config["geomodelgrids"]["creator_institution"]
-        self.acknowledgements = config["geomodelgrids"]["acknowledgements"]
+        self.acknowledgement = config["geomodelgrids"]["acknowledgement"]
         self.authors = string_to_list(config["geomodelgrids"]["authors"], delimiter="|")
         self.references = string_to_list(config["geomodelgrids"]["references"], delimiter="|")
-        self.doi = config["geomodelgrids"]["doi"]
+        self.repository_name = config["geomodelgrids"]["repository_name"]
+        self.repository_url = config["geomodelgrids"]["repository_url"]
+        self.repository_doi = config["geomodelgrids"]["repository_doi"]
+        self.license = config["geomodelgrids"]["license"]
 
         # Data
         self.data_values = string_to_list(config["data"]["values"])
@@ -444,6 +600,38 @@ class Model():
         self.storage = HDF5Storage(config["geomodelgrids"]["filename"])
         self.top_surface = Surface("top_surface", self.metadata, config["top_surface"], self.storage)
         self.topo_bathy = Surface("topography_bathymetry", self.metadata, config["topography_bathymetry"], self.storage)
+
+    @staticmethod
+    def get_attributes():
+        return (
+            ("title", str),
+            ("id", str),
+            ("description", str),
+            ("keywords", list),
+            ("history", str),
+            ("comment", str),
+            ("creator_name", str),
+            ("creator_email", str),
+            ("creator_institution", str),
+            ("acknowledgement", str),
+            ("authors", list),
+            ("references", list),
+            ("repository_name", str),
+            ("repository_url", str),
+            ("repository_doi", str),
+            ("license", str),
+            ("version", str),
+            ("data_values", list),
+            ("data_units", list),
+            ("crs", str),
+            ("origin_x", float),
+            ("origin_y", float),
+            ("y_azimuth", float),
+            ("dim_x", float),
+            ("dim_y", float),
+            ("dim_z", float),
+            ("auxiliary", dict),
+        )
 
 
 # End of file

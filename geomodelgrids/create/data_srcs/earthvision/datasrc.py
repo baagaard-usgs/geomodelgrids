@@ -51,9 +51,7 @@ class RulesDataSrc(DataSrc):
         ev_env = self.config["earthvision.environment"]
         self.api = api.EarthVisionAPI(self.model_dir, ev_env)
         self._get_faultblocks_zones()
-
-    def get_metadata(self):
-        return {
+        self.config["auxiliary"] = {
             "fault_block_ids": self.faultblock_ids,
             "zone_ids": self.zone_ids,
         }

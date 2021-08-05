@@ -7,38 +7,6 @@ import numpy
 class HDF5Storage():
     """HDF5 file for storing gridded model.
     """
-    MODEL_ATTRS = (
-        ("title", str),
-        ("id", str),
-        ("description", str),
-        ("keywords", list),
-        ("creator_name", str),
-        ("creator_email", str),
-        ("creator_institution", str),
-        ("acknowledgements", str),
-        ("authors", list),
-        ("references", list),
-        ("doi", str),
-        ("version", str),
-        ("data_values", list),
-        ("data_units", list),
-        ("crs", str),
-        ("origin_x", float),
-        ("origin_y", float),
-        ("y_azimuth", float),
-        ("dim_x", float),
-        ("dim_y", float),
-        ("dim_z", float),
-        ("auxiliary", dict),
-    )
-    SURFACE_ATTRS = (
-        ("resolution_horiz", float),
-    )
-    BLOCK_ATTRS = (
-        ("resolution_horiz", float),
-        ("resolution_vert", float),
-        ("z_top", float),
-    )
 
     def __init__(self, filename):
         """Constructor.
@@ -58,7 +26,7 @@ class HDF5Storage():
         """
         h5 = h5py.File(self.filename, "a")
         attrs = h5.attrs
-        for attr, typeE in self.MODEL_ATTRS:
+        for attr, typeE in domain.get_attributes():
             value = getattr(domain.metadata, attr)
             if not isinstance(value, typeE):
                 raise ValueError(f"Expected type '{typeE}' for domain attribute '{attr}'. Got type '{type(value)}'")
@@ -87,7 +55,7 @@ class HDF5Storage():
         surf_dataset = surfaces_group.create_dataset(surface.name, shape=surface.get_dims(),
                                                      chunks=surface.chunk_size, compression="gzip")
         attrs = surf_dataset.attrs
-        for attr, typeE in self.SURFACE_ATTRS:
+        for attr, typeE in surface.get_attributes():
             value = getattr(surface, attr)
             if not isinstance(value, typeE):
                 raise ValueError(
@@ -130,10 +98,21 @@ class HDF5Storage():
         h5 = h5py.File(self.filename, "r")
         surf_dataset = h5["surfaces"][surface.name]
         attrs = surf_dataset.attrs
-        for attr, _ in self.SURFACE_ATTRS:
-            if getattr(surface, attr) != attrs[attr]:
-                raise ValueError("Inconsistency in surface '{surface.name}' attribute '{}': config value: {}, value from model: {}".format(
-                    attr, getattr(surface, attr), attrs[attr]))
+        for attr, typeE in surface.get_attributes():
+            if typeE == list or typeE == tuple:
+                config_attr = getattr(surface, attr)
+                h5_attr = attrs[attr]
+                if len(config_attr) != len(h5_attr):
+                    raise ValueError(
+                        f"Inconsistency in surface '{surface.name}' attribute '{attr}': config value: {config_attr}, value from model: {h5_attr}")
+                for config_value, h5_value in zip(config_attr, h5_attr):
+                    if config_value != h5_value:
+                        raise ValueError(
+                            f"Inconsistency in surface '{surface.name}' attribute '{attr}': config value: {config_attr}, value from model: {h5_attr}")
+            else:
+                if getattr(surface, attr) != attrs[attr]:
+                    raise ValueError(
+                        f"Inconsistency in surface '{surface.name}' attribute '{attr}': config value: {config_attr}, value from model: {h5_attr}")
 
         if batch:
             x_start, x_end = batch.x_range
@@ -162,7 +141,7 @@ class HDF5Storage():
         block_dataset = blocks_group.create_dataset(
             block.name, shape=shape, chunks=block.chunk_size, compression="gzip")
         attrs = block_dataset.attrs
-        for attr, _ in self.BLOCK_ATTRS:
+        for attr, _ in block.get_attributes():
             attrs[attr] = getattr(block, attr)
         h5.close()
 

@@ -13,11 +13,15 @@ dist_noinst_PYTHON = \
 
 dist_noinst_DATA = \
 	test_createapp.cfg \
-	test_createapp_batch.cfg
+	test_createapp_batch.cfg \
+	test_createapp_varz.cfg \
+	test_createapp_varxyz.cfg
 
 noinst_TMP = \
 	test-model-1.0.0.h5 \
 	test-model-1.0.0-batch.h5 \
+	test-model-varz-1.0.0.h5 \
+	test-model-varxyz-1.0.0.h5 \
 	test_createapp.log \
 	coverage.xml
 

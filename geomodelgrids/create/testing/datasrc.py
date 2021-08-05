@@ -21,9 +21,12 @@ class AnalyticDataSrc(DataSrc):
                 Configuration parameters.
         """
         super().__init__()
+        self.config = config
 
-    def get_metadata(self):
-        return {
+    def initialize(self):
+        """Initialize model.
+        """
+        self.config["auxiliary"] = {
             "int_value": 1,
             "float_value": 2.0,
             "str_value": "abc",

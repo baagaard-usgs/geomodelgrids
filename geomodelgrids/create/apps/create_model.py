@@ -26,7 +26,7 @@ class App():
 
         Keyword arguments:
             config (str)
-                Name of configuration (INI) file.
+                Name of configuration file.
             show_parameters (bool), default: False
                 If True, print parameters to stdout.
             import_domain (bool), default: False
@@ -60,7 +60,6 @@ class App():
         datasrc = data_obj(self.config)
         datasrc.initialize()
         model = core.model.Model(self.config)
-        model.metadata.auxiliary.update(datasrc.get_metadata())
 
         if args.import_domain or args.all:
             model.save_domain()
