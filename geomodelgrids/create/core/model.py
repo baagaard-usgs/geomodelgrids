@@ -28,9 +28,7 @@ class Surface():
             model_metadata (ModelMetadata)
                 Metadata for model domain associated with block.
             config (dict)
-                True if use of surface is enabled, False otherwise.
                 Keys:
-                    - use_surface: Model uses surface
                     - x_resolution: Resolution in x-direction (m) if uniform resolution in x-direction.
                     - x_coordiantes: Array of x coordinates (m) if variable resolution in x-direction.
                     - y_resolution: Resolution in y-direction (m) if uniform resolution in y-direction.
@@ -41,21 +39,20 @@ class Surface():
         """
         self.name = name
         self.model_metadata = model_metadata
-        self.enabled = "True" == config["use_surface"]
         if "x_resolution" in config:
-            self.x_resolution = float(config["x_resolution"]) if self.enabled else None
+            self.x_resolution = float(config["x_resolution"])
             self.x_coordinates = None
         else:
             self.x_resolution = None
-            self.x_coordinates = tuple(map(float, string_to_list(config["x_coordinates"]))) if self.enabled else None
+            self.x_coordinates = tuple(map(float, string_to_list(config["x_coordinates"])))
         if "y_resolution" in config:
-            self.y_resolution = float(config["y_resolution"]) if self.enabled else None
+            self.y_resolution = float(config["y_resolution"])
             self.y_coordinates = None
         else:
             self.y_resolution = None
-            self.y_coordinates = tuple(map(float, string_to_list(config["y_coordinates"]))) if self.enabled else None
+            self.y_coordinates = tuple(map(float, string_to_list(config["y_coordinates"])))
 
-        self.chunk_size = tuple(map(int, string_to_list(config["chunk_size"]))) if self.enabled else None
+        self.chunk_size = tuple(map(int, string_to_list(config["chunk_size"])))
         self.storage = storage
 
     def get_dims(self):
@@ -70,19 +67,12 @@ class Surface():
 
     def get_batches(self, batch_size):
         """Get iterator witch batches of points.
-
-        Should not be called if surface is not enabled.
         """
-        if not self.enabled:
-            raise NotImplementedError("Surface.get_batches() not implemented if surface is not enabled.")
-
         num_x, num_y, _ = self.get_dims()
         return batch.BatchGenerator2D(num_x, num_y, batch_size)
 
     def generate_points(self, batch=None):
         """Generate points for surface.
-
-        Should not be called if surface is not enabled.
 
         Args:
             batch (utils.BatchGenerator2D)
@@ -90,9 +80,6 @@ class Surface():
         Returns:
             2D array (Nx*Ny,2) of point locations for ground surface.
         """
-        if not self.enabled:
-            raise NotImplementedError("Surface.generate_points() not implemented if surface is not enabled.")
-
         num_x, num_y, _ = self.get_dims()
         logger = logging.getLogger(__name__)
         logger.info("Surface for domain contains %d points (%d x %d).",
@@ -134,11 +121,11 @@ class Surface():
         if self.x_resolution:
             attrs.append(("x_resolution", float))
         else:
-            attrs.append(("x_coordinates", tuple))
+            attrs.append(("x_coordinates", tuple, float))
         if self.y_resolution:
             attrs.append(("y_resolution", float))
         else:
-            attrs.append(("y_coordinates", tuple))
+            attrs.append(("y_coordinates", tuple, float))
         return attrs
 
 
@@ -268,7 +255,7 @@ class Block():
 
         domain_top = 0.0
         domain_bot = -self.model_metadata.dim_z
-        if top_surface.enabled:
+        if top_surface:
             top_elev = self.get_surface(top_surface, batch)
             for iz in range(z.shape[-1]):
                 z[:, :, iz] = domain_bot + (top_elev - domain_bot) / \
@@ -375,16 +362,16 @@ class Block():
         if self.x_resolution:
             attrs.append(("x_resolution", float))
         else:
-            attrs.append(("x_coordinates", tuple))
+            attrs.append(("x_coordinates", tuple, float))
         if self.y_resolution:
             attrs.append(("y_resolution", float))
         else:
-            attrs.append(("y_coordinates", tuple))
+            attrs.append(("y_coordinates", tuple, float))
         if self.z_resolution:
             attrs.append(("z_resolution", float))
             attrs.append(("z_top", float))
         else:
-            attrs.append(("z_coordinates", tuple))
+            attrs.append(("z_coordinates", tuple, float))
         return attrs
 
 
@@ -598,8 +585,15 @@ class Model():
             self.blocks.append(block)
 
         self.storage = HDF5Storage(config["geomodelgrids"]["filename"])
-        self.top_surface = Surface("top_surface", self.metadata, config["top_surface"], self.storage)
-        self.topo_bathy = Surface("topography_bathymetry", self.metadata, config["topography_bathymetry"], self.storage)
+        if "top_surface" in config:
+            self.top_surface = Surface("top_surface", self.metadata, config["top_surface"], self.storage)
+        else:
+            self.top_surface = None
+        if "topography_bathymetry" in config:
+            self.topo_bathy = Surface("topography_bathymetry", self.metadata,
+                                      config["topography_bathymetry"], self.storage)
+        else:
+            self.topo_bathy = None
 
     @staticmethod
     def get_attributes():
@@ -607,22 +601,22 @@ class Model():
             ("title", str),
             ("id", str),
             ("description", str),
-            ("keywords", list),
+            ("keywords", list, str),
             ("history", str),
             ("comment", str),
             ("creator_name", str),
             ("creator_email", str),
             ("creator_institution", str),
             ("acknowledgement", str),
-            ("authors", list),
-            ("references", list),
+            ("authors", list, str),
+            ("references", list, str),
             ("repository_name", str),
             ("repository_url", str),
             ("repository_doi", str),
             ("license", str),
             ("version", str),
-            ("data_values", list),
-            ("data_units", list),
+            ("data_values", list, str),
+            ("data_units", list, str),
             ("crs", str),
             ("origin_x", float),
             ("origin_y", float),

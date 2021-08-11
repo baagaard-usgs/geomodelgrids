@@ -64,16 +64,15 @@ class App():
         if args.import_domain or args.all:
             model.save_domain()
 
-        batch_size = int(self.config["domain"]["batch_size"])
-
         if args.import_surfaces or args.all:
-            if model.top_surface.enabled:
+            batch_size = int(self.config["domain"]["batch_size"])
+            if model.top_surface:
                 model.init_top_surface()
                 for batch in model.top_surface.get_batches(batch_size):
                     points = model.top_surface.generate_points(batch)
                     elevation = datasrc.get_top_surface(points)
                     model.save_top_surface(elevation, batch)
-            if model.topo_bathy.enabled:
+            if model.topo_bathy:
                 model.init_topography_bathymetry()
                 for batch in model.topo_bathy.get_batches(batch_size):
                     points = model.topo_bathy.generate_points(batch)
@@ -81,7 +80,8 @@ class App():
                     model.save_topography_bathymetry(elevation, batch)
 
         if args.import_blocks or args.all:
-            topo_depth = model.topo_bathy if model.topo_bathy.enabled else model.top_surface
+            batch_size = int(self.config["domain"]["batch_size"])
+            topo_depth = model.topo_bathy if model.topo_bathy else model.top_surface
             for block in model.blocks:
                 model.init_block(block)
                 for batch in block.get_batches(batch_size):

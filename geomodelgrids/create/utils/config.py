@@ -6,7 +6,9 @@ import configparser
 
 
 def string_to_list(list_string, delimiter=","):
-    """Convert list as string into a list of objects.
+    """Convert object as string into a list of objects.
+
+    If the object is already a list, return the list.
 
     Args:
         list_string (str):
@@ -17,6 +19,10 @@ def string_to_list(list_string, delimiter=","):
     Returns:
         List of objects, e.g., ["a", "b", "c"]
     """
+    if isinstance(list_string, list):
+        return list_string
+
+    PATTERN = "[\[\(]?([\w\s,]+)[\]\)]?"
     values = [value.strip() for value in list_string[1:-1].split(delimiter)]
     return values
 

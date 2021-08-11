@@ -38,10 +38,106 @@ class EMCNetCDF(DataSrc):
         import netCDF4
         filename = os.path.expanduser(self.config["iris_emc"]["filename"])
         self.emc = netCDF4.Dataset(filename, "r")
-        self._read_metadata()
+        self._read_model_metadata()
+        self._read_domain_metadata()
+        self._read_values_metadata()
+        self._read_block_metadata()
 
-    def _read_metadata(self):
-        return
+    def _read_model_metadata(self):
+        def list_from_attr(nc, name):
+            return [getattr(nc, name)] if hasattr(nc, name) else []
+
+        ATTRS = {
+            "title": lambda nc: getattr(nc, "title", "unknown").strip(),
+            "id": lambda nc: getattr(nc, "id", "unknown").strip(),
+            "description": lambda nc: getattr(nc, "summary", "").strip(),
+            "keywords": lambda nc: [kw.strip() for kw in getattr(nc, "keywords", "").split(",")],
+            "history": lambda nc: getattr(nc, "history", "").strip(),
+            "comment": lambda nc: getattr(nc, "comment", "").strip(),
+            "version": lambda nc: getattr(nc, "data_revision", "unknown").strip(),
+            "creator_name": lambda nc: getattr(nc, "author_name", getattr(nc, "creator_name", "")).strip(),
+            "creator_email": lambda nc: getattr(nc, "author_email", getattr(nc, "creator_email", "")).strip(),
+            "creator_institution": lambda nc: getattr(nc, "author_institution", getattr(nc, "creator_institution", "")).strip(),
+            "authors": lambda nc: list_from_attr(nc, "author_name"),
+            "acknowledgement": lambda nc: getattr(nc, "acknowledgement", "").strip(),
+            "references": lambda nc: list_from_attr(nc, "reference"),
+            "license": lambda nc: getattr(nc, "license", "").strip(),
+        }
+
+        import datetime
+
+        metadata = {}
+        for key, fn in ATTRS.items():
+            metadata[key] = fn(self.emc)
+        metadata["history"] += f"\n{datetime.date.today()} EMC NetCDF file converted to GeoModelGrids HDF5 file."
+        self.config["geomodelgrids"].update(metadata)
+
+        self.config["coordsys"] = {
+            "crs": "EPSG:4979",
+            "origin_x": self.emc.geospatial_lon_min,
+            "origin_y": self.emc.geospatial_lat_min,
+            "y_azimuth": 0.0,
+        }
+
+    def _read_domain_metadata(self):
+        lon_max = self.emc.geospatial_lon_max
+        lon_min = self.emc.geospatial_lon_min
+        lat_max = self.emc.geospatial_lat_max
+        lat_min = self.emc.geospatial_lat_min
+        depth_max = self.emc.geospatial_vertical_max
+        depth_min = self.emc.geospatial_vertical_min
+        assert self.emc.geospatial_lon_units.strip() in ["degrees_east", "degrees"]
+        assert self.emc.geospatial_lat_units.strip() in ["degrees_north", "degrees"]
+        vertical_scale = units.length_scale(self.emc.geospatial_vertical_units)
+
+        self.config["domain"].update({
+            "dim_x": lon_max - lon_min,
+            "dim_y": lat_max - lat_min,
+            "dim_z": (depth_max - depth_min) * vertical_scale,
+            "blocks": ["block"],
+        })
+
+    def _read_values_metadata(self):
+        values = list(self.emc.variables.keys())
+        for ignore in ("longitude", "latitude", "depth"):
+            values.remove(ignore)
+
+        units = []
+        for value in values:
+            units.append(self.emc.variables[value].units)
+        self.config["data"] = {
+            "values": values,
+            "units": units,
+        }
+
+        long_names = {}
+        for value in values:
+            long_names[value] = self.emc.variables[value].long_name
+        self.config["auxiliary"] = {"values": long_names}
+
+    def _read_block_metadata(self):
+        def is_uniform_resolution(z):
+            return numpy.std(numpy.diff(z)) < 0.001
+
+        lon_max = self.emc.geospatial_lon_max
+        lon_min = self.emc.geospatial_lon_min
+        lat_max = self.emc.geospatial_lat_max
+        lat_min = self.emc.geospatial_lat_min
+        depth_max = self.emc.geospatial_vertical_max
+        depth_min = self.emc.geospatial_vertical_min
+        vertical_scale = units.length_scale(self.emc.geospatial_vertical_units)
+
+        info = {
+            "x_resolution": (lon_max - lon_min) / (self.emc.variables["longitude"].size-1),
+            "y_resolution": (lat_max - lat_min) / (self.emc.variables["latitude"].size-1),
+            "z_top_offset": 0.0,
+        }
+        if is_uniform_resolution(self.emc.variables["depth"][:]):
+            info["z_resolution"] = vertical_scale * (depth_max - depth_min) / (self.emc.variables["depth"].size-1),
+        else:
+            z_coordinates = -vertical_scale * self.emc.variables["depth"][:]
+            info["z_coordinates"] = z_coordinates.tolist()
+        self.config["block"].update(info)
 
     def get_top_surface(self, points):
         return None
@@ -62,7 +158,12 @@ class EMCNetCDF(DataSrc):
             batch (BatchGenerator3D)
                 Current batch of points in block.
         """
-        values = values.reshape((points.shape[0], points.shape[1], points.shape[2], -1))
+        value_names = self.config["data"]["values"]
+        nz, ny, nx = self.emc.variables[value_names[0]][:].shape
+        values = numpy.zeros((nx, ny, nz, len(value_names)), dtype=numpy.float32)
+        for i_value, name in enumerate(value_names):
+            values[:, :, :, i_value] = numpy.transpose(self.emc.variables[name][:])
         return values
+
 
 # End of file
