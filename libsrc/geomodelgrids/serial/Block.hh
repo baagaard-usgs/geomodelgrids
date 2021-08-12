@@ -36,17 +36,23 @@ public:
      */
     const std::string& getName(void) const;
 
-    /** Get horizontal resolution.
+    /** Get resolution along x-axis.
      *
-     * @returns Horizontal resolution (m).
+     * @returns Resolution along x-axis.
      */
-    double getResolutionHoriz(void) const;
+    double getResolutionX(void) const;
 
-    /** Get vertical resolution.
+    /** Get resolution along y-axis.
      *
-     * @returns Vertical resolution (m).
+     * @returns Resolution along y-axis.
      */
-    double getResolutionVert(void) const;
+    double getResolutionY(void) const;
+
+    /** Get resolution along z-axis.
+     *
+     * @returns Resolution along z-axis.
+     */
+    double getResolutionZ(void) const;
 
     /** Get elevation of top of block in topological space.
      *
@@ -115,8 +121,9 @@ private:
 
     std::string _name; ///< Name of block.
     geomodelgrids::serial::Hyperslab* _hyperslab; ///< Hyperslab of data in model.
-    double _resolutionHoriz; ///< Horizontal resolution (m).
-    double _resolutionVert; ///< Vertical resolution (m).
+    double _resolutionX; ///< Resolution along x-axis.
+    double _resolutionY; ///< Resolution along y-axis.
+    double _resolutionZ; ///< Resolution along z-axis.
     double _zTop; ///< Elevation (m) of top of block.
     double* _values;
     size_t _numValues; ///< Number of values stored at each grid point.

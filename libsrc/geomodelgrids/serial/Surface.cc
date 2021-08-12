@@ -16,7 +16,8 @@
 geomodelgrids::serial::Surface::Surface(const char* const name) :
     _hyperslab(NULL),
     _name(name),
-    _resolutionHoriz(0.0) {
+    _resolutionX(0.0),
+    _resolutionY(0.0) {
     _dims[0] = 0;
     _dims[1] = 0;
 
@@ -45,10 +46,17 @@ geomodelgrids::serial::Surface::loadMetadata(geomodelgrids::serial::HDF5* const 
     const char* indent = "            ";
     bool missingAttributes = false;
 
-    if (h5->hasAttribute(surfacePath.c_str(), "resolution_horiz")) {
-        h5->readAttribute(surfacePath.c_str(), "resolution_horiz", H5T_NATIVE_DOUBLE, (void*)&_resolutionHoriz);
+    if (h5->hasAttribute(surfacePath.c_str(), "x_resolution")) {
+        h5->readAttribute(surfacePath.c_str(), "x_resolution", H5T_NATIVE_DOUBLE, (void*)&_resolutionX);
     } else {
-        msg << indent << "    /" << surfacePath << "/resolution_horiz\n";
+        msg << indent << "    /" << surfacePath << "/x_resolution\n";
+        missingAttributes = true;
+    } // if/else
+
+    if (h5->hasAttribute(surfacePath.c_str(), "y_resolution")) {
+        h5->readAttribute(surfacePath.c_str(), "y_resolution", H5T_NATIVE_DOUBLE, (void*)&_resolutionY);
+    } else {
+        msg << indent << "    /" << surfacePath << "/y_resolution\n";
         missingAttributes = true;
     } // if/else
 
@@ -66,11 +74,19 @@ geomodelgrids::serial::Surface::loadMetadata(geomodelgrids::serial::HDF5* const 
 
 
 // ------------------------------------------------------------------------------------------------
-// Get horizontal resolution.
+// Get resolution along x-axis.
 double
-geomodelgrids::serial::Surface::getResolutionHoriz(void) const {
-    return _resolutionHoriz;
-} // getResolutionHoriz
+geomodelgrids::serial::Surface::getResolutionX(void) const {
+    return _resolutionX;
+} // getResolutionX
+
+
+// ------------------------------------------------------------------------------------------------
+// Get resolution along y-axis.
+double
+geomodelgrids::serial::Surface::getResolutionY(void) const {
+    return _resolutionY;
+} // getResolutionY
 
 
 // ------------------------------------------------------------------------------------------------
@@ -129,8 +145,8 @@ double
 geomodelgrids::serial::Surface::query(const double x,
                                       const double y) {
     double index[2];
-    index[0] = x / _resolutionHoriz;
-    index[1] = y / _resolutionHoriz;
+    index[0] = x / _resolutionX;
+    index[1] = y / _resolutionY;
 
     double elevation = geomodelgrids::NODATA_VALUE;
     if ((index[0] >= 0) && (index[0] <= double(_dims[0]-1))

@@ -15,12 +15,17 @@ geomodelgrids::serial::ModelInfo::ModelInfo(void) :
     _title(""),
     _id(""),
     _description(""),
+    _history(""),
+    _comment(""),
     _creatorName(""),
-    _creatorEmail(""),
     _creatorInstitution(""),
-    _acknowledgements(""),
-    _doi(""),
+    _creatorEmail(""),
+    _acknowledgement(""),
+    _repositoryName(""),
+    _repositoryURL(""),
+    _repositoryDOI(""),
     _version(""),
+    _license(""),
     _auxiliary("")
 {} // constructor
 
@@ -60,16 +65,23 @@ geomodelgrids::serial::ModelInfo::getKeywords(void) const {
 
 // ------------------------------------------------------------------------------------------------
 const std::string&
-geomodelgrids::serial::ModelInfo::getCreatorName(void) const {
-    return _creatorName;
-} // getCreatorName
+geomodelgrids::serial::ModelInfo::getHistory(void) const {
+    return _history;
+} // getHistory
 
 
 // ------------------------------------------------------------------------------------------------
 const std::string&
-geomodelgrids::serial::ModelInfo::getCreatorEmail(void) const {
-    return _creatorEmail;
-} // getCreatorEmail
+geomodelgrids::serial::ModelInfo::getComment(void) const {
+    return _comment;
+} // getComment
+
+
+// ------------------------------------------------------------------------------------------------
+const std::string&
+geomodelgrids::serial::ModelInfo::getCreatorName(void) const {
+    return _creatorName;
+} // getCreatorName
 
 
 // ------------------------------------------------------------------------------------------------
@@ -81,9 +93,16 @@ geomodelgrids::serial::ModelInfo::getCreatorInstitution(void) const {
 
 // ------------------------------------------------------------------------------------------------
 const std::string&
-geomodelgrids::serial::ModelInfo::getAcknowledgements(void) const {
-    return _acknowledgements;
-} // getAcknowledgments
+geomodelgrids::serial::ModelInfo::getCreatorEmail(void) const {
+    return _creatorEmail;
+} // getCreatorEmail
+
+
+// ------------------------------------------------------------------------------------------------
+const std::string&
+geomodelgrids::serial::ModelInfo::getAcknowledgement(void) const {
+    return _acknowledgement;
+} // getAcknowledgment
 
 
 // ------------------------------------------------------------------------------------------------
@@ -102,9 +121,23 @@ geomodelgrids::serial::ModelInfo::getReferences(void) const {
 
 // ------------------------------------------------------------------------------------------------
 const std::string&
-geomodelgrids::serial::ModelInfo::getDOI(void) const {
-    return _doi;
-} // getDOI
+geomodelgrids::serial::ModelInfo::getRepositoryName(void) const {
+    return _repositoryName;
+} // getRepositoryName
+
+
+// ------------------------------------------------------------------------------------------------
+const std::string&
+geomodelgrids::serial::ModelInfo::getRepositoryURL(void) const {
+    return _repositoryURL;
+} // getRepositoryURL
+
+
+// ------------------------------------------------------------------------------------------------
+const std::string&
+geomodelgrids::serial::ModelInfo::getRepositoryDOI(void) const {
+    return _repositoryDOI;
+} // getRepositoryDOI
 
 
 // ------------------------------------------------------------------------------------------------
@@ -112,6 +145,13 @@ const std::string&
 geomodelgrids::serial::ModelInfo::getVersion(void) const {
     return _version;
 } // getVersion
+
+
+// ------------------------------------------------------------------------------------------------
+const std::string&
+geomodelgrids::serial::ModelInfo::getLicense(void) const {
+    return _license;
+} // getLicense
 
 
 // ------------------------------------------------------------------------------------------------
@@ -160,17 +200,24 @@ geomodelgrids::serial::ModelInfo::load(geomodelgrids::serial::HDF5* const h5) {
         missingAttributes = true;
     } // if/else
 
+    if (h5->hasAttribute("/", "history")) {
+        _history = h5->readAttribute("/", "history");
+    } else {
+        msg << indent << "    /history\n";
+        missingAttributes = true;
+    } // if/else
+
+    if (h5->hasAttribute("/", "comment")) {
+        _comment = h5->readAttribute("/", "comment");
+    } else {
+        msg << indent << "    /comment\n";
+        missingAttributes = true;
+    } // if/else
+
     if (h5->hasAttribute("/", "creator_name")) {
         _creatorName = h5->readAttribute("/", "creator_name");
     } else {
         msg << indent << "    /creator_name\n";
-        missingAttributes = true;
-    } // if/else
-
-    if (h5->hasAttribute("/", "creator_email")) {
-        _creatorEmail = h5->readAttribute("/", "creator_email");
-    } else {
-        msg << indent << "    /creator_email\n";
         missingAttributes = true;
     } // if/else
 
@@ -181,10 +228,17 @@ geomodelgrids::serial::ModelInfo::load(geomodelgrids::serial::HDF5* const h5) {
         missingAttributes = true;
     } // if/else
 
-    if (h5->hasAttribute("/", "acknowledgements")) {
-        _acknowledgements = h5->readAttribute("/", "acknowledgements");
+    if (h5->hasAttribute("/", "creator_email")) {
+        _creatorEmail = h5->readAttribute("/", "creator_email");
     } else {
-        msg << indent << "    /acknowledgements\n";
+        msg << indent << "    /creator_email\n";
+        missingAttributes = true;
+    } // if/else
+
+    if (h5->hasAttribute("/", "acknowledgement")) {
+        _acknowledgement = h5->readAttribute("/", "acknowledgement");
+    } else {
+        msg << indent << "    /acknowledgement\n";
         missingAttributes = true;
     } // if/else
 
@@ -202,10 +256,24 @@ geomodelgrids::serial::ModelInfo::load(geomodelgrids::serial::HDF5* const h5) {
         missingAttributes = true;
     } // if/else
 
-    if (h5->hasAttribute("/", "doi")) {
-        _doi = h5->readAttribute("/", "doi");
+    if (h5->hasAttribute("/", "repository_name")) {
+        _repositoryName = h5->readAttribute("/", "repository_name");
     } else {
-        msg << indent << "    /doi\n";
+        msg << indent << "    /repository_name\n";
+        missingAttributes = true;
+    } // if/else
+
+    if (h5->hasAttribute("/", "repository_url")) {
+        _repositoryURL = h5->readAttribute("/", "repository_url");
+    } else {
+        msg << indent << "    /repository_url\n";
+        missingAttributes = true;
+    } // if/else
+
+    if (h5->hasAttribute("/", "repository_doi")) {
+        _repositoryDOI = h5->readAttribute("/", "repository_doi");
+    } else {
+        msg << indent << "    /repository_doi\n";
         missingAttributes = true;
     } // if/else
 
@@ -213,6 +281,13 @@ geomodelgrids::serial::ModelInfo::load(geomodelgrids::serial::HDF5* const h5) {
         _version = h5->readAttribute("/", "version");
     } else {
         msg << indent << "    /version\n";
+        missingAttributes = true;
+    } // if/else
+
+    if (h5->hasAttribute("/", "license")) {
+        _license = h5->readAttribute("/", "license");
+    } else {
+        msg << indent << "    /license\n";
         missingAttributes = true;
     } // if/else
 

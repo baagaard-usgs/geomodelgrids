@@ -29,11 +29,17 @@ public:
      */
     void loadMetadata(geomodelgrids::serial::HDF5* const h5);
 
-    /** Get horizontal resolution.
+    /** Get resolution along x-axis.
      *
-     * @returns Horizontal resolution (m).
+     * @returns Resolution along x-axis.
      */
-    double getResolutionHoriz(void) const;
+    double getResolutionX(void) const;
+
+    /** Get resolution along y-axis.
+     *
+     * @returns Resolution along y-axis.
+     */
+    double getResolutionY(void) const;
 
     /** Get number of values along each grid dimension.
      *
@@ -58,11 +64,11 @@ public:
     // Cleanup after querying.
     void closeQuery(void);
 
-    /** Query for elevation (m) of ground surface at a point using bilinear interpolation.
+    /** Query for elevation of ground surface at a point using bilinear interpolation.
      *
      * @param[in] x X coordinate of point in model coordinate system.
      * @param[in] y Y coordinate of point in model coordinate system.
-     * @returns Elevation (m) of ground surface.
+     * @returns Elevation of ground surface.
      */
     double query(const double x,
                  const double y);
@@ -72,7 +78,8 @@ private:
 
     geomodelgrids::serial::Hyperslab* _hyperslab; ///< Hyperslab of data in model.
     std::string _name; ///< Name of surface (matches dataset in HDF5 file).
-    double _resolutionHoriz; ///< Horizontal resolution (m).
+    double _resolutionX; ///< Resolution along x-axis.
+    double _resolutionY; ///< Resolution along y-axis.
     size_t _dims[2]; ///< Number of points along grid in each x and y dimension [x, y].
     size_t _hyperslabDims[3]; ///< Dimensions of hyperslab.
 

@@ -16,8 +16,9 @@
 geomodelgrids::serial::Block::Block(const char* name) :
     _name(name),
     _hyperslab(NULL),
-    _resolutionHoriz(0.0),
-    _resolutionVert(0.0),
+    _resolutionX(0.0),
+    _resolutionY(0.0),
+    _resolutionZ(0.0),
     _zTop(0.0),
     _values(NULL),
     _numValues(0) {
@@ -54,16 +55,22 @@ geomodelgrids::serial::Block::loadMetadata(geomodelgrids::serial::HDF5* const h5
     const char* indent = "            ";
     bool missingAttributes = false;
 
-    if (h5->hasAttribute(blockPath.c_str(), "resolution_horiz")) {
-        h5->readAttribute(blockPath.c_str(), "resolution_horiz", H5T_NATIVE_DOUBLE, (void*)&_resolutionHoriz);
+    if (h5->hasAttribute(blockPath.c_str(), "x_resolution")) {
+        h5->readAttribute(blockPath.c_str(), "x_resolution", H5T_NATIVE_DOUBLE, (void*)&_resolutionX);
     } else {
-        msg << indent << "    " << blockPath << "/resolution_horiz\n";
+        msg << indent << "    " << blockPath << "/x_resolution\n";
         missingAttributes = true;
     } // if/else
-    if (h5->hasAttribute(blockPath.c_str(), "resolution_vert")) {
-        h5->readAttribute(blockPath.c_str(), "resolution_vert", H5T_NATIVE_DOUBLE, (void*)&_resolutionVert);
+    if (h5->hasAttribute(blockPath.c_str(), "y_resolution")) {
+        h5->readAttribute(blockPath.c_str(), "y_resolution", H5T_NATIVE_DOUBLE, (void*)&_resolutionY);
     } else {
-        msg << indent << "    " << blockPath << "/resolution_vert\n";
+        msg << indent << "    " << blockPath << "/y_resolution\n";
+        missingAttributes = true;
+    } // if/else
+    if (h5->hasAttribute(blockPath.c_str(), "z_resolution")) {
+        h5->readAttribute(blockPath.c_str(), "z_resolution", H5T_NATIVE_DOUBLE, (void*)&_resolutionZ);
+    } else {
+        msg << indent << "    " << blockPath << "/z_resolution\n";
         missingAttributes = true;
     } // if/else
     if (h5->hasAttribute(blockPath.c_str(), "z_top")) {
@@ -104,19 +111,27 @@ geomodelgrids::serial::Block::getName(void) const {
 
 
 // ------------------------------------------------------------------------------------------------
-// Get horizontal resolution.
+// Get resolution along x-axis.
 double
-geomodelgrids::serial::Block::getResolutionHoriz(void) const {
-    return _resolutionHoriz;
-} // getResolutionHoriz
+geomodelgrids::serial::Block::getResolutionX(void) const {
+    return _resolutionX;
+} // getResolutionX
 
 
 // ------------------------------------------------------------------------------------------------
-// Get vertical resolution.
+// Get resolution along y-axis.
 double
-geomodelgrids::serial::Block::getResolutionVert(void) const {
-    return _resolutionVert;
-} // getResolutionVert
+geomodelgrids::serial::Block::getResolutionY(void) const {
+    return _resolutionY;
+} // getResolutionY
+
+
+// ------------------------------------------------------------------------------------------------
+// Get resolution along z-axis.
+double
+geomodelgrids::serial::Block::getResolutionZ(void) const {
+    return _resolutionZ;
+} // getResolutionZ
 
 
 // ------------------------------------------------------------------------------------------------
@@ -131,7 +146,7 @@ geomodelgrids::serial::Block::getZTop(void) const {
 // Get elevation of bottom of block in topological space.
 double
 geomodelgrids::serial::Block::getZBottom(void) const {
-    return _zTop - _resolutionVert * (_dims[2] - 1);
+    return _zTop - _resolutionZ * (_dims[2] - 1);
 } // getZBottom
 
 
@@ -200,9 +215,9 @@ geomodelgrids::serial::Block::query(const double x,
     assert( (_numValues > 0 && _values) || (!_numValues && !_values) );
 
     double index[3];
-    index[0] = x / _resolutionHoriz;assert(index[0] < double(_dims[0]));
-    index[1] = y / _resolutionHoriz;assert(index[1] < double(_dims[1]));
-    index[2] = (_zTop - z)/ _resolutionVert;assert(index[2] < double(_dims[2]));
+    index[0] = x / _resolutionX;assert(index[0] < double(_dims[0]));
+    index[1] = y / _resolutionY;assert(index[1] < double(_dims[1]));
+    index[2] = (_zTop - z)/ _resolutionZ;assert(index[2] < double(_dims[2]));
     _hyperslab->interpolate(_values, index);
 
     return _values;
