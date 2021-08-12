@@ -205,16 +205,18 @@ geomodelgrids::serial::TestHyperslab::testInterpolate2D(void) {
 
     Hyperslab hyperslab(&_h5, dataset.c_str(), dims, ndims);
 
-    double resolution = 0.0;
-    _h5.readAttribute(dataset.c_str(), "resolution_horiz", H5T_NATIVE_DOUBLE, &resolution);
+    double dx = 0.0;
+    double dy = 0.0;
+    _h5.readAttribute(dataset.c_str(), "x_resolution", H5T_NATIVE_DOUBLE, &dx);
+    _h5.readAttribute(dataset.c_str(), "y_resolution", H5T_NATIVE_DOUBLE, &dy);
 
     double elevation = -999.0;
     const double tolerance = 1.0e-6;
     for (size_t i = 0; i < npoints; ++i) {
         hyperslab.interpolate(&elevation, &index[i*spaceDim]);
 
-        const double x = resolution * index[i*spaceDim + 0];
-        const double y = resolution * index[i*spaceDim + 1];
+        const double x = dx * index[i*spaceDim + 0];
+        const double y = dy * index[i*spaceDim + 1];
         const double elevationE = geomodelgrids::testdata::ModelPoints::computeTopElevation(x, y);
 
         std::ostringstream msg;
@@ -247,11 +249,13 @@ geomodelgrids::serial::TestHyperslab::testInterpolate3D(void) {
 
     Hyperslab hyperslab(&_h5, dataset.c_str(), dims, ndims);
 
-    double resHoriz = 0.0;
-    double resVert = 0.0;
+    double dx = 0.0;
+    double dy = 0.0;
+    double dz = 0.0;
     double zTop = 0.0;
-    _h5.readAttribute(dataset.c_str(), "resolution_horiz", H5T_NATIVE_DOUBLE, &resHoriz);
-    _h5.readAttribute(dataset.c_str(), "resolution_vert", H5T_NATIVE_DOUBLE, &resVert);
+    _h5.readAttribute(dataset.c_str(), "x_resolution", H5T_NATIVE_DOUBLE, &dx);
+    _h5.readAttribute(dataset.c_str(), "y_resolution", H5T_NATIVE_DOUBLE, &dy);
+    _h5.readAttribute(dataset.c_str(), "z_resolution", H5T_NATIVE_DOUBLE, &dz);
     _h5.readAttribute(dataset.c_str(), "z_top", H5T_NATIVE_DOUBLE, &zTop);
 
     double values[2] = { -999.0, -999.0 };
@@ -259,9 +263,9 @@ geomodelgrids::serial::TestHyperslab::testInterpolate3D(void) {
     for (size_t i = 0; i < npoints; ++i) {
         hyperslab.interpolate(values, &index[i*spaceDim]);
 
-        const double x = resHoriz * index[i*spaceDim + 0];
-        const double y = resHoriz * index[i*spaceDim + 1];
-        const double z = zTop - resVert * index[i*spaceDim + 2];
+        const double x = dx * index[i*spaceDim + 0];
+        const double y = dx * index[i*spaceDim + 1];
+        const double z = zTop - dz * index[i*spaceDim + 2];
 
         { // Value 0
             const double valueE = geomodelgrids::testdata::ModelPoints::computeValueOne(x, y, z);

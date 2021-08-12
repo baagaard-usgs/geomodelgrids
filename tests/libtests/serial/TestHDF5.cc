@@ -226,7 +226,7 @@ geomodelgrids::serial::TestHDF5::testHasAttribute(void) {
     HDF5 h5;
     h5.open("../../data/three-blocks-flat.h5", H5F_ACC_RDONLY);
 
-    bool found = h5.hasAttribute("/blocks/bottom", "resolution_horiz");
+    bool found = h5.hasAttribute("/blocks/bottom", "x_resolution");
     CPPUNIT_ASSERT_MESSAGE("Couldn't find existing attribute.", found);
 
     found = h5.hasAttribute("/blocks/bottom", "abcdf");
@@ -246,7 +246,7 @@ geomodelgrids::serial::TestHDF5::testReadAttribute(void) {
     const double resolutionE = 30e+3;
     double resolution = 0.0;
     const double tolerance = 1.0e-6;
-    h5.readAttribute("/blocks/bottom", "resolution_horiz", H5T_NATIVE_DOUBLE, (void*)&resolution);
+    h5.readAttribute("/blocks/bottom", "x_resolution", H5T_NATIVE_DOUBLE, (void*)&resolution);
     CPPUNIT_ASSERT_DOUBLES_EQUAL(resolutionE, resolution, tolerance*resolutionE);
 
     CPPUNIT_ASSERT_THROW(h5.readAttribute("/blocks/bottom", "blah", H5T_NATIVE_DOUBLE, (void*)&resolution),
@@ -304,11 +304,13 @@ geomodelgrids::serial::TestHDF5::testReadDatasetHyperslab(void) {
     HDF5 h5;
     h5.open("../../data/three-blocks-flat.h5", H5F_ACC_RDONLY);
 
-    double res_horiz = 0.0;
-    double res_vert = 0.0;
+    double dx = 0.0;
+    double dy = 0.0;
+    double dz = 0.0;
     double z_top = 0.0;
-    h5.readAttribute(dataset, "resolution_horiz", H5T_NATIVE_DOUBLE, &res_horiz);
-    h5.readAttribute(dataset, "resolution_vert", H5T_NATIVE_DOUBLE, &res_vert);
+    h5.readAttribute(dataset, "x_resolution", H5T_NATIVE_DOUBLE, &dx);
+    h5.readAttribute(dataset, "y_resolution", H5T_NATIVE_DOUBLE, &dy);
+    h5.readAttribute(dataset, "z_resolution", H5T_NATIVE_DOUBLE, &dz);
     h5.readAttribute(dataset, "z_top", H5T_NATIVE_DOUBLE, &z_top);
 
     const int ndims = 4;
@@ -320,11 +322,11 @@ geomodelgrids::serial::TestHDF5::testReadDatasetHyperslab(void) {
 
     const double tolerance = 1.0e-6;
     for (hsize_t ix = 0, i = 0; ix < dims[0]; ++ix) {
-        const double x = res_horiz * (origin[0] + ix);
+        const double x = dx * (origin[0] + ix);
         for (hsize_t iy = 0; iy < dims[1]; ++iy) {
-            const double y = res_horiz * (origin[1] + iy);
+            const double y = dy * (origin[1] + iy);
             for (hsize_t iz = 0; iz < dims[2]; ++iz) {
-                const double z = z_top - res_vert * (origin[2] + iz);
+                const double z = z_top - dz * (origin[2] + iz);
 
                 { // Value 0
                     std::ostringstream msg;

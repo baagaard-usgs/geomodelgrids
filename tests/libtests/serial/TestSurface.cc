@@ -58,7 +58,8 @@ void
 geomodelgrids::serial::TestSurface::testConstructor(void) {
     Surface topo("top_surface");
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking horizontal resolution", 0.0, topo._resolutionHoriz);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking x resolution", 0.0, topo._resolutionX);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking y resolution", 0.0, topo._resolutionY);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking dims[0]", size_t(0), topo._dims[0]);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking dims[1]", size_t(0), topo._dims[1]);
 } // testConstructor
@@ -70,12 +71,14 @@ void
 geomodelgrids::serial::TestSurface::testAccessors(void) {
     Surface topo("top_surface");
 
-    const double resolutionHoriz(8.0);topo._resolutionHoriz = resolutionHoriz;
+    const double resolutionX(8.0);topo._resolutionX = resolutionX;
+    const double resolutionY(8.0);topo._resolutionY = resolutionY;
     const size_t dimsE[2] = { 5, 6 };
     topo._dims[0] = dimsE[0];
     topo._dims[1] = dimsE[1];
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch horizontal resolution", resolutionHoriz, topo.getResolutionHoriz());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch x resolution", resolutionX, topo.getResolutionX());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch y resolution", resolutionX, topo.getResolutionY());
 
     const size_t* const dims = topo.getDims();
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in x dimension.", dimsE[0], dims[0]);
@@ -122,7 +125,8 @@ geomodelgrids::serial::TestSurface::testLoadMetadata(void) {
     const double resolutionHoriz(10.0e+3);
     const size_t dims[2] = { 4, 5 };
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking horizontal resolution", resolutionHoriz, topSurface.getResolutionHoriz());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking x resolution", resolutionHoriz, topSurface.getResolutionX());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking y resolution", resolutionHoriz, topSurface.getResolutionY());
     for (size_t i = 0; i < 2; ++i) {
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking dims", dims[i], topSurface._dims[i]);
     } // for

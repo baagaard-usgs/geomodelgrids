@@ -374,7 +374,7 @@ geomodelgrids::apps::TestInfo::testRunOneBlockFlat(void) {
     info.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(1247), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(1357), coutHelp.str().length());
 } // testRunOneBlockFlat
 
 
@@ -400,7 +400,7 @@ geomodelgrids::apps::TestInfo::testRunThreeBlocksTopo(void) {
     info.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(2106), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(2184), coutHelp.str().length());
 } // testRunThreeBlocksTopo
 
 
@@ -423,7 +423,7 @@ geomodelgrids::apps::TestInfo::testRunTwoModels(void) {
     info.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(1305), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(1547), coutHelp.str().length());
 } // testRunTwoModels
 
 
@@ -445,7 +445,7 @@ geomodelgrids::apps::TestInfo::testRunBadMetadata(void) {
     info.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(2120), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(2371), coutHelp.str().length());
 }
 
 
@@ -467,7 +467,7 @@ geomodelgrids::apps::TestInfo::testRunBadTopSurface(void) {
     info.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(460), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(351), coutHelp.str().length());
 }
 
 
@@ -489,7 +489,7 @@ geomodelgrids::apps::TestInfo::testRunBadBlock(void) {
     info.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(1143), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(945), coutHelp.str().length());
 
 }
 

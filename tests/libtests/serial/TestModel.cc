@@ -213,7 +213,8 @@ geomodelgrids::serial::TestModel::testLoadMetadata(void) {
     const double origin[2] = { 200000.0, -400000.0 };
     const double yazimuth(330.0);
     const double dims[3] = { 60.0e+3, 120.0e+3, 45.0e+3 };
-    const double topoHorizRes = 5.0e+3;
+    const double topoResX = 5.0e+3;
+    const double topoResY = 5.0e+3;
 
     const size_t numBlocks = 3;
     const char* blockNamesPtr[numBlocks] = {"top", "middle", "bottom"};
@@ -260,17 +261,21 @@ geomodelgrids::serial::TestModel::testLoadMetadata(void) {
     CPPUNIT_ASSERT_MESSAGE("Checking model info pointer", info);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking model title", title, info->getTitle());
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking model id", id, info->getId());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking model doi", doi, info->getDOI());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking model repositoryDOI", doi, info->getRepositoryDOI());
 
     const Surface* surfaceTop = model.getTopSurface();
     CPPUNIT_ASSERT_MESSAGE("Checking top surface pointer", surfaceTop);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking horizontal resolution of top surface",
-                                         topoHorizRes, surfaceTop->getResolutionHoriz(), tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking x resolution of top surface",
+                                         topoResX, surfaceTop->getResolutionX(), tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking y resolution of top surface",
+                                         topoResY, surfaceTop->getResolutionY(), tolerance);
 
     const Surface* surfaceTopoBathy = model.getTopoBathy();
     CPPUNIT_ASSERT_MESSAGE("Checking topography/bathymetry pointer", surfaceTopoBathy);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking horizontal resolution of topography/bathymetry",
-                                         topoHorizRes, surfaceTopoBathy->getResolutionHoriz(), tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking x resolution of topography/bathymetry",
+                                         topoResX, surfaceTopoBathy->getResolutionX(), tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking y resolution of topography/bathymetry",
+                                         topoResY, surfaceTopoBathy->getResolutionY(), tolerance);
 
     const std::vector<Block*>& blocksT = model.getBlocks();
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking blocks size", numBlocks, blocksT.size());
