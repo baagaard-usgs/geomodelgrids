@@ -191,25 +191,27 @@ geomodelgrids::serial::Model::loadMetadata(void) {
     } // if/else
 
     delete _surfaceTop;_surfaceTop = NULL;
-    if (_h5->hasDataset("surfaces/top_surface")) {
-        _surfaceTop = new geomodelgrids::serial::Surface("top_surface");assert(_surfaceTop);
-        try {
-            _surfaceTop->loadMetadata(_h5);
-        } catch (const std::runtime_error& err) {
-            msg << err.what();
-            missingAttributes = true;
-        } // try/catch
-    } // if
-
     delete _surfaceTopoBathy;_surfaceTopoBathy = NULL;
-    if (_h5->hasDataset("surfaces/topography_bathymetry")) {
-        _surfaceTopoBathy = new geomodelgrids::serial::Surface("topography_bathymetry");assert(_surfaceTopoBathy);
-        try {
-            _surfaceTopoBathy->loadMetadata(_h5);
-        } catch (const std::runtime_error& err) {
-            msg << err.what();
-            missingAttributes = true;
-        } // try/catch
+    if (_h5->hasGroup("surfaces")) {
+        if (_h5->hasDataset("surfaces/top_surface")) {
+            _surfaceTop = new geomodelgrids::serial::Surface("top_surface");assert(_surfaceTop);
+            try {
+                _surfaceTop->loadMetadata(_h5);
+            } catch (const std::runtime_error& err) {
+                msg << err.what();
+                missingAttributes = true;
+            } // try/catch
+        } // if
+
+        if (_h5->hasDataset("surfaces/topography_bathymetry")) {
+            _surfaceTopoBathy = new geomodelgrids::serial::Surface("topography_bathymetry");assert(_surfaceTopoBathy);
+            try {
+                _surfaceTopoBathy->loadMetadata(_h5);
+            } catch (const std::runtime_error& err) {
+                msg << err.what();
+                missingAttributes = true;
+            } // try/catch
+        } // if
     } // if
 
     if (_blocks.size() > 0) {
