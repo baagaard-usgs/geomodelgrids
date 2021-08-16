@@ -65,28 +65,42 @@ class App():
             model.save_domain()
 
         if args.import_surfaces or args.all:
-            batch_size = int(self.config["domain"]["batch_size"])
+            batch_size = int(self.config["domain"]["batch_size"]) if "batch_size" in self.config["domain"] else None
             if model.top_surface:
                 model.init_top_surface()
-                for batch in model.top_surface.get_batches(batch_size):
-                    points = model.top_surface.generate_points(batch)
-                    elevation = datasrc.get_top_surface(points)
-                    model.save_top_surface(elevation, batch)
+                if batch_size:
+                    for batch in model.top_surface.get_batches(batch_size):
+                        points = model.top_surface.generate_points(batch)
+                        elevation = datasrc.get_top_surface(points)
+                        model.save_top_surface(elevation, batch)
+                else:
+                    points = model.top_surface.generate_points()
+                    elevation = datasrc.get_top_surface()
+                    model.save_top_surface(elevation)
             if model.topo_bathy:
                 model.init_topography_bathymetry()
-                for batch in model.topo_bathy.get_batches(batch_size):
-                    points = model.topo_bathy.generate_points(batch)
+                if batch_size:
+                    for batch in model.topo_bathy.get_batches(batch_size):
+                        points = model.topo_bathy.generate_points(batch)
+                        elevation = datasrc.get_topography_bathymetry(points)
+                        model.save_topography_bathymetry(elevation, batch)
+                else:
+                    points = model.topo_bathy.generate_points()
                     elevation = datasrc.get_topography_bathymetry(points)
-                    model.save_topography_bathymetry(elevation, batch)
+                    model.save_topography_bathymetry(elevation)
 
         if args.import_blocks or args.all:
-            batch_size = int(self.config["domain"]["batch_size"])
+            batch_size = int(self.config["domain"]["batch_size"]) if "batch_size" in self.config["domain"] else None
             topo_depth = model.topo_bathy if model.topo_bathy else model.top_surface
             for block in model.blocks:
                 model.init_block(block)
-                for batch in block.get_batches(batch_size):
-                    values = datasrc.get_values(block, model.top_surface, topo_depth, batch)
-                    model.save_block(block, values, batch)
+                if batch_size:
+                    for batch in block.get_batches(batch_size):
+                        values = datasrc.get_values(block, model.top_surface, topo_depth, batch)
+                        model.save_block(block, values, batch)
+                else:
+                    values = datasrc.get_values(block, model.top_surface, topo_depth)
+                    model.save_block(block, values)
 
     def initialize(self, config_filenames):
         """Set parameters from config file and DEFAULTS.
