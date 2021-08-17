@@ -196,7 +196,7 @@ class OneBlockFlat(TestData):
         "origin_x": 590000.0,
         "origin_y": 4150000.0,
         "y_azimuth": 90.0,
-        "dim_x": 30.0e+3,
+        "dim_x": 32.0e+3,
         "dim_y": 40.0e+3,
         "dim_z": 5.0e+3,
         "auxiliary": {0: "zero", 1: "one", },
@@ -208,7 +208,7 @@ class OneBlockFlat(TestData):
     blocks = [
         {
             "name": "block",
-            "x_resolution": 10.0e+3,
+            "x_resolution": 8.0e+3,
             "y_resolution": 10.0e+3,
             "z_resolution": 5.0e+3,
             "z_top": 0.0e+3,
@@ -335,7 +335,7 @@ class ThreeBlocksFlat(TestData):
         {
             "name": "top",
             "x_resolution": 10.0e+3,
-            "y_resolution": 10.0e+3,
+            "y_resolution": 15.0e+3,
             "z_resolution": 5.0e+3,
             "z_top": 0.0,
             "dim_z": 5.0e+3,
@@ -353,7 +353,7 @@ class ThreeBlocksFlat(TestData):
         {
             "name": "bottom",
             "x_resolution": 30.0e+3,
-            "y_resolution": 30.0e+3,
+            "y_resolution": 40.0e+3,
             "z_resolution": 10.0e+3,
             "z_top": -25.0e+3,
             "dim_z": 20.0e+3,
