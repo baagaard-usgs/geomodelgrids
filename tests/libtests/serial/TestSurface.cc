@@ -4,64 +4,46 @@
 
 #include <portinfo>
 
-#include "ModelPoints.hh"
+#include "TestSurface.hh" // Implementation of class methods.
+
+#include "ModelPoints.hh" // USES ModelPoints
 
 #include "geomodelgrids/serial/Surface.hh" // USES Surface
 #include "geomodelgrids/serial/HDF5.hh" // USES HDF5
-
-#include <cppunit/extensions/HelperMacros.h>
+#include "geomodelgrids/utils/Indexing.hh" // USES Indexing
 
 #include <cmath> // USES fabs()
 
-namespace geomodelgrids {
-    namespace serial {
-        class TestSurface;
-    } // serial
-} // geomodelgrids
+// ------------------------------------------------------------------------------------------------
+void
+geomodelgrids::serial::TestSurface::setUp(void) {
+    _data = new TestSurface_Data();
+}
 
-class geomodelgrids::serial::TestSurface : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE -------------------------------------------------------------------------
-    CPPUNIT_TEST_SUITE(TestSurface);
 
-    CPPUNIT_TEST(testConstructor);
-    CPPUNIT_TEST(testAccessors);
-    CPPUNIT_TEST(testSetHyperslabDims);
-    CPPUNIT_TEST(testLoadMetadata);
-    CPPUNIT_TEST(testQuery);
+// ------------------------------------------------------------------------------------------------
+void
+geomodelgrids::serial::TestSurface::tearDown(void) {
+    delete _data;_data = NULL;
+}
 
-    CPPUNIT_TEST_SUITE_END();
-
-    // PUBLIC METHODS -----------------------------------------------------------------------------
-public:
-
-    /// Test constructor.
-    void testConstructor(void);
-
-    /// Test getters.
-    void testAccessors(void);
-
-    /// Test setHyperslabDims.
-    void testSetHyperslabDims(void);
-
-    /// Test loadMetadata().
-    void testLoadMetadata(void);
-
-    /// Test query().
-    void testQuery(void);
-
-}; // class TestSurface
-CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::serial::TestSurface);
 
 // ------------------------------------------------------------------------------------------------
 // Test constructor.
 void
 geomodelgrids::serial::TestSurface::testConstructor(void) {
-    Surface topo("top_surface");
+    const std::string surfaceName("top_surface");
+    Surface surf(surfaceName.c_str());
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking x resolution", 0.0, topo._resolutionX);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking y resolution", 0.0, topo._resolutionY);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking dims[0]", size_t(0), topo._dims[0]);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking dims[1]", size_t(0), topo._dims[1]);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking name", surfaceName, surf._name);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking x resolution", 0.0, surf._resolutionX);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking y resolution", 0.0, surf._resolutionY);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking x coordinates", (double*)NULL, surf._coordinatesX);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking y coordinates", (double*)NULL, surf._coordinatesY);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checknig x indexing", (geomodelgrids::utils::Indexing*)NULL, surf._indexingX);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checknig y indexing", (geomodelgrids::utils::Indexing*)NULL, surf._indexingY);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking dims[0]", size_t(0), surf._dims[0]);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking dims[1]", size_t(0), surf._dims[1]);
 } // testConstructor
 
 
@@ -69,20 +51,38 @@ geomodelgrids::serial::TestSurface::testConstructor(void) {
 // Test getters.
 void
 geomodelgrids::serial::TestSurface::testAccessors(void) {
-    Surface topo("top_surface");
+    CPPUNIT_ASSERT(_data);
 
-    const double resolutionX(8.0);topo._resolutionX = resolutionX;
-    const double resolutionY(8.0);topo._resolutionY = resolutionY;
-    const size_t dimsE[2] = { 5, 6 };
-    topo._dims[0] = dimsE[0];
-    topo._dims[1] = dimsE[1];
+    Surface surf("top_surface");
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch x resolution", resolutionX, topo.getResolutionX());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch y resolution", resolutionX, topo.getResolutionY());
+    surf._resolutionX = _data->resolutionX;
+    surf._resolutionY = _data->resolutionY;
+    surf._dims[0] = _data->numX;
+    surf._dims[1] = _data->numY;
 
-    const size_t* const dims = topo.getDims();
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in x dimension.", dimsE[0], dims[0]);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in y dimension.", dimsE[1], dims[1]);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch x resolution", _data->resolutionX, surf.getResolutionX());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch y resolution", _data->resolutionY, surf.getResolutionY());
+
+    const size_t* const dims = surf.getDims();
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in x dimension.", _data->numX, dims[0]);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in y dimension.", _data->numY, dims[1]);
+
+    surf._coordinatesX = _data->coordinatesX;
+    surf._coordinatesY = _data->coordinatesY;
+    const double tolerance = 1.0e-6;
+    double* x = surf.getCoordinatesX();
+    if (_data->coordinatesX) {
+        for (size_t i = 0; i < _data->numX; ++i) {
+            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Mismatch in x coordinates", _data->coordinatesX[i], x[i], tolerance);
+        } // for
+    } // if
+
+    if (_data->coordinatesY) {
+        double* y = surf.getCoordinatesY();
+        for (size_t i = 0; i < _data->numY; ++i) {
+            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Mismatch in y coordinates", _data->coordinatesY[i], y[i], tolerance);
+        } // for
+    } // if
 } // testAccessors
 
 
@@ -116,27 +116,47 @@ geomodelgrids::serial::TestSurface::testSetHyperslabDims(void) {
 // Test loadMetadata().
 void
 geomodelgrids::serial::TestSurface::testLoadMetadata(void) {
+    CPPUNIT_ASSERT(_data);
+
     geomodelgrids::serial::HDF5 h5;
-    h5.open("../../data/one-block-topo.h5", H5F_ACC_RDONLY);
+    h5.open(_data->filename, H5F_ACC_RDONLY);
 
-    Surface topSurface("top_surface");
-    topSurface.loadMetadata(&h5);
+    Surface surf("top_surface");
+    surf.loadMetadata(&h5);
 
-    const double resolutionHoriz(10.0e+3);
-    const size_t dims[2] = { 4, 5 };
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking x resolution", _data->resolutionX, surf.getResolutionX());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking y resolution", _data->resolutionY, surf.getResolutionY());
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking x resolution", resolutionHoriz, topSurface.getResolutionX());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking y resolution", resolutionHoriz, topSurface.getResolutionY());
-    for (size_t i = 0; i < 2; ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking dims", dims[i], topSurface._dims[i]);
-    } // for
+    const size_t* const dims = surf.getDims();
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in x dimension.", _data->numX, dims[0]);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in y dimension.", _data->numY, dims[1]);
+
+    const double tolerance = 1.0e-6;
+    double* x = surf.getCoordinatesX();
+    if (_data->coordinatesX) {
+        for (size_t i = 0; i < _data->numX; ++i) {
+            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Mismatch in x coordinates", _data->coordinatesX[i], x[i], tolerance);
+        } // for
+    } // if
+
+    if (_data->coordinatesY) {
+        double* y = surf.getCoordinatesY();
+        for (size_t i = 0; i < _data->numY; ++i) {
+            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Mismatch in y coordinates", _data->coordinatesY[i], y[i], tolerance);
+        } // for
+    } // if
+
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in x indexing", surf._indexingX);
+    CPPUNIT_ASSERT_MESSAGE("Mismatch in y indexing", surf._indexingY);
 } // testLoadMetadata
 
 
 // ------------------------------------------------------------------------------------------------
-// Test query().
+// Test query() for surface with uniform resolution.
 void
 geomodelgrids::serial::TestSurface::testQuery(void) {
+    CPPUNIT_ASSERT(_data);
+
     const size_t npoints = 5;
     const size_t spaceDim = 2;
     const double xy[npoints*spaceDim] = {
@@ -148,17 +168,17 @@ geomodelgrids::serial::TestSurface::testQuery(void) {
     };
 
     geomodelgrids::serial::HDF5 h5;
-    h5.open("../../data/one-block-topo.h5", H5F_ACC_RDONLY);
+    h5.open(_data->filename, H5F_ACC_RDONLY);
 
-    Surface topSurface("top_surface");
-    topSurface.loadMetadata(&h5);
+    Surface surf("top_surface");
+    surf.loadMetadata(&h5);
 
-    topSurface.openQuery(&h5);
+    surf.openQuery(&h5);
     for (size_t i = 0; i < npoints; ++i) {
         const double tolerance = 1.0e-6;
         const double x = xy[i*spaceDim+0];
         const double y = xy[i*spaceDim+1];
-        const double elevation = topSurface.query(x, y);
+        const double elevation = surf.query(x, y);
 
         const double elevationE = geomodelgrids::testdata::ModelPoints::computeTopElevation(x, y);
 
@@ -167,8 +187,24 @@ geomodelgrids::serial::TestSurface::testQuery(void) {
         const double toleranceV = std::max(tolerance, tolerance*fabs(elevationE));
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), elevationE, elevation, toleranceV);
     } // for
-    topSurface.closeQuery();
+    surf.closeQuery();
 } // testQuery
+
+
+// ------------------------------------------------------------------------------------------------
+geomodelgrids::serial::TestSurface_Data::TestSurface_Data(void) :
+    filename(NULL),
+    resolutionX(0.0),
+    resolutionY(0.0),
+    coordinatesX(NULL),
+    coordinatesY(NULL),
+    numX(0),
+    numY(0)
+{}
+
+
+// ------------------------------------------------------------------------------------------------
+geomodelgrids::serial::TestSurface_Data::~TestSurface_Data(void) {}
 
 
 // End of file

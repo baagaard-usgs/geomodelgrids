@@ -5,6 +5,7 @@
 #define geomodelgrids_serial_surface_hh
 
 #include "serialfwd.hh" // forward declarations
+#include "geomodelgrids/utils/utilsfwd.hh" // forward declarations
 
 #include <string> // HASA std::string
 
@@ -29,17 +30,29 @@ public:
      */
     void loadMetadata(geomodelgrids::serial::HDF5* const h5);
 
-    /** Get resolution along x-axis.
+    /** Get resolution along x axis.
      *
-     * @returns Resolution along x-axis.
+     * @returns Resolution along x axis.
      */
     double getResolutionX(void) const;
 
-    /** Get resolution along y-axis.
+    /** Get resolution along y axis.
      *
-     * @returns Resolution along y-axis.
+     * @returns Resolution along y axis.
      */
     double getResolutionY(void) const;
+
+    /** Get coordinates along x axis.
+     *
+     * @returns Array of coordinates along x axis.
+     */
+    double* getCoordinatesX(void) const;
+
+    /** Get coordinates along y axis.
+     *
+     * @returns Array of coordinates along y axis.
+     */
+    double* getCoordinatesY(void) const;
 
     /** Get number of values along each grid dimension.
      *
@@ -78,8 +91,16 @@ private:
 
     geomodelgrids::serial::Hyperslab* _hyperslab; ///< Hyperslab of data in model.
     std::string _name; ///< Name of surface (matches dataset in HDF5 file).
-    double _resolutionX; ///< Resolution along x-axis.
-    double _resolutionY; ///< Resolution along y-axis.
+
+    // Only resolution or coordinates are given.
+    double _resolutionX; ///< Resolution along x axis.
+    double _resolutionY; ///< Resolution along y axis.
+    double* _coordinatesX; ///< Coordinates along x axis.
+    double* _coordinatesY; ///< Coordinates along y axis.
+
+    geomodelgrids::utils::Indexing* _indexingX; ///< Procedure for finding index along x axis.
+    geomodelgrids::utils::Indexing* _indexingY; ///< Procedure for finding index along y axis.
+
     size_t _dims[2]; ///< Number of points along grid in each x and y dimension [x, y].
     size_t _hyperslabDims[3]; ///< Dimensions of hyperslab.
 
