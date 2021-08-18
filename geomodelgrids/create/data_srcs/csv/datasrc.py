@@ -54,6 +54,12 @@ class CSVFile(DataSrc):
             batch (BatchGenerator3D)
                 Current batch of points in block.
         """
+        def _varxy_index_fn(coordinates):
+            x_grid = numpy.array(coordinates)
+            x_grid.sort()
+            x_round = -int(numpy.log10(numpy.min(numpy.diff(x_grid))))
+            return x_grid.searchsorted(round(x, x_round))
+
         if batch:
             raise NotImplementedError("Batches with CSV files are not implemented.")
 
@@ -67,17 +73,11 @@ class CSVFile(DataSrc):
         if block.x_resolution:
             def get_xindex(x, block): return round(x / block.x_resolution)
         else:
-            x_grid = numpy.array(block.x_coordinates)
-            x_grid.sort()
-            x_round = -int(numpy.log10(numpy.min(numpy.diff(x_grid))))
-            def get_xindex(x, block): return x_grid.searchsorted(round(x, x_round))
+            def get_xindex(x, block): return _varxy_index_fn(block.x_coordinates)
         if block.y_resolution:
             def get_yindex(y, block): return round(y / block.y_resolution)
         else:
-            y_grid = numpy.array(block.y_coordinates)
-            y_grid.sort()
-            y_round = -int(numpy.log10(numpy.min(numpy.diff(y_grid))))
-            def get_yindex(y, block): return y_grid.searchsorted(round(y, y_round))
+            def get_yindex(y, block): return _varxy_index_fn(block.y_coordinates)
         if block.z_resolution:
             def get_zindex(z, block): return round(z / block.z_resolution)
         else:
