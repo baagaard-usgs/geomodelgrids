@@ -120,6 +120,19 @@ public:
                        hid_t datatype,
                        void* value);
 
+    /** Read array attribute.
+     *
+     * @param[in] path Full path to object with attribute.
+     * @param[in] name Name of attribute.
+     * @param[in] datatype Datatype of array.
+     * @param[out] values Attribute value.
+     */
+    void readAttribute(const char* path,
+                       const char* name,
+                       hid_t datatype,
+                       void** value,
+                       size_t* valuesSize);
+
     /** Read string attribute.
      *
      * @param[in] path Full path to object with attribute.

@@ -312,6 +312,49 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
 
 
 // ------------------------------------------------------------------------------------------------
+// Read vector attribute.
+void
+geomodelgrids::serial::HDF5::readAttribute(const char* path,
+                                           const char* name,
+                                           hid_t datatype,
+                                           void** values,
+                                           size_t* valuesSize) {
+    assert(path);
+    assert(name);
+    assert(values);
+    assert(valuesSize);
+
+    try {
+        _HDF5Access h5access;
+
+        h5access.attribute = H5Aopen_by_name(_file, path, name, H5P_DEFAULT, H5P_DEFAULT);
+        if (h5access.attribute < 0) { throw std::runtime_error("Could not open"); }
+
+        h5access.dataspace = H5Aget_space(h5access.attribute);
+        if (h5access.dataspace < 0) { throw std::runtime_error("Could not get dataspace of"); }
+        const hsize_t ndims = H5Sget_simple_extent_ndims(h5access.dataspace);assert(1 == ndims);
+        hsize_t dims[1];
+        H5Sget_simple_extent_dims(h5access.dataspace, dims, NULL);
+        const hsize_t numValues = dims[0];assert(numValues > 0);
+
+        hsize_t typeNumBytes = H5Tget_size(datatype);
+        void* buffer = (void*) new char[numValues * typeNumBytes];
+
+        herr_t err = H5Aread(h5access.attribute, datatype, buffer);
+        if (err < 0) { throw std::runtime_error("Could not read"); }
+
+        *valuesSize = numValues;
+        *values = buffer;
+    } catch (std::exception& err) {
+        std::ostringstream msg;
+        msg << err.what() << " attribute '" << name << "' of '" << path << "'.";
+        throw std::runtime_error(msg.str());
+    } // try/catch
+
+} // readAttribute
+
+
+// ------------------------------------------------------------------------------------------------
 // Read string attribute.
 std::string
 geomodelgrids::serial::HDF5::readAttribute(const char* path,
