@@ -79,7 +79,7 @@ geomodelgrids::apps::Info::run(int argc,
         } else {
             try {
                 model.loadMetadata();
-            } catch (const std::runtime_error& err) {
+            } catch (const std::exception& err) {
                 std::cout << _Info::indent(1)
                           << "WARNING: Errors encountered while reading metadata. Information may be incomplete.\n";
                 if (!_doVerification && !_showAll) {
