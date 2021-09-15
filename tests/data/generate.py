@@ -423,6 +423,24 @@ class OneBlockTopoVarXY(TestData):
         with h5py.File(self.filename, "a") as h5:
             h5["surfaces"]["top_surface"].attrs["x_coordinates"] *= 0.5
 
+    def bad_topo_coordinates(self):
+        self.filename = "one-block-topo-varxy-bad-surf-coords.h5"
+        self.create()
+        with h5py.File(self.filename, "a") as h5:
+            attrs = h5["surfaces"]["top_surface"].attrs
+            attrs["x_coordinates"] = [0.0, 10.0e+3, 30.0e+3]
+            attrs["y_coordinates"] = [0.0, 1.0, 2.0, 3.0, 40.0e+3]
+
+    def bad_block_coordinates(self):
+        self.filename = "one-block-topo-varxy-bad-block-coords.h5"
+        self.create()
+        with h5py.File(self.filename, "a") as h5:
+            attrs = h5["blocks"]["block"].attrs
+            attrs["x_coordinates"] = [0.0, 10.0e+3, 30.0e+3]
+            attrs["y_coordinates"] = [0.0, 1.0, 2.0, 3.0, 40.0e+3]
+            attrs["z_coordinates"] = [0.0]
+            del attrs["z_resolution"]
+
 
 class ThreeBlocksFlat(TestData):
     filename = "three-blocks-flat.h5"
@@ -651,7 +669,7 @@ class ThreeBlocksTopoVarXYZ(TestData):
     }
 
     top_surface = {
-        "x_coordinates": [0.0e+3, 5.0e+3, 10.0e+3, 15.0e+3, 20.0e+3, 30.0e+3],
+        "x_coordinates": [0.0e+3, 5.0e+3, 10.0e+3, 30.0e+3, 40.0e+3, 60.0e+3],
         "y_coordinates": [0.0e+3, 5.0e+3, 10.0e+3, 20.0e+3, 30.0e+3, 40.0e+3, 60.0e+3, 80.0e+3, 100.0e+3, 120.0e+3],
         "chunk_size": (3, 3, 1),
     }
@@ -662,7 +680,7 @@ class ThreeBlocksTopoVarXYZ(TestData):
     top_surface["elevation"] = elevation
 
     topo_bathy = {
-        "x_coordinates": [0.0e+3, 5.0e+3, 10.0e+3, 15.0e+3, 20.0e+3, 30.0e+3],
+        "x_coordinates": [0.0e+3, 5.0e+3, 10.0e+3, 30.0e+3, 40.0e+3, 60.0e+3],
         "y_coordinates": [0.0e+3, 5.0e+3, 10.0e+3, 20.0e+3, 30.0e+3, 40.0e+3, 60.0e+3, 80.0e+3, 100.0e+3, 120.0e+3],
         "chunk_size": (4, 4, 1),
     }
@@ -675,21 +693,21 @@ class ThreeBlocksTopoVarXYZ(TestData):
     blocks = [
         {
             "name": "top",
-            "x_coordinates": [0.0e+3, 5.0e+3, 10.0e+3, 15.0e+3, 20.0e+3, 30.0e+3],
+            "x_coordinates": [0.0e+3, 5.0e+3, 10.0e+3, 30.0e+3, 40.0e+3, 60.0e+3],
             "y_coordinates": [0.0e+3, 5.0e+3, 10.0e+3, 20.0e+3, 30.0e+3, 40.0e+3, 60.0e+3, 80.0e+3, 100.0e+3, 120.0e+3],
             "z_coordinates": [0.0e+3, -1.0e+3, -3.0e+3, -5.0e+3],
             "chunk_size": (3, 3, 4, 2),
         },
         {
             "name": "middle",
-            "x_coordinates": [0.0e+3, 10.0e+3, 15.0e+3, 20.0e+3, 30.0e+3],
+            "x_coordinates": [0.0e+3, 0.0e+3, 30.0e+3, 40.0e+3, 60.0e+3],
             "y_coordinates": [0.0e+3, 10.0e+3, 20.0e+3, 40.0e+3, 60.0e+3, 80.0e+3, 100.0e+3, 120.0e+3],
             "z_coordinates": [-5.0e+3, -10.0e+3, -20.0e+3, -25.0e+3],
             "chunk_size": (2, 2, 4, 2),
         },
         {
             "name": "bottom",
-            "x_coordinates": [0.0e+3, 10.0e+3, 20.0e+3, 30.0e+3],
+            "x_coordinates": [0.0e+3, 30.0e+3, 60.0e+3],
             "y_coordinates": [0.0e+3, 10.0e+3, 20.0e+3, 40.0e+3, 80.0e+3, 120.0e+3],
             "z_coordinates": [-25.0e+3, -30.0e+3, -45.0e+3],
             "chunk_size": (1, 1, 3, 2),
@@ -714,6 +732,8 @@ if __name__ == "__main__":
 
     OneBlockFlatVarZ().create()
     OneBlockTopoVarXY().create()
+    OneBlockTopoVarXY().bad_topo_coordinates()
+    OneBlockTopoVarXY().bad_block_coordinates()
     ThreeBlocksTopoVarXYZ().create()
 
     OneBlockTopo().bad_topo_metadata()

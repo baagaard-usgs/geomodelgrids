@@ -9,6 +9,8 @@ dist_noinst_DATA = \
 	one-block-flat-varz.h5 \
 	one-block-topo.h5 \
 	one-block-topo-varxy.h5 \
+	one-block-topo-varxy-bad-surf-coords.h5 \
+	one-block-topo-varxy-bad-block-coords.h5 \
 	three-blocks-flat.h5 \
 	three-blocks-topo.h5 \
 	three-blocks-topo-varxyz.h5 \
