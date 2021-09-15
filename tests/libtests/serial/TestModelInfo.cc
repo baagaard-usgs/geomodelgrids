@@ -103,6 +103,7 @@ geomodelgrids::serial::TestModelInfo::testAccessors(void) {
     const std::string repositoryDOI("doi:1.2.3");info._repositoryDOI = repositoryDOI;
     const std::string version("1.2.3");info._version = version;
     const std::string license("1.2.3");info._license = license;
+    const std::string auxiliary("{'a': 1}");info._auxiliary = auxiliary;
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking title", title, info.getTitle());
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking id", id, info.getId());
@@ -139,6 +140,8 @@ geomodelgrids::serial::TestModelInfo::testAccessors(void) {
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking repository DOI", repositoryDOI, info.getRepositoryDOI());
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking version", version, info.getVersion());
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking license", license, info.getLicense());
+
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking auxiliary", auxiliary, info.getAuxiliary());
 } // testAccessors
 
 
@@ -217,6 +220,12 @@ geomodelgrids::serial::TestModelInfo::testLoad(void) {
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking repository DOI", repositoryDOI, info.getRepositoryDOI());
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking version", version, info.getVersion());
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking license", license, info.getLicense());
+
+    h5.close();
+
+    h5.open("../../data/three-blocks-topo-missing-metadata.h5", H5F_ACC_RDONLY);
+    CPPUNIT_ASSERT_THROW_MESSAGE("Checking missing metadata.", info.load(&h5), std::runtime_error);
+
 } // testLoad
 
 

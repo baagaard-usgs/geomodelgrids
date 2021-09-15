@@ -21,6 +21,7 @@ class geomodelgrids::serial::TestSurface : public CppUnit::TestFixture {
     CPPUNIT_TEST(testAccessors);
     CPPUNIT_TEST(testSetHyperslabDims);
     CPPUNIT_TEST(testLoadMetadata);
+    CPPUNIT_TEST(testLoadBadMetadata);
     CPPUNIT_TEST(testQuery);
 
     CPPUNIT_TEST_SUITE_END();
@@ -45,6 +46,9 @@ public:
 
     /// Test loadMetadata().
     void testLoadMetadata(void);
+
+    /// Test loadMetadata() with bad variable resolution data.
+    void testLoadBadMetadata(void);
 
     /// Test query().
     void testQuery(void);

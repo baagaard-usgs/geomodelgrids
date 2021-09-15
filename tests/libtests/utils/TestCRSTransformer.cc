@@ -21,6 +21,7 @@ class geomodelgrids::utils::TestCRSTransformer : public CppUnit::TestFixture {
     CPPUNIT_TEST_SUITE(TestCRSTransformer);
 
     CPPUNIT_TEST(testConstructor);
+    CPPUNIT_TEST(testFactories);
     CPPUNIT_TEST(testAccessors);
     CPPUNIT_TEST(testInitialize);
     CPPUNIT_TEST(testTransform);
@@ -32,6 +33,9 @@ public:
 
     /// Test constructor.
     void testConstructor(void);
+
+    /// Test factories.
+    void testFactories(void);
 
     /// Test getters.
     void testAccessors(void);
@@ -54,6 +58,20 @@ geomodelgrids::utils::TestCRSTransformer::testConstructor(void) {
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in default src coordsys.", std::string("EPSG:4326"), transformer._srcString);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in default dest coordsys.", std::string("EPSG:3488"), transformer._destString);
 } // testConstructor
+
+
+// ------------------------------------------------------------------------------------------------
+// Test factories.
+void
+geomodelgrids::utils::TestCRSTransformer::testFactories(void) {
+    CRSTransformer* transformer = CRSTransformer::createGeoToXYAxisOrder("EPSG:4326");
+    CPPUNIT_ASSERT_MESSAGE("createGeoToXYAxisOrder() failed with valid CRS.", transformer);
+
+    CPPUNIT_ASSERT_THROW_MESSAGE("createGeoToXYAxisOrder() did not fail with invalid CRS.",
+                                 CRSTransformer::createGeoToXYAxisOrder("nonsense"),
+                                 std::runtime_error);
+
+} // testFactories
 
 
 // ------------------------------------------------------------------------------------------------

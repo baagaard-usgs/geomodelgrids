@@ -152,6 +152,21 @@ geomodelgrids::serial::TestSurface::testLoadMetadata(void) {
 
 
 // ------------------------------------------------------------------------------------------------
+// Test loadMetadata() with bad variable resolution data.
+void
+geomodelgrids::serial::TestSurface::testLoadBadMetadata(void) {
+    CPPUNIT_ASSERT(_data);
+
+    geomodelgrids::serial::HDF5 h5;
+    h5.open("../../data/one-block-topo-varxy-bad-surf-coords.h5", H5F_ACC_RDONLY);
+
+    Surface surf("top_surface");
+    CPPUNIT_ASSERT_THROW_MESSAGE("Failed to detect wrong number of coordinates.",
+                                 surf.loadMetadata(&h5), std::runtime_error);
+} // testLoadBadMetadata
+
+
+// ------------------------------------------------------------------------------------------------
 // Test query() for surface with uniform resolution.
 void
 geomodelgrids::serial::TestSurface::testQuery(void) {

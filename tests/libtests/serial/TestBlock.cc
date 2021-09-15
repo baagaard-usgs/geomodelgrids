@@ -190,6 +190,21 @@ geomodelgrids::serial::TestBlock::testLoadMetadata(void) {
 
 
 // ------------------------------------------------------------------------------------------------
+// Test loadMetadata() with bad variable resolution data.
+void
+geomodelgrids::serial::TestBlock::testLoadBadMetadata(void) {
+    CPPUNIT_ASSERT(_data);
+
+    geomodelgrids::serial::HDF5 h5;
+    h5.open("../../data/one-block-topo-varxy-bad-block-coords.h5", H5F_ACC_RDONLY);
+
+    Block block("block");
+    CPPUNIT_ASSERT_THROW_MESSAGE("Failed to detect wrong number of coordinates.",
+                                 block.loadMetadata(&h5), std::runtime_error);
+} // testLoadBadMetadata
+
+
+// ------------------------------------------------------------------------------------------------
 // Test query().
 void
 geomodelgrids::serial::TestBlock::testQuery(void) {
