@@ -33,7 +33,7 @@ class EarthVisionAPI():
         return result.stdout.decode().split("\n")
 
     def ev_label(self, filename_values, filename_points, filename_model, dtype, converters):
-        """Run 'ev_label -m FILENAME_MODEL -o FILENAME_VALUES FILE
+        """Run 'ev_label -m FILENAME_MODEL -o FILENAME_VALUES FILE'.
 
         Args:
             filename_values (str)

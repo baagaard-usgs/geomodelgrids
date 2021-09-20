@@ -1,11 +1,16 @@
 # Code layout
 
-- The root directory contains basic information files, such as `README` and `LICENSE.md`.
+The root directory contains basic information files, such as `README` and `LICENSE.md`.
 - **bin**: Command line programs.
-- **libsrc**: C and C++ API
-- **geomodelgrids**: Python API
+- **ci-config**: Continuous integration configuration files.
+- **developer**: Configuration files for developer related tools.
+- **docker**: Docker image configuration files.
 - **docs**: Files used to generate the documentation.
+- **examples**: Source code illustrating use of the C and C++ APIs.
+- **geomodelgrids**: Python API
+- **libsrc**: C and C++ API
 - **models**: Files used to generate some specific models using geomodelgrids.
+- **tests**: Code for continuous integration testing.
 
 ## Command line programs
 
@@ -71,6 +76,8 @@ libsrc/
         ├── ErrorHandler.hh
         ├── GeoTiff.cc
         ├── GeoTiff.hh
+        ├── Indexing.cc
+        ├── Indexing.hh
         ├── Makefile.am
         ├── TestDriver.cc
         ├── TestDriver.hh
@@ -84,6 +91,7 @@ libsrc/
 
 ```{code-block} bash
 geomodelgrids
+├── Makefile.am
 ├── __init__.py
 └── create
     ├── __init__.py
@@ -94,10 +102,18 @@ geomodelgrids
     │   ├── __init__.py
     │   ├── datasrc.py
     │   └── model.py
-    ├── earthvision
-    │   ├── __init__.py
-    │   ├── api.py
-    │   └── datasrc.py
+    ├── data_srcs
+    │   ├── __init__.py
+    │   ├── csv
+    │   │   ├── __init__.py
+    │   │   └── datasrc.py
+    │   ├── earthvision
+    │   │   ├── __init__.py
+    │   │   ├── api.py
+    │   │   └── datasrc.py
+    │   └── iris_emc
+    │       ├── __init__.py
+    │       └── datasrc.py
     ├── io
     │   ├── __init__.py
     │   ├── hdf5.py

@@ -106,7 +106,7 @@ class App():
         """Set parameters from config file and DEFAULTS.
 
         Args:
-            config_filename (str)
+            config_filenames (list of str)
                 Name of configuration (INI) file(s) with parameters.
         """
         self.config = config.get_config(config_filenames)

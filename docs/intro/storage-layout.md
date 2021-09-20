@@ -2,7 +2,7 @@
 
 ## Model Representation
 
-We map the physical space of the model domain bounded on top by topography (or a flat surface) into logical space that has uniform regular grids as shown in {numref}`fig-grid-mapping`.
+We map the physical space of the model domain bounded on top by topography (or a flat surface) into logical space that has uniform or variable resolution grids. {numref}`fig-grid-mapping` illustrates a model with three uniform resolution grids.
 
 :::{figure-md} fig-grid-mapping
 <img src="figs/gridmapping.*" alt="Diagram of physical and logical grids." width="100%"/>

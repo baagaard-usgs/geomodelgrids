@@ -21,6 +21,7 @@ public:
     /** Get index.
      *
      * @param[in] x Coordinate value.
+     * @returns Index for coordinate value.
      */
     virtual
     double getIndex(const double x) const = 0;
@@ -78,6 +79,7 @@ public:
      *
      * @param[in] x Array of coordinates along axis.
      * @param[in] numX Number of coordinates along axis.
+     * @param[in] sortOrder Order of coordinate indexing.
      */
     IndexingVariable(const double* x,
                      const size_t numX,

@@ -30,9 +30,9 @@ class Surface():
             config (dict)
                 Keys:
                     - x_resolution: Resolution in x-direction (m) if uniform resolution in x-direction.
-                    - x_coordiantes: Array of x coordinates (m) if variable resolution in x-direction.
+                    - x_coordinates: Array of x coordinates (m) if variable resolution in x-direction.
                     - y_resolution: Resolution in y-direction (m) if uniform resolution in y-direction.
-                    - y_coordiantes: Array of y coordinates (m) if variable resolution in y-direction.
+                    - y_coordinates: Array of y coordinates (m) if variable resolution in y-direction.
                     - chunk_size: Dimensions of dataset chunk (should be about 10Kb - 1Mb)
             storage (HDF5Storage)
                 Storage interface.
@@ -56,7 +56,7 @@ class Surface():
         self.storage = storage
 
     def get_dims(self):
-        """Get number of points in block along each dimension.
+        """Get number of points in surface along each dimension.
 
         Returns:
             Tuple of number of points along each dimension (num_x, num_y).
@@ -66,7 +66,7 @@ class Surface():
         return (num_x, num_y, 1)
 
     def get_batches(self, batch_size):
-        """Get iterator witch batches of points.
+        """Get generator for batches of points.
         """
         num_x, num_y, _ = self.get_dims()
         return batch.BatchGenerator2D(num_x, num_y, batch_size)
@@ -130,7 +130,7 @@ class Surface():
 
 
 class Block():
-    """Block of regular logically gridded points.
+    """Grid of points on a logically regular grid.
     """
 
     def __init__(self, name, model_metadata, config):
@@ -145,13 +145,13 @@ class Block():
                 Block parameters as dictionary.
                 Keys:
                     - x_resolution: Resolution in x-direction (m) if uniform resolution in x-direction.
-                    - x_coordiantes: Array of x coordinates (m) if variable resolution in x-direction.
+                    - x_coordinates: Array of x coordinates (m) if variable resolution in x-direction.
                     - y_resolution: Resolution in y-direction (m) if uniform resolution in y-direction.
-                    - y_coordiantes: Array of y coordinates (m) if variable resolution in y-direction.
+                    - y_coordinates: Array of y coordinates (m) if variable resolution in y-direction.
                     - z_resolution: Resolution in z-direction (m) if uniform resolution in z-direction.
                     - z_top: Elevation of top of block (m) if uniform resolution in z-direction.
                     - z_bot: Elevation of bottom of block (m) if uniform resolution in z-direction.
-                    - z_coordiantes: Array of z coordinates (m) if variable resolution in z-direction.
+                    - z_coordinates: Array of z coordinates (m) if variable resolution in z-direction.
                     - z_top_offset: Vertical offset of top set of points below top of block (m) (used to avoid roundoff errors).
                     - chunk_size: Dimensions of dataset chunk (should be about 10Kb - 1Mb)
         """
@@ -205,6 +205,11 @@ class Block():
         return (num_x, num_y, num_z)
 
     def get_batches(self, batch_size):
+        """Get batch generator for block.
+
+        Returns:
+            BatchGenerator3D for block.
+        """
         num_x, num_y, num_z = self.get_dims()
         return batch.BatchGenerator3D(num_x, num_y, num_z, batch_size)
 
@@ -358,6 +363,11 @@ class Block():
         return numpy.float64(elevation[numpy.ix_(x_indices, y_indices, [0])].squeeze())
 
     def get_attributes(self):
+        """Get attributes associated with block.
+
+        Returns:
+            Array of tuples with attributes for block.
+        """
         attrs = []
         if self.x_resolution:
             attrs.append(("x_resolution", float))
@@ -565,9 +575,9 @@ class Model():
             block (Block)
                 Block information.
             values (numpy.array)
-                Numpy array [Nx,Ny,Nz,Nv] of gridded data asociated with block.
+                Numpy array [Nx,Ny,Nz,Nv] of gridded data associated with block.
             batch (utils.BatchGenerator3D)
-                Current batch of points in domain corresponding to elevation data.
+                Current batch of points in domain.
         """
         self.storage.save_block(block, values, batch)
 
@@ -597,6 +607,8 @@ class Model():
 
     @staticmethod
     def get_attributes():
+        """Get attributes for model.
+        """
         return (
             ("title", str),
             ("id", str),
