@@ -157,10 +157,22 @@ class EMCNetCDF(DataSrc):
                 Current batch of points in block.
         """
         value_names = self.config["data"]["values"]
-        nz, ny, nx = self.emc.variables[value_names[0]][:].shape
-        values = numpy.zeros((nx, ny, nz, len(value_names)), dtype=numpy.float32)
-        for i_value, name in enumerate(value_names):
-            values[:, :, :, i_value] = numpy.transpose(self.emc.variables[name][:])
+        if batch:
+            nx = batch.x_range[1] - batch.x_range[0]
+            ny = batch.y_range[1] - batch.y_range[0]
+            nz = batch.z_range[1] - batch.z_range[0]
+            values = numpy.zeros((nx, ny, nz, len(value_names)), dtype=numpy.float32)
+            x_start, x_end = batch.x_range
+            y_start, y_end = batch.y_range
+            z_start, z_end = batch.z_range
+            for i_value, name in enumerate(value_names):
+                values_batch = self.emc.variables[name][z_start:z_end, y_start:y_end, x_start:x_end]
+                values[:, :, :, i_value] = numpy.transpose(values_batch)
+        else:
+            nz, ny, nx = self.emc.variables[value_names[0]][:].shape
+            values = numpy.zeros((nx, ny, nz, len(value_names)), dtype=numpy.float32)
+            for i_value, name in enumerate(value_names):
+                values[:, :, :, i_value] = numpy.transpose(self.emc.variables[name][:])
         return values
 
 
