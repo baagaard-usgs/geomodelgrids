@@ -11,7 +11,7 @@ import numpy
 from geomodelgrids.create.core.datasrc import DataSrc
 from geomodelgrids.create.utils import units
 from geomodelgrids.create.utils.config import string_to_list
-from geomodelgrids.create.earthvision import api
+from geomodelgrids.create.data_srcs.earthvision import api
 from geomodelgrids.create.core import NODATA_VALUE
 
 
