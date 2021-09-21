@@ -8,6 +8,7 @@
 #include "geomodelgrids/utils/constants.hh" // USES NODATA_VALUE
 
 #include <cstring> // USES strlen()
+#include <algorithm> // USES std::sort
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
