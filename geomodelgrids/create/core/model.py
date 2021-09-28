@@ -413,6 +413,7 @@ class ModelMetadata:
     # Data
     data_values: List[str]
     data_units: List[str]
+    data_layout: str
 
     # Coordinate system
     crs: str
@@ -460,6 +461,7 @@ class ModelMetadata:
                     - data
                         - values
                         - units
+                        - layout
                     - domain
                         - dim_x
                         - dim_y
@@ -487,6 +489,10 @@ class ModelMetadata:
         # Data
         self.data_values = string_to_list(config["data"]["values"])
         self.data_units = string_to_list(config["data"]["units"])
+        if config["data"]["layout"] in ["vertex"]:
+            self.data_layout = config["data"]["layout"]
+        else:
+            raise NotImplementedError("Currently only vertex-based data are implemented.")
 
         # Coordinate system
         self.crs = config["coordsys"]["crs"]
@@ -499,7 +505,7 @@ class ModelMetadata:
         self.dim_y = float(config["domain"]["dim_y"])
         self.dim_z = float(config["domain"]["dim_z"])
 
-        # Auxilary data
+        # Auxiliary data
         if "auxiliary" in config:
             self.auxiliary = config["auxiliary"]
         else:
@@ -629,6 +635,7 @@ class Model():
             ("version", str),
             ("data_values", list, str),
             ("data_units", list, str),
+            ("data_layout", str),
             ("crs", str),
             ("origin_x", float),
             ("origin_y", float),

@@ -73,6 +73,7 @@ class TestApp(unittest.TestCase):
             "license": model_config["geomodelgrids"]["license"],
             "data_values": config.string_to_list(model_config["data"]["values"]),
             "data_units": config.string_to_list(model_config["data"]["units"]),
+            "data_layout": model_config["data"]["layout"],
             "crs": model_config["coordsys"]["crs"],
             "origin_x": float(model_config["coordsys"]["origin_x"]),
             "origin_y": float(model_config["coordsys"]["origin_y"]),

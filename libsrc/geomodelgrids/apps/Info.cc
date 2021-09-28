@@ -272,6 +272,17 @@ geomodelgrids::apps::Info::_printValues(geomodelgrids::serial::Model* const mode
     for (size_t i = 0; i < size; ++i) {
         std::cout << _Info::indent(2) << i << ": " << names[i] << " (" << units[i] << ")" << "\n";
     } // for
+
+    switch (model->getDataLayout()) {
+        case geomodelgrids::serial::Model::VERTEX:
+        std::cout << _Info::indent(2) << "Vertex-based data\n";
+        break; 
+        case geomodelgrids::serial::Model::CELL:
+        std::cout << _Info::indent(2) << "Cell-based data\n";
+        break; 
+        default:
+        std::cout << _Info::indent(2) << "Unknown data layout\n";
+    }
 } // _printValues
 
 

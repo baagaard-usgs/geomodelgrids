@@ -83,6 +83,7 @@ The files also contain sections for the data source and sections corresponding t
 
 + **values** *(array of string)* Comma separated list of values stored in the model.
 + **units** *(array of string)* Comma separated list of units of the values stored in the model. Units for dimensionless values are `none`.
++ **layout** *(string)* `vertex` for vertex-based values (values are specified at coordinates of vertices) or `cell` for cell-based values (values are specified at center of grid cells). Currently only vertex-based values are supported.
 
 ## `domain` parameters
 

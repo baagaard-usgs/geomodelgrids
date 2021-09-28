@@ -78,6 +78,7 @@ $N_v$ is the number of values at each point.
 
 * **data_values** *(array of strings)* Names of values in model grids.
 * **data_units** *(array of strings)* Units of values in model grids.
+* **data_layout** *(string)* `vertex` for vertex-based layout (values are specified at vertices) or `cell` for cell-based layout (values are specified at centers of grid cells). Currently only vertex-based values are supported.
 
 ### Model Storage
 

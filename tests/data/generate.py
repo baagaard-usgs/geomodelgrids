@@ -47,6 +47,7 @@ class TestData:
         ("version", str),
         ("data_values", str),
         ("data_units", str),
+        ("data_layout", str),
         ("crs", str),
         ("origin_x", float),
         ("origin_y", float),
@@ -92,9 +93,6 @@ class TestData:
         attrs = h5.attrs
         for attr_name, map_fn in self.MODEL_ATTRS:
             attrs[attr_name] = self._hdf5_type(self.model[attr_name], map_fn)
-        # Create fixed-length string attributes
-        #attrs["keywords"] = [numpy.string_(v) for v in self.model["keywords"]]
-        #attrs["creator_institution"] = numpy.string_(self.model["creator_institution"])
         if "auxiliary" in self.model:
             attrs["auxiliary"] = dict_as_str(self.model["auxiliary"])
 
@@ -193,6 +191,7 @@ class OneBlockFlat(TestData):
         "version": "1.0.0",
         "data_values": ["one", "two"],
         "data_units": ["m", "m/s"],
+        "data_layout": "vertex",
         "crs": 'EPSG:26910',
         "origin_x": 590000.0,
         "origin_y": 4150000.0,
@@ -249,6 +248,7 @@ class OneBlockFlatVarZ(TestData):
         "version": "1.0.0",
         "data_values": ["one", "two"],
         "data_units": ["m", "m/s"],
+        "data_layout": "vertex",
         "crs": 'EPSG:26910',
         "origin_x": 590000.0,
         "origin_y": 4150000.0,
@@ -304,6 +304,7 @@ class OneBlockTopo(TestData):
         "version": "2.0.0",
         "data_values": ["one", "two"],
         "data_units": ["m", "m/s"],
+        "data_layout": "vertex",
         "crs": 'EPSG:26910',
         "origin_x": 590000.0,
         "origin_y": 4150000.0,
@@ -351,6 +352,7 @@ class OneBlockTopo(TestData):
         self.create()
         with h5py.File(self.filename, "a") as h5:
             h5["surfaces"]["top_surface"].attrs["x_resolution"] *= 0.5
+            h5.attrs["data_layout"] = "cell"
 
 
 class OneBlockTopoVarXY(TestData):
@@ -375,6 +377,7 @@ class OneBlockTopoVarXY(TestData):
         "version": "2.0.0",
         "data_values": ["one", "two"],
         "data_units": ["m", "m/s"],
+        "data_layout": "vertex",
         "crs": 'EPSG:26910',
         "origin_x": 590000.0,
         "origin_y": 4150000.0,
@@ -464,6 +467,7 @@ class ThreeBlocksFlat(TestData):
         "version": "1.0.0",
         "data_values": ["one", "two"],
         "data_units": ["m", "m/s"],
+        "data_layout": "vertex",
         "crs": 'EPSG:3311',
         "origin_x": 200000.0,
         "origin_y": -400000.0,
@@ -537,6 +541,7 @@ class ThreeBlocksTopo(TestData):
         "version": "1.0.0",
         "data_values": ["one", "two"],
         "data_units": ["m", "m/s"],
+        "data_layout": "vertex",
         "crs": 'EPSG:3311',
         "origin_x": 200000.0,
         "origin_y": -400000.0,
@@ -659,6 +664,7 @@ class ThreeBlocksTopoVarXYZ(TestData):
         "version": "1.0.0",
         "data_values": ["one", "two"],
         "data_units": ["m", "m/s"],
+        "data_layout": "vertex",
         "crs": 'EPSG:3311',
         "origin_x": 200000.0,
         "origin_y": -400000.0,

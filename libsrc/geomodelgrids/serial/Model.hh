@@ -22,6 +22,11 @@ public:
         READ_WRITE_TRUNCATE=2,
     }; // ModelEnum
 
+    enum DataLayout {
+        VERTEX=0,
+        CELL=1,
+    }; // DataLayout
+
     // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
@@ -67,6 +72,12 @@ public:
      * @returns Array of names of values in model.
      */
     const std::vector<std::string>& getValueUnits(void) const;
+
+    /** Get data layout.
+     * 
+     * @returns Data layout scheme.
+     */
+    DataLayout getDataLayout(void) const;
 
     /** Get model dimensions.
      *
@@ -191,6 +202,7 @@ private:
 
     std::vector<std::string> _valueNames; ///< Names of values in model.
     std::vector<std::string> _valueUnits; ///< Units of values in model.
+    DataLayout _layout; ///< Data layout (vertex or cell data).
     std::string _modelCRSString; ///< Model CRS as string (PROJ, EPSG, or WKT).
     std::string _inputCRSString; ///< CRS as string (PROJ, EPSG, WKT for input points).
     double _origin[2]; ///< x and y coordinates of model origin.

@@ -9,6 +9,7 @@
 #include "geomodelgrids/utils/CRSTransformer.hh" // USES CRSTransformer
 
 #include <cstring> // USES strlen()
+#include <strings.h> // USES strcasecmp()
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 #include <algorithm> // USES std::fill()
@@ -18,6 +19,7 @@
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
 geomodelgrids::serial::Model::Model(void) :
+    _layout(VERTEX),
     _modelCRSString(""),
     _inputCRSString("EPSG:4326"),
     _yazimuth(0.0),
@@ -143,6 +145,19 @@ geomodelgrids::serial::Model::loadMetadata(void) {
         _h5->readAttribute("/", "data_units", &_valueUnits);
     } else {
         msg << indent << "    /data_units\n";
+        missingAttributes = true;
+    } // if/else
+
+    if (_h5->hasAttribute("/", "data_layout")) {
+        const std::string& layoutString = _h5->readAttribute("/", "data_layout");
+        if (0 == strcasecmp(layoutString.c_str(), "vertex")) {
+            _layout = VERTEX;
+        } else {
+            msg << indent << "    Only vertex-based data layout is supported\n";
+            missingAttributes = true;
+        } // if/else
+    } else {
+        msg << indent << "    /data_layout\n";
         missingAttributes = true;
     } // if/else
 
@@ -282,6 +297,14 @@ geomodelgrids::serial::Model::getValueUnits(void) const {
 
 
 // ------------------------------------------------------------------------------------------------
+// Get data layout.
+geomodelgrids::serial::Model::DataLayout
+geomodelgrids::serial::Model::getDataLayout(void) const {
+    return _layout;
+} // getDataLayout
+
+
+// ------------------------------------------------------------------------------------------------
 // Get model dimensions.
 const double*
 geomodelgrids::serial::Model::getDims(void) const {
@@ -298,7 +321,7 @@ geomodelgrids::serial::Model::getOrigin(void) const {
 
 
 // ------------------------------------------------------------------------------------------------
-// Get azimuth of y coordinate axies.
+// Get azimuth of y coordinate axis.
 const double
 geomodelgrids::serial::Model::getYAzimuth(void) const {
     return _yazimuth;

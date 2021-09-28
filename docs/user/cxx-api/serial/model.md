@@ -10,6 +10,11 @@
 - **READ_WRITE** Read/write mode.
 - **READ_WRITE_TRUNCATE** Read/write mode, truncate upon opening.
 
+### DataLayout
+
+- **VERTEX** Vertex-based data (values are specified at coordinates of vertices).
+- **CELL** Cell-based data (values are specified at centers of grid cells).
+
 ## Methods
 
 + [Model()](cxx-api-serial-model-Model)
@@ -20,6 +25,7 @@
 + [initialize()](cxx-api-serial-model-initialize)
 + [getValueNames()](cxx-api-serial-model-getValueNames)
 + [getValueUnits()](cxx-api-serial-model-getValueUnits)
++ [getDataLayout()](cxx-api-serial-model-getDataLayout)
 + [getDims()](cxx-api-serial-model-getDims)
 + [getOrigin()](cxx-api-serial-model-getOrigin)
 + [getYAzimuth()](cxx-api-serial-model-getYAzimuth)
@@ -81,6 +87,13 @@ Get names of values in the model.
 Get units of values in the model.
 
 * **returns** Array of units of values in the model.
+
+(cxx-api-serial-model-getDataLayout)=
+### DataLayout getDataLayout()
+
+Get data layout for the model.
+
+* **returns** Data layout for values.
 
 (cxx-api-serial-model-getDims)=
 ### const double* getDims()
