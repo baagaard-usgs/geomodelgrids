@@ -2,7 +2,7 @@
 
 ## Model Representation
 
-We map the physical space of the model domain bounded on top by topography (or a flat surface) into logical space that has uniform regular grids as shown in {numref}`fig-grid-mapping`.
+We map the physical space of the model domain bounded on top by topography (or a flat surface) into logical space that has uniform or variable resolution grids. {numref}`fig-grid-mapping` illustrates a model with three uniform resolution grids.
 
 :::{figure-md} fig-grid-mapping
 <img src="figs/gridmapping.*" alt="Diagram of physical and logical grids." width="100%"/>
@@ -78,6 +78,7 @@ $N_v$ is the number of values at each point.
 
 * **data_values** *(array of strings)* Names of values in model grids.
 * **data_units** *(array of strings)* Units of values in model grids.
+* **data_layout** *(string)* `vertex` for vertex-based layout (values are specified at vertices) or `cell` for cell-based layout (values are specified at centers of grid cells). Currently only vertex-based values are supported.
 
 ### Model Storage
 

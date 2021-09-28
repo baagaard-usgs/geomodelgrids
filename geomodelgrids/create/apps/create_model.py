@@ -26,7 +26,7 @@ class App():
 
         Keyword arguments:
             config (str)
-                Name of configuration (INI) file.
+                Name of configuration file.
             show_parameters (bool), default: False
                 If True, print parameters to stdout.
             import_domain (bool), default: False
@@ -35,6 +35,8 @@ class App():
                 If True, write surfaces information to model.
             import_blocks (bool), default: False
                 If True, write block information to model.
+            update_metadata (bool), default: False
+                If True, update all metadata in model.
             all (bool), default: False
                 If True, equivalent to import_domain=True, import_surfaces=True, import_blocks=True
             show_progress (bool), default: True
@@ -60,40 +62,56 @@ class App():
         datasrc = data_obj(self.config)
         datasrc.initialize()
         model = core.model.Model(self.config)
-        model.metadata.auxiliary.update(datasrc.get_metadata())
 
         if args.import_domain or args.all:
             model.save_domain()
 
-        batch_size = int(self.config["domain"]["batch_size"])
-
         if args.import_surfaces or args.all:
-            if model.top_surface.enabled:
+            batch_size = int(self.config["domain"]["batch_size"]) if "batch_size" in self.config["domain"] else None
+            if model.top_surface:
                 model.init_top_surface()
-                for batch in model.top_surface.get_batches(batch_size):
-                    points = model.top_surface.generate_points(batch)
-                    elevation = datasrc.get_top_surface(points)
-                    model.save_top_surface(elevation, batch)
-            if model.topo_bathy.enabled:
+                if batch_size:
+                    for batch in model.top_surface.get_batches(batch_size):
+                        points = model.top_surface.generate_points(batch)
+                        elevation = datasrc.get_top_surface(points)
+                        model.save_top_surface(elevation, batch)
+                else:
+                    points = model.top_surface.generate_points()
+                    elevation = datasrc.get_top_surface()
+                    model.save_top_surface(elevation)
+            if model.topo_bathy:
                 model.init_topography_bathymetry()
-                for batch in model.topo_bathy.get_batches(batch_size):
-                    points = model.topo_bathy.generate_points(batch)
+                if batch_size:
+                    for batch in model.topo_bathy.get_batches(batch_size):
+                        points = model.topo_bathy.generate_points(batch)
+                        elevation = datasrc.get_topography_bathymetry(points)
+                        model.save_topography_bathymetry(elevation, batch)
+                else:
+                    points = model.topo_bathy.generate_points()
                     elevation = datasrc.get_topography_bathymetry(points)
-                    model.save_topography_bathymetry(elevation, batch)
+                    model.save_topography_bathymetry(elevation)
 
         if args.import_blocks or args.all:
-            topo_depth = model.topo_bathy if model.topo_bathy.enabled else model.top_surface
+            batch_size = int(self.config["domain"]["batch_size"]) if "batch_size" in self.config["domain"] else None
+            topo_depth = model.topo_bathy if model.topo_bathy else model.top_surface
             for block in model.blocks:
                 model.init_block(block)
-                for batch in block.get_batches(batch_size):
-                    values = datasrc.get_values(block, model.top_surface, topo_depth, batch)
-                    model.save_block(block, values, batch)
+                if batch_size:
+                    for batch in block.get_batches(batch_size):
+                        values = datasrc.get_values(block, model.top_surface, topo_depth, batch)
+                        model.save_block(block, values, batch)
+                else:
+                    values = datasrc.get_values(block, model.top_surface, topo_depth)
+                    model.save_block(block, values)
+
+        if args.update_metadata:
+            model.update_metadata()
 
     def initialize(self, config_filenames):
         """Set parameters from config file and DEFAULTS.
 
         Args:
-            config_filename (str)
+            config_filenames (list of str)
                 Name of configuration (INI) file(s) with parameters.
         """
         self.config = config.get_config(config_filenames)
@@ -118,6 +136,7 @@ class App():
         parser.add_argument("--import-domain", action="store_true", dest="import_domain")
         parser.add_argument("--import-surfaces", action="store_true", dest="import_surfaces")
         parser.add_argument("--import-blocks", action="store_true", dest="import_blocks")
+        parser.add_argument("--update-metadata", action="store_true", dest="update_metadata")
 
         parser.add_argument("--all", action="store_true", dest="all")
         parser.add_argument("--quiet", action="store_false", dest="show_progress", default=True)

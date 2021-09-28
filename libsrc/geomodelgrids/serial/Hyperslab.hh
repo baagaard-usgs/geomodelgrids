@@ -49,6 +49,14 @@ public:
     void interpolate(double* const values,
                      const double indexFloat[]);
 
+    /** Get values at nearest point.
+     *
+     * @param[out] values Preallocated array for values.
+     * @param[in] indexFloat Index of target point as floating point values.
+     */
+    void nearest(double* const values,
+                 const double indexFloat[]);
+
     // PRIVATE MEMBERS ----------------------------------------------------------------------------
 private:
 

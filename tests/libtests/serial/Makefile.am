@@ -10,15 +10,19 @@ test_serial_SOURCES = \
 	TestModelInfo.cc \
 	TestHDF5.cc \
 	TestHyperslab.cc \
-	TestBlock.cc \
 	TestSurface.cc \
+	TestSurface_Cases.cc \
+	TestBlock.cc \
+	TestBlock_Cases.cc \
 	TestModel.cc \
 	TestQuery.cc \
 	TestCQuery.cc \
 	../../data/ModelPoints.cc \
 	test_driver.cc
 
-noinst_HEADERS =
+noinst_HEADERS = \
+	TestSurface.hh \
+	TestBlock.hh
 
 test_serial_CPPFLAGS = \
 	$(AM_CPPFLAGS) \

@@ -7,6 +7,10 @@ namespace geomodelgrids {
         class GeoTiff;
         class LineSearch;
 
+        class Indexing;
+        class IndexingVariable;
+        class IndexingUniform;
+
         class ErrorHandler;
 
         class TestDriver;

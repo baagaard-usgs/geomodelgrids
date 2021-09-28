@@ -9,6 +9,7 @@
 #include "geomodelgrids/utils/CRSTransformer.hh" // USES CRSTransformer
 
 #include <cstring> // USES strlen()
+#include <strings.h> // USES strcasecmp()
 #include <stdexcept> // USES std::runtime_error
 #include <sstream> // USES std::ostringstream
 #include <algorithm> // USES std::fill()
@@ -18,6 +19,7 @@
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
 geomodelgrids::serial::Model::Model(void) :
+    _layout(VERTEX),
     _modelCRSString(""),
     _inputCRSString("EPSG:4326"),
     _yazimuth(0.0),
@@ -146,6 +148,19 @@ geomodelgrids::serial::Model::loadMetadata(void) {
         missingAttributes = true;
     } // if/else
 
+    if (_h5->hasAttribute("/", "data_layout")) {
+        const std::string& layoutString = _h5->readAttribute("/", "data_layout");
+        if (0 == strcasecmp(layoutString.c_str(), "vertex")) {
+            _layout = VERTEX;
+        } else {
+            msg << indent << "    Only vertex-based data layout is supported\n";
+            missingAttributes = true;
+        } // if/else
+    } else {
+        msg << indent << "    /data_layout\n";
+        missingAttributes = true;
+    } // if/else
+
     if (_h5->hasAttribute("/", "dim_x")) {
         _h5->readAttribute("/", "dim_x", H5T_NATIVE_DOUBLE, (void*)&_dims[0]);
     } else {
@@ -191,25 +206,27 @@ geomodelgrids::serial::Model::loadMetadata(void) {
     } // if/else
 
     delete _surfaceTop;_surfaceTop = NULL;
-    if (_h5->hasDataset("surfaces/top_surface")) {
-        _surfaceTop = new geomodelgrids::serial::Surface("top_surface");assert(_surfaceTop);
-        try {
-            _surfaceTop->loadMetadata(_h5);
-        } catch (const std::runtime_error& err) {
-            msg << err.what();
-            missingAttributes = true;
-        } // try/catch
-    } // if
-
     delete _surfaceTopoBathy;_surfaceTopoBathy = NULL;
-    if (_h5->hasDataset("surfaces/topography_bathymetry")) {
-        _surfaceTopoBathy = new geomodelgrids::serial::Surface("topography_bathymetry");assert(_surfaceTopoBathy);
-        try {
-            _surfaceTopoBathy->loadMetadata(_h5);
-        } catch (const std::runtime_error& err) {
-            msg << err.what();
-            missingAttributes = true;
-        } // try/catch
+    if (_h5->hasGroup("surfaces")) {
+        if (_h5->hasDataset("surfaces/top_surface")) {
+            _surfaceTop = new geomodelgrids::serial::Surface("top_surface");assert(_surfaceTop);
+            try {
+                _surfaceTop->loadMetadata(_h5);
+            } catch (const std::runtime_error& err) {
+                msg << err.what();
+                missingAttributes = true;
+            } // try/catch
+        } // if
+
+        if (_h5->hasDataset("surfaces/topography_bathymetry")) {
+            _surfaceTopoBathy = new geomodelgrids::serial::Surface("topography_bathymetry");assert(_surfaceTopoBathy);
+            try {
+                _surfaceTopoBathy->loadMetadata(_h5);
+            } catch (const std::runtime_error& err) {
+                msg << err.what();
+                missingAttributes = true;
+            } // try/catch
+        } // if
     } // if
 
     if (_blocks.size() > 0) {
@@ -280,6 +297,14 @@ geomodelgrids::serial::Model::getValueUnits(void) const {
 
 
 // ------------------------------------------------------------------------------------------------
+// Get data layout.
+geomodelgrids::serial::Model::DataLayout
+geomodelgrids::serial::Model::getDataLayout(void) const {
+    return _layout;
+} // getDataLayout
+
+
+// ------------------------------------------------------------------------------------------------
 // Get model dimensions.
 const double*
 geomodelgrids::serial::Model::getDims(void) const {
@@ -296,7 +321,7 @@ geomodelgrids::serial::Model::getOrigin(void) const {
 
 
 // ------------------------------------------------------------------------------------------------
-// Get azimuth of y coordinate axies.
+// Get azimuth of y coordinate axis.
 const double
 geomodelgrids::serial::Model::getYAzimuth(void) const {
     return _yazimuth;

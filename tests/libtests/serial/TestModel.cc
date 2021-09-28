@@ -36,6 +36,7 @@ class geomodelgrids::serial::TestModel : public CppUnit::TestFixture {
     CPPUNIT_TEST(testQueryTopElevation);
     CPPUNIT_TEST(testQueryTopoBathyElevation);
     CPPUNIT_TEST(testQuery);
+    CPPUNIT_TEST(testQueryVarXYZ);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -74,6 +75,9 @@ public:
 
     /// Test query().
     void testQuery(void);
+
+    /// Test query() with variable resolution blocks.
+    void testQueryVarXYZ(void);
 
 }; // class TestModel
 CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::serial::TestModel);
@@ -174,6 +178,12 @@ geomodelgrids::serial::TestModel::testAccessors(void) {
     for (size_t i = 0; i < blocks.size(); ++i) {
         CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking blocks", blocks[i], blocksT[i]);
     } // for
+
+    Block* block = model._findBlock(0, 0, 0);
+    CPPUNIT_ASSERT_MESSAGE("Failed to find block.", block);
+
+    block = model._findBlock(0, 0, 1.0e+20);
+    CPPUNIT_ASSERT_MESSAGE("Found block for invalid point.", !block);
 } // testAccessors
 
 
@@ -213,7 +223,8 @@ geomodelgrids::serial::TestModel::testLoadMetadata(void) {
     const double origin[2] = { 200000.0, -400000.0 };
     const double yazimuth(330.0);
     const double dims[3] = { 60.0e+3, 120.0e+3, 45.0e+3 };
-    const double topoHorizRes = 5.0e+3;
+    const double topoResX = 5.0e+3;
+    const double topoResY = 5.0e+3;
 
     const size_t numBlocks = 3;
     const char* blockNamesPtr[numBlocks] = {"top", "middle", "bottom"};
@@ -260,17 +271,21 @@ geomodelgrids::serial::TestModel::testLoadMetadata(void) {
     CPPUNIT_ASSERT_MESSAGE("Checking model info pointer", info);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking model title", title, info->getTitle());
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking model id", id, info->getId());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking model doi", doi, info->getDOI());
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking model repositoryDOI", doi, info->getRepositoryDOI());
 
     const Surface* surfaceTop = model.getTopSurface();
     CPPUNIT_ASSERT_MESSAGE("Checking top surface pointer", surfaceTop);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking horizontal resolution of top surface",
-                                         topoHorizRes, surfaceTop->getResolutionHoriz(), tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking x resolution of top surface",
+                                         topoResX, surfaceTop->getResolutionX(), tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking y resolution of top surface",
+                                         topoResY, surfaceTop->getResolutionY(), tolerance);
 
     const Surface* surfaceTopoBathy = model.getTopoBathy();
     CPPUNIT_ASSERT_MESSAGE("Checking topography/bathymetry pointer", surfaceTopoBathy);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking horizontal resolution of topography/bathymetry",
-                                         topoHorizRes, surfaceTopoBathy->getResolutionHoriz(), tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking x resolution of topography/bathymetry",
+                                         topoResX, surfaceTopoBathy->getResolutionX(), tolerance);
+    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking y resolution of topography/bathymetry",
+                                         topoResY, surfaceTopoBathy->getResolutionY(), tolerance);
 
     const std::vector<Block*>& blocksT = model.getBlocks();
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking blocks size", numBlocks, blocksT.size());
@@ -311,7 +326,7 @@ geomodelgrids::serial::TestModel::testInitialize(void) {
 } // testInitialize
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _toModelXYZ() with flat ground surface.
 void
 geomodelgrids::serial::TestModel::testToModelXYZFlat(void) {
@@ -343,7 +358,7 @@ geomodelgrids::serial::TestModel::testToModelXYZFlat(void) {
 } // testToModelXYZFlat
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test _toModelXYZ() with topography.
 void
 geomodelgrids::serial::TestModel::testToModelXYZTopo(void) {
@@ -376,7 +391,7 @@ geomodelgrids::serial::TestModel::testToModelXYZTopo(void) {
 } // testToModelXYZTopo
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test contains().
 void
 geomodelgrids::serial::TestModel::testContains(void) {
@@ -417,7 +432,7 @@ geomodelgrids::serial::TestModel::testContains(void) {
 } // testContains
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test queryTopElevation().
 void
 geomodelgrids::serial::TestModel::testQueryTopElevation(void) {
@@ -445,7 +460,7 @@ geomodelgrids::serial::TestModel::testQueryTopElevation(void) {
 } // testQueryElevation
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test queryTopoBathyElevation().
 void
 geomodelgrids::serial::TestModel::testQueryTopoBathyElevation(void) {
@@ -473,7 +488,7 @@ geomodelgrids::serial::TestModel::testQueryTopoBathyElevation(void) {
 } // testQueryTopoBathyElevation
 
 
-// ----------------------------------------------------------------------
+// ------------------------------------------------------------------------------------------------
 // Test query().
 void
 geomodelgrids::serial::TestModel::testQuery(void) {
@@ -517,6 +532,54 @@ geomodelgrids::serial::TestModel::testQuery(void) {
         } // Value 1
     } // for
 } // testQuery
+
+
+void testQueryVarXYZ(void);
+
+// ------------------------------------------------------------------------------------------------
+// Test query() with variable resolution blocks.
+void
+geomodelgrids::serial::TestModel::testQueryVarXYZ(void) {
+    Model model;
+    model.open("../../data/three-blocks-topo-varxyz.h5", Model::READ);
+    model.loadMetadata();
+    model.initialize();
+
+    geomodelgrids::testdata::ThreeBlocksTopoPoints points;
+    const size_t numPoints = points.getNumPoints();
+    const size_t spaceDim = 3;
+    const double* pointsLLE = points.getLatLonElev();
+    const double* pointsXYZ = points.getXYZ();
+
+    for (size_t iPt = 0; iPt < numPoints; ++iPt) {
+        const double* values = model.query(pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
+
+        const double x = pointsXYZ[iPt*spaceDim+0];
+        const double y = pointsXYZ[iPt*spaceDim+1];
+        const double z = pointsXYZ[iPt*spaceDim+2];
+
+        const double tolerance = 1.0e-5;
+        { // Value 0
+            const double valueE = points.computeValueOne(x, y, z);
+
+            std::ostringstream msg;
+            msg << "Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                << ", " << pointsLLE[iPt*spaceDim+2] << ") for value 0.";
+            const double valueTolerance = std::max(tolerance, tolerance*fabs(valueE));
+            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[0], valueTolerance);
+        } // Value 0
+
+        { // Value 1
+            const double valueE = points.computeValueTwo(x, y, z);
+
+            std::ostringstream msg;
+            msg << "Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                << ", " << pointsLLE[iPt*spaceDim+2] << ") for value 1.";
+            const double valueTolerance = std::max(tolerance, tolerance*fabs(valueE));
+            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[1], valueTolerance);
+        } // Value 1
+    } // for
+} // testQueryVarXYZ
 
 
 // End of file

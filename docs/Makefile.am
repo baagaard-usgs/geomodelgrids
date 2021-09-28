@@ -1,7 +1,6 @@
 EXTRA_DIST = \
 	build.sh \
 	conf.py \
-	files \
 	index.md \
 	requirements.txt \
 	_static/images/USGSsimple.png \
@@ -35,6 +34,9 @@ EXTRA_DIST = \
 	user/apps/isosurface.md \
 	user/apps/query-elev.md \
 	user/apps/query.md \
+	user/apps/data_srcs/csv.md \
+	user/apps/data_srcs/iris-emc.md \
+	user/apps/data_srcs/earthvision.md \
 	user/c-api/index.md \
 	user/c-api/example-query.md \
 	user/c-api/parallel.md \
@@ -42,32 +44,45 @@ EXTRA_DIST = \
 	user/c-api/serial.md \
 	user/c-api/utils-errorhandler.md \
 	user/cxx-api/index.md \
-	user/cxx-api/example-query.md \
-	user/cxx-api/parallel.md \
-	user/cxx-api/serial-block.md \
-	user/cxx-api/serial-hdf5.md \
-	user/cxx-api/serial-hyperslab.md \
-	user/cxx-api/serial-model.md \
-	user/cxx-api/serial-modelinfo.md \
-	user/cxx-api/serial-query.md \
-	user/cxx-api/serial-surface.md \
-	user/cxx-api/serial.md \
-	user/cxx-api/utils-crstransformer.md \
-	user/cxx-api/utils-errorhandler.md \
-	user/cxx-api/utils-testdriver.md \
-	user/cxx-api/utils.md \
+	user/cxx-api/parallel/index.md \
+	user/cxx-api/serial/index.md \
+	user/cxx-api/serial/block.md \
+	user/cxx-api/serial/example-query.md \
+	user/cxx-api/serial/hdf5.md \
+	user/cxx-api/serial/hyperslab.md \
+	user/cxx-api/serial/model.md \
+	user/cxx-api/serial/modelinfo.md \
+	user/cxx-api/serial/query.md \
+	user/cxx-api/serial/surface.md \
+	user/cxx-api/utils/index.md \
+	user/cxx-api/utils/crstransformer.md \
+	user/cxx-api/utils/errorhandler.md \
+	user/cxx-api/utils/indexing.md \
+	user/cxx-api/utils/testdriver.md \
 	user/scripting/index.md \
-	user/scripting/data-structures.md \
-	user/scripting/scripting.md \
 	user/scripting/create/index.md \
-	user/scripting/create/apps-create-model.md \
-	user/scripting/create/core-block.md \
-	user/scripting/create/core-datasrc.md \
-	user/scripting/create/core-model.md \
-	user/scripting/create/core-surface.md \
-	user/scripting/create/earthvision-api.md \
-	user/scripting/create/earthvision-datasrc.md \
-	user/scripting/create/io-hdf5.md
+	user/scripting/create/apps/index.md \
+	user/scripting/create/apps/create-model.md \
+	user/scripting/create/core/index.md \
+	user/scripting/create/core/block.md \
+	user/scripting/create/core/datasrc.md \
+	user/scripting/create/core/model.md \
+	user/scripting/create/core/surface.md \
+	user/scripting/create/data_srcs/index.md \
+	user/scripting/create/data_srcs/csv/index.md \
+	user/scripting/create/data_srcs/csv/datasrc.md \
+	user/scripting/create/data_srcs/earthvision/index.md \
+	user/scripting/create/data_srcs/earthvision/api.md \
+	user/scripting/create/data_srcs/earthvision/datasrc.md \
+	user/scripting/create/data_srcs/iris_emc/index.md \
+	user/scripting/create/data_srcs/iris_emc/datasrc.md \
+	user/scripting/create/io/index.md \
+	user/scripting/create/io/hdf5.md \
+	user/scripting/create/utils/index.md \
+	user/scripting/create/utils/batch.md \
+	user/scripting/create/utils/config.md \
+	user/scripting/create/utils/units.md \
+	user/scripting/python-api/index.md
 
 
 # End of file

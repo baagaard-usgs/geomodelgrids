@@ -32,6 +32,8 @@ class DataSrc(ABC):
         Args:
             points (numpy.array [Nx,Ny])
                 Numpy array with coordinates of points in model coordinates.
+        Returns:
+            Numpy array with elevation at points.
         """
 
     @abstractmethod
@@ -41,6 +43,8 @@ class DataSrc(ABC):
         Args:
             points (numpy.array [Nx,Ny])
                 Numpy array with coordinates of points in model coordinates.
+        Returns:
+            Numpy array with elevation at points.
         """
 
     @abstractmethod
@@ -51,9 +55,9 @@ class DataSrc(ABC):
             block (Block)
                 Block information.
             top_surface (Surface)
-                Elevation of top surface.
+                Top surface.
             topo_bathy (Surface)
-                Elevation of topography or bathymetry used to define depth.
+                Topography or bathymetry surface used to define depth.
             batch (BatchGenerator3D)
                 Current batch of points in block.
         """

@@ -2,7 +2,7 @@
 
 from . import apps
 from . import core
-from . import earthvision
+from . import data_srcs
 from . import io
 from . import testing
 from . import utils

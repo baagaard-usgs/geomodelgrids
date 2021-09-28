@@ -1,7 +1,7 @@
 # C++ API
 
 ```{toctree}
-serial.md
-parallel.md
-utils.md
+serial/index.md
+parallel/index.md
+utils/index.md
 ```

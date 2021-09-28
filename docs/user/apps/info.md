@@ -47,10 +47,12 @@ Show all information for a model with three blocks and topography. The file is `
 geomodelgrids_info --all --models=tests/data/three-blocks-topo.h5
 
 # Output
-Model: three-blocks-topo.h5
+Model: tests/data/three-blocks-topo.h5
     Verification
         Verifying metadata...OK
-        Verifying topography...OK
+        Verifying surface 'top surface'...OK
+        Verifying surface 'topography/bathymetry'...OK
+        Verifying resolution of top surface matches resolution of topography/bathymetry...OK
         Verifying block 'top'...OK
         Verifying block 'middle'...OK
         Verifying block 'bottom'...OK
@@ -59,14 +61,18 @@ Model: three-blocks-topo.h5
     Id: three-blocks-topo
     Description: Model with three blocks and topography.
     Keywords: key one, key two, key three
+    History: First version
+    Comment: One comment
     Creator: John Doe, Agency, johndoe@agency.org
     Authors: Smith, Jim; Doe, John; Doyle, Sarah
     References:
         Reference 1
         Reference 2
-    Acknowledgements: Thank you!
+    Acknowledgement: Thank you!
+    Repository: Some repository http://somewhere.org
     DOI: this.is.a.doi
     Version: 1.0.0
+    License: CC0
     Dimensions of model (m): x=60000, y=120000, z=45000
     Coordinate system:
         CRS (PROJ, EPSG, WKT): EPSG:3311
@@ -78,23 +84,23 @@ Model: three-blocks-topo.h5
     Surfaces
         Top surface:
             Number of points: x=13, y=25
-            Horizontal resolution (m): 5000
+            Resolution: x=5000, y=5000
         Topography/bathymetry:
             Number of points: x=13, y=25
-            Horizontal resolution (m): 5000
+            Resolution: x=5000, y=5000
     Blocks (3)
         Block 'top'
-            Resolution (m): horizontal=10000, vertical=5000
+            Resolution: x=10000, y=10000, z=5000
             Elevation (m) of top of block in logical space: 0
             Number of points: x=7, y=13, z=2
             Dimensions (m): x=60000, y=120000, z=5000
         Block 'middle'
-            Resolution (m): horizontal=20000, vertical=10000
+            Resolution: x=20000, y=20000, z=10000
             Elevation (m) of top of block in logical space: -5000
             Number of points: x=4, y=7, z=3
             Dimensions (m): x=60000, y=120000, z=20000
         Block 'bottom'
-            Resolution (m): horizontal=30000, vertical=10000
+            Resolution: x=30000, y=30000, z=10000
             Elevation (m) of top of block in logical space: -25000
             Number of points: x=3, y=5, z=3
             Dimensions (m): x=60000, y=120000, z=20000
