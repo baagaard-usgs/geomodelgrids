@@ -24,7 +24,6 @@ EXTRA_DIST = \
 	CONTRIBUTING.md \
 	DISCLAIMER.md \
 	LICENSE.md \
-	MANIFEST \
 	setup.py \
 	code.json \
 	developer/autopep8.cfg \

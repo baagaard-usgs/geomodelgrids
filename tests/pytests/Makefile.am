@@ -15,7 +15,8 @@ dist_noinst_DATA = \
 	test_createapp.cfg \
 	test_createapp_batch.cfg \
 	test_createapp_varz.cfg \
-	test_createapp_varxyz.cfg
+	test_createapp_varxyz.cfg \
+	test_updatemetadata_varxyz.cfg
 
 noinst_TMP = \
 	test-model-1.0.0.h5 \

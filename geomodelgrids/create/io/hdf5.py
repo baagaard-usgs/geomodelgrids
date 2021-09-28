@@ -29,7 +29,6 @@ class HDF5Storage():
         for attr_info in domain.get_attributes():
             attr_name = attr_info[0]
             attrs[attr_name] = self._get_attribute(domain.metadata, attr_info)
-
         h5.close()
 
     def create_surface(self, surface):
@@ -47,7 +46,18 @@ class HDF5Storage():
             del surfaces_group[surface.name]
         surf_dataset = surfaces_group.create_dataset(surface.name, shape=surface.get_dims(),
                                                      chunks=surface.chunk_size, compression="gzip")
-        attrs = surf_dataset.attrs
+        h5.close()
+        self.save_surface_metadata(surface)
+
+    def save_surface_metadata(self, surface):
+        """Write surface metadata to HDF5 file.
+
+        Args:
+            surface (Surface)
+                Model surface
+        """
+        h5 = h5py.File(self.filename, "a")
+        attrs = h5["surfaces"][surface.name].attrs
         for attr_info in surface.get_attributes():
             attr_name = attr_info[0]
             attrs[attr_name] = self._get_attribute(surface, attr_info)
@@ -132,7 +142,18 @@ class HDF5Storage():
         shape = list(block.get_dims()) + [len(block.model_metadata.data_values)]
         block_dataset = blocks_group.create_dataset(
             block.name, shape=shape, chunks=block.chunk_size, compression="gzip")
-        attrs = block_dataset.attrs
+        h5.close()
+        self.save_block_metadata(block)
+
+    def save_block_metadata(self, block):
+        """Write block metadata to HDF5 file.
+
+        Args:
+            block (Block)
+                Block associated with gridded data.
+        """
+        h5 = h5py.File(self.filename, "a")
+        attrs = h5["blocks"][block.name].attrs
         for attr_info in block.get_attributes():
             attr_name = attr_info[0]
             attrs[attr_name] = self._get_attribute(block, attr_info)

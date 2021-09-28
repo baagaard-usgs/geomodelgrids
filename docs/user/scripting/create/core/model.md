@@ -21,6 +21,7 @@
 + [save_topography_bathymetry(elevation, batch)](py-api-create-core-model-save-topography-bathymetry)
 + [init_block(block)](py-api-create-core-model-init-block)
 + [save_block(block, values, batch)](py-api-create-core-model-save-block)
++ [update_metadata()](py-api-create-core-model-update-metadata)
 + [get_attributes()](py-api-create-core-model-get-attributes)
 
 
@@ -77,6 +78,11 @@ Write block information to storage.
 + **block[in]** *(Block)* Block information.
 + **values[in]** *(numpy.array [Nx, Ny, Nz, Nv])* Gridded data associated with block.
 + **batch[in]** *(BatchGenerator3D)* Current batch of points in domain.
+
+(py-api-create-core-model-update-metadata)=
+### update_metadata()
+
+Update all metadata for model using current model configuration.
 
 (py-api-create-core-model-get-attributes)=
 ### get_attributes()

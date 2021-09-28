@@ -97,6 +97,7 @@ class TestApp(unittest.TestCase):
             "import_domain": True,
             "import_surfaces": False,
             "import_blocks": False,
+            "update_metadata": False,
             "all": False,
             "show_progress": False,
             "log_filename": "test_createapp.log",
@@ -116,6 +117,7 @@ class TestApp(unittest.TestCase):
             "import_domain": True,
             "import_surfaces": True,
             "import_blocks": False,
+            "update_metadata": False,
             "all": False,
             "show_progress": False,
             "log_filename": "test_createapp.log",
@@ -163,6 +165,7 @@ class TestApp(unittest.TestCase):
             "import_domain": True,
             "import_surfaces": True,
             "import_blocks": True,
+            "update_metadata": False,
             "all": False,
             "show_progress": False,
             "log_filename": "test_createapp.log",
@@ -273,6 +276,37 @@ class TestAppVarZ(TestApp):
 
 class TestAppVarXYZ(TestApp):
     CONFIG_FILENAME = "test_createapp_varxyz.cfg"
+
+    def test_metadata(self):
+        ARGS = {
+            "config": self.CONFIG_FILENAME,
+            "show_parameters": False,
+            "import_domain": False,
+            "import_surfaces": False,
+            "import_blocks": False,
+            "update_metadata": False,
+            "all": True,
+            "show_progress": False,
+            "log_filename": "test_createapp.log",
+            "debug": True,
+        }
+        app = App()
+        app.main(**ARGS)
+        ARGS.update({
+            "config": "test_updatemetadata_varxyz.cfg",
+            "all": False,
+            "update_metadata": True,
+        })
+        app.main(**ARGS)
+
+        model_metadata = {
+            "references": ["lots"],
+            "repository_name": "Yet another repository too",
+            "license": "CC0123",
+            "data_values": ["one", "three"],
+        }
+        h5 = h5py.File(self.metadata["filename"], "r")
+        self._check_attributes(model_metadata.keys(), model_metadata, h5.attrs)
 
 
 def test_classes():

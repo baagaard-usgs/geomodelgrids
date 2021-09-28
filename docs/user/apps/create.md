@@ -17,6 +17,7 @@ geomodelgrids_create_model
   [--import-domain]
   [--import-surfaces]
   [--import-blocks]
+  [--update-metadata]
   [--all]
   [--quiet]
   [--log=LOG_FILENAME]
@@ -35,9 +36,15 @@ geomodelgrids_create_model
 + **`--import-surfaces`** Create surfaces.
 + **`--import-blocks`** Create blocks.
 + **`--all`** Equivalent to `--import-domain --import-surfaces --import-block`.
++ **`--update-metadata`** Update all metadata in file using current model configuration.
 + **`--quiet`** Turn off printing progress information to stdout.
 + **`--log=LOG_FILENAME`** Name of file for logging output.
 + **`--debug`** Log debugging information.
+
+:::{hint}
+The `--update-metadata` option makes it possible to update the model, surface, and block metadata without altering the values.
+It is very useful for updating metadata associated with publication or archiving of the model, such as repository information, references, acknowledgement, history, and comment.
+:::
 
 ## Model configuration files
 

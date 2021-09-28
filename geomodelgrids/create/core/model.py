@@ -587,6 +587,17 @@ class Model():
         """
         self.storage.save_block(block, values, batch)
 
+    def update_metadata(self):
+        """Update all metadata for model using current model configuration.
+        """
+        self.storage.save_domain(self)
+        if self.top_surface:
+            self.storage.save_surface_metadata(self.top_surface)
+        if self.topo_bathy:
+            self.storage.save_surface_metadata(self.topo_bathy)
+        for block in self.blocks:
+            self.storage.save_block_metadata(block)
+
     def _initialize(self, config):
         """Setup model.
 

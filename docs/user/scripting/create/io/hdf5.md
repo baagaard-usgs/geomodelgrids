@@ -13,9 +13,11 @@ HDF5 file for storing gridded model.
 + [HDF5Storage(filename)](py-api-create-io-hdf5storage-constructor)
 + [save_domain(domain)](py-api-create-io-hdf5storage-save-domain)
 + [create_surface(surface)](py-api-create-io-hdf5storage-create-surface)
++ [save_surface_metadata(surface)](py-api-create-io-hdf5storage-save-surface-metadata)
 + [save_surface(surface, elevation, batch)](py-api-create-io-hdf5storage-save-surface)
 + [load_surface(surface, batch)](py-api-create-io-hdf5storage-load-surface)
 + [create_block(block)](py-api-create-io-hdf5storage-create-block)
++ [save_block_metadata(block)](py-api-create-io-hdf5storage-save-block-metadata)
 + [save_block(block, data, batch)](py-api-create-io-hdf5storage-save-block)
 
 (py-api-create-io-hdf5storage-constructor)=
@@ -38,6 +40,13 @@ Write domain attributes to HDF5 file.
 Create surface in HDF5 file.
 
 + **surface[in]** *(Surface)* Model surface.
+
+(py-api-create-io-hdf5storage-save-surface-metadata)=
+### save_surface_metadata(surface)
+
+Write surface metadata to HDF5 file.
+
++ **surface[in]** *(Surface)* Model surface
 
 (py-api-create-io-hdf5storage-save-surface)=
 ### save_surface(surface, elevation, batch=None)
@@ -63,6 +72,13 @@ Load surface from HDF5 file.
 Create block in HDF5 file.
 
 + **block** *(Block)* Block in model.
+
+(py-api-create-io-hdf5storage-save-block-metadata)=
+### save_block_metadata(block)
+
+Write block metadata to HDF5 file.
+
++ **block[in]** *(Block)* Block associated with gridded data.
 
 (py-api-create-io-hdf5storage-save-block)=
 ### save_block(block, data, batch=None)

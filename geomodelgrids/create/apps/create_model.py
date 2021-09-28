@@ -35,6 +35,8 @@ class App():
                 If True, write surfaces information to model.
             import_blocks (bool), default: False
                 If True, write block information to model.
+            update_metadata (bool), default: False
+                If True, update all metadata in model.
             all (bool), default: False
                 If True, equivalent to import_domain=True, import_surfaces=True, import_blocks=True
             show_progress (bool), default: True
@@ -102,6 +104,9 @@ class App():
                     values = datasrc.get_values(block, model.top_surface, topo_depth)
                     model.save_block(block, values)
 
+        if args.update_metadata:
+            model.update_metadata()
+
     def initialize(self, config_filenames):
         """Set parameters from config file and DEFAULTS.
 
@@ -131,6 +136,7 @@ class App():
         parser.add_argument("--import-domain", action="store_true", dest="import_domain")
         parser.add_argument("--import-surfaces", action="store_true", dest="import_surfaces")
         parser.add_argument("--import-blocks", action="store_true", dest="import_blocks")
+        parser.add_argument("--update-metadata", action="store_true", dest="update_metadata")
 
         parser.add_argument("--all", action="store_true", dest="all")
         parser.add_argument("--quiet", action="store_false", dest="show_progress", default=True)
