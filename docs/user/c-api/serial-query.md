@@ -7,7 +7,7 @@ These functions are prefixed by `geomodelgrids_squery`.
 - **GEOMODELGRIDS_NODATA_VALUE** Value assigned to points with no data.
 - **GEOMODELGRIDS_SQUASH_NONE** Disable squashing.
 - **GEOMODELGRIDS_SQUASH_TOP_SURFACE** Squash relative to the top surface of the model.
-- **GEOMODELGRIDS_SQUASH_TOPOGRAPHY_BATHYMETRY** Squash relative to the topopography/bathymetryc surface.
+- **GEOMODELGRIDS_SQUASH_TOPOGRAPHY_BATHYMETRY** Squash relative to the topography/bathymetry surface.
 
 ## Functions
 

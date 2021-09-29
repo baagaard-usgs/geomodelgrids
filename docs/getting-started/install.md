@@ -41,7 +41,9 @@ $ tar -xf geomodelgrids-1.0.0-Linux_x86_64.tar.gz
 $ tar -xf geomodelgrids-1.0.0-Darwin_x86_64.tar.gz
 ```
 
-Set environment variables. The provided `setup.sh` script in the top-level directory script only works if you are using bash shell. If you are using adifferent shell, you will need to alter how the environment variables are set in `setup.sh`.
+Set environment variables.
+The provided `setup.sh` script in the top-level directory script only works if you are using bash shell.
+If you are using a different shell, you will need to alter how the environment variables are set in `setup.sh`.
 
 ```{code-block} bash
 # Linux 64-bit

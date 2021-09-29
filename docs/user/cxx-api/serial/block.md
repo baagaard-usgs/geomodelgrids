@@ -71,7 +71,7 @@ Get resolution along z axis. Only valid (nonzero) for uniform resolution.
 
 Get elevation of top of block in logical space.
 
-* **returns** Elvation of top of block.
+* **returns** Elevation of top of block.
 
 
 (cxx-api-serial-block-getZBottom)=

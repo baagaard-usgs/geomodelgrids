@@ -91,4 +91,4 @@ Query for elevation of ground surface at a point using bilinear interpolation.
 * **x[in]** X coordinate of point in model coordinate system.
 * **y[in]** Y coordinate of point in model coordinate system.
 
-* **returns** Elvation of ground surface at point.
+* **returns** Elevation of ground surface at point.
