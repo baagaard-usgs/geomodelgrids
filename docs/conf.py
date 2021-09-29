@@ -31,6 +31,7 @@ release = '1.0.0rc2'
 # ones.
 extensions = [
     "myst_parser",
+#    "sphinxcontrib.spelling", # Requires pyenchant and enchant C library
 ]
 myst_enable_extensions = [
     "colon_fence",
@@ -81,3 +82,5 @@ numfig = True
 # so a file named "default.css" will overwrite the builtin "default.css".
 html_static_path = ['_static']
 html_last_updated_fmt = ""
+
+spelling_word_list_filename = ["spellcheck.txt"]
