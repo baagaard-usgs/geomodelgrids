@@ -28,6 +28,8 @@ RUN dnf install -y \
 	python38-Cython \
 	sqlite \
 	sqlite-devel \
+	libtiff-devel \
+	libcurl-devel \
 	gdb \
 	valgrind \
 	vim-common \
@@ -59,9 +61,9 @@ ENV  TOP_SRCDIR=$HOME/src  TOP_BUILDDIR=$HOME/build
 RUN mkdir ${INSTALL_DIR} \
   && chown ${GMG_USER} ${INSTALL_DIR} \
   && chgrp ${GMG_USER} ${INSTALL_DIR}
-ENV PATH=$PATH:$INSTALL_DIR/bin \
-    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$INSTALL_DIR/lib:$INSTALL_DIR/lib64 \
-    PYTHONPATH=${PYTHONPATH}:${INSTALL_DIR}/lib/python${PYTHON_VERSION}/site-packages:${INSTALL_DIR}/lib64/python${PYTHON_VERSION}/site-packages
+ENV PATH=$INSTALL_DIR/bin:$PATH \
+    LD_LIBRARY_PATH=$INSTALL_DIR/lib:$INSTALL_DIR/lib64:$LD_LIBRARY_PATH \
+    PYTHONPATH=${INSTALL_DIR}/lib/python${PYTHON_VERSION}/site-packages:${INSTALL_DIR}/lib64/python${PYTHON_VERSION}/site-packages:${PYTHONPATH}
 
 USER ${GMG_USER}
 
@@ -74,16 +76,14 @@ from user-setup as build-deps
 # --------------------------------------
 # proj
 # --------------------------------------
-ENV PROJ_VER=6.3.1  src_dir=${TOP_SRCDIR}/proj  build_dir=${TOP_BUILDDIR}/proj
+ENV PROJ_VER=8.1.1  src_dir=${TOP_SRCDIR}/proj  build_dir=${TOP_BUILDDIR}/proj
 RUN mkdir -p ${src_dir} && mkdir -p ${build_dir}
 WORKDIR ${src_dir}
 RUN curl -O https://download.osgeo.org/proj/proj-${PROJ_VER}.tar.gz \
-    && curl -O https://download.osgeo.org/proj/proj-datumgrid-1.8.zip \
     && tar -xf proj-${PROJ_VER}.tar.gz
 
 WORKDIR ${build_dir}
 RUN ${src_dir}/proj-${PROJ_VER}/configure --prefix=${INSTALL_DIR} SQLITE3_CFLAGS=-I/usr/include SQLITE3_LIBS="-L/usr/lib -lsqlite3" \
-  && unzip -o ${src_dir}/proj-datumgrid-1.8.zip -d ${build_dir}/data/ \
   && make -j$(nproc) \
   && make install \
   && rm -r ${build_dir}

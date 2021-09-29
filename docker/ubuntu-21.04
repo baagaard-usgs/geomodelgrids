@@ -1,4 +1,4 @@
-FROM ubuntu:20.10 as os-update
+FROM ubuntu:21.04 as os-update
 MAINTAINER Brad Aagaard <baagaard@usgs.gov>
 
 RUN apt-get update \

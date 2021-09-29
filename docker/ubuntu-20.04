@@ -12,6 +12,7 @@ RUN apt-get update \
       curl \
       libpython3.8 \
       python3-dev \
+      python3-venv \
       python3-pip \
       python3-setuptools \
       python3-numpy \
@@ -64,9 +65,9 @@ ENV  TOP_SRCDIR=$HOME/src  TOP_BUILDDIR=$HOME/build
 RUN mkdir ${INSTALL_DIR} \
   && chown ${TEST_USER} ${INSTALL_DIR} \
   && chgrp ${TEST_USER} ${INSTALL_DIR}
-ENV PATH=$PATH:$INSTALL_DIR/bin \
-    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$INSTALL_DIR/lib \
-    PYTHONPATH=${PYTHONPATH}:${INSTALL_DIR}/lib/python${PYTHON_VERSION}/site-packages
+ENV PATH=$INSTALL_DIR/bin:$PATH \
+    LD_LIBRARY_PATH=$INSTALL_DIR/lib:$LD_LIBRARY_PATH \
+    PYTHONPATH=${INSTALL_DIR}/lib/python${PYTHON_VERSION}/site-packages:${PYTHONPATH}
 
 
 USER ${TEST_USER}

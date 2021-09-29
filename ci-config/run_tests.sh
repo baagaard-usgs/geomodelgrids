@@ -12,15 +12,21 @@ make check -C tests/data
 if [ $? != 0 ]; then exit 1; fi
 
 
-make -j$(nproc) check -C tests/libtests VERBOSE=1
+make clean-coverage && make -j$(nproc) check -C tests/libtests VERBOSE=1
 if [ $? != 0 ]; then exit 1; fi
 
 make coverage-libtests
 if [ $? != 0 ]; then exit 1; fi
 
 if [ -r coverage-libtests.info ]; then
-  pushd ../src && \
-      bash <(curl -s https://codecov.io/bash) -X gcov -f ../build/coverage-libtests.info -F libtests -y ci-config/codecov.yml \
+  curl https://keybase.io/codecovsecurity/pgp_keys.asc | gpg --import # One-time step
+  curl -Os https://uploader.codecov.io/latest/linux/codecov
+  curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM
+  curl -Os https://uploader.codecov.io/latest/linux/codecov.SHA256SUM.sig
+  gpg --verify codecov.SHA256SUM.sig codecov.SHA256SUM
+  shasum -a 256 -c codecov.SHA256SUM
+  chmod +x codecov  pushd ${SRC_DIR} && \
+      ${BUILD_DIR}/codecov -X gcov -f ${BUILD_DIR}/coverage-libtests.info -F libtests -y ci-config/codecov.yml \
 	  || echo "Codecov did not collect libtests coverage reports." && \
       popd
 fi
@@ -33,7 +39,7 @@ if [ $? != 0 ]; then exit 1; fi
 
 if [ -r coverage-pytests.xml ]; then
   pushd ${SRC_DIR} && \
-      bash <(curl -s https://codecov.io/bash) -X gcov -f ${BUILD_DIR}/coverage-pytests.xml -F pytests -y ci-config/codecov.yml \
+      ${BUILD_DIR}/codecov -X gcov -f ${BUILD_DIR}/coverage-pytests.xml -F pytests -y ci-config/codecov.yml \
 	  || echo "Codecov did not collect pytests coverage reports." && \
       popd
 fi

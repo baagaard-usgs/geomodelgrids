@@ -11,6 +11,10 @@ ENV TEST_COVERAGE=${TEST_COVERAGE} PYTHON_COVERAGE=${PYTHON_COVERAGE} ENABLE_VAL
 
 LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
 
+# ------------------------------------------------------------------------------
+RUN python3 -m venv --system-site-packages ${INSTALL_DIR} \
+    && /bin/bash -c 'source ${INSTALL_DIR}/bin/activate' \
+    && python3 -m pip install --upgrade pip setuptools
 
 # ------------------------------------------------------------------------------
 ENV  src_dir=${TOP_SRCDIR}/geomodelgrids  build_dir=${TOP_BUILDDIR}/geomodelgrids
@@ -42,4 +46,4 @@ RUN make check -C tests/data \
 
 
 # ------------------------------------------------------------------------------
-CMD /bin/bash
+CMD /bin/bash -c 'source ${INSTALL_DIR}/bin/activate'

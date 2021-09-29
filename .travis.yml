@@ -48,5 +48,4 @@ install:
   - docker build -t geomodelgrids-testenv --build-arg BASE_IMAGE=$BASE_IMAGE --build-arg TEST_COVERAGE=$TEST_COVERAGE --build-arg PYTHON_COVERAGE=$PYTHON_COVERAGE --build-arg ENABLE_GDAL=$ENABLE_GDAL --build-arg ENABLE_VALGRIND=$ENABLE_VALGRIND --target build -f docker/geomodelgrids-testenv .
 
 script:
-  - ci_env=`bash <(curl -s https://codecov.io/env)`
-  - docker run $ci_env geomodelgrids-testenv ci-config/run_test_coverage.sh
+  - docker run geomodelgrids-testenv ci-config/run_tests.sh

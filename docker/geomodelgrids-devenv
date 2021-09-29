@@ -13,12 +13,14 @@ RUN apt-get update \
       locales \
       libpython3.8 \
       python3-dev \
+      python3-venv \
       python3-pip \
       python3-setuptools \
       python3-numpy \
       python3-coverage \
       python3-autopep8 \
       python3-h5py \
+      python3-enchant \
       cython3 \
       zlib1g-dev \
       unzip \
@@ -42,6 +44,7 @@ RUN apt-get update \
       tree \
       less \
       uncrustify \
+      libenchant-2-2 \
       gnupg2 \
       vim-common \
       vim-runtime \
@@ -69,9 +72,14 @@ ENV  GEOMODELGRIDS_BUILDDIR=${TOP_BUILDDIR}  \
     PROJ_INCDIR=/usr/include \
     CPPUNIT_INCDIR=/usr/include
 
-ENV PATH=$PATH:$INSTALL_DIR/bin \
-    LD_LIBRARY_PATH=$INSTALL_DIR/lib \
-    PYTHONPATH=${INSTALL_DIR}/lib/python${PYTHON_VERSION}/site-packages
+ENV LD_LIBRARY_PATH=$INSTALL_DIR/lib
+
+# ------------------------------------------------------------------------------
+RUN python3 -m venv --system-site-packages ${INSTALL_DIR} \
+    && /bin/bash -c 'source ${INSTALL_DIR}/bin/activate' \
+    && python3 -m pip install --upgrade pip setuptools \
+    && python3 -m pip install sphinx myst-parser pydata-sphinx-theme sphinxcontrib.bibtex sphinxcontrib-spelling
+
 
 WORKDIR $HOME
 RUN mkdir -p ${BASE_DIR} \
@@ -80,4 +88,4 @@ RUN mkdir -p ${BASE_DIR} \
 USER ${GMG_USER}
 
 
-CMD /bin/bash
+CMD /bin/bash -c 'source ${INSTALL_DIR}/bin/activate'

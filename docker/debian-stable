@@ -3,43 +3,47 @@ LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
 
 RUN apt-get update \
     && apt-get install -y --no-install-recommends \
-        g++ \
-	make \
-        file \
-        automake \
-        autoconf \
-        libtool \
-        curl \
-	libpython3.7 \
-        python3-dev \
-	python3-numpy \
-	python3-h5py \
-	python3-pip \
-        python3-setuptools \
-	python3-coverage \
-        zlib1g-dev \
-	unzip \
-        git \
-	ca-certificates \
-	hdf5-tools \
-	libhdf5-dev \
-        libcppunit-dev \
-	sqlite3 \
-	libsqlite3-0 \
-	libsqlite3-dev \
-        gdal-bin \
-        libgdal-dev \
-	gdb \
-	valgrind \
-	lcov \
-	vim-common \
-	vim-runtime \
-	vim-nox
+    g++ \
+    make \
+    file \
+    automake \
+    autoconf \
+    libtool \
+    curl \
+    libpython3.9 \
+    python3-dev \
+    python3-venv \
+    python3-pip \
+    python3-setuptools \
+    python3-numpy \
+    python3-h5py \
+    python3-coverage \
+    zlib1g-dev \
+    unzip \
+    git \
+    ca-certificates \
+    hdf5-tools \
+    libhdf5-dev \
+    libcppunit-dev \
+    sqlite3 \
+    libsqlite3-0 \
+    libsqlite3-dev \
+    libproj-dev \
+    proj-bin \
+    proj-data \
+    gdal-bin \
+    libgdal-dev \
+    gdb \
+    valgrind \
+    lcov \
+    vim-common \
+    vim-runtime \
+    vim-nox
     
 COPY docker/certs/ /usr/local/share/ca-certificates
 RUN update-ca-certificates
 
-ENV PYTHON_VERSION 3.7
+ENV PYTHON_VERSION 3.9
 ENV HDF5_INCDIR=/usr/include/hdf5/serial  HDF5_LIBDIR=/usr/lib/x86_64-linux-gnu/hdf5/serial
 
 # ------------------------------------------------------------------------------
@@ -59,33 +63,11 @@ ENV  TOP_SRCDIR=$HOME/src  TOP_BUILDDIR=$HOME/build
 RUN mkdir ${INSTALL_DIR} \
   && chown ${GMG_USER} ${INSTALL_DIR} \
   && chgrp ${GMG_USER} ${INSTALL_DIR}
-ENV PATH=$PATH:$INSTALL_DIR/bin \
-    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$INSTALL_DIR/lib \
-    PYTHONPATH=${PYTHONPATH}:${INSTALL_DIR}/lib/python${PYTHON_VERSION}/site-packages
+ENV PATH=$INSTALL_DIR/bin:$PATH \
+    LD_LIBRARY_PATH=$INSTALL_DIR/lib:$LD_LIBRARY_PATH \
+    PYTHONPATH=${INSTALL_DIR}/lib/python${PYTHON_VERSION}/site-packages:${PYTHONPATH}
+
 
 USER ${GMG_USER}
-
-
-## ------------------------------------------------------------------------------
-from user-setup as build-deps
-
-# Install dependencies to /opt/geomodelgrids
-
-# proj
-ENV PROJ_VER=6.3.1  src_dir=${TOP_SRCDIR}/proj  build_dir=${TOP_BUILDDIR}/proj
-RUN mkdir -p ${src_dir} && mkdir -p ${build_dir}
-WORKDIR ${src_dir}
-RUN curl -O https://download.osgeo.org/proj/proj-${PROJ_VER}.tar.gz \
-    && curl -O https://download.osgeo.org/proj/proj-datumgrid-1.8.zip \
-    && tar -xf proj-${PROJ_VER}.tar.gz
-
-WORKDIR ${build_dir}
-RUN ${src_dir}/proj-${PROJ_VER}/configure --prefix=${INSTALL_DIR} SQLITE3_CFLAGS=-I/usr/include SQLITE3_LIBS="-L/usr/lib -lsqlite3" \
-  && unzip -o ${src_dir}/proj-datumgrid-1.8.zip -d ${build_dir}/data/ \
-  && make -j$(nproc) \
-  && make install \
-  && rm -r ${build_dir}
-
-
 WORKDIR ${HOME}
 CMD /bin/bash

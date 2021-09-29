@@ -1,4 +1,4 @@
-FROM fedora:32 as os-update
+FROM fedora:34 as os-update
 LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
 
 RUN dnf install -y \
@@ -35,7 +35,7 @@ RUN dnf install -y \
     sqlite-devel \
     proj \
     proj-devel \
-    proj-datumgrid \
+    proj-data-north-america \
     gdal \
     gdal-devel \
     lcov \
@@ -49,7 +49,7 @@ COPY docker/certs/ /usr/share/pki/ca-trust-source/anchors
 RUN update-ca-trust enable
 
 
-ENV PYTHON_VERSION 3.8
+ENV PYTHON_VERSION 3.9
 ENV HDF5_INCDIR=/usr/include  HDF5_LIBDIR=/usr/lib64
 
 # ------------------------------------------------------------------------------
@@ -69,9 +69,9 @@ ENV  TOP_SRCDIR=$HOME/src  TOP_BUILDDIR=$HOME/build
 RUN mkdir ${INSTALL_DIR} \
   && chown ${TEST_USER} ${INSTALL_DIR} \
   && chgrp ${TEST_USER} ${INSTALL_DIR}
-ENV PATH=$PATH:$INSTALL_DIR/bin \
-    LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$INSTALL_DIR/lib \
-    PYTHONPATH=${PYTHONPATH}:${INSTALL_DIR}/lib/python${PYTHON_VERSION}/site-packages
+ENV PATH=$INSTALL_DIR/bin:$PATH \
+    LD_LIBRARY_PATH=$INSTALL_DIR/lib:$INSTALL_DIR/lib64:$LD_LIBRARY_PATH \
+    PYTHONPATH=${INSTALL_DIR}/lib/python${PYTHON_VERSION}/site-packages:${INSTALL_DIR}/lib64/python${PYTHON_VERSION}/site-packages:${PYTHONPATH}
 
 
 USER ${TEST_USER}
