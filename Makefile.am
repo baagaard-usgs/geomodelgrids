@@ -36,15 +36,17 @@ EXTRA_DIST = \
 	docker/debian-testing \
 	docker/ubuntu-20.04 \
 	docker/ubuntu-20.10 \
-	docker/fedora-32 \
+	docker/ubuntu-21.04 \
 	docker/fedora-33 \
+	docker/fedora-34 \
 	docker/centos-8 \
 	docker/geomodelgrids-testenv \
 	docker/geomodelgrids-devenv \
 	docker/geomodelgrids-userenv
+	ci-config/run_tests.sh
 
 
-.PHONY: coverage-libtests coverage-html clean-coverage
+.PHONY: coverage-libtests coverage-pytests coverage-html clean-coverage
 
 if ENABLE_TEST_COVERAGE
 coverage-libtests:
@@ -53,11 +55,11 @@ coverage-libtests:
 	$(LCOV) --list coverage-libtests.info
 
 coverage-pytests:
-	$(PYTHON_COVERAGE) combine tests/pytests/.coverage
-	$(PYTHON_COVERAGE) xml -o coverage-pytests.xml
+	$(PYTHON_COVERAGE) xml -o coverage-pytests.xml tests/pytests/coverage.xml
 
-coverage-html: coverage-libtests
+coverage-html: coverage-libtests coverage-pytests
 	genhtml -o coverage-libtests coverage-libtests.info
+	$(PYTHON_COVERAGE) html -d coverage-pytests
 
 clean-coverage:
 	$(RM) `find . -name "*.gcda"`

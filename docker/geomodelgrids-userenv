@@ -95,5 +95,4 @@ RUN make check -C tests/data \
 
 
 WORKDIR ${HOME}
-
-CMD /bin/bash
+CMD /bin/bash -c 'source ${INSTALL_DIR}/bin/activate'
