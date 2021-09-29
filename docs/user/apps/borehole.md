@@ -33,7 +33,7 @@ geomodelgrids_borehole [--help] [--log=FILE_LOG]
 
 * **--help** Print help information to stdout and exit.
 * **--log=FILE_LOG** Name of file for logging.
-* **--max-depth=DEPTH** Depth extext of virtual borehole in point coordinate system vertical units (default=5000m).
+* **--max-depth=DEPTH** Depth extent of virtual borehole in point coordinate system vertical units (default=5000m).
 * **--dz=RESOLUTION** Vertical resolution of query points in virtual borehole in point coordinate system vertical units (default=10m).
 * **--points-coordsys=PROJ\|EPSG\|WKT** Coordinate reference system of input points as Proj parameters, EPSG code, or Well-Known Text. Default is EPSG:4326 (latitude, WGS84 degrees; longitude, WGS84 degrees; elevation, m above ellipsoid.
 

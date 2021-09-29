@@ -173,7 +173,7 @@ Query model for elevation of the top surface at a point using bilinear interpola
 (cxx-api-serial-model-queryTopoBathy)=
 ### double queryTopoBathyElevation(const double x, const double y)
 
-Query model for elevation of the topogrpahy/bathymetry surface at a point using bilinear interpolation.
+Query model for elevation of the topography/bathymetry surface at a point using bilinear interpolation.
 
 * **x**[in] X coordinate of point (in input CRS).
 * **y**[in] Y coordinate of point (in input CRS).
