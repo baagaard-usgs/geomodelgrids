@@ -10,6 +10,7 @@
 #include "geomodelgrids/serial/ModelInfo.hh" // USES ModelInfo
 #include "geomodelgrids/serial/Surface.hh" // USES Surface
 #include "geomodelgrids/serial/Block.hh" // USES Block
+#include "geomodelgrids/utils/constants.hh" // USES TOLERANCE
 
 #include <cppunit/extensions/HelperMacros.h>
 
@@ -413,6 +414,17 @@ geomodelgrids::serial::TestModel::testContains(void) {
                 << ", " << pointsLLE[iPt*spaceDim+2] << ").";
             CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.str().c_str(), true, flag);
         } // for
+
+        // Verify points slightly above topography are considered in the domain.
+        for (size_t iPt = 0; iPt < numPoints; ++iPt) {
+            const double elev = model.queryTopElevation(pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1]) + 0.5*TOLERANCE;
+            const bool flag = model.contains(pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], elev);
+            std::ostringstream msg;
+            msg << "Mismatch for surface point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                << ", " << elev << ").";
+            CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.str().c_str(), true, flag);
+        } // for
+
     } // inside domain
 
     { // outside domain
