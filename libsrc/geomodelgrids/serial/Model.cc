@@ -7,6 +7,7 @@
 #include "geomodelgrids/serial/Surface.hh" // USES Surface
 #include "geomodelgrids/serial/Block.hh" // USES Block
 #include "geomodelgrids/utils/CRSTransformer.hh" // USES CRSTransformer
+#include "geomodelgrids/utils/constants.hh" // USES TOLERANCE
 
 #include <cstring> // USES strlen()
 #include <strings.h> // USES strcasecmp()
@@ -498,6 +499,9 @@ geomodelgrids::serial::Model::_toModelXYZ(double* xModel,
         } // if
         const double zBottom = -_dims[2];
         *zModel = zBottom * (zGroundSurf - zModelCRS) / (zGroundSurf - zBottom);
+        if ((*zModel > 0.0) && (*zModel < TOLERANCE)) {
+            *zModel = 0.0;
+        } // if
     } // if
 } // _toModelXYZ
 
