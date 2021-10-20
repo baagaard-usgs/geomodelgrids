@@ -107,6 +107,11 @@ geomodelgrids::serial::TestBlock::testAccessors(void) {
     } // if
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking numValues", _data->numValues, block.getNumValues());
+
+    // Memory managed by _data.
+    block._coordinatesX = NULL;
+    block._coordinatesY = NULL;
+    block._coordinatesZ = NULL;
 } // testAccessors
 
 
@@ -274,8 +279,7 @@ geomodelgrids::serial::TestBlock_Data::TestBlock_Data(void) :
     numX(0),
     numY(0),
     numZ(0),
-    points(NULL)
-{}
+    points(NULL) {}
 
 
 // ------------------------------------------------------------------------------------------------

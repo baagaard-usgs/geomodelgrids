@@ -85,6 +85,9 @@ public:
                      const size_t numX,
                      SortOrder sortOrder=ASCENDING);
 
+    /// Destructor.
+    ~IndexingVariable(void);
+
     /** Get index.
      *
      * @param[in] x Distance along coordinate axis from beginning.

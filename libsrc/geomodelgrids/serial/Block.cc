@@ -44,6 +44,10 @@ geomodelgrids::serial::Block::Block(const char* name) :
 // ------------------------------------------------------------------------------------------------
 // Destructor
 geomodelgrids::serial::Block::~Block(void) {
+    delete[] _coordinatesX;_coordinatesX = NULL;
+    delete[] _coordinatesY;_coordinatesY = NULL;
+    delete[] _coordinatesZ;_coordinatesZ = NULL;
+
     delete _indexingX;_indexingX = NULL;
     delete _indexingY;_indexingY = NULL;
     delete _indexingZ;_indexingZ = NULL;

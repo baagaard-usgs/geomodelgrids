@@ -71,6 +71,7 @@ geomodelgrids::utils::TestCRSTransformer::testFactories(void) {
                                  CRSTransformer::createGeoToXYAxisOrder("nonsense"),
                                  std::runtime_error);
 
+    delete transformer;transformer = NULL;
 } // testFactories
 
 
