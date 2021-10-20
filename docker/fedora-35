@@ -1,5 +1,5 @@
 ARG BUILD_ENV=nocerts
-FROM fedora:33 as os-update
+FROM fedora:35 as os-update
 LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
 
 ENV BUILD_ENV=${BUILD_ENV}
@@ -34,7 +34,7 @@ RUN dnf install -y \
   sqlite-devel \
   proj \
   proj-devel \
-  proj-datumgrid \
+  proj-data-north-america \
   gdal \
   gdal-devel \
   lcov \
@@ -61,7 +61,7 @@ FROM build-${BUILD_ENV} as build-deps
 # Build geomodelgrids in $HOME/build
 
 ENV GMG_USER=gmg-tester \
-  PYTHON_VERSION=3.9 \
+  PYTHON_VERSION=3.10 \
   INSTALL_DIR=/opt/geomodelgrids
 ENV HOME=/home/$GMG_USER \
   PATH=$INSTALL_DIR/bin:$PATH \

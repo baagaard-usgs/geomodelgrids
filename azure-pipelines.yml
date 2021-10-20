@@ -13,11 +13,10 @@ stages:
   - stage: basic_build
     displayName: "Basic Build"
     jobs:
-      - job: debian_stable
+      - job: ubuntu_20_04
         variables:
-          BASE_IMAGE: "testenv-debian-stable"
-          TEST_COVERAGE: "yes"
-          PYTHON_COVERAGE: "python3-coverage"
+          BASE_IMAGE: "testenv-ubuntu-20.04"
+          ENABLE_GDAL: "yes"
         steps:
           - checkout: self
             submodules: "true"
@@ -27,7 +26,7 @@ stages:
               command: "build"
               Dockerfile: "docker/geomodelgrids-testenv"
               buildContext: $(Build.SourcesDirectory)
-              arguments: "-t geomodelgrids-testenv --build-arg BASE_IMAGE=$(IMAGE_REGISTRY)/$(BASE_IMAGE) --build-arg TEST_COVERAGE=$(TEST_COVERAGE) --build-arg PYTHON_COVERAGE=$(PYTHON_COVERAGE) --target build"
+              arguments: "-t geomodelgrids-testenv --build-arg BASE_IMAGE=$(IMAGE_REGISTRY)/$(BASE_IMAGE) --build-arg ENABLE_GDAL=$(ENABLE_GDAL) --target build"
               addPipelineData: false
               addBaseImageData: false
           - script: docker run geomodelgrids-testenv ci-config/run_tests.sh
@@ -35,21 +34,65 @@ stages:
   - stage: other_platforms
     displayName: "Other Builds"
     jobs:
+      - job: code_coverage
+        variables:
+          BASE_IMAGE: "testenv-debian-stable"
+          TEST_COVERAGE: "yes"
+          PYTHON_COVERAGE: "coverage3"
+          ENABLE_GDAL: "yes"
+        steps:
+          - checkout: self
+            submodules: "true"
+          - task: Docker@2
+            displayName: Build
+            inputs:
+              command: "build"
+              Dockerfile: "docker/geomodelgrids-testenv"
+              buildContext: $(Build.SourcesDirectory)
+              arguments: "-t geomodelgrids-testenv --build-arg BASE_IMAGE=$(IMAGE_REGISTRY)/$(BASE_IMAGE) --build-arg ENABLE_GDAL=$(ENABLE_GDAL) --build-arg TEST_COVERAGE=$(TEST_COVERAGE) --build-arg PYTHON_COVERAGE=$(PYTHON_COVERAGE) --target build"
+              addPipelineData: false
+              addBaseImageData: false
+          - script: ci_env=`bash <(curl -s https://codecov.io/env)`; docker run $ci_env -e CI=true geomodelgrids-testenv ci-config/run_tests.sh
+            displayName: Test
+            env:
+              CODECOV_TOKEN: $(codecovToken)
+      - job: valgrind
+        variables:
+          BASE_IMAGE: "testenv-debian-stable"
+          ENABLE_GDAL: "yes"
+          ENABLE_VALGRIND: "yes"
+        steps:
+          - checkout: self
+            submodules: "true"
+          - task: Docker@2
+            displayName: Build
+            inputs:
+              command: "build"
+              Dockerfile: "docker/geomodelgrids-testenv"
+              buildContext: $(Build.SourcesDirectory)
+              arguments: "-t geomodelgrids-testenv --build-arg BASE_IMAGE=$(IMAGE_REGISTRY)/$(BASE_IMAGE) --build-arg ENABLE_GDAL=$(ENABLE_GDAL) --build-arg ENABLE_VALGRIND=$(ENABLE_VALGRIND) --target build"
+              addPipelineData: false
+              addBaseImageData: false
+          - script: docker run geomodelgrids-testenv ci-config/run_tests.sh
+            displayName: Test
       - job: main
         strategy:
           matrix:
             debian_testing:
               BASE_IMAGE: "testenv-debian-testing"
-            ubuntu_20.04:
-              BASE_IMAGE: "testenv-ubuntu-20.04"
-            ubuntu_20.10:
-              BASE_IMAGE: "testenv-ubuntu-20.10"
+              ENABLE_GDAL: "yes"
             ubuntu_21.04:
               BASE_IMAGE: "testenv-ubuntu-21.04"
+              ENABLE_GDAL: "yes"
+            ubuntu_21.10:
+              BASE_IMAGE: "testenv-ubuntu-21.10"
+              ENABLE_GDAL: "yes"
             fedora_33:
               BASE_IMAGE: "testenv-fedora-33"
+              ENABLE_GDAL: "yes"
             fedora_34:
               BASE_IMAGE: "testenv-fedora-34"
+              ENABLE_GDAL: "yes"
             centos_8:
               BASE_IMAGE: "testenv-centos-8"
         steps:
@@ -61,7 +104,7 @@ stages:
               command: "build"
               Dockerfile: "docker/geomodelgrids-testenv"
               buildContext: $(Build.SourcesDirectory)
-              arguments: "-t geomodelgrids-testenv --build-arg BASE_IMAGE=$(IMAGE_REGISTRY)/$(BASE_IMAGE) --target build"
+              arguments: "-t geomodelgrids-testenv --build-arg BASE_IMAGE=$(IMAGE_REGISTRY)/$(BASE_IMAGE) --build-arg ENABLE_GDAL=$(ENABLE_GDAL) --target build"
               addPipelineData: false
               addBaseImageData: false
           - script: docker run geomodelgrids-testenv ci-config/run_tests.sh

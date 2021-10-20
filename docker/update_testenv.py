@@ -11,15 +11,15 @@ import subprocess
 ENVS = (
     ("debian:stable", "debian-stable"),
     ("debian:testing", "debian-testing"),
-    ("ubuntu:18.04", "ubuntu-18.04"),
     ("ubuntu:20.04", "ubuntu-20.04"),
-    ("ubuntu:20.10", "ubuntu-20.10"),
-    ("fedora:32", "fedora-32"),
+    ("ubuntu:21.04", "ubuntu-21.04"),
+    ("ubuntu:21.10", "ubuntu-21.10"),
     ("fedora:33", "fedora-33"),
+    ("fedora:34", "fedora-34"),
     ("centos:8", "centos-8"),
     )
 
-TAG_TEMPLATE = "registry.gitlab.com/baagaard-usgs/geomodelgrids-testenv-{env}"
+TAG_TEMPLATE = "registry.gitlab.com/baagaard-usgs/geomodelgrids/testenv-{env}"
 
 def run_docker(cmd, verbose=True):
     """Run docker command.
@@ -39,4 +39,5 @@ for base, dockerfile in ENVS:
     run_docker(f"pull {base}")
 
     tag = TAG_TEMPLATE.format(env=dockerfile)
-    run_docker(f"build -t {tag} -f docker/{dockerfile} .")
+    run_docker(f"build --build-arg BUILD_ENV=certs-doi -t {tag} -f docker/{dockerfile} .")
+    run_docker(f"push {tag}")
