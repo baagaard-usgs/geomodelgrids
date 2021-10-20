@@ -36,6 +36,9 @@ geomodelgrids::serial::Surface::Surface(const char* const name) :
 // ------------------------------------------------------------------------------------------------
 // Destructor
 geomodelgrids::serial::Surface::~Surface(void) {
+    delete[] _coordinatesX;_coordinatesX = NULL;
+    delete[] _coordinatesY;_coordinatesY = NULL;
+
     delete _indexingX;_indexingX = NULL;
     delete _indexingY;_indexingY = NULL;
     delete _hyperslab;_hyperslab = NULL;

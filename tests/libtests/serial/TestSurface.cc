@@ -83,6 +83,10 @@ geomodelgrids::serial::TestSurface::testAccessors(void) {
             CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Mismatch in y coordinates", _data->coordinatesY[i], y[i], tolerance);
         } // for
     } // if
+
+    // Memory managed by _data
+    surf._coordinatesX = NULL;
+    surf._coordinatesY = NULL;
 } // testAccessors
 
 
@@ -214,8 +218,7 @@ geomodelgrids::serial::TestSurface_Data::TestSurface_Data(void) :
     coordinatesX(NULL),
     coordinatesY(NULL),
     numX(0),
-    numY(0)
-{}
+    numY(0) {}
 
 
 // ------------------------------------------------------------------------------------------------

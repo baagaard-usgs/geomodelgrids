@@ -64,6 +64,12 @@ geomodelgrids::utils::IndexingVariable::IndexingVariable(const double* x,
 
 
 // ------------------------------------------------------------------------------------------------
+geomodelgrids::utils::IndexingVariable::~IndexingVariable(void) {
+    delete[] _x;_x = NULL;
+}
+
+
+// ------------------------------------------------------------------------------------------------
 double
 geomodelgrids::utils::IndexingVariable::getIndex(const double x) const {
     assert(_x);

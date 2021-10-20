@@ -2,9 +2,9 @@
 
 
 ARG BASE_IMAGE
-from ${BASE_IMAGE} as src
+FROM ${BASE_IMAGE} as src
 ARG TEST_COVERAGE=no
-ARG PYTHON_COVERAGE=python3-coverage
+ARG PYTHON_COVERAGE=coverage3
 ARG ENABLE_VALGRIND=no
 ARG ENABLE_GDAL=no
 ENV TEST_COVERAGE=${TEST_COVERAGE} PYTHON_COVERAGE=${PYTHON_COVERAGE} ENABLE_VALGRIND=${ENABLE_VALGRIND} ENABLE_GDAL=${ENABLE_GDAL}
@@ -12,37 +12,33 @@ ENV TEST_COVERAGE=${TEST_COVERAGE} PYTHON_COVERAGE=${PYTHON_COVERAGE} ENABLE_VAL
 LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
 
 # ------------------------------------------------------------------------------
-RUN python3 -m venv --system-site-packages ${INSTALL_DIR} \
-    && /bin/bash -c 'source ${INSTALL_DIR}/bin/activate' \
-    && python3 -m pip install --upgrade pip setuptools
-
-# ------------------------------------------------------------------------------
 ENV  src_dir=${TOP_SRCDIR}/geomodelgrids  build_dir=${TOP_BUILDDIR}/geomodelgrids
+RUN mkdir -p ${src_dir} \
+  && mkdir -p ${build_dir} 
 
-RUN mkdir -p ${src_dir}
 COPY --chown=gmg-tester:gmg-tester . ${src_dir}
 WORKDIR ${src_dir}
 RUN autoreconf --install --verbose --force
 
-RUN mkdir -p ${build_dir}
 WORKDIR ${build_dir}
 RUN ${src_dir}/configure --prefix=${INSTALL_DIR} --enable-python --enable-testing --enable-test-coverage=${TEST_COVERAGE} --with-python-coverage=${PYTHON_COVERAGE} --enable-valgrind=${ENABLE_VALGRIND} --enable-gdal=${ENABLE_GDAL} CPPFLAGS="-I${INSTALL_DIR}/include -I${HDF5_INCDIR}" LDFLAGS="-L${INSTALL_DIR}/lib -L${HDF5_LIBDIR}"  CFLAGS="-g -O --coverage" CXXFLAGS="-g -O --coverage"
 
 # ------------------------------------------------------------------------------
-from src as build
+FROM src as build
 
 RUN make -j$(nproc) install
 
 WORKDIR ${src_dir}
 
 # ------------------------------------------------------------------------------
-from build as test
+FROM build as test
 
 WORKDIR ${build_dir}
 RUN make check -C tests/data \
   && make clean-coverage \
-  && make -j$(nproc) check -C tests/libtests VERBOSE=1 \
-  && make coverage-libtests
+  && make -j$(nproc) check VERBOSE=1 \
+  && make coverage-libtests \
+  && make coverage-pytests
 
 
 # ------------------------------------------------------------------------------

@@ -1,79 +1,97 @@
+ARG BUILD_ENV=nocerts
 FROM fedora:34 as os-update
 LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
 
+ENV BUILD_ENV=${BUILD_ENV}
+
+
 RUN dnf install -y \
-    gcc \
-    gcc-c++ \
-    make \
-    file \
-    automake \
-    autoconf \
-    libtool \
-    curl \
-    python3 \
-    python3-devel \
-    python3-libs \
-    python3-numpy \
-    python3-setuptools \
-    python3-six \
-    python3-h5py \
-    python3-coverage \
-    python3-Cython \
-    zlib \
-    zlib-devel \
-    openssl \
-    openssl-libs \
-    unzip \
-    git \
-    ca-certificates \
-    cppunit \
-    cppunit-devel \
-    hdf5 \
-    hdf5-devel \
-    sqlite \
-    sqlite-libs \
-    sqlite-devel \
-    proj \
-    proj-devel \
-    proj-data-north-america \
-    gdal \
-    gdal-devel \
-    lcov \
-    gdb \
-    valgrind \
-    vim \
-    vim-common
-
-
-COPY docker/certs/ /usr/share/pki/ca-trust-source/anchors
-RUN update-ca-trust enable
-
-
-ENV PYTHON_VERSION 3.9
-ENV HDF5_INCDIR=/usr/include  HDF5_LIBDIR=/usr/lib64
+  gcc \
+  gcc-c++ \
+  make \
+  file \
+  automake \
+  autoconf \
+  libtool \
+  curl \
+  python3 \
+  python3-devel \
+  python3-libs \
+  python3-setuptools \
+  zlib \
+  zlib-devel \
+  openssl \
+  openssl-libs \
+  unzip \
+  git \
+  ca-certificates \
+  cppunit \
+  cppunit-devel \
+  hdf5 \
+  hdf5-devel \
+  sqlite \
+  sqlite-libs \
+  sqlite-devel \
+  proj \
+  proj-devel \
+  proj-data-north-america \
+  gdal \
+  gdal-devel \
+  lcov \
+  gdb \
+  valgrind \
+  vim \
+  vim-common
 
 # ------------------------------------------------------------------------------
-from os-update as user-setup
+FROM os-update as build-certs-doi
+
+ONBUILD COPY docker/certs/ /usr/share/pki/ca-trust-source/anchors
+ONBUILD RUN update-ca-trust enable
+ONBUILD ENV CERT_FILE=/etc/ssl/certs/ca-bundle.crt
+
+FROM os-update as build-nocerts
+ONBUILD ENV CERT_FILE=no
+
+# ------------------------------------------------------------------------------
+FROM build-${BUILD_ENV} as build-deps
 
 # Install geomodelgrids to /opt/geomodelgrids
 # Download source code to $HOME/src
 # Build geomodelgrids in $HOME/build
 
+ENV GMG_USER=gmg-tester \
+  PYTHON_VERSION=3.9 \
+  INSTALL_DIR=/opt/geomodelgrids
+ENV HOME=/home/$GMG_USER \
+  PATH=$INSTALL_DIR/bin:$PATH \
+  LD_LIBRARY_PATH=$INSTALL_DIR/lib:$INSTALL_DIR/lib64:$LD_LIBRARY_PATH \
+  PYTHONPATH=${INSTALL_DIR}/lib/python${PYTHON_VERSION}/site-packages:${INSTALL_DIR}/lib64/python${PYTHON_VERSION}/site-packages:${PYTHONPATH} \
+  HDF5_INCDIR=/usr/include \
+  HDF5_LIBDIR=/usr/lib64
+RUN useradd --create-home --shell /bin/bash $GMG_USER \
+  && mkdir -p ${INSTALL_DIR} \
+  && chown ${GMG_USER} ${INSTALL_DIR} \
+  && chgrp ${GMG_USER} ${INSTALL_DIR}
 
-# Create 'gmg-tester' user
-ENV TEST_USER gmg-tester
-RUN useradd --create-home --shell /bin/bash $TEST_USER
-ENV  INSTALL_DIR=/opt/geomodelgrids  HOME=/home/$TEST_USER
-ENV  TOP_SRCDIR=$HOME/src  TOP_BUILDDIR=$HOME/build
+ENV TOP_SRCDIR=$HOME/src \
+  TOP_BUILDDIR=$HOME/build
 
-RUN mkdir ${INSTALL_DIR} \
-  && chown ${TEST_USER} ${INSTALL_DIR} \
-  && chgrp ${TEST_USER} ${INSTALL_DIR}
-ENV PATH=$INSTALL_DIR/bin:$PATH \
-    LD_LIBRARY_PATH=$INSTALL_DIR/lib:$INSTALL_DIR/lib64:$LD_LIBRARY_PATH \
-    PYTHONPATH=${INSTALL_DIR}/lib/python${PYTHON_VERSION}/site-packages:${INSTALL_DIR}/lib64/python${PYTHON_VERSION}/site-packages:${PYTHONPATH}
+USER ${GMG_USER}
 
+# --------------------------------------
+# Python packages
+# --------------------------------------
+RUN python3 -m venv ${INSTALL_DIR} && \
+  if [ x${CERT_FILE} = x"no" ]; then \
+  python3 -m pip install --upgrade pip setuptools && \
+  python3 -m pip install numpy coverage && \
+  CC=gcc HDF5_LIBDIR=${HDF5_LIBDIR} HDF5_INCLUDEDIR=${HDF5_INCDIR} python3 -m pip install --no-binary h5py h5py; \
+  else \
+  SSL_CERT_FILE=${CERT_FILE} REQUESTS_CA_BUNDLE=${CERT_FILE} python3 -m pip install --upgrade pip setuptools && \
+  SSL_CERT_FILE=${CERT_FILE} REQUESTS_CA_BUNDLE=${CERT_FILE} python3 -m pip install numpy coverage && \
+  SSL_CERT_FILE=${CERT_FILE} REQUESTS_CA_BUNDLE=${CERT_FILE} CC=gcc HDF5_LIBDIR=${HDF5_LIBDIR} HDF5_INCLUDEDIR=${HDF5_INCDIR} python3 -m pip install --no-binary h5py h5py; \
+  fi
 
-USER ${TEST_USER}
 WORKDIR ${HOME}
 CMD /bin/bash
