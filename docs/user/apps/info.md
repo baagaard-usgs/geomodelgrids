@@ -50,6 +50,7 @@ geomodelgrids_info --all --models=tests/data/three-blocks-topo.h5
 Model: tests/data/three-blocks-topo.h5
     Verification
         Verifying metadata...OK
+        Verifying model coordinate system ...OK
         Verifying surface 'top surface'...OK
         Verifying surface 'topography/bathymetry'...OK
         Verifying resolution of top surface matches resolution of topography/bathymetry...OK
@@ -73,14 +74,17 @@ Model: tests/data/three-blocks-topo.h5
     DOI: this.is.a.doi
     Version: 1.0.0
     License: CC0
-    Dimensions of model (m): x=60000, y=120000, z=45000
+    Dimensions of model: x=60000, y=120000, z=45000
+    Bounding box (WGS84): (34.3954, -117.8241) (34.6535, -117.2496) (35.603, -117.8789) (35.342, -118.4583)
     Coordinate system:
         CRS (PROJ, EPSG, WKT): EPSG:3311
+        Coordinate system units: x=meter, y=meter, z=meter (assumed)
         Origin: x=200000, y=-400000
         Azimuth (degrees) of y axis from north: 330
     Values stored in model:
         0: one (m)
         1: two (m/s)
+        Vertex-based data
     Surfaces
         Top surface:
             Number of points: x=13, y=25
@@ -91,17 +95,16 @@ Model: tests/data/three-blocks-topo.h5
     Blocks (3)
         Block 'top'
             Resolution: x=10000, y=10000, z=5000
-            Elevation (m) of top of block in logical space: 0
+            Elevation of top of block in logical space: 0
             Number of points: x=7, y=13, z=2
-            Dimensions (m): x=60000, y=120000, z=5000
+            Dimensions: x=60000, y=120000, z=5000
         Block 'middle'
             Resolution: x=20000, y=20000, z=10000
-            Elevation (m) of top of block in logical space: -5000
+            Elevation of top of block in logical space: -5000
             Number of points: x=4, y=7, z=3
-            Dimensions (m): x=60000, y=120000, z=20000
+            Dimensions: x=60000, y=120000, z=20000
         Block 'bottom'
             Resolution: x=30000, y=30000, z=10000
-            Elevation (m) of top of block in logical space: -25000
+            Elevation of top of block in logical space: -25000
             Number of points: x=3, y=5, z=3
-            Dimensions (m): x=60000, y=120000, z=20000
-```			
+            Dimensions: x=60000, y=120000, z=20000```			
