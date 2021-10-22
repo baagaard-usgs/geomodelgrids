@@ -81,6 +81,19 @@ public:
     static
     CRSTransformer* createGeoToXYAxisOrder(const char* crsString);
 
+    /** Get units for CRS.
+     *
+     * @param[out] xUnit Units for x axis (can be NULL).
+     * @param[out] yUnit Units for y axis (can be NULL).
+     * @param[out] zUnit Units for z axis (can be NULL).
+     * @param[in] crsString CRS for coordinate system.
+     */
+    static
+    void getCRSUnits(std::string* xUnit,
+                     std::string* yUnit,
+                     std::string* zUnit,
+                     const char* crsString);
+
     // PRIVATE MEMBERS ----------------------------------------------------------------------------
 private:
 

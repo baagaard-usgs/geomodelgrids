@@ -6,6 +6,7 @@
 #include "geomodelgrids/serial/ModelInfo.hh" // USES ModelInfo
 #include "geomodelgrids/serial/Block.hh" // USES Block
 #include "geomodelgrids/serial/Surface.hh" // USES Surface
+#include "geomodelgrids/utils/CRSTransformer.hh" // USES CRSTransformer
 
 #include <cmath> // USES fabs()
 
@@ -25,6 +26,8 @@ namespace geomodelgrids {
             std::string indent(const size_t level,
                                const size_t width=4);
 
+            void verifyCoordSys(const geomodelgrids::serial::Model* model);
+
             void verifySurface(const geomodelgrids::serial::Surface* topography,
                                const geomodelgrids::serial::Model* model,
                                const char* const name);
@@ -34,6 +37,8 @@ namespace geomodelgrids {
 
             void verifyBlocksZ(const std::vector<geomodelgrids::serial::Block*>& blocks,
                                const double zBottom);
+
+            const double* computeBoundingBox(const geomodelgrids::serial::Model* model);
 
         } // _Info
     } // apps
@@ -236,7 +241,21 @@ geomodelgrids::apps::Info::_printDescription(geomodelgrids::serial::Model* const
     } // if
 
     const double* dims = model->getDims();
-    std::cout << _Info::indent(1) << "Dimensions of model (m): x=" << dims[0] << ", y="<< dims[1] << ", z=" << dims[2] << "\n";
+    std::cout << _Info::indent(1) << "Dimensions of model: x=" << dims[0] << ", y="<< dims[1] << ", z=" << dims[2] << "\n";
+
+    const double* bbox = _Info::computeBoundingBox(model);
+    std::cout << _Info::indent(1) << "Bounding box (WGS84):" << std::resetiosflags(std::ios::fixed);
+    for (size_t i = 0; i < 4; ++i) {
+        const size_t dim = 2;
+        std::cout << " ("
+                  << std::setprecision(6)
+                  << bbox[i*dim+0]
+                  << ", "
+                  << std::setprecision(7)
+                  << bbox[i*dim+1]
+                  << ")";
+    } // for
+    std::cout << "\n";
 } // _printDescription
 
 
@@ -249,6 +268,13 @@ geomodelgrids::apps::Info::_printCoordSys(geomodelgrids::serial::Model* const mo
     std::cout << _Info::indent(1) << "Coordinate system:\n";
 
     std::cout << _Info::indent(2) << "CRS (PROJ, EPSG, WKT): " << model->getCRSString() << "\n";
+
+    std::string xUnit;
+    std::string yUnit;
+    std::string zUnit;
+    geomodelgrids::utils::CRSTransformer::getCRSUnits(&xUnit, &yUnit, &zUnit, model->getCRSString().c_str());
+    std::cout << _Info::indent(2) << "Coordinate system units:"
+              << " x=" << xUnit << ", y=" << yUnit << ", z=" << zUnit << "\n";
 
     const double* origin = model->getOrigin();
     std::cout << _Info::indent(2) << "Origin: x=" << origin[0] <<", y=" << origin[1] << "\n";
@@ -274,13 +300,13 @@ geomodelgrids::apps::Info::_printValues(geomodelgrids::serial::Model* const mode
     } // for
 
     switch (model->getDataLayout()) {
-        case geomodelgrids::serial::Model::VERTEX:
+    case geomodelgrids::serial::Model::VERTEX:
         std::cout << _Info::indent(2) << "Vertex-based data\n";
-        break; 
-        case geomodelgrids::serial::Model::CELL:
+        break;
+    case geomodelgrids::serial::Model::CELL:
         std::cout << _Info::indent(2) << "Cell-based data\n";
-        break; 
-        default:
+        break;
+    default:
         std::cout << _Info::indent(2) << "Unknown data layout\n";
     }
 } // _printValues
@@ -327,7 +353,7 @@ geomodelgrids::apps::Info::_printBlocks(geomodelgrids::serial::Model* const mode
                   << "x=" << blocks[i]->getResolutionX()
                   << ", y=" << blocks[i]->getResolutionY()
                   << ", z=" << blocks[i]->getResolutionZ() << "\n";
-        std::cout << _Info::indent(3) << "Elevation (m) of top of block in logical space: " << blocks[i]->getZTop() << "\n";
+        std::cout << _Info::indent(3) << "Elevation of top of block in logical space: " << blocks[i]->getZTop() << "\n";
 
         const size_t* dims = blocks[i]->getDims();
         std::cout << _Info::indent(3) << "Number of points: x=" << dims[0] << ", y=" << dims[1] << ", z=" << dims[2] << "\n";
@@ -335,7 +361,7 @@ geomodelgrids::apps::Info::_printBlocks(geomodelgrids::serial::Model* const mode
         const double dim_x = blocks[i]->getResolutionX() * (dims[0] - 1);
         const double dim_y = blocks[i]->getResolutionY() * (dims[1] - 1);
         const double dim_z = blocks[i]->getResolutionZ() * (dims[2] - 1);
-        std::cout << _Info::indent(3) << "Dimensions (m): x=" << dim_x << ", y=" << dim_y << ", z=" << dim_z << "\n";
+        std::cout << _Info::indent(3) << "Dimensions: x=" << dim_x << ", y=" << dim_y << ", z=" << dim_z << "\n";
     } // for
 } // _printBlocks
 
@@ -357,6 +383,7 @@ geomodelgrids::apps::Info::_verify(geomodelgrids::serial::Model* const model) {
         ok = false;
     } // try/catch
     if (ok) { std::cout << "OK\n"; }
+    _Info::verifyCoordSys(model);
 
     const geomodelgrids::serial::Surface* surfaceTop = model->getTopSurface();
     if (surfaceTop) { _Info::verifySurface(surfaceTop, model, "top surface"); }
@@ -417,6 +444,28 @@ geomodelgrids::apps::_Info::indent(const size_t level,
     buffer << std::setw(level*width) << " ";
     return buffer.str();
 } // indent
+
+
+// ------------------------------------------------------------------------------------------------
+void
+geomodelgrids::apps::_Info::verifyCoordSys(const geomodelgrids::serial::Model* model) {
+    std::cout << _Info::indent(2) << "Verifying model coordinate system ...";
+
+    bool ok = true;
+
+    std::string xUnit;
+    std::string yUnit;
+    geomodelgrids::utils::CRSTransformer::getCRSUnits(&xUnit, &yUnit, NULL,
+                                                      model->getCRSString().c_str());
+    if (xUnit != yUnit) {
+        if (ok) { std::cout << "FAIL\n"; }
+        std::cout << _Info::indent(3) << "Units for x (" << xUnit << ") and y (" << yUnit
+                  << ") in model coordinate system do not match.\n";
+        ok = false;
+    } // if
+
+    if (ok) { std::cout << "OK\n"; }
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -549,6 +598,45 @@ geomodelgrids::apps::_Info::verifyBlocksZ(const std::vector<geomodelgrids::seria
     } // if
 
     if (ok) { std::cout << "OK\n"; }
+}
+
+
+// ------------------------------------------------------------------------------------------------
+const double*
+geomodelgrids::apps::_Info::computeBoundingBox(const geomodelgrids::serial::Model* model) {
+    assert(model);
+
+    const double* dims = model->getDims();assert(dims);
+    const double* origin = model->getOrigin();assert(origin);
+    const double yazimuth = model->getYAzimuth();
+    const std::string& crsString = model->getCRSString();
+
+    const size_t npts = 4;
+    const size_t dim = 2;
+    const double thetaR = (360.0 - yazimuth) / 180.0 * M_PI;
+    const double cosaz = cos(thetaR);
+    const double sinaz = sin(thetaR);
+
+    static double bbox_model[npts*dim];
+    bbox_model[0*dim+0] = origin[0];
+    bbox_model[0*dim+1] = origin[1];
+    bbox_model[1*dim+0] = origin[0] + dims[0]*cosaz;
+    bbox_model[1*dim+1] = origin[1] + dims[0]*sinaz;
+    bbox_model[2*dim+0] = origin[0] + dims[0]*cosaz - dims[1]*sinaz;
+    bbox_model[2*dim+1] = origin[1] + dims[0]*sinaz + dims[1]*cosaz;
+    bbox_model[3*dim+0] = origin[0] - dims[1]*sinaz;
+    bbox_model[3*dim+1] = origin[1] + dims[1]*cosaz;
+
+    static double bbox_geo[npts*dim];
+    geomodelgrids::utils::CRSTransformer transformer;
+    transformer.setSrc(crsString.c_str());
+    transformer.setDest("EPSG:4326");
+    transformer.initialize();
+    for (size_t i = 0; i < npts; ++i) {
+        transformer.transform(&bbox_geo[i*dim+0], &bbox_geo[i*dim+1], NULL, bbox_model[i*dim+0], bbox_model[i*dim+1], 0.0);
+    } // for
+
+    return bbox_geo;
 }
 
 

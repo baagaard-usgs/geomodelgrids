@@ -4,6 +4,29 @@
 
 #include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
+#include <cstring> // USES strlen()
+#include <strings.h> // USES stdcasecmp()
+
+namespace geomodelgrids {
+    namespace utils {
+        class _CRSTransformer {
+public:
+
+            static
+            void getUnits(std::string* xUnit,
+                          std::string* yUnit,
+                          std::string* zUnit,
+                          const PJ* projCoordSys);
+
+            static
+            void getAxisUnit(std::string* unit,
+                             const PJ* projCoordSys,
+                             const int axisIndex);
+
+        };
+
+    }
+}
 
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
@@ -133,6 +156,89 @@ geomodelgrids::utils::CRSTransformer::createGeoToXYAxisOrder(const char* crsStri
     transformer->_proj = transform;
 
     return transformer;
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get units for CRS.
+void
+geomodelgrids::utils::CRSTransformer::getCRSUnits(std::string* xUnit,
+                                                  std::string* yUnit,
+                                                  std::string* zUnit,
+                                                  const char* crsString) {
+    if (xUnit) { *xUnit = "unknown"; }
+    if (yUnit) { *yUnit = "unknown"; }
+    if (zUnit) { *zUnit = "meter (assumed)"; }
+    if (!crsString || (0 == strlen(crsString))) { return; }
+
+    PJ* proj = proj_create(NULL, crsString);assert(proj);
+    PJ* projCoordSys = proj_crs_get_coordinate_system(NULL, proj);
+    if (projCoordSys) {
+        _CRSTransformer::getUnits(xUnit, yUnit, zUnit, projCoordSys);
+        proj_destroy(proj);
+        proj_destroy(projCoordSys);
+        return;
+    } else if (proj_get_type(proj) == PJ_TYPE_BOUND_CRS) {
+        PJ* projTmp = proj_get_source_crs(NULL, proj);
+        proj_destroy(proj);
+        if (!projTmp) {
+            return;
+        } // if
+        const char* srcWKT = proj_as_wkt(NULL, projTmp, PJ_WKT2_2019, NULL);
+        PJ* projSrc = proj_create(NULL, srcWKT);
+        projCoordSys = proj_crs_get_coordinate_system(NULL, projSrc);
+        proj_destroy(projTmp);
+        proj_destroy(projSrc);
+        if (!projCoordSys) {
+            return;
+        }
+        _CRSTransformer::getUnits(xUnit, yUnit, zUnit, projCoordSys);
+        proj_destroy(projCoordSys);
+        return;
+    }
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get units for CRS.
+void
+geomodelgrids::utils::_CRSTransformer::getUnits(std::string* xUnit,
+                                                std::string* yUnit,
+                                                std::string* zUnit,
+                                                const PJ* projCoordSys) {
+    const int numAxes = proj_cs_get_axis_count(NULL, projCoordSys);
+    if (xUnit && (numAxes >= 1)) {
+        _CRSTransformer::getAxisUnit(xUnit, projCoordSys, 0);
+    }
+    if (yUnit && (numAxes >= 2)) {
+        _CRSTransformer::getAxisUnit(yUnit, projCoordSys, 1);
+    }
+    if (zUnit && (numAxes >= 3)) {
+        _CRSTransformer::getAxisUnit(zUnit, projCoordSys, 2);
+    }
+}
+
+
+// ------------------------------------------------------------------------------------------------
+// Get units for CRS.
+void
+geomodelgrids::utils::_CRSTransformer::getAxisUnit(std::string* unit,
+                                                   const PJ* projCoordSys,
+                                                   const int axisIndex) {
+    assert(unit);
+    assert(projCoordSys);
+
+    const char* buffer = NULL;
+    proj_cs_get_axis_info(NULL, projCoordSys, 0, NULL, NULL, NULL, NULL, &buffer, NULL, NULL);
+    if (strcasecmp("metre", buffer) == 0) {
+        *unit = "meter";
+    } else if (strcasecmp("meter", buffer) == 0) {
+        *unit = "meter";
+    } else if (strcasecmp("kilometre", buffer) == 0) {
+        *unit = "kilometer";
+    } else {
+        *unit = buffer;
+    }
 }
 
 
