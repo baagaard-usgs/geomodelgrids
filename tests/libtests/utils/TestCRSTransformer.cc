@@ -25,6 +25,7 @@ class geomodelgrids::utils::TestCRSTransformer : public CppUnit::TestFixture {
     CPPUNIT_TEST(testAccessors);
     CPPUNIT_TEST(testInitialize);
     CPPUNIT_TEST(testTransform);
+    CPPUNIT_TEST(testUnits);
 
     CPPUNIT_TEST_SUITE_END();
 
@@ -45,6 +46,9 @@ public:
 
     /// Test transform().
     void testTransform(void);
+
+    /// Test getCRSUnits().
+    void testUnits(void);
 
 }; // class TestCRSTransformer
 CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::utils::TestCRSTransformer);
@@ -146,6 +150,53 @@ geomodelgrids::utils::TestCRSTransformer::testTransform(void) {
         CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Mismatch in z coordinate in 3D check.", destXYZE[2], destXYZ[2],
                                              fabs(tolerance*destXYZE[2]));
     } // 3D
+} // testTransform
+
+
+// ------------------------------------------------------------------------------------------------
+// Test getCRSUnits().
+void
+geomodelgrids::utils::TestCRSTransformer::testUnits(void) {
+    std::string xUnit = "unknown";
+    std::string yUnit = "unknown";
+    std::string zUnit = "unknown";
+
+    CRSTransformer::getCRSUnits(&xUnit, &yUnit, &zUnit, "EPSG:4326");
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in EPSG:4326 x axis unit", std::string("degree"), xUnit);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in EPSG:4326 y axis unit", std::string("degree"), yUnit);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in EPSG:4326 z axis unit", std::string("meter (assumed)"), zUnit);
+
+    CRSTransformer::getCRSUnits(&xUnit, &yUnit, NULL, "EPSG:3488"); // CA Albers equal area
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in EPSG:3488 x axis unit", std::string("meter"), xUnit);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in EPSG:3488 y axis unit", std::string("meter"), yUnit);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in EPSG:3488 y axis unit", std::string("meter (assumed)"), zUnit);
+
+    const char* crsString = "+proj=tmerc +lon_0=-123.0 +lat_0-35.0 +k_0=0.9996 +datum=NAD83 +units=km +type=crs";
+    CRSTransformer::getCRSUnits(&xUnit, &yUnit, &zUnit, crsString);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in tmerc projection x axis unit", std::string("kilometer"), xUnit);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in tmerc projection y axis unit", std::string("kilometer"), yUnit);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in tmerc projection z axis unit", std::string("meter (assumed)"), zUnit);
+
+    const char* crsString2 = "+proj=aea +lat_1=34 +lat_2=40.5 +lat_0=0 +lon_0=-120 +x_0=0 +y_0=-4000000 +ellps=GRS80 +towgs84=0,0,0,0,0,0,0 +units=m +no_defs +type=crs";
+    CRSTransformer::getCRSUnits(&xUnit, &yUnit, &zUnit, crsString2);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in aea projection x axis unit", std::string("meter"), xUnit);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in aea projection y axis unit", std::string("meter"), yUnit);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in aea projection y axis unit", std::string("meter (assumed)"), zUnit);
+
+    CRSTransformer::getCRSUnits(&xUnit, &yUnit, &zUnit, "EPSG:4978"); // Earth-centered Earth-fixed
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in EPSG:4978 x axis unit", std::string("meter"), xUnit);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in EPSG:4978 y axis unit", std::string("meter"), yUnit);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in EPSG:4978 y axis unit", std::string("meter"), zUnit);
+
+    CRSTransformer::getCRSUnits(&xUnit, &yUnit, &zUnit, "EPSG:26910"); // utm zone 10N
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in EPSG:26910 x axis unit", std::string("meter"), xUnit);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in EPSG:26910 y axis unit", std::string("meter"), yUnit);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in EPSG:26910 y axis unit", std::string("meter (assumed)"), zUnit);
+
+    CRSTransformer::getCRSUnits(&xUnit, &yUnit, &zUnit, "EPSG:2193"); // NZ
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in EPSG:2193 x axis unit", std::string("meter"), xUnit);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in EPSG:2193 y axis unit", std::string("meter"), yUnit);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in EPSG:2193 y axis unit", std::string("meter (assumed)"), zUnit);
 } // testTransform
 
 
