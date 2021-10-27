@@ -16,7 +16,7 @@ Corrections:
   2. Correct coefficient (0.00064 -> 0.0064) for 4th order term in
   generic Vs equation.
 
-  3. Correct coefficient (4.46 -> 4.64) for constant term in Teriary
+  3. Correct coefficient (4.46 -> 4.64) for constant term in Tertiary
   sedimentary rocks (South Bay) and Cenozoic sedimentary rocks (Half
   Moon Bay region) for Vp equation 4 < d < 7.0.
 
@@ -469,11 +469,11 @@ def seawater(x, y, depth):
         Tuple of density (kg/m**3), Vp (m/s), Vs (m/s), Qp, and Qs
     """
     vp = 1500.0
-    density = 1000.0
+    density = 1030.0
 
     vs = NODATA_VALUE
     qs = NODATA_VALUE
-    qp = NODATA_VALUE
+    qp = 63000.0
     return (density, vp, vs, qp, qs)
 
 
