@@ -12,7 +12,7 @@
 2. Install geomodelgrids
 3. Create setup.sh
 4. Update linking (Darwin only)
-4. Create tarball.
+5. Create tarball.
 """
 
 import argparse
@@ -185,7 +185,7 @@ class Tiff(Package):
 
 # --------------------------------------------------------------------------------------------------
 class OpenSSL(Package):
-    VERSION = "1.1.1k"
+    VERSION = "1.1.1l"
     TARBALL = f"openssl-{VERSION}.tar.gz"
     URL = f"https://www.openssl.org/source/{TARBALL}"
     SRC_DIR = f"openssl-{VERSION}"
@@ -222,7 +222,7 @@ class Curl(Package):
 
 # --------------------------------------------------------------------------------------------------
 class Proj(Package):
-    VERSION = "7.2.1"
+    VERSION = "8.1.1"
     TARBALL = f"proj-{VERSION}.tar.gz"
     URL = f"https://download.osgeo.org/proj/{TARBALL}"
     BUILD_DIR = "proj-build"
@@ -248,9 +248,9 @@ class Proj(Package):
 
 # --------------------------------------------------------------------------------------------------
 class HDF5(Package):
-    VERSION = "1.12.0"
+    VERSION = "1.12.1"
     TARBALL = f"hdf5-{VERSION}.tar.gz"
-    URL = f"https://hdf-wordpress-1.s3.amazonaws.com/wp-content/uploads/manual/HDF5/HDF5_1_12_0/source/{TARBALL}"
+    URL = f"https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-{VERSION}/src/{TARBALL}"
     BUILD_DIR = "hdf5-build"
     SRC_DIR = f"hdf5-{VERSION}"
 

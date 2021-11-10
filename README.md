@@ -6,7 +6,7 @@
 
 ## Description
 
-Georeferenced grid-based models composed of blocks with different grid resolutions.
+Georeferenced grid-based Earth models composed of blocks with different grid resolutions.
 
 ## Documentation
 

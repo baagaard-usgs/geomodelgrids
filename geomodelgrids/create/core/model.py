@@ -385,7 +385,7 @@ class Block():
         return attrs
 
 
-@ dataclass
+@dataclass
 class ModelMetadata:
     """Metadata describing model.
     """
@@ -506,8 +506,9 @@ class ModelMetadata:
         self.dim_z = float(config["domain"]["dim_z"])
 
         # Auxiliary data
-        if "auxiliary" in config:
-            self.auxiliary = config["auxiliary"]
+        if "auxiliary" in config["data"]:
+            import json
+            self.auxiliary = json.loads(config["data"]["auxiliary"])
         else:
             self.auxiliary = {}
 

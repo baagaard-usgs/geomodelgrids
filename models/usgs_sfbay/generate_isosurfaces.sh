@@ -1,6 +1,6 @@
 MODELS_DIR=/data/geomodelgrids
-DETAILED_VERSION=21-1-0
-REGIONAL_VERSION=21-0-0
+DETAILED_VERSION=v21-1
+REGIONAL_VERSION=v21-0
 
 # detailed+regional
 geomodelgrids_isosurface \
@@ -9,6 +9,6 @@ geomodelgrids_isosurface \
     --isosurface=Vs,1000.0 \
     --isosurface=Vs,2500.0 \
     --max-depth=10.0e+3 \
-    --models=${MODELS_DIR}/seismic_sfbay_detailed-${DETAILED_VERSION}.h5,${MODELS_DIR}/seismic_sfbay_regional-${REGIONAL_VERSION}.h5 \
-    --output=${MODELS_DIR}/seismic_sfbay_regional+detailed_vsisosurfaces.tiff \
+    --models=${MODELS_DIR}/USGS_SFCVM_${DETAILED_VERSION}_detailed.h5,${MODELS_DIR}/USGS_SFCVM_${REGIONAL_VERSION}_regional.h5 \
+    --output=${MODELS_DIR}/USGS_SFCVM_${DETAILED_VERSION}_z10z25.tiff \
     --log=isosurface.log

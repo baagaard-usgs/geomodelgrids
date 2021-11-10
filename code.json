@@ -1,45 +1,49 @@
-{
-  "version": "2.0.0",
-  "measurementType": {},
-  "agency": "U.S. Department of Interior",
-  "releases": [
-    {
-        "name": "geomodelgrids",
-        "description": "Generate georeferenced gridded models",
-        "version": "v1.0.0",
-        "status": "??",
-        "organization": "U.S. Geological Survey",
-        "vcs": "git",
-        "repositoryUrl": "https://github.com/baagaard-usgs/geomodelgrids.git",
-        "homepageURL": "https://baagaard-usgs.github.io/geomodelgrids/",
-        "downloadURL": "https://github.com/baagaard-usgs/geomodelgrids/releases/tag/v1.0.0",
-        "disclaimerURL": "https://github.com/baagaard-usgs/geomodelgrids/blob/master/DISCLAIMER.md",
-        "permissions": {
-            "licenses": [
-                {
-                    "name": "Public Domain, CC0-1.0",
-                    "URL": "https://github.com/baagaard-usgs/geomodelgrids/blob/master/LICENSE.md"
-                }
-            ],
-            "usageType": "openSource",
-            "exemptionText": null
-        },
-        "laborHours": null,
-        "languages": [
-            "Python",
-	    "C++"
-        ],
-        "tags": [
-            "seismic velocity model",
-            "HDF5",
-        ],
-        "contact": {
-            "name": "Brad Aagaard",
-            "email": "baagaard@usgs.gov"
-        },
-        "date": {
-            "metadataLastUpdated": "2019-10-24"
+[
+  {
+    "name": "geomodelgrids",
+    "organization": "U.S. Geological Survey",
+    "description": "Georeferenced grid-based Earth models composed of blocks with different grid resolutions.",
+    "version": "1.0.0",
+    "status": "Beta",
+
+    "permissions": {
+      "usageType": "openSource",
+      "licenses": [
+        {
+          "name": "Public Domain, CC0-1.0",
+          "URL": "https://github.com/baagaard-usgs/geomodelgrids/blob/main/LICENSE.md"
         }
+      ]
+    },
+
+    "homepageURL": "https://geomodelgrids.readthedocs.io",
+    "downloadURL": "https://github.com/baagaard-usgs/geomodelgrids/archive/main.zip",
+    "disclaimerURL": "https://github.com/baagaard-usgs/geomodelgrids/blob/main/LICENSE.md",
+    "repositoryURL": "https://github.com/baagaard-usgs/geomodelgrids.git",
+    "vcs": "git",
+
+    "laborHours": 0,
+
+    "tags": [
+      "USGS",
+	"U.S. Geological Survey",
+	"Earth model",
+       "seismic velocity model",
+	"HDF5"
+    ],
+
+    "languages": [
+      "Python",
+      "C++"
+    ],
+
+    "contact": {
+      "name": "Brad Aagaard",
+      "email": "baagaard@usgs.gov"
+    },
+
+    "date": {
+      "metadataLastUpdated": "2021-10-01"
     }
-  ]
-}
+  }
+]
