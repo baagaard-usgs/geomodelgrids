@@ -27,6 +27,7 @@ RUN yum install -y rh-python38
 
 COPY docker/certs/ /usr/share/pki/ca-trust-source/anchors
 RUN update-ca-trust enable
+ENV CERT_PATH=/etc/ssl/certs CERT_FILE=ca-bundle.crt
 
 # ------------------------------------------------------------------------------
 from os-update as build-setup
@@ -39,15 +40,13 @@ ENV INSTALL_DIR=$STORAGE_DIR/dest  HOME=/home/$GMG_USER
 
 RUN mkdir ${STORAGE_DIR} \
   && chown ${GMG_USER} ${STORAGE_DIR} \
-  && chgrp ${GMG_USER} ${STORAGE_DIR}
+  && chgrp ${GMG_USER} ${STORAGE_DIR} \
+  && mkdir ${STORAGE_DIR}/build
 USER ${GMG_USER}
 
-RUN mkdir -p ~/.config/pip \
-  && echo "[global]" > $HOME/.config/pip/pip.conf \
-  && echo "trusted-host = pypi.org files.pythonhosted.org" >> $HOME/.config/pip/pip.conf \
-  && scl enable rh-python38 -- python3 -m pip install requests --user
+RUN scl enable rh-python38 -- python3 -m pip install requests --user
 
-WORKDIR $STORAGE_DIR
+WORKDIR $STORAGE_DIR/build
 
 # To build up to here:
 # docker build -t geomodelgrids-binaryenv -f docker/linux-binary --target build-setup .
@@ -56,11 +55,13 @@ WORKDIR $STORAGE_DIR
 # docker run -ti --rm --name geomodelgrids-binary-workspace -v geomodelgrids-binary:/opt/geomodelgrids geomodelgrids-binaryenv
 # docker cp TARBALL geomodelgrids-binary-workspace:/opt/geomodelgrids/build
 # docker cp docker/build_binary.py geomodelgrids-binary-workspace:/opt/geomodelgrids/build
-# svn enable rh-python38 -- /opt/geomodelgrids/src/docker/build_binary.py --install-dir=$INSTALL_DIR --version=X.X.X --all
+# export SSL_CERT_PATH=/etc/ssl/certs/ca-bundle.crt REQUESTS_CA_BUNDLE=/etc/ssl/certs/ca-bundle.crt
+# scl enable rh-python38 -- /opt/geomodelgrids/src/docker/build_binary.py --install-dir=$INSTALL_DIR --version=X.X.X --all
 
 # ------------------------------------------------------------------------------
 from build-setup as build-binary
 
+ENV BUILD_DIR=${STORAGE_DIR}/build
 COPY --chown=gmg-user:gmg-user docker/build_binary.py ${BUILD_DIR}
 
 WORKDIR $BUILD_DIR

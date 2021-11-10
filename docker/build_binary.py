@@ -250,7 +250,7 @@ class Proj(Package):
 class HDF5(Package):
     VERSION = "1.12.1"
     TARBALL = f"hdf5-{VERSION}.tar.gz"
-    URL = f"https://hdf-wordpress-1.s3.amazonaws.com/wp-content/uploads/manual/HDF5/HDF5_1_12_0/source/{TARBALL}"
+    URL = f"https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-{VERSION}/src/{TARBALL}"
     BUILD_DIR = "hdf5-build"
     SRC_DIR = f"hdf5-{VERSION}"
 
