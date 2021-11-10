@@ -196,28 +196,27 @@ geomodelgrids::serial::Query::query(double* const values,
     bool found = false;
     for (size_t i = 0; i < _models.size(); ++i) {
         assert(_models[i]);
-        if (_models[i]->contains(x, y, z)) {
-            double elevationSquash = z;
-            switch (_squash) {
-            case SQUASH_NONE:
-                break;
-            case SQUASH_TOP_SURFACE:
-                if (z > _squashMinElev) {
-                    const double topElev = _models[i]->queryTopElevation(x, y);
-                    elevationSquash = z + topElev;
-                } // if
-                break;
-            case SQUASH_TOPOGRAPHY_BATHYMETRY:
-                if (z > _squashMinElev) {
-                    const double groundElev = _models[i]->queryTopoBathyElevation(x, y);
-                    elevationSquash = z + groundElev;
-                } // if
-                break;
-            default:
-                throw std::logic_error("Unknown squashing type.");
-            } // switch
-
-            const double* modelValues = _models[i]->query(x, y, elevationSquash);
+        double zSquash = z;
+        switch (_squash) {
+        case SQUASH_NONE:
+            break;
+        case SQUASH_TOP_SURFACE:
+            if (z > _squashMinElev) {
+                const double topElev = _models[i]->queryTopElevation(x, y);
+                zSquash = z + topElev;
+            } // if
+            break;
+        case SQUASH_TOPOGRAPHY_BATHYMETRY:
+            if (z > _squashMinElev) {
+                const double groundElev = _models[i]->queryTopoBathyElevation(x, y);
+                zSquash = z + groundElev;
+            } // if
+            break;
+        default:
+            throw std::logic_error("Unknown squashing type.");
+        } // switch
+	if (_models[i]->contains(x, y, zSquash)) {
+            const double* modelValues = _models[i]->query(x, y, zSquash);
             values_map_type& modelMap = _valuesIndex[i];
             for (size_t iValue = 0; iValue < numQueryValues; ++iValue) {
                 values[iValue] = modelValues[modelMap[iValue]];
