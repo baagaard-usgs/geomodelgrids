@@ -25,6 +25,7 @@ EXTRA_DIST = \
 	DISCLAIMER.md \
 	LICENSE.md \
 	setup.py \
+	setup.cfg \
 	code.json \
 	developer/autopep8.cfg \
 	developer/uncrustify.cfg \
@@ -35,14 +36,15 @@ EXTRA_DIST = \
 	docker/debian-stable \
 	docker/debian-testing \
 	docker/ubuntu-20.04 \
-	docker/ubuntu-20.10 \
 	docker/ubuntu-21.04 \
+	docker/ubuntu-21.10 \
 	docker/fedora-33 \
 	docker/fedora-34 \
+	docker/fedora-35 \
 	docker/centos-8 \
 	docker/geomodelgrids-testenv \
 	docker/geomodelgrids-devenv \
-	docker/geomodelgrids-userenv
+	docker/geomodelgrids-userenv \
 	ci-config/run_tests.sh
 
 
