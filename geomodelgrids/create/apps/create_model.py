@@ -57,7 +57,7 @@ class App():
             self.show_parameters()
             return
 
-        if args.import_domain or args.import_surfaces or args.all:
+        if args.import_domain or args.import_surfaces or args.import_blocks or args.all:
             data_path = self.config["geomodelgrids"]["data_source"].split(".")
             data_obj = getattr(import_module(".".join(data_path[:-1])), data_path[-1])
             datasrc = data_obj(self.config)
