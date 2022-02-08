@@ -73,7 +73,8 @@ class TopographyApp(object):
         with h5py.File(model_filename, "r") as h5:
             surface = h5["surfaces"][surface_name]
             elev = surface[:]
-            res = surface.attrs["resolution_horiz"]
+            res_x = surface.attrs["x_resolution"]
+            res_y = surface.attrs["y_resolution"]
             crsString = h5.attrs["crs"]
             origin_x = h5.attrs["origin_x"]
             origin_y = h5.attrs["origin_y"]
@@ -81,8 +82,8 @@ class TopographyApp(object):
 
         num_x = elev.shape[0]
         num_y = elev.shape[1]
-        x_1d = numpy.arange(0.0, num_x*res, res)
-        y_1d = numpy.arange(0.0, num_y*res, res)
+        x_1d = numpy.arange(0.0, num_x*res_x, res_x)
+        y_1d = numpy.arange(0.0, num_y*res_y, res_y)
         xModel,yModel = numpy.meshgrid(x_1d, y_1d, indexing="ij")
         xCRS = origin_x + xModel*math.cos(y_azimuth) + yModel*math.sin(y_azimuth)
         yCRS = origin_y - xModel*math.sin(y_azimuth) + yModel*math.cos(y_azimuth)

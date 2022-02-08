@@ -110,7 +110,7 @@ geomodelgrids::serial::TestHDF5::testConstructor(void) {
     CPPUNIT_ASSERT_EQUAL(hid_t(-1), h5._file);
 
     // Check default cache parameters.
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in cache size.", size_t(16*1048576), h5._cacheSize);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in cache size.", size_t(128*1048576), h5._cacheSize);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of slots for cache.", size_t(63997), h5._cacheNumSlots);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in cache preemption policy.", 0.75, h5._cachePreemption);
 } // testConstructor

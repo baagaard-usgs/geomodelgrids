@@ -55,10 +55,9 @@ struct geomodelgrids::serial::_HDF5Access {
 // Default constructor.
 geomodelgrids::serial::HDF5::HDF5(void) :
     _file(H5_NULL),
-    _cacheSize(16*1048576),
+    _cacheSize(128*1048576),
     _cacheNumSlots(63997),
-    _cachePreemption(0.75)
-{} // constructor
+    _cachePreemption(0.75) {}
 
 
 // ------------------------------------------------------------------------------------------------
