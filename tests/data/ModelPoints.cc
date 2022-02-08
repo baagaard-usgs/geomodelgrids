@@ -4,7 +4,7 @@
 
 #include "proj.h" // USES PJ
 
-#include <cmath> // USES sin(), cos()
+#include <cmath> // USES sin(), cos(), HUGE_VAL
 #include <cassert> // USES assert()
 
 namespace geomodelgrids {
@@ -163,11 +163,12 @@ geomodelgrids::testdata::_ModelPoints::toXYZ(double* const coordsDest,
     assert(srcString);
     assert(coordsSrc);
 
-    PJ* proj = proj_create_crs_to_crs(NULL, srcString, destString, NULL);assert(proj);
+    PJ_CONTEXT* context = PJ_DEFAULT_CTX;
+    PJ* proj = proj_create_crs_to_crs(context, srcString, destString, NULL);assert(proj);
 
     const size_t dim = 3;
     for (size_t i = 0; i < numPoints; ++i) {
-        PJ_COORD xySrc = proj_coord(coordsSrc[i*dim+0], coordsSrc[i*dim+1], 0.0, 0.0);
+        PJ_COORD xySrc = proj_coord(coordsSrc[i*dim+0], coordsSrc[i*dim+1], 0.0, HUGE_VAL);
         PJ_COORD xyDest = proj_trans(proj, PJ_FWD, xySrc);
         const double x = xyDest.xyzt.x - domain.originX;
         const double y = xyDest.xyzt.y - domain.originY;

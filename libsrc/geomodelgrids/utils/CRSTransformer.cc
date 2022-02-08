@@ -2,6 +2,7 @@
 
 #include "CRSTransformer.hh" // implementation of class methods
 
+#include <cmath> // USES HUGE_VAL
 #include <sstream> // USES std::ostringstream
 #include <cassert> // USES assert()
 #include <cstring> // USES strlen()
@@ -68,7 +69,8 @@ geomodelgrids::utils::CRSTransformer::initialize(void) {
     if (_proj) {
         proj_destroy(_proj);_proj = NULL;
     } // if
-    _proj = proj_create_crs_to_crs(NULL, _srcString.c_str(), _destString.c_str(), NULL);
+    PJ_CONTEXT* context = PJ_DEFAULT_CTX;
+    _proj = proj_create_crs_to_crs(context, _srcString.c_str(), _destString.c_str(), NULL);
     if (!_proj) {
         std::stringstream msg;
         msg << "Error creating CRS transformation from '" << _srcString << "' to '" << _destString << "'.\n"
@@ -90,7 +92,7 @@ geomodelgrids::utils::CRSTransformer::transform(double* destX,
     assert(destX);
     assert(destY);
 
-    PJ_COORD xyzSrc = proj_coord(srcX, srcY, srcZ, 0.0);
+    PJ_COORD xyzSrc = proj_coord(srcX, srcY, srcZ, HUGE_VAL);
     PJ_COORD xyzDest = proj_trans(_proj, PJ_FWD, xyzSrc);
     *destX = xyzDest.xyzt.x;
     *destY = xyzDest.xyzt.y;
@@ -112,7 +114,7 @@ geomodelgrids::utils::CRSTransformer::inverse_transform(double* srcX,
     assert(srcX);
     assert(srcY);
 
-    PJ_COORD xyzDest = proj_coord(destX, destY, destZ, 0.0);
+    PJ_COORD xyzDest = proj_coord(destX, destY, destZ, HUGE_VAL);
     PJ_COORD xyzSrc = proj_trans(_proj, PJ_INV, xyzDest);
     *srcX = xyzSrc.xyzt.x;
     *srcY = xyzSrc.xyzt.y;
@@ -126,7 +128,7 @@ geomodelgrids::utils::CRSTransformer::inverse_transform(double* srcX,
 // Get boundary box in x/y order from bounding box in CRS.
 geomodelgrids::utils::CRSTransformer*
 geomodelgrids::utils::CRSTransformer::createGeoToXYAxisOrder(const char* crsString) {
-    PJ_CONTEXT* context = NULL;
+    PJ_CONTEXT* context = PJ_DEFAULT_CTX;
     PJ* projGeo = proj_create(context, crsString);
     if (!projGeo) {
         std::stringstream msg;
@@ -171,22 +173,23 @@ geomodelgrids::utils::CRSTransformer::getCRSUnits(std::string* xUnit,
     if (zUnit) { *zUnit = "meter (assumed)"; }
     if (!crsString || (0 == strlen(crsString))) { return; }
 
-    PJ* proj = proj_create(NULL, crsString);assert(proj);
-    PJ* projCoordSys = proj_crs_get_coordinate_system(NULL, proj);
+    PJ_CONTEXT* context = PJ_DEFAULT_CTX;
+    PJ* proj = proj_create(context, crsString);assert(proj);
+    PJ* projCoordSys = proj_crs_get_coordinate_system(context, proj);
     if (projCoordSys) {
         _CRSTransformer::getUnits(xUnit, yUnit, zUnit, projCoordSys);
         proj_destroy(proj);
         proj_destroy(projCoordSys);
         return;
     } else if (proj_get_type(proj) == PJ_TYPE_BOUND_CRS) {
-        PJ* projTmp = proj_get_source_crs(NULL, proj);
+        PJ* projTmp = proj_get_source_crs(context, proj);
         proj_destroy(proj);
         if (!projTmp) {
             return;
         } // if
-        const char* srcWKT = proj_as_wkt(NULL, projTmp, PJ_WKT2_2019, NULL);
-        PJ* projSrc = proj_create(NULL, srcWKT);
-        projCoordSys = proj_crs_get_coordinate_system(NULL, projSrc);
+        const char* srcWKT = proj_as_wkt(context, projTmp, PJ_WKT2_2019, NULL);
+        PJ* projSrc = proj_create(context, srcWKT);
+        projCoordSys = proj_crs_get_coordinate_system(context, projSrc);
         proj_destroy(projTmp);
         proj_destroy(projSrc);
         if (!projCoordSys) {
