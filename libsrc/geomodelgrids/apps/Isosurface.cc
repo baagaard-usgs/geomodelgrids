@@ -541,7 +541,7 @@ geomodelgrids::apps::Isosurfacer::query(double* values,
             const double a = (vTop-vBot) / (zTop-zBot);
             const double b = vTop - a*zTop;
             values[iValue] = topElev - (vTarget - b) / a;
-        } else if ((vTarget <= vTop) && (vTop <= vBot)) {
+        } else if (vTarget < vTop) {
             values[iValue] = 0.0;
         } else {
             values[iValue] = geomodelgrids::NODATA_VALUE;
