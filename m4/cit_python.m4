@@ -16,7 +16,7 @@ AC_CACHE_CHECK([for $am_display_PYTHON include directory],
     [_cv_PYTHON_INCDIR],
     [_cv_PYTHON_INCDIR=`$PYTHON -c "from distutils import sysconfig; print(sysconfig.get_python_inc())" 2>/dev/null ||
      echo "$PYTHON_PREFIX/include/python$PYTHON_VERSION"`])
-AC_SUBST([_cv_PYTHON_INCDIR], [$PYTHON_INCDIR])
+AC_SUBST([PYTHON_INCDIR], [$_cv_PYTHON_INCDIR])
 ])dnl CIT_PYTHON_INCDIR
 
 
@@ -118,7 +118,7 @@ AC_DEFUN([CIT_PYTHON_SYSCONFIG], [
 # $Id$
 AC_REQUIRE([AM_PATH_PYTHON])
 AC_MSG_CHECKING([$am_display_PYTHON sysconfig])
-cat >sysconfig.py <<END_OF_PYTHON
+cat >local_sysconfig.py <<END_OF_PYTHON
 [import os, sys
 from distutils import sysconfig
 def cygpath(wpath):
@@ -195,16 +195,16 @@ for key in keys:
     print('PYTHON_%s="%s"' % (key, vars.get(key, '')))
 ]
 END_OF_PYTHON
-eval `$PYTHON sysconfig.py 2>/dev/null`
+eval `$PYTHON local_sysconfig.py 2>/dev/null`
 if test -n "$PYTHON_INCDIR"; then
     AC_MSG_RESULT(ok)
 else
     AC_MSG_ERROR(["failed
 
-Run '$PYTHON sysconfig.py' to see what went wrong.
+Run '$PYTHON local_sysconfig.py' to see what went wrong.
 "])
 fi
-rm -f sysconfig.py sysconfig.pyc
+rm -f local_sysconfig.py 
 AC_SUBST([PYTHON_INCDIR], [$PYTHON_INCDIR])
 AC_SUBST([PYTHON_BLDLIBRARY], [$PYTHON_BLDLIBRARY])
 AC_SUBST([PYTHON_LDFLAGS], [$PYTHON_LDFLAGS])
@@ -270,7 +270,7 @@ import sys
 try:
     from pkg_resources import require
     require("$1")
-except Exception as e:
+except Exception, e:
     sys.stderr.write("%s\n" % e)
     print("cit_egg_status=1")
 else:
@@ -373,7 +373,7 @@ def printUsage():
 
 try:
     (opts, args) = getopt(argv[1:], "h:m:o:")
-except GetoptError as error:
+except GetoptError, error:
     print("%s: %s" % (argv[0], error))
     printUsage()
     exit(1)
@@ -401,12 +401,11 @@ keys = makefile_vars.keys()
 for key in keys:
     makefile_vars[key] = expand_makefile_vars(makefile_vars[key], makefile_vars)
 
-f = open(output, 'w')
-f.write("#!/usr/bin/env python\n\n")
-f.write("config = %s\n\n" % config_vars)
-f.write("makefile = %s\n\n" % makefile_vars)
-f.write("# end of file\n")
-f.close()
+with open(output, 'w') as f:
+     f.write("#!/usr/bin/env python\n\n")
+     f.write("config = %s\n\n\n" % config_vars)
+     f.write("makefile = %s\n\n" % makefile_vars)
+     f.write("# end of file\n")
 
 # end of file]
 END_OF_PYTHON
