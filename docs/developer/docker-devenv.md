@@ -103,7 +103,7 @@ ${TOP_SRCDIR}/configure \
   --enable-python \
   --enable-gdal \
   --enable-testing \
-  CPPFLAGS="-${HDF5_INCDIR}" \
+  CPPFLAGS="-I${HDF5_INCDIR}" \
   LDFLAGS="-L${HDF5_LIBDIR}" \
   CC=gcc CXX=g++ CFLAGS="-g -Wall" CXXFLAGS="-g -Wall"
 make install -j$(nproc)
