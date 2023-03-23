@@ -30,20 +30,24 @@ geomodelgrids_query [--help] [--log=FILE_LOG]
 
 * **--help** Print help information to stdout and exit.
 * **--log=FILE_LOG** Name of file for logging.
-* **--squash-min-elev=ELEV** Interpret vertical coordinate as depth instead of elevation if the elevation is above `ELEV`. This option is used to adjust (squash) topography to sea level above
-  `ELEV`. Below `ELEV` the original geometry of the model is maintained; this maintains the original geometry of deeper structure.
+* **--squash-min-elev=ELEV** Top of the model is squashed/stretched to z=0 with the model below z=`ELEV` held fixed (default=-10.0e+3). See {ref}`sec-user-squashing` for more information.
 * **--squash-surface=SURFACE** Surface to use as a vertical reference for computing depth. Valid values for `SURFACE` include `top_surface` (default), `topography_bathymetry`, and `none` (disables squashing).
 * **--points-coordsys=PROJ\|EPSG\|WKT** Coordinate reference system of input points as Proj parameters, EPSG code, or Well-Known Text. Default is EPSG:4326 (latitude, WGS84 degrees; longitude, WGS84 degrees; elevation, m above ellipsoid.
 
+:::{admonition} New in v1.0.0
+The default value for the minimum squashing elevation has been changed from 0 to -10.0e+3 (-10 km).
+This value works well for many applications with topography of about 1-2 km.
+You can enable squashing with this default value using the command line argument `--squash-surface`.
+:::
 
 ### Output file
 
 The output file contains a one line header with the command used to generate the file. The header is followed by lines with columns of the input coordinates and the values (in the order they were specified on the command line).
 
-
 ## Examples
 
 The input files for these examples are located in `tests/data`.
+See {ref}`sec-user-squashing` for examples illustrating how to use squashing.
 
 ### Query with input points in WGS84
 

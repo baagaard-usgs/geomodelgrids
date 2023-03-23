@@ -27,6 +27,11 @@ EXTRA_DIST = \
 	intro/figs/hdf5layout.png \
 	intro/figs/hdf5layout.tex \
 	intro/figs/plot_gridmapping.py \
+	user/features/index.md \
+	user/features/squashing.md \
+	user/features/figs/squashing.py \
+	user/features/figs/squashing.png \
+	user/features/figs/squashing.pdf \
 	user/apps/index.md \
 	user/apps/borehole.md \
 	user/apps/create.md \
