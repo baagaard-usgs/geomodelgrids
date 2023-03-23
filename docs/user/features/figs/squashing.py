@@ -50,8 +50,10 @@ def plotModel(ax, x, y, title):
     ax.text(10, squashMin-0.5, "Min. squash elev.", va="top")
     ax.set_xlabel("Horizontal Distance")
     ax.set_ylabel("Elevation")
+    ax.set_xlim(min(x), max(x))
     ax.set_ylim(minModel, maxTopo)
     ax.set_title(title)
+    ax.spines[["top", "right"]].set_visible(False)
 
 
 yModel = generateModel()
