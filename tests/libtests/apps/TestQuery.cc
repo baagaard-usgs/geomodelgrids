@@ -155,7 +155,7 @@ geomodelgrids::apps::TestQuery::testConstructor(void) {
     Query query;
 
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in points CRS.", std::string("EPSG:4326"), query._pointsCRS);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in squash minimum elevation.", 0.0, query._squashMinElev);
+    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in squash minimum elevation.", -10.0e+3, query._squashMinElev);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Squash flag.", geomodelgrids::serial::Query::SQUASH_NONE, query._squash);
     CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in help flag.", false, query._showHelp);
 } // testConstructor
@@ -321,7 +321,7 @@ geomodelgrids::apps::TestQuery::testPrintHelp(void) {
     Query query;
     query._printHelp();
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(1013), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(1062), coutHelp.str().length());
 } // testPrintHelp
 
 
@@ -342,7 +342,7 @@ geomodelgrids::apps::TestQuery::testRunHelp(void) {
     query.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(1013), coutHelp.str().length());
+    CPPUNIT_ASSERT_EQUAL(size_t(1062), coutHelp.str().length());
 } // testRunHelp
 
 
@@ -418,9 +418,9 @@ geomodelgrids::apps::TestQuery::testRunThreeBlocksSquashTop(void) {
         "--points=three-blocks-squash-top.in",
         "--output=three-blocks-squash-top.out",
         "--points-coordsys=EPSG:4326",
-        "--squash-min-elev=-3.0e+3"
+        "--squash-min-elev=-4.999e+3" // Must match value in ModelPoints.cc
     };
-    geomodelgrids::testdata::ThreeBlocksSquashTopPoints pointsThree(-3.0e+3);
+    geomodelgrids::testdata::ThreeBlocksSquashTopPoints pointsThree;
     std::ofstream sout("three-blocks-squash-top.in");CPPUNIT_ASSERT(sout.is_open() && sout.good());
     _TestQuery::createPointsFile(sout, pointsThree);
     sout.close();
@@ -447,10 +447,10 @@ geomodelgrids::apps::TestQuery::testRunThreeBlocksSquashTopoBathy(void) {
         "--points=three-blocks-squash-topo-bathy.in",
         "--output=three-blocks-squash-topo-bathy.out",
         "--points-coordsys=EPSG:4326",
-        "--squash-min-elev=-3.0e+3",
+        "--squash-min-elev=-4.999e+3", // Must match value in ModelPoints.cc
         "--squash-surface=topography_bathymetry",
     };
-    geomodelgrids::testdata::ThreeBlocksSquashTopoBathyPoints pointsThree(-3.0e+3);
+    geomodelgrids::testdata::ThreeBlocksSquashTopoBathyPoints pointsThree;
     std::ofstream sout("three-blocks-squash-topo-bathy.in");CPPUNIT_ASSERT(sout.is_open() && sout.good());
     _TestQuery::createPointsFile(sout, pointsThree);
     sout.close();
