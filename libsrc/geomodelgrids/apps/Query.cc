@@ -28,7 +28,7 @@ geomodelgrids::apps::Query::Query() :
     _pointsCRS("EPSG:4326"),
     _outputFilename(""),
     _logFilename(""),
-    _squashMinElev(0.0),
+    _squashMinElev(-10.0e+3),
     _squash(geomodelgrids::serial::Query::SQUASH_NONE),
     _showHelp(false) {}
 
@@ -237,8 +237,8 @@ geomodelgrids::apps::Query::_printHelp(void) {
               << "    --models=FILE_0,...,FILE_M       Models to query (in order).\n"
               << "    --points=FILE_POINTS             Read input points from FILE_POINTS.\n"
               << "    --output=FILE_OUTPUT             Write values to FILE_OUTPUT.\n"
-              << "    --squash-min-elev=ELEV           Vertical coordinate is interpreted as -depth instead of elevation.\n"
-              << "    --squash-surface=none|top_surface|topography_bathymetry    Surface reference for squashing (default=none).\n"
+              << "    --squash-min-elev=ELEV           Top of the model is squashed/stretched to z=0 with the model below z=ELEV held fixed (default=-10.0e+3).\n"
+              << "    --squash-surface=none|top_surface|topography_bathymetry    Surface reference for squashing/stretching (default=none).\n"
               << "    --points-coordsys=PROJ|EPSG|WKT  Coordinate system of input points (default=EPSG:4326)."
               << std::endl;
 } // _printHelp

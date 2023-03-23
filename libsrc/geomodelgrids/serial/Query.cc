@@ -203,19 +203,19 @@ geomodelgrids::serial::Query::query(double* const values,
         case SQUASH_TOP_SURFACE:
             if (z > _squashMinElev) {
                 const double topElev = _models[i]->queryTopElevation(x, y);
-                zSquash = z + topElev;
+                zSquash = topElev + z * (_squashMinElev - topElev) / _squashMinElev;
             } // if
             break;
         case SQUASH_TOPOGRAPHY_BATHYMETRY:
             if (z > _squashMinElev) {
                 const double groundElev = _models[i]->queryTopoBathyElevation(x, y);
-                zSquash = z + groundElev;
+                zSquash = groundElev + z * (_squashMinElev - groundElev) / _squashMinElev;
             } // if
             break;
         default:
             throw std::logic_error("Unknown squashing type.");
         } // switch
-	if (_models[i]->contains(x, y, zSquash)) {
+        if (_models[i]->contains(x, y, zSquash)) {
             const double* modelValues = _models[i]->query(x, y, zSquash);
             values_map_type& modelMap = _valuesIndex[i];
             for (size_t iValue = 0; iValue < numQueryValues; ++iValue) {
