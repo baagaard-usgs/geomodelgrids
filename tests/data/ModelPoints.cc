@@ -24,6 +24,8 @@ public:
     } // testdata
 } // geomodelgrids
 
+const double geomodelgrids::testdata::ModelPoints::squashMinElev = -4.999e+3;
+
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
 geomodelgrids::testdata::ModelPoints::ModelPoints(const size_t numPoints) :
@@ -102,6 +104,15 @@ geomodelgrids::testdata::ModelPoints::computeTopoBathyElevation(const double x,
                                                                 const double y) {
     return 1.5e+2 + 2.0e-5 * x - 1.2e-5 * y - 5.0e-10 * x * y;
 } // computeTopoBathyElevation
+
+
+// ------------------------------------------------------------------------------------------------
+// Compute elevation in model physical space given elevation in squashed model.
+double
+geomodelgrids::testdata::ModelPoints::computePhysicalElevation(const double elevSquashed,
+                                                               const double elevTop) {
+    return elevTop + elevSquashed * (squashMinElev - elevTop) / squashMinElev;
+}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -281,7 +292,7 @@ geomodelgrids::testdata::OneBlockTopoPoints::OneBlockTopoPoints(void) :
 
 // ------------------------------------------------------------------------------------------------
 // Constructor.
-geomodelgrids::testdata::OneBlockSquashPoints::OneBlockSquashPoints(const double squashMinElev) :
+geomodelgrids::testdata::OneBlockSquashPoints::OneBlockSquashPoints(void) :
     ModelPoints(5) {
     const size_t numPoints = 5;assert(_numPoints == numPoints);
     static const double pointsLLE[numPoints*3] = {
@@ -311,7 +322,7 @@ geomodelgrids::testdata::OneBlockSquashPoints::OneBlockSquashPoints(const double
 
         pointsLLESquash[i*3+0] = pointsLLE[i*3+0];
         pointsLLESquash[i*3+1] = pointsLLE[i*3+1];
-        pointsLLESquash[i*3+2] = (elevOrig > squashMinElev) ? elevOrig + elevTopSurface : elevOrig;
+        pointsLLESquash[i*3+2] = (elevOrig > squashMinElev) ? computePhysicalElevation(elevOrig, elevTopSurface) : elevOrig;
     } // for
     _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLESquash, numPoints, _domain);
 } // Constructor
@@ -420,7 +431,7 @@ geomodelgrids::testdata::ThreeBlocksTopoIsosurface::ThreeBlocksTopoIsosurface(vo
 
 // ------------------------------------------------------------------------------------------------
 // Constructor.
-geomodelgrids::testdata::ThreeBlocksSquashTopPoints::ThreeBlocksSquashTopPoints(const double squashMinElev) :
+geomodelgrids::testdata::ThreeBlocksSquashTopPoints::ThreeBlocksSquashTopPoints(void) :
     ModelPoints(6) {
     const size_t numPoints = 6;assert(_numPoints == numPoints);
     static const double pointsLLE[numPoints*3] = {
@@ -451,7 +462,7 @@ geomodelgrids::testdata::ThreeBlocksSquashTopPoints::ThreeBlocksSquashTopPoints(
 
         pointsLLESquash[i*3+0] = pointsLLE[i*3+0];
         pointsLLESquash[i*3+1] = pointsLLE[i*3+1];
-        pointsLLESquash[i*3+2] = (elevOrig > squashMinElev) ? elevOrig + elevGround : elevOrig;
+        pointsLLESquash[i*3+2] = (elevOrig > squashMinElev) ? computePhysicalElevation(elevOrig, elevGround) : elevOrig;
     } // for
     _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLESquash, numPoints, _domain);
 } // Constructor
@@ -459,7 +470,7 @@ geomodelgrids::testdata::ThreeBlocksSquashTopPoints::ThreeBlocksSquashTopPoints(
 
 // ------------------------------------------------------------------------------------------------
 // Constructor.
-geomodelgrids::testdata::ThreeBlocksSquashTopoBathyPoints::ThreeBlocksSquashTopoBathyPoints(const double squashMinElev) :
+geomodelgrids::testdata::ThreeBlocksSquashTopoBathyPoints::ThreeBlocksSquashTopoBathyPoints(void) :
     ModelPoints(6) {
     const size_t numPoints = 6;assert(_numPoints == numPoints);
     static const double pointsLLE[numPoints*3] = {
@@ -490,7 +501,7 @@ geomodelgrids::testdata::ThreeBlocksSquashTopoBathyPoints::ThreeBlocksSquashTopo
 
         pointsLLESquash[i*3+0] = pointsLLE[i*3+0];
         pointsLLESquash[i*3+1] = pointsLLE[i*3+1];
-        pointsLLESquash[i*3+2] = (elevOrig > squashMinElev) ? elevOrig + elevTopoBathy : elevOrig;
+        pointsLLESquash[i*3+2] = (elevOrig > squashMinElev) ? computePhysicalElevation(elevOrig, elevTopoBathy) : elevOrig;
     } // for
     _ModelPoints::toXYZ(_pointsXYZ, _modelCRS, _inCRS, pointsLLESquash, numPoints, _domain);
 } // Constructor

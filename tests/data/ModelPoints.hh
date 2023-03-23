@@ -47,6 +47,9 @@ public:
 
     };
 
+    /// Minimum squash elevation to use in unit tests.
+    static const double squashMinElev;
+
     // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
@@ -105,6 +108,16 @@ public:
     static
     double computeTopoBathyElevation(const double x,
                                      const double y);
+
+    /** Compute elevation in model physical space given elevation in squashed model.
+     *
+     * @param[in] elevSquashed Elevation in squashed model.
+     * @param[in] elevTop Elevation of top of model.
+     * @returns Elevation (m) in model physical space.
+     */
+    static
+    double computePhysicalElevation(const double elevSquashed,
+                                    const double elevTop);
 
     /** Compute value 'one' at point.
      *
@@ -201,7 +214,7 @@ public:
 class geomodelgrids::testdata::OneBlockSquashPoints : public ModelPoints {
 public:
 
-    OneBlockSquashPoints(const double squashMinElev);
+    OneBlockSquashPoints(void);
 }; // OneBlockSquashPoints
 
 class geomodelgrids::testdata::ThreeBlocksFlatPoints : public ModelPoints {
@@ -231,13 +244,13 @@ public:
 class geomodelgrids::testdata::ThreeBlocksSquashTopPoints : public ModelPoints {
 public:
 
-    ThreeBlocksSquashTopPoints(const double squashMinElev);
+    ThreeBlocksSquashTopPoints(void);
 }; // ThreeBlocksSquashPoints
 
 class geomodelgrids::testdata::ThreeBlocksSquashTopoBathyPoints : public ModelPoints {
 public:
 
-    ThreeBlocksSquashTopoBathyPoints(const double squashMinElev);
+    ThreeBlocksSquashTopoBathyPoints(void);
 }; // ThreeBlocksSquashPoints
 
 class geomodelgrids::testdata::OutsideDomainPoints : public ModelPoints {

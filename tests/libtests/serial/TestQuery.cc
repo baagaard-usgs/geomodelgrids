@@ -483,7 +483,7 @@ geomodelgrids::serial::TestQuery::testQueryTopo(void) {
 // Test query() for model using top surface for squashing.
 void
 geomodelgrids::serial::TestQuery::testQuerySquashTop(void) {
-    const double squashMinElev = -4.999e+3;
+    const double squashMinElev = geomodelgrids::testdata::ModelPoints::squashMinElev;
 
     const size_t numModels = 2;
     const char* const filenamesArray[numModels] = {
@@ -496,7 +496,7 @@ geomodelgrids::serial::TestQuery::testQuerySquashTop(void) {
     const char* const valueNamesArray[numValues] = { "two", "one" };
     std::vector<std::string> valueNames(valueNamesArray, valueNamesArray+numValues);
 
-    geomodelgrids::testdata::OneBlockSquashPoints pointsOne(squashMinElev);
+    geomodelgrids::testdata::OneBlockSquashPoints pointsOne;
     const std::string& crs = pointsOne.getCRSLatLonElev();
     const size_t spaceDim = 3;
 
@@ -535,7 +535,7 @@ geomodelgrids::serial::TestQuery::testQuerySquashTop(void) {
     } // One Block Squash
 
     { // Three Block Squash
-        geomodelgrids::testdata::ThreeBlocksSquashTopPoints pointsThree(squashMinElev);
+        geomodelgrids::testdata::ThreeBlocksSquashTopPoints pointsThree;
         const size_t numPoints = pointsThree.getNumPoints();
         const double* pointsLLE = pointsThree.getLatLonElev();
         const double* pointsXYZ = pointsThree.getXYZ();
@@ -592,7 +592,7 @@ geomodelgrids::serial::TestQuery::testQuerySquashTop(void) {
 // Test query() for model using topography/bathymetry for squashing.
 void
 geomodelgrids::serial::TestQuery::testQuerySquashTopoBathy(void) {
-    const double squashMinElev = -4.999e+3;
+    const double squashMinElev = geomodelgrids::testdata::ModelPoints::squashMinElev;
 
     const size_t numModels = 2;
     const char* const filenamesArray[numModels] = {
@@ -605,7 +605,7 @@ geomodelgrids::serial::TestQuery::testQuerySquashTopoBathy(void) {
     const char* const valueNamesArray[numValues] = { "two", "one" };
     std::vector<std::string> valueNames(valueNamesArray, valueNamesArray+numValues);
 
-    geomodelgrids::testdata::OneBlockSquashPoints pointsOne(squashMinElev);
+    geomodelgrids::testdata::OneBlockSquashPoints pointsOne;
     const std::string& crs = pointsOne.getCRSLatLonElev();
     const size_t spaceDim = 3;
 
@@ -645,7 +645,7 @@ geomodelgrids::serial::TestQuery::testQuerySquashTopoBathy(void) {
     } // One Block Squash
 
     { // Three Block Squash
-        geomodelgrids::testdata::ThreeBlocksSquashTopoBathyPoints pointsThree(squashMinElev);
+        geomodelgrids::testdata::ThreeBlocksSquashTopoBathyPoints pointsThree;
         const size_t numPoints = pointsThree.getNumPoints();
         const double* pointsLLE = pointsThree.getLatLonElev();
         const double* pointsXYZ = pointsThree.getXYZ();
