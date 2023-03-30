@@ -304,10 +304,10 @@ class Block():
                     f"Block resolution ({block_resolution}) must be a integer multiple of the surface resolution ({surface_resolution})")
             if batch:
                 surf_range = (block_skip * batch_range[0], block_skip * batch_range[1])
-                indices = numpy.arange(0, surf_range[1]-surf_range[0], step=block_skip, dtype=numpy.int)
+                indices = numpy.arange(0, surf_range[1]-surf_range[0], step=block_skip, dtype=numpy.int64)
             else:
                 surf_range = None
-                indices = numpy.arange(0, surfae_dim+0.5, step=block_skip, dtype=numpy.int)
+                indices = numpy.arange(0, surfae_dim+0.5, step=block_skip, dtype=numpy.int64)
             return (surf_range, indices)
 
         def _get_slice_variable(block_coordinates, surface_coordinates, batch_range):
