@@ -1,119 +1,82 @@
-image: docker:latest
-
 stages:
-  - manual-trigger
   - basic-platform
   - other-platforms
-  - auto-documentation
-
-.pull-request:
-  only:
-    - external_pull_requests
 
 .runner:
+  only:
+    - merge_requests
   tags:
-    - docker
-    - private
+    - development
+  variables:
+    GIT_SUBMODULE_STRATEGY: "normal"
+    IMAGE_REGISTRY: "code.usgs.gov:5001/ghsc/gmp/earth-structure/cvms/geomodelgrids"
 
 .builder:
   extends:
-    - .pull-request
     - .runner
   stage: other-platforms
   variables:
-    GIT_SUBMODULE_STRATEGY: "normal"
-    IMAGE_REGISTRY: "registry.gitlab.com/baagaard-usgs/geomodelgrids"
     ENABLE_GDAL: "yes"
     ENABLE_VALGRIND: "no"
   script:
-    - docker build -t geomodelgrids-testenv --build-arg BASE_IMAGE=$IMAGE_REGISTRY/$BASE_IMAGE --build-arg TEST_COVERAGE=$TEST_COVERAGE --build-arg PYTHON_COVERAGE=$PYTHON_COVERAGE  --build-arg ENABLE_GDAL=$ENABLE_GDAL --build-arg ENABLE_VALGRIND=$ENABLE_VALGRIND --target build -f docker/geomodelgrids-testenv .
-    - docker run -e CI_JOB_ID -e GITLAB_CI -e CI_BUILD_REF_NAME -e CI_BUILD_ID -e CI_BUILD_REPO -e CI_BUILD_REF -e CODECOV_TOKEN geomodelgrids-testenv ci-config/run_test_coverage.sh
+    - docker/testenv-build.sh
+    - ci-config/run_tests.sh
 
 .builder-first:
   extends: .builder
   stage: basic-platform
 
 .doc:
-  when: manual
   extends: .runner
-  variables:
-    BASE_IMAGE: "testenv-debian-stable"
+  image: $IMAGE_REGISTRY/testenv-debian-stable
   script:
     - echo "-TODO- Generate documentation."
 
-trigger-job:
-  stage: manual-trigger
-  when: manual
-  extends:
-    - .pull-request
-    - .runner
-  allow_failure: false
-  script:
-    - echo "Pipeline triggered manually"
-
-debian-stable-job:
+ubuntu-20.04:
   extends: .builder-first
-  variables:
-    BASE_IMAGE: "testenv-debian-stable"
-    TEST_COVERAGE: "yes"
-    PYTHON_COVERAGE: "python3-coverage"
+  image: $IMAGE_REGISTRY/testenv-ubuntu-20.04
 
-debian-stable-valgrind-job:
+ubuntu-22.04:
   extends: .builder
+  image: $IMAGE_REGISTRY/testenv-ubuntu-22.04
+
+ubuntu-23.04:
+  extends: .builder
+  image: $IMAGE_REGISTRY/testenv-ubuntu-23.04
+
+deb-stable-coverage:
+  extends: .builder
+  image: $IMAGE_REGISTRY/testenv-debian-stable
   variables:
-    BASE_IMAGE: "testenv-debian-stable"
+    TEST_COVERAGE: "yes"
+    PYTHON_COVERAGE: "coverage3"
+
+deb-testing-valgrind:
+  extends: .builder
+  image: $IMAGE_REGISTRY/testenv-debian-testing
+  variables:
     ENABLE_VALGRIND: "yes"
 
-debian-testing-job:
+fedora-37:
   extends: .builder
-  variables:
-    BASE_IMAGE: "testenv-debian-testing"
-    TEST_COVERAGE: "yes"
-    PYTHON_COVERAGE: "python3-coverage"
+  image: $IMAGE_REGISTRY/testenv-fedora-37
 
-ubuntu-20.04-job:
+fedora-38:
   extends: .builder
-  variables:
-    BASE_IMAGE: "testenv-ubuntu-20.04"
-    TEST_COVERAGE: "yes"
-    PYTHON_COVERAGE: "python3-coverage"
+  image: $IMAGE_REGISTRY/testenv-fedora-38
 
-ubuntu-20.10-job:
+rockylinux-8:
   extends: .builder
+  image: $IMAGE_REGISTRY/testenv-rockylinux-8
   variables:
-    BASE_IMAGE: "testenv-ubuntu-20.10"
-    TEST_COVERAGE: "yes"
-    PYTHON_COVERAGE: "python3-coverage"
-
-fedora-32-job:
-  extends: .builder
-  variables:
-    BASE_IMAGE: "testenv-fedora-32"
-    TEST_COVERAGE: "yes"
-    PYTHON_COVERAGE: "coverage3"
-
-fedora-33-job:
-  extends: .builder
-  variables:
-    BASE_IMAGE: "testenv-fedora-33"
-    TEST_COVERAGE: "yes"
-    PYTHON_COVERAGE: "coverage3"
-
-centos-8-job:
-  extends: .builder
-  variables:
-    BASE_IMAGE: "testenv-centos-8"
-    TEST_COVERAGE: "no"
     ENABLE_GDAL: "no"
 
-auto-doc-job:
-  stage: auto-documentation
-  extends:
-    - .pull-request
-    - .doc
+rockylinux-9:
+  extends: .builder
+  image: $IMAGE_REGISTRY/testenv-rockylinux-9
+  variables:
+    ENABLE_GDAL: "no"
 
-manual-doc-job:
+documentation:
   stage: basic-platform
   extends: .doc
-  only:
-    - main

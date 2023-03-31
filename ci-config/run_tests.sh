@@ -1,12 +1,12 @@
-#!/bin/bash
+#!/bin/bash -x
 
 # Run tests to generate coverage information. Upload test coverage data.
 # Must run codeocov script in top-level source directory.
 
-SRC_DIR=`pwd`
-BUILD_DIR=${SRC_DIR}/../../build/geomodelgrids
+src_dir=${TOP_SRCDIR}/geomodelgrids
+build_dir=${TOP_BUILDDIR}/geomodelgrids
 
-cd ${BUILD_DIR}
+cd ${build_dir}
 
 make check -C tests/data
 if [ $? != 0 ]; then exit 1; fi
