@@ -1,53 +1,52 @@
 ARG BUILD_ENV=nocerts
-FROM debian:testing as os-update
+FROM fedora:37 as os-update
 LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
 
 ENV BUILD_ENV=${BUILD_ENV}
 
 
-RUN apt-get update \
-  && apt-get install -y --no-install-recommends \
-  g++ \
+RUN dnf install -y \
+  gcc \
+  gcc-c++ \
   make \
   file \
   automake \
   autoconf \
   libtool \
   curl \
-  python3-dev \
-  libpython3.11 \
-  python3-venv \
+  python3 \
+  python3-devel \
   python3-pip \
-  zlib1g-dev \
+  zlib \
+  zlib-devel \
+  openssl \
+  openssl-libs \
   unzip \
   git \
   ca-certificates \
-  hdf5-tools \
-  libhdf5-dev \
-  libcppunit-dev \
-  sqlite3 \
-  libsqlite3-0 \
-  libsqlite3-dev \
-  libproj-dev \
-  proj-bin \
-  proj-data \
-  gdal-bin \
-  libgdal-dev \
-  gdb \
-  gnupg2 \
-  valgrind \
+  cppunit \
+  cppunit-devel \
+  hdf5 \
+  hdf5-devel \
+  sqlite \
+  sqlite-libs \
+  sqlite-devel \
+  proj \
+  proj-devel \
+  gdal \
+  gdal-devel \
   lcov \
-  vim-common \
-  vim-runtime \
-  vim-nox
-
+  gdb \
+  valgrind \
+  vim \
+  vim-common
 
 # ------------------------------------------------------------------------------
 FROM os-update as build-certs-doi
 
-ONBUILD COPY docker/certs/ /usr/local/share/ca-certificates
-ONBUILD RUN update-ca-certificates
-ONBUILD ENV CERT_FILE=/etc/ssl/certs/DOIRootCA2.pem
+ONBUILD COPY docker/certs/ /usr/share/pki/ca-trust-source/anchors
+ONBUILD RUN update-ca-trust enable
+ONBUILD ENV CERT_FILE=/etc/ssl/certs/ca-bundle.crt
 
 FROM os-update as build-nocerts
 ONBUILD ENV CERT_FILE=no
@@ -60,14 +59,14 @@ FROM build-${BUILD_ENV} as build-deps
 # Build geomodelgrids in $HOME/build
 
 ENV GMG_USER=gmg-tester \
-  PYTHON_VERSION=3.11 \
+  PYTHON_VERSION=3.10 \
   INSTALL_DIR=/opt/geomodelgrids
 ENV HOME=/home/$GMG_USER \
   PATH=$INSTALL_DIR/bin:$PATH \
-  LD_LIBRARY_PATH=$INSTALL_DIR/lib:$LD_LIBRARY_PATH \
-  PYTHONPATH=${INSTALL_DIR}/lib/python${PYTHON_VERSION}/site-packages:${PYTHONPATH} \
-  HDF5_INCDIR=/usr/include/hdf5/serial \
-  HDF5_LIBDIR=/usr/lib/x86_64-linux-gnu/hdf5/serial
+  LD_LIBRARY_PATH=$INSTALL_DIR/lib:$INSTALL_DIR/lib64:$LD_LIBRARY_PATH \
+  PYTHONPATH=${INSTALL_DIR}/lib/python${PYTHON_VERSION}/site-packages:${INSTALL_DIR}/lib64/python${PYTHON_VERSION}/site-packages:${PYTHONPATH} \
+  HDF5_INCDIR=/usr/include \
+  HDF5_LIBDIR=/usr/lib64
 RUN useradd --create-home --shell /bin/bash $GMG_USER \
   && mkdir -p ${INSTALL_DIR} \
   && chown ${GMG_USER} ${INSTALL_DIR} \
