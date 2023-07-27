@@ -17,7 +17,7 @@ ${src_dir}/configure --prefix=${INSTALL_DIR} --enable-python --enable-testing \
     --enable-test-coverage=${TEST_COVERAGE} --with-python-coverage=${PYTHON_COVERAGE} \
     --enable-valgrind=${ENABLE_VALGRIND} --enable-gdal=${ENABLE_GDAL} \
     CPPFLAGS="-I${INSTALL_DIR}/include -I${HDF5_INCDIR}" \
-    LDFLAGS="-L${INSTALL_DIR}/lib -L${HDF5_LIBDIR}"  \
+    LDFLAGS="-L${INSTALL_DIR}/lib -L${INSTALL_DIR}/lib64 -L${HDF5_LIBDIR}"  \
     CFLAGS="-g -O --coverage" CXXFLAGS="-g -O --coverage"
 if [ $? != 0 ]; then exit 1; fi
 

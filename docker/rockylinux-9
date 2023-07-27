@@ -91,7 +91,8 @@ RUN curl -L -O https://download.osgeo.org/proj/proj-${PROJ_VER}.tar.gz \
 
 WORKDIR ${build_dir}
 RUN cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Release ${src_dir}/proj-${PROJ_VER} \
-  && make -j$(nproc) && make install \
+  && make -j$(nproc) \
+  && make install \
   && rm -r ${build_dir}
 
 
