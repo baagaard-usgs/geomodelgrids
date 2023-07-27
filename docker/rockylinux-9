@@ -1,0 +1,145 @@
+ARG BUILD_ENV=nocerts
+FROM rockylinux:9 as os-init
+LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
+
+ENV BUILD_ENV=${BUILD_ENV}
+
+# ------------------------------------------------------------------------------
+from os-init as os-certs-doi
+
+ONBUILD COPY docker/certs/ /usr/share/pki/ca-trust-source/anchors
+ONBUILD RUN update-ca-trust enable
+ONBUILD ENV CERT_FILE=/etc/ssl/certs/ca-bundle.crt
+
+from os-init as os-nocerts
+ONBUILD ENV CERT_FILE=no
+
+# ------------------------------------------------------------------------------
+from os-${BUILD_ENV} as os-update
+
+RUN dnf install -y --allowerasing \
+  redhat-rpm-config \
+  dnf-plugins-core \
+  gcc \
+  gcc-c++ \
+  make \
+  file \
+  automake \
+  autoconf \
+  libtool \
+  curl \
+  python3 \
+  python3-devel \
+  python3-pip \
+  curl \
+  libcurl-devel \
+  openssl \
+  openssl-devel \
+  zlib \
+  zlib-devel \
+  openssl \
+  openssl-libs \
+  unzip \
+  git \
+  cmake \
+  ca-certificates \
+  sqlite \
+  sqlite-libs \
+  sqlite-devel \
+  libtiff \
+  libtiff-devel \
+  gdb \
+  valgrind \
+  vim-minimal \
+  vim-common
+
+
+# ------------------------------------------------------------------------------
+FROM os-update as build-deps
+
+# Install geomodelgrids to /opt/geomodelgrids
+# Download source code to $HOME/src
+# Build geomodelgrids in $HOME/build
+
+ENV GMG_USER=gmg-tester \
+  PYTHON_VERSION=3.9 \
+  INSTALL_DIR=/opt/geomodelgrids
+ENV HOME=/home/$GMG_USER \
+  PATH=$INSTALL_DIR/bin:$PATH \
+  LD_LIBRARY_PATH=$INSTALL_DIR/lib:$INSTALL_DIR/lib64:$LD_LIBRARY_PATH \
+  PYTHONPATH=${INSTALL_DIR}/lib/python${PYTHON_VERSION}/site-packages:${INSTALL_DIR}/lib64/python${PYTHON_VERSION}/site-packages:${PYTHONPATH} \
+  HDF5_INCDIR=${INSTALL_DIR}/include \
+  HDF5_LIBDIR=${INSTALL_DIR}/lib
+RUN useradd --create-home --shell /bin/bash $GMG_USER \
+  && mkdir -p ${INSTALL_DIR} \
+  && chown ${GMG_USER} ${INSTALL_DIR} \
+  && chgrp ${GMG_USER} ${INSTALL_DIR}
+
+ENV TOP_SRCDIR=$HOME/src \
+  TOP_BUILDDIR=$HOME/build
+
+USER ${GMG_USER}
+
+# --------------------------------------
+# proj
+# --------------------------------------
+ENV PROJ_VER=9.2.1  src_dir=${TOP_SRCDIR}/proj  build_dir=${TOP_BUILDDIR}/proj
+RUN mkdir -p ${src_dir} && mkdir -p ${build_dir}
+WORKDIR ${src_dir}
+RUN curl -L -O https://download.osgeo.org/proj/proj-${PROJ_VER}.tar.gz \
+  && tar -xf proj-${PROJ_VER}.tar.gz
+
+WORKDIR ${build_dir}
+RUN cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} -DBUILD_TESTING=OFF -DCMAKE_BUILD_TYPE=Release ${src_dir}/proj-${PROJ_VER} \
+  && make -j$(nproc) \
+  && make install \
+  && rm -r ${build_dir}
+
+
+# --------------------------------------
+# HDF5
+# --------------------------------------
+ENV HDF5_VER=1.12.1  src_dir=${TOP_SRCDIR}/hdf5  build_dir=${TOP_BUILDDIR}/hdf5
+RUN mkdir -p ${src_dir} && mkdir -p ${build_dir}
+WORKDIR ${src_dir}
+RUN curl -L -O https://support.hdfgroup.org/ftp/HDF5/releases/hdf5-1.12/hdf5-${HDF5_VER}/src/hdf5-${HDF5_VER}.tar.gz \
+  && tar -xf hdf5-${HDF5_VER}.tar.gz
+
+WORKDIR ${build_dir}
+RUN ${src_dir}/hdf5-${HDF5_VER}/configure --prefix=${INSTALL_DIR} --enable-shared --disable-static \
+  && make -j$(nproc) \
+  && make install \
+  && rm -r ${build_dir}
+
+# --------------------------------------
+# CPPUNIT
+# --------------------------------------
+ENV CPPUNIT_VER=1.15.1  src_dir=${TOP_SRCDIR}/cppunit  build_dir=${TOP_BUILDDIR}/cppunit
+RUN mkdir -p ${src_dir} && mkdir -p ${build_dir}
+WORKDIR ${src_dir}
+RUN curl -L -O http://dev-www.libreoffice.org/src/cppunit-${CPPUNIT_VER}.tar.gz \
+  && tar -xf cppunit-${CPPUNIT_VER}.tar.gz
+
+WORKDIR ${build_dir}
+RUN ${src_dir}/cppunit-${CPPUNIT_VER}/configure --prefix=${INSTALL_DIR} --enable-shared --disable-static \
+  && make -j$(nproc) \
+  && make install \
+  && rm -r ${build_dir}
+
+
+# --------------------------------------
+# Python packages
+# --------------------------------------
+RUN python3 -m venv ${INSTALL_DIR} && \
+  if [ x${CERT_FILE} = x"no" ]; then \
+  python3 -m pip install --upgrade pip setuptools && \
+  python3 -m pip install numpy coverage && \
+  CC=gcc HDF5_LIBDIR=${HDF5_LIBDIR} HDF5_INCLUDEDIR=${HDF5_INCDIR} python3 -m pip install --no-binary h5py h5py; \
+  else \
+  SSL_CERT_FILE=${CERT_FILE} REQUESTS_CA_BUNDLE=${CERT_FILE} python3 -m pip install --upgrade pip setuptools && \
+  SSL_CERT_FILE=${CERT_FILE} REQUESTS_CA_BUNDLE=${CERT_FILE} python3 -m pip install numpy coverage && \
+  SSL_CERT_FILE=${CERT_FILE} REQUESTS_CA_BUNDLE=${CERT_FILE} CC=gcc HDF5_LIBDIR=${HDF5_LIBDIR} HDF5_INCLUDEDIR=${HDF5_INCDIR} python3 -m pip install --no-binary h5py h5py; \
+  fi
+
+WORKDIR ${HOME}
+CMD /bin/bash

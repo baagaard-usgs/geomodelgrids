@@ -14,11 +14,10 @@ RUN apt-get update \
   autoconf \
   libtool \
   curl \
-  libpython3.9 \
   python3-dev \
+  libpython3.11 \
   python3-venv \
   python3-pip \
-  python3-setuptools \
   zlib1g-dev \
   unzip \
   git \
@@ -42,9 +41,6 @@ RUN apt-get update \
   vim-runtime \
   vim-nox
 
-COPY docker/certs/ /usr/local/share/ca-certificates
-RUN update-ca-certificates
-
 # ------------------------------------------------------------------------------
 FROM os-update as build-certs-doi
 
@@ -63,7 +59,7 @@ FROM build-${BUILD_ENV} as build-deps
 # Build geomodelgrids in $HOME/build
 
 ENV GMG_USER=gmg-tester \
-  PYTHON_VERSION=3.9 \
+  PYTHON_VERSION=3.11 \
   INSTALL_DIR=/opt/geomodelgrids
 ENV HOME=/home/$GMG_USER \
   PATH=$INSTALL_DIR/bin:$PATH \
