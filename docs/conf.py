@@ -31,7 +31,7 @@ release = '1.0.0rc2'
 # ones.
 extensions = [
     "myst_parser",
-#    "sphinxcontrib.spelling", # Requires pyenchant and enchant C library
+    #    "sphinxcontrib.spelling", # Requires pyenchant and enchant C library
 ]
 myst_enable_extensions = [
     "colon_fence",
@@ -68,8 +68,8 @@ html_theme_options = {
             "icon": "fab fa-github-square",
         },
     ],
-    "navbar_start": ["navbar-usgs","navbar-logo"],
-    "footer_items": ["last-updated"],
+    "navbar_start": ["navbar-usgs", "navbar-logo"],
+    "footer_end": ["last-updated"],
 }
 html_sidebars = {
     "**": ["search-field", "sidebar-nav-bs"]

@@ -1,8 +1,6 @@
 # GeoModelGrids
 
-[![CC0-1.0 License](https://img.shields.io/badge/License-CC0%201.0-lightgrey.svg)](https://github.com/baagaard-usgs/geomodelgrids/blob/main/LICENSE.md)
-[![codecov](https://codecov.io/gh/baagaard-usgs/geomodelgrids/branch/main/graph/badge.svg)](https://codecov.io/gh/baagaard-usgs/geomodelgrids)
-
+[![CC0-1.0 License](https://img.shields.io/badge/License-CC0%201.0-lightgrey.svg)](https://code.usgs.gov/ghsc/gmp/earth-structure/cvms/geomodelgrids/-/blob/main/LICENSE.md)
 
 ## Description
 
@@ -24,4 +22,4 @@ See [CHANGES](CHANGES.md) for a complete list of changes for each release.
 
 ## Authors
 
-* Brad Aagard, Geologic Hazards Science Center, USGS, USA
+* Brad Aagaard, Geologic Hazards Science Center, U.S. Geological Survey, USA
