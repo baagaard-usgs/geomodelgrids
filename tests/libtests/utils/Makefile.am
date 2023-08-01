@@ -5,13 +5,12 @@ TESTS = libtest_utils
 check_PROGRAMS = libtest_utils
 
 libtest_utils_SOURCES = \
+	TestCRSTransformer.cc \
+	TestIndexing.cc \
+	TestErrorHandler.cc \
 	TestCErrorHandler.cc \
 	$(top_srcdir)/tests/src/driver_catch2.cc
 
-#	TestCRSTransformer.cc \
-#	TestIndexing.cc \
-#	TestErrorHandler.cc \
-#
 
 noinst_HEADERS =
 
