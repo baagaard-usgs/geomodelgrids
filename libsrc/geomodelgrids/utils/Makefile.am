@@ -18,13 +18,4 @@ subpkginclude_HEADERS += \
 endif
 
 
-
-
-if ENABLE_TESTING
-subpkginclude_HEADERS += \
-	TestDriver.hh
-endif
-
-
-
 # End of file
