@@ -8,13 +8,16 @@
 #include "geomodelgrids/utils/constants.hh" // USES NODATA_VALUE
 #include "geomodelgrids/utils/GeoTiff.hh" // USES GeoTiff
 
-#include "ModelPoints.hh"
+#include "tests/data/ModelPoints.hh"
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "catch2/catch_test_macros.hpp"
+#include "catch2/matchers/catch_matchers_floating_point.hpp"
 
-#include <fstream> // USES std::ifstream, std::ofstream
-#include <iomanip> // USES ios::setf(), ios::setprecision()
 #include <getopt.h> // USES optind
+#include <fstream> // USES std::ifstream, std::ofstream
+#include <iostream> // USES std::cout
+#include <sstream> // USES std::ostringstream
+#include <iomanip> // USES ios::setf(), ios::setprecision()
 #include <cmath> // USES fabs()
 
 namespace geomodelgrids {
@@ -23,36 +26,12 @@ namespace geomodelgrids {
     } // apps
 } // geomodelgrids
 
-class geomodelgrids::apps::TestIsosurface : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE -------------------------------------------------------------------------
-    CPPUNIT_TEST_SUITE(TestIsosurface);
-
-    CPPUNIT_TEST(testConstructor);
-    CPPUNIT_TEST(testParseNoArgs);
-    CPPUNIT_TEST(testParseArgsHelp);
-    CPPUNIT_TEST(testParseArgsNoBBox);
-    CPPUNIT_TEST(testParseArgsNoResolution);
-    CPPUNIT_TEST(testParseArgsNoMaxDepth);
-    CPPUNIT_TEST(testParseArgsNoIsosurface);
-    CPPUNIT_TEST(testParseArgsNoModels);
-    CPPUNIT_TEST(testParseArgsNoOutput);
-    CPPUNIT_TEST(testParseArgsBadValues);
-    CPPUNIT_TEST(testParseArgsWrong);
-    CPPUNIT_TEST(testParseArgsMinimal);
-    CPPUNIT_TEST(testParseArgsAll);
-    CPPUNIT_TEST(testPrintHelp);
-    CPPUNIT_TEST(testRunHelp);
-    CPPUNIT_TEST(testRunOneBlockFlat);
-    CPPUNIT_TEST(testRunThreeBlocksTopo);
-    CPPUNIT_TEST(testRunBadOutput);
-
-    CPPUNIT_TEST_SUITE_END();
-
+class geomodelgrids::apps::TestIsosurface {
     // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
-    /// Setup test.
-    void setUp(void);
+    /// Constructor.
+    TestIsosurface(void);
 
     /// Test constructor.
     void testConstructor(void);
@@ -109,8 +88,62 @@ public:
     void testRunBadOutput(void);
 
 }; // class TestIsosurface
-CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::apps::TestIsosurface);
 
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestIsosurface::testConstructor", "[TestIsosurface]") {
+    geomodelgrids::apps::TestIsosurface().testConstructor();
+}
+TEST_CASE("TestIsosurface::testParseNoArgs", "[TestIsosurface]") {
+    geomodelgrids::apps::TestIsosurface().testParseNoArgs();
+}
+TEST_CASE("TestIsosurface::testParseArgsHelp", "[TestIsosurface]") {
+    geomodelgrids::apps::TestIsosurface().testParseArgsHelp();
+}
+TEST_CASE("TestIsosurface::testParseArgsNoBBox", "[TestIsosurface]") {
+    geomodelgrids::apps::TestIsosurface().testParseArgsNoBBox();
+}
+TEST_CASE("TestIsosurface::testParseArgsNoResolution", "[TestIsosurface]") {
+    geomodelgrids::apps::TestIsosurface().testParseArgsNoResolution();
+}
+TEST_CASE("TestIsosurface::testParseArgsNoMaxDepth", "[TestIsosurface]") {
+    geomodelgrids::apps::TestIsosurface().testParseArgsNoMaxDepth();
+}
+TEST_CASE("TestIsosurface::testParseArgsNoIsosurface", "[TestIsosurface]") {
+    geomodelgrids::apps::TestIsosurface().testParseArgsNoIsosurface();
+}
+TEST_CASE("TestIsosurface::testParseArgsNoModels", "[TestIsosurface]") {
+    geomodelgrids::apps::TestIsosurface().testParseArgsNoModels();
+}
+TEST_CASE("TestIsosurface::testParseArgsNoOutput", "[TestIsosurface]") {
+    geomodelgrids::apps::TestIsosurface().testParseArgsNoOutput();
+}
+TEST_CASE("TestIsosurface::testParseArgsBadValues", "[TestIsosurface]") {
+    geomodelgrids::apps::TestIsosurface().testParseArgsBadValues();
+}
+TEST_CASE("TestIsosurface::testParseArgsWrong", "[TestIsosurface]") {
+    geomodelgrids::apps::TestIsosurface().testParseArgsWrong();
+}
+TEST_CASE("TestIsosurface::testParseArgsMinimal", "[TestIsosurface]") {
+    geomodelgrids::apps::TestIsosurface().testParseArgsMinimal();
+}
+TEST_CASE("TestIsosurface::testParseArgsAll", "[TestIsosurface]") {
+    geomodelgrids::apps::TestIsosurface().testParseArgsAll();
+}
+TEST_CASE("TestIsosurface::testPrintHelp", "[TestIsosurface]") {
+    geomodelgrids::apps::TestIsosurface().testPrintHelp();
+}
+TEST_CASE("TestIsosurface::testRunHelp", "[TestIsosurface]") {
+    geomodelgrids::apps::TestIsosurface().testRunHelp();
+}
+TEST_CASE("TestIsosurface::testRunOneBlockFlat", "[TestIsosurface]") {
+    geomodelgrids::apps::TestIsosurface().testRunOneBlockFlat();
+}
+TEST_CASE("TestIsosurface::testRunThreeBlocksTopo", "[TestIsosurface]") {
+    geomodelgrids::apps::TestIsosurface().testRunThreeBlocksTopo();
+}
+TEST_CASE("TestIsosurface::testRunBadOutput", "[TestIsosurface]") {
+    geomodelgrids::apps::TestIsosurface().testRunBadOutput();
+}
 // ------------------------------------------------------------------------------------------------
 namespace geomodelgrids {
     namespace apps {
@@ -130,10 +163,9 @@ public:
 }; // _TestIsosurface
 
 // ------------------------------------------------------------------------------------------------
-void
-geomodelgrids::apps::TestIsosurface::setUp(void) {
+geomodelgrids::apps::TestIsosurface::TestIsosurface(void) {
     optind = 1; // reset parsing of argc and argv
-} // setUp
+} // constructor
 
 
 // ------------------------------------------------------------------------------------------------
@@ -142,28 +174,25 @@ void
 geomodelgrids::apps::TestIsosurface::testConstructor(void) {
     Isosurface isosurface;
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in points CRS.", std::string("EPSG:4326"), isosurface._bboxCRS);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in minX.", geomodelgrids::NODATA_VALUE, isosurface._minX);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in maxX.", geomodelgrids::NODATA_VALUE, isosurface._maxX);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in minY.", geomodelgrids::NODATA_VALUE, isosurface._minY);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in maxY.", geomodelgrids::NODATA_VALUE, isosurface._maxY);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in horizontal resolution.", 0.0, isosurface._horizRes);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in vertical resolution.", 10.0, isosurface._vertRes);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in maximum depth.", 0.0, isosurface._maxDepth);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of search points.", 10, isosurface._numSearchPoints);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in depth surface.",
-                                 geomodelgrids::serial::Query::SQUASH_TOPOGRAPHY_BATHYMETRY, isosurface._depthSurface);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in shallow preference.", true, isosurface._preferShallow);
+    CHECK(std::string("EPSG:4326") == isosurface._bboxCRS);
+    CHECK(geomodelgrids::NODATA_VALUE == isosurface._minX);
+    CHECK(geomodelgrids::NODATA_VALUE == isosurface._maxX);
+    CHECK(geomodelgrids::NODATA_VALUE == isosurface._minY);
+    CHECK(geomodelgrids::NODATA_VALUE == isosurface._maxY);
+    CHECK(0.0 == isosurface._horizRes);
+    CHECK(10.0 == isosurface._vertRes);
+    CHECK(0.0 == isosurface._maxDepth);
+    CHECK(10 == isosurface._numSearchPoints);
+    CHECK(geomodelgrids::serial::Query::SQUASH_TOPOGRAPHY_BATHYMETRY == isosurface._depthSurface);
+    CHECK(true == isosurface._preferShallow);
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of isosurfaces.", size_t(2), isosurface._isosurfaces.size());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in isosurface 1 value name.", std::string("Vs"),
-                                 isosurface._isosurfaces[0].first);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in isosurface 1 value.", 1.0e+3, isosurface._isosurfaces[0].second);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in isosurface 2 value name.", std::string("Vs"),
-                                 isosurface._isosurfaces[1].first);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in isosurface 2 value.", 2.5e+3, isosurface._isosurfaces[1].second);
+    CHECK(size_t(2) == isosurface._isosurfaces.size());
+    CHECK(std::string("Vs") == isosurface._isosurfaces[0].first);
+    CHECK(1.0e+3 == isosurface._isosurfaces[0].second);
+    CHECK(std::string("Vs") == isosurface._isosurfaces[1].first);
+    CHECK(2.5e+3 == isosurface._isosurfaces[1].second);
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in help flag.", false, isosurface._showHelp);
+    CHECK(false == isosurface._showHelp);
 } // testConstructor
 
 
@@ -176,7 +205,7 @@ geomodelgrids::apps::TestIsosurface::testParseNoArgs(void) {
 
     Isosurface isosurface;
     isosurface._parseArgs(nargs, const_cast<char**>(args));
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in help.", isosurface._showHelp);
+    CHECK(isosurface._showHelp);
 } // testParseNoArgs
 
 
@@ -189,7 +218,7 @@ geomodelgrids::apps::TestIsosurface::testParseArgsHelp(void) {
 
     Isosurface isosurface;
     isosurface._parseArgs(nargs, const_cast<char**>(args));
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in help.", isosurface._showHelp);
+    CHECK(isosurface._showHelp);
 } // testParseArgsHelp
 
 
@@ -208,7 +237,7 @@ geomodelgrids::apps::TestIsosurface::testParseArgsNoBBox(void) {
     };
 
     Isosurface isosurface;
-    CPPUNIT_ASSERT_THROW(isosurface._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
+    CHECK_THROWS_AS(isosurface._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
 } // testParseArgsNoBBox
 
 
@@ -227,7 +256,7 @@ geomodelgrids::apps::TestIsosurface::testParseArgsNoResolution(void) {
     };
 
     Isosurface isosurface;
-    CPPUNIT_ASSERT_THROW(isosurface._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
+    CHECK_THROWS_AS(isosurface._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
 } // testParseArgsNoResolution
 
 
@@ -246,7 +275,7 @@ geomodelgrids::apps::TestIsosurface::testParseArgsNoMaxDepth(void) {
     };
 
     Isosurface isosurface;
-    CPPUNIT_ASSERT_THROW(isosurface._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
+    CHECK_THROWS_AS(isosurface._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
 } // testParseArgsNoMaxDepth
 
 
@@ -265,7 +294,7 @@ geomodelgrids::apps::TestIsosurface::testParseArgsNoIsosurface(void) {
     };
 
     Isosurface isosurface;
-    CPPUNIT_ASSERT_THROW(isosurface._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
+    CHECK_THROWS_AS(isosurface._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
 } // testParseArgsNoIsosurface
 
 
@@ -284,7 +313,7 @@ geomodelgrids::apps::TestIsosurface::testParseArgsNoModels(void) {
     };
 
     Isosurface isosurface;
-    CPPUNIT_ASSERT_THROW(isosurface._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
+    CHECK_THROWS_AS(isosurface._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
 } // testParseArgsNoModels
 
 
@@ -303,7 +332,7 @@ geomodelgrids::apps::TestIsosurface::testParseArgsNoOutput(void) {
     };
 
     Isosurface isosurface;
-    CPPUNIT_ASSERT_THROW(isosurface._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
+    CHECK_THROWS_AS(isosurface._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
 } // testParseArgsNoOutput
 
 
@@ -325,7 +354,7 @@ geomodelgrids::apps::TestIsosurface::testParseArgsBadValues(void) {
     };
 
     Isosurface isosurface;
-    CPPUNIT_ASSERT_THROW(isosurface._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
+    CHECK_THROWS_AS(isosurface._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
 } // testParseArgsNoOutput
 
 
@@ -337,7 +366,7 @@ geomodelgrids::apps::TestIsosurface::testParseArgsWrong(void) {
     const char* const args[nargs] = { "test", "--blah" };
 
     Isosurface isosurface;
-    CPPUNIT_ASSERT_THROW(isosurface._parseArgs(nargs, const_cast<char**>(args)), std::logic_error);
+    CHECK_THROWS_AS(isosurface._parseArgs(nargs, const_cast<char**>(args)), std::logic_error);
 } // testParseArgsWrong
 
 
@@ -359,32 +388,29 @@ geomodelgrids::apps::TestIsosurface::testParseArgsMinimal(void) {
 
     Isosurface isosurface;
     isosurface._parseArgs(nargs, const_cast<char**>(args));
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of values.", size_t(2), isosurface._isosurfaces.size());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in isosurface value name.", std::string("one"),
-                                 isosurface._isosurfaces[0].first);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in isosurface value.", 1.0, isosurface._isosurfaces[0].second);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in isosurface value name.", std::string("two"),
-                                 isosurface._isosurfaces[1].first);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in isosurface value.", 2.0, isosurface._isosurfaces[1].second);
+    CHECK(size_t(2) == isosurface._isosurfaces.size());
+    CHECK(std::string("one") == isosurface._isosurfaces[0].first);
+    CHECK(1.0 == isosurface._isosurfaces[0].second);
+    CHECK(std::string("two") == isosurface._isosurfaces[1].first);
+    CHECK(2.0 == isosurface._isosurfaces[1].second);
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in points CRS.", std::string("EPSG:4326"), isosurface._bboxCRS);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in minX.", 0.0, isosurface._minX);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in maxX.", 1.0, isosurface._maxX);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in minY.", 2.0, isosurface._minY);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in maxY.", 3.0, isosurface._maxY);
+    CHECK(std::string("EPSG:4326") == isosurface._bboxCRS);
+    CHECK(0.0 == isosurface._minX);
+    CHECK(1.0 == isosurface._maxX);
+    CHECK(2.0 == isosurface._minY);
+    CHECK(3.0 == isosurface._maxY);
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in horizontal resolution.", 0.5, isosurface._horizRes);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in vertical resolution.", 10.0, isosurface._vertRes);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in maximum depth.", 2.0, isosurface._maxDepth);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of search points.", 10, isosurface._numSearchPoints);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in depth surface.",
-                                 geomodelgrids::serial::Query::SQUASH_TOPOGRAPHY_BATHYMETRY, isosurface._depthSurface);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in shallow preference.", true, isosurface._preferShallow);
+    CHECK(0.5 == isosurface._horizRes);
+    CHECK(10.0 == isosurface._vertRes);
+    CHECK(2.0 == isosurface._maxDepth);
+    CHECK(10 == isosurface._numSearchPoints);
+    CHECK(geomodelgrids::serial::Query::SQUASH_TOPOGRAPHY_BATHYMETRY == isosurface._depthSurface);
+    CHECK(true == isosurface._preferShallow);
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of models.", size_t(1), isosurface._modelFilenames.size());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in models.", std::string("one.h5"), isosurface._modelFilenames[0]);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in output.", std::string("iso.tiff"), isosurface._outputFilename);
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in help for minimal args.", !isosurface._showHelp);
+    CHECK(size_t(1) == isosurface._modelFilenames.size());
+    CHECK(std::string("one.h5") == isosurface._modelFilenames[0]);
+    CHECK(std::string("iso.tiff") == isosurface._outputFilename);
+    CHECK(!isosurface._showHelp);
 } // testParseArgsMinimal
 
 
@@ -412,33 +438,30 @@ geomodelgrids::apps::TestIsosurface::testParseArgsAll(void) {
 
     Isosurface isosurface;
     isosurface._parseArgs(nargs, const_cast<char**>(args));
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of values.", size_t(2), isosurface._isosurfaces.size());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in isosurface value name.", std::string("one"),
-                                 isosurface._isosurfaces[0].first);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in isosurface value.", 1.0, isosurface._isosurfaces[0].second);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in isosurface value name.", std::string("two"),
-                                 isosurface._isosurfaces[1].first);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in isosurface value.", 2.0, isosurface._isosurfaces[1].second);
+    CHECK(size_t(2) == isosurface._isosurfaces.size());
+    CHECK(std::string("one") == isosurface._isosurfaces[0].first);
+    CHECK(1.0 == isosurface._isosurfaces[0].second);
+    CHECK(std::string("two") == isosurface._isosurfaces[1].first);
+    CHECK(2.0 == isosurface._isosurfaces[1].second);
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in points CRS.", std::string("EPSG:3311"), isosurface._bboxCRS);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in minX.", 0.0, isosurface._minX);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in maxX.", 1.0, isosurface._maxX);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in minY.", 2.0, isosurface._minY);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in maxY.", 3.0, isosurface._maxY);
+    CHECK(std::string("EPSG:3311") == isosurface._bboxCRS);
+    CHECK(0.0 == isosurface._minX);
+    CHECK(1.0 == isosurface._maxX);
+    CHECK(2.0 == isosurface._minY);
+    CHECK(3.0 == isosurface._maxY);
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in horizontal resolution.", 0.5, isosurface._horizRes);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in vertical resolution.", 0.4, isosurface._vertRes);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in maximum depth.", 2.0, isosurface._maxDepth);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of search points.", 5, isosurface._numSearchPoints);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in depth surface.",
-                                 geomodelgrids::serial::Query::SQUASH_TOP_SURFACE, isosurface._depthSurface);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in shallow preference.", false, isosurface._preferShallow);
+    CHECK(0.5 == isosurface._horizRes);
+    CHECK(0.4 == isosurface._vertRes);
+    CHECK(2.0 == isosurface._maxDepth);
+    CHECK(5 == isosurface._numSearchPoints);
+    CHECK(geomodelgrids::serial::Query::SQUASH_TOP_SURFACE == isosurface._depthSurface);
+    CHECK(false == isosurface._preferShallow);
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of models.", size_t(2), isosurface._modelFilenames.size());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in models.", std::string("one.h5"), isosurface._modelFilenames[0]);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in models.", std::string("two.h5"), isosurface._modelFilenames[1]);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in output.", std::string("iso.tiff"), isosurface._outputFilename);
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in help for minimal args.", !isosurface._showHelp);
+    CHECK(size_t(2) == isosurface._modelFilenames.size());
+    CHECK(std::string("one.h5") == isosurface._modelFilenames[0]);
+    CHECK(std::string("two.h5") == isosurface._modelFilenames[1]);
+    CHECK(std::string("iso.tiff") == isosurface._outputFilename);
+    CHECK(!isosurface._showHelp);
 } // testParseArgsAll
 
 
@@ -453,7 +476,7 @@ geomodelgrids::apps::TestIsosurface::testPrintHelp(void) {
     Isosurface isosurface;
     isosurface._printHelp();
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(1473), coutHelp.str().length());
+    CHECK(size_t(1473) == coutHelp.str().length());
 } // testPrintHelp
 
 
@@ -474,7 +497,7 @@ geomodelgrids::apps::TestIsosurface::testRunHelp(void) {
     isosurface.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(1473), coutHelp.str().length());
+    CHECK(size_t(1473) == coutHelp.str().length());
 } // testRunHelp
 
 
@@ -502,7 +525,7 @@ geomodelgrids::apps::TestIsosurface::testRunOneBlockFlat(void) {
     isosurface.run(nargs, const_cast<char**>(args));
 
     _TestIsosurface::checkIsosurface("one-block-flat-isosurface.tiff", 25.0e+3, 10.0e+3, isosurfaceOne);
-    std::ifstream slog("error.log");CPPUNIT_ASSERT(slog.is_open() && slog.good());
+    std::ifstream slog("error.log");assert(slog.is_open() && slog.good());
 } // testRunOneBlockFlat
 
 
@@ -532,7 +555,7 @@ geomodelgrids::apps::TestIsosurface::testRunThreeBlocksTopo(void) {
     isosurface.run(nargs, const_cast<char**>(args));
 
     _TestIsosurface::checkIsosurface("three-blocks-topo-isosurface.tiff", 12.0e+4, 40.0e+3, isosurfaceThree);
-    std::ifstream slog("error.log");CPPUNIT_ASSERT(slog.is_open() && slog.good());
+    std::ifstream slog("error.log");assert(slog.is_open() && slog.good());
 } // testRunThreeBlocksTopo
 
 
@@ -559,7 +582,7 @@ geomodelgrids::apps::TestIsosurface::testRunBadOutput(void) {
     };
 
     Isosurface isosurface;
-    CPPUNIT_ASSERT_THROW(isosurface.run(nargs, const_cast<char**>(args)), std::runtime_error);
+    CHECK_THROWS_AS(isosurface.run(nargs, const_cast<char**>(args)), std::runtime_error);
 } // testRunBadOutput
 
 
@@ -580,7 +603,7 @@ geomodelgrids::apps::_TestIsosurface::checkIsosurface(const char* filename,
 
     const size_t numX = reader.getNumCols();
     const size_t numY = reader.getNumRows();
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in image size.", numPoints, numX*numY);
+    CHECK(numPoints == numX*numY);
 
     double minX = 0.0, maxX = 0.0, minY = 0.0, maxY = 0.0;
     reader.getBBox(&minX, &maxX, &minY, &maxY);
@@ -588,10 +611,10 @@ geomodelgrids::apps::_TestIsosurface::checkIsosurface(const char* filename,
     const std::vector<std::string>& bandLabels = reader.getBandLabels();
     std::ostringstream label;
     label << "one=" << isoOne;
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in label for band 'one'.", label.str(), bandLabels[0]);
+    CHECK(label.str() == bandLabels[0]);
     label.str("");
     label << "two=" << isoTwo;
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in label for band 'two'.", label.str(), bandLabels[1]);
+    CHECK(label.str() == bandLabels[1]);
 
     const float* data = reader.getBands();
 
@@ -610,11 +633,10 @@ geomodelgrids::apps::_TestIsosurface::checkIsosurface(const char* filename,
                 const double valueE = topElev - points.computeIsosurfaceOne(x, y, isoOne, topElev, domain.zBottom);
                 const double value = data[iValue*numY*numX + row*numX + col];
 
-                std::ostringstream msg;
-                msg << "Mismatch for isosurface 'one' for point ("
-                    << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").";
+                INFO("Mismatch for isosurface 'one' for point ("
+                     << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").");
                 const double valueTolerance = std::max(tolerance, tolerance*fabs(valueE));
-                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, value, valueTolerance);
+                CHECK_THAT(value, Catch::Matchers::WithinAbs(valueE, valueTolerance));
             } // Value 'one'
 
             { // Value 'two'
@@ -622,11 +644,10 @@ geomodelgrids::apps::_TestIsosurface::checkIsosurface(const char* filename,
                 const double valueE = topElev - points.computeIsosurfaceTwo(x, y, isoTwo, topElev, domain.zBottom);
                 const double value = data[iValue*numY*numX + row*numX + col];
 
-                std::ostringstream msg;
-                msg << "Mismatch for isosurface 'two' for point ("
-                    << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").";
+                INFO("Mismatch for isosurface 'two' for point ("
+                     << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").");
                 const double valueTolerance = std::max(tolerance, tolerance*fabs(valueE));
-                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, value, valueTolerance);
+                CHECK_THAT(value, Catch::Matchers::WithinAbs(valueE, valueTolerance));
             } // Value 'two'
 
         } // for
