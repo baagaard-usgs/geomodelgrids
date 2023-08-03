@@ -1,10 +1,10 @@
 include $(top_srcdir)/tests/check.am
 
-TESTS = test_serial
+TESTS = libtest_serial
 
-check_PROGRAMS = test_serial
+check_PROGRAMS = libtest_serial
 
-test_serial_SOURCES = \
+libtest_serial_SOURCES = \
 	TestModelInfo.cc \
 	TestHDF5.cc \
 	TestHyperslab.cc \
@@ -15,23 +15,13 @@ test_serial_SOURCES = \
 	TestModel.cc \
 	TestQuery.cc \
 	TestCQuery.cc \
-	../../data/ModelPoints.cc \
-	test_driver.cc
+	$(top_srcdir)/tests/data/ModelPoints.cc \
+	$(top_srcdir)/tests/src/driver_catch2.cc
+
+#
 
 noinst_HEADERS = \
 	TestSurface.hh \
 	TestBlock.hh
-
-test_serial_CPPFLAGS = \
-	$(AM_CPPFLAGS) \
-	-I$(top_srcdir)/tests/data
-
-test_serial_LDFLAGS = $(AM_LDFLAGS)
-test_serial_LDADD = \
-	-lcppunit -ldl \
-	$(top_builddir)/libsrc/geomodelgrids/libgeomodelgrids.la \
-	-lhdf5 \
-	-lproj
-
 
 # End of file

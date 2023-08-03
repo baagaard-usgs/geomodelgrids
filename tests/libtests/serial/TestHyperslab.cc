@@ -4,13 +4,14 @@
 
 #include <portinfo>
 
-#include "ModelPoints.hh"
+#include "tests/data/ModelPoints.hh"
 
 #include "geomodelgrids/serial/Hyperslab.hh" // Test subject
 
 #include "geomodelgrids/serial/HDF5.hh" // HASA HDF5
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "catch2/catch_test_macros.hpp"
+#include "catch2/matchers/catch_matchers_floating_point.hpp"
 
 #include <cmath> // USES fabs()
 
@@ -20,27 +21,15 @@ namespace geomodelgrids {
     } // serial
 } // geomodelgrids
 
-class geomodelgrids::serial::TestHyperslab : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE -------------------------------------------------------------------------
-    CPPUNIT_TEST_SUITE(TestHyperslab);
-
-    CPPUNIT_TEST(testConstructor2D);
-    CPPUNIT_TEST(testConstructor3D);
-    CPPUNIT_TEST(testConstructorOversize3D);
-    CPPUNIT_TEST(testConstructorBadDims);
-    CPPUNIT_TEST(testInterpolate2D);
-    CPPUNIT_TEST(testInterpolate3D);
-
-    CPPUNIT_TEST_SUITE_END();
-
+class geomodelgrids::serial::TestHyperslab {
     // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
-    /// Set up test data.
-    void setUp(void);
+    /// Constructor.
+    TestHyperslab(void);
 
-    /// Tear down test data.
-    void tearDown(void);
+    /// Destructor.
+    ~TestHyperslab(void);
 
     /// Test constructor in 2D.
     void testConstructor2D(void);
@@ -66,22 +55,40 @@ private:
     geomodelgrids::serial::HDF5 _h5;
 
 }; // class TestHyperslab
-CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::serial::TestHyperslab);
 
 // ------------------------------------------------------------------------------------------------
-// Set up test data.
-void
-geomodelgrids::serial::TestHyperslab::setUp(void) {
+TEST_CASE("TestHyperslab::testConstructor2D", "[TestHyperslab]") {
+    geomodelgrids::serial::TestHyperslab().testConstructor2D();
+}
+TEST_CASE("TestHyperslab::testConstructor3D", "[TestHyperslab]") {
+    geomodelgrids::serial::TestHyperslab().testConstructor3D();
+}
+TEST_CASE("TestHyperslab::testConstructorOversize3D", "[TestHyperslab]") {
+    geomodelgrids::serial::TestHyperslab().testConstructorOversize3D();
+}
+TEST_CASE("TestHyperslab::testConstructorBadDims", "[TestHyperslab]") {
+    geomodelgrids::serial::TestHyperslab().testConstructorBadDims();
+}
+
+TEST_CASE("TestHyperslab::testInterpolate2D", "[TestHyperslab]") {
+    geomodelgrids::serial::TestHyperslab().testInterpolate2D();
+}
+TEST_CASE("TestHyperslab::testInterpolate3D", "[TestHyperslab]") {
+    geomodelgrids::serial::TestHyperslab().testInterpolate3D();
+}
+
+// ------------------------------------------------------------------------------------------------
+// Constructor.
+geomodelgrids::serial::TestHyperslab::TestHyperslab(void) {
     _h5.open("../../data/one-block-topo.h5", H5F_ACC_RDONLY);
-} // setUp
+} // constructor
 
 
 // ------------------------------------------------------------------------------------------------
-// Tear down test data.
-void
-geomodelgrids::serial::TestHyperslab::tearDown(void) {
+// Destructor.
+geomodelgrids::serial::TestHyperslab::~TestHyperslab(void) {
     _h5.close();
-} // tearDown
+} // destructor
 
 
 // ------------------------------------------------------------------------------------------------
@@ -95,21 +102,21 @@ geomodelgrids::serial::TestHyperslab::testConstructor2D(void) {
 
     Hyperslab hyperslab(&_h5, dataset.c_str(), dims, ndims);
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in HDF5 file object.", &_h5, hyperslab._h5);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in dataset path.", dataset, hyperslab._datasetPath);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of dimensions for hyperslab.", ndims, hyperslab._ndims);
-    CPPUNIT_ASSERT_MESSAGE("Expected NULL origin.", !hyperslab._origin);
+    REQUIRE(&_h5 == hyperslab._h5);
+    CHECK(dataset == hyperslab._datasetPath);
+    REQUIRE(ndims == hyperslab._ndims);
+    CHECK(!hyperslab._origin);
 
     for (size_t i = 0; i < ndims; ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in hyperslab dimensions.", dims[i], hyperslab._dims[i]);
+        CHECK(dims[i] == hyperslab._dims[i]);
     } // for
 
     for (size_t i = 0; i < ndims; ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in dataset dimensions.", dimsAll[i], hyperslab._dimsAll[i]);
+        CHECK(dimsAll[i] == hyperslab._dimsAll[i]);
     } // for
 
-    CPPUNIT_ASSERT_MESSAGE("Expected non-NULL values.", hyperslab._values);
-    CPPUNIT_ASSERT_MESSAGE("Expected non-NULL hyperslab.", hyperslab._hyperslab);
+    CHECK(hyperslab._values);
+    CHECK(hyperslab._hyperslab);
 } // testConstructor2D
 
 
@@ -124,21 +131,21 @@ geomodelgrids::serial::TestHyperslab::testConstructor3D(void) {
 
     Hyperslab hyperslab(&_h5, dataset.c_str(), dims, ndims);
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in HDF5 file object.", &_h5, hyperslab._h5);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in dataset path.", dataset, hyperslab._datasetPath);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of dimensions for hyperslab.", ndims, hyperslab._ndims);
-    CPPUNIT_ASSERT_MESSAGE("Expected NULL origin.", !hyperslab._origin);
+    REQUIRE(&_h5 == hyperslab._h5);
+    CHECK(dataset == hyperslab._datasetPath);
+    REQUIRE(ndims == hyperslab._ndims);
+    CHECK(!hyperslab._origin);
 
     for (size_t i = 0; i < ndims; ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in hyperslab dimensions.", dims[i], hyperslab._dims[i]);
+        CHECK(dims[i] == hyperslab._dims[i]);
     } // for
 
     for (size_t i = 0; i < ndims; ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in dataset dimensions.", dimsAll[i], hyperslab._dimsAll[i]);
+        CHECK(dimsAll[i] == hyperslab._dimsAll[i]);
     } // for
 
-    CPPUNIT_ASSERT_MESSAGE("Expected non-NULL values.", hyperslab._values);
-    CPPUNIT_ASSERT_MESSAGE("Expected non-NULL hyperslab.", hyperslab._hyperslab);
+    CHECK(hyperslab._values);
+    CHECK(hyperslab._hyperslab);
 } // testConstructor3D
 
 
@@ -153,21 +160,21 @@ geomodelgrids::serial::TestHyperslab::testConstructorOversize3D(void) {
 
     Hyperslab hyperslab(&_h5, dataset.c_str(), dims, ndims);
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in HDF5 file object.", &_h5, hyperslab._h5);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in dataset path.", dataset, hyperslab._datasetPath);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of dimensions for hyperslab.", ndims, hyperslab._ndims);
-    CPPUNIT_ASSERT_MESSAGE("Expected NULL origin.", !hyperslab._origin);
+    CHECK(&_h5 == hyperslab._h5);
+    CHECK(dataset == hyperslab._datasetPath);
+    REQUIRE(ndims == hyperslab._ndims);
+    CHECK(!hyperslab._origin);
 
     for (size_t i = 0; i < ndims; ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in hyperslab dimensions.", dimsAll[i], hyperslab._dims[i]);
+        CHECK(dimsAll[i] == hyperslab._dims[i]);
     } // for
 
     for (size_t i = 0; i < ndims; ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in dataset dimensions.", dimsAll[i], hyperslab._dimsAll[i]);
+        CHECK(dimsAll[i] == hyperslab._dimsAll[i]);
     } // for
 
-    CPPUNIT_ASSERT_MESSAGE("Expected non-NULL values.", hyperslab._values);
-    CPPUNIT_ASSERT_MESSAGE("Expected non-NULL hyperslab.", hyperslab._hyperslab);
+    CHECK(hyperslab._values);
+    CHECK(hyperslab._hyperslab);
 } // testConstructorOversize3D
 
 
@@ -179,7 +186,7 @@ geomodelgrids::serial::TestHyperslab::testConstructorBadDims(void) {
     const size_t ndims(2);
     const hsize_t dims[ndims] = { 1, 1 };
 
-    CPPUNIT_ASSERT_THROW(Hyperslab hyperslab(&_h5, dataset.c_str(), dims, ndims), std::length_error);
+    CHECK_THROWS_AS(Hyperslab(&_h5, dataset.c_str(), dims, ndims), std::length_error);
 } // testConstructorBadDims
 
 
@@ -219,10 +226,9 @@ geomodelgrids::serial::TestHyperslab::testInterpolate2D(void) {
         const double y = dy * index[i*spaceDim + 1];
         const double elevationE = geomodelgrids::testdata::ModelPoints::computeTopElevation(x, y);
 
-        std::ostringstream msg;
-        msg << "Mismatch in elevation for index (" << index[i*spaceDim+0] << ", " << index[i*spaceDim+1] << ").";
+        INFO("Mismatch in elevation for index (" << index[i*spaceDim+0] << ", " << index[i*spaceDim+1] << ").");
         const double toleranceV = std::max(tolerance, tolerance*fabs(elevationE));
-        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), elevationE, elevation, toleranceV);
+        CHECK_THAT(elevation, Catch::Matchers::WithinAbs(elevationE, toleranceV));
     } // for
 } // testInterplate2D
 
@@ -269,20 +275,18 @@ geomodelgrids::serial::TestHyperslab::testInterpolate3D(void) {
 
         { // Value 0
             const double valueE = geomodelgrids::testdata::ModelPoints::computeValueOne(x, y, z);
-            std::ostringstream msg;
-            msg << "Mismatch in value 'one' for index (" << index[i*spaceDim+0] << ", " << index[i*spaceDim+1]
-                << ", " << index[i*spaceDim+2] << ").";
+            INFO("Mismatch in value 'one' for index (" << index[i*spaceDim+0] << ", " << index[i*spaceDim+1]
+                                                       << ", " << index[i*spaceDim+2] << ").");
             const double toleranceV = std::max(tolerance, tolerance*fabs(valueE));
-            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[0], toleranceV);
+            CHECK_THAT(values[0], Catch::Matchers::WithinAbs(valueE, toleranceV));
         } // Value 0
 
         { // Value 1
             const double valueE = geomodelgrids::testdata::ModelPoints::computeValueTwo(x, y, z);
-            std::ostringstream msg;
-            msg << "Mismatch in value 'two' for index (" << index[i*spaceDim+0] << ", " << index[i*spaceDim+1]
-                << ", " << index[i*spaceDim+2] << ").";
+            INFO("Mismatch in value 'two' for index (" << index[i*spaceDim+0] << ", " << index[i*spaceDim+1]
+                                                       << ", " << index[i*spaceDim+2] << ").");
             const double toleranceV = std::max(tolerance, tolerance*fabs(valueE));
-            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[1], toleranceV);
+            CHECK_THAT(values[1], Catch::Matchers::WithinAbs(valueE, toleranceV));
         } // Value 1
     } // for
 } // testInterplate3D

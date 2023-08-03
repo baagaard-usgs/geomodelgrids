@@ -4,7 +4,7 @@
 
 #include <portinfo>
 
-#include "ModelPoints.hh" // USES ModelPoints
+#include "tests/data/ModelPoints.hh" // USES ModelPoints
 
 #include "geomodelgrids/serial/Model.hh" // USES Model
 #include "geomodelgrids/serial/ModelInfo.hh" // USES ModelInfo
@@ -12,7 +12,8 @@
 #include "geomodelgrids/serial/Block.hh" // USES Block
 #include "geomodelgrids/utils/constants.hh" // USES TOLERANCE
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "catch2/catch_test_macros.hpp"
+#include "catch2/matchers/catch_matchers_floating_point.hpp"
 
 #include <cmath> // USES fabs()
 
@@ -22,66 +23,97 @@ namespace geomodelgrids {
     } // serial
 } // geomodelgrids
 
-class geomodelgrids::serial::TestModel : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE -------------------------------------------------------------------------
-    CPPUNIT_TEST_SUITE(TestModel);
-
-    CPPUNIT_TEST(testConstructor);
-    CPPUNIT_TEST(testAccessors);
-    CPPUNIT_TEST(testOpenClose);
-    CPPUNIT_TEST(testLoadMetadata);
-    CPPUNIT_TEST(testInitialize);
-    CPPUNIT_TEST(testToModelXYZFlat);
-    CPPUNIT_TEST(testToModelXYZTopo);
-    CPPUNIT_TEST(testContains);
-    CPPUNIT_TEST(testQueryTopElevation);
-    CPPUNIT_TEST(testQueryTopoBathyElevation);
-    CPPUNIT_TEST(testQuery);
-    CPPUNIT_TEST(testQueryVarXYZ);
-
-    CPPUNIT_TEST_SUITE_END();
-
+class geomodelgrids::serial::TestModel {
     // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
     /// Test constructor.
+    static
     void testConstructor(void);
 
     /// Test getters.
+    static
     void testAccessors(void);
 
     /// Test open() and close().
+    static
     void testOpenClose(void);
 
     /// Test loadMetadata().
+    static
     void testLoadMetadata(void);
 
     /// Test initialize().
+    static
     void testInitialize(void);
 
     /// Test _toModelXYZ() with flat ground surface.
+    static
     void testToModelXYZFlat(void);
 
     /// Test _toModelXYZ() with topography.
+    static
     void testToModelXYZTopo(void);
 
     /// Test contains().
+    static
     void testContains(void);
 
     /// Test queryTopElevation().
+    static
     void testQueryTopElevation(void);
 
     /// Test queryTopoBathyElevation().
+    static
     void testQueryTopoBathyElevation(void);
 
     /// Test query().
+    static
     void testQuery(void);
 
     /// Test query() with variable resolution blocks.
+    static
     void testQueryVarXYZ(void);
 
 }; // class TestModel
-CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::serial::TestModel);
+
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestModel::testConstructor", "[TestModel]") {
+    geomodelgrids::serial::TestModel::testConstructor();
+}
+TEST_CASE("TestModel::testAccessors", "[TestModel]") {
+    geomodelgrids::serial::TestModel::testAccessors();
+}
+TEST_CASE("TestModel::testOpenClose", "[TestModel]") {
+    geomodelgrids::serial::TestModel::testOpenClose();
+}
+TEST_CASE("TestModel::testLoadMetadata", "[TestModel]") {
+    geomodelgrids::serial::TestModel::testLoadMetadata();
+}
+TEST_CASE("TestModel::testInitialize", "[TestModel]") {
+    geomodelgrids::serial::TestModel::testInitialize();
+}
+TEST_CASE("TestModel::testToModelXYZFlat", "[TestModel]") {
+    geomodelgrids::serial::TestModel::testToModelXYZFlat();
+}
+TEST_CASE("TestModel::testToModelXYZTopo", "[TestModel]") {
+    geomodelgrids::serial::TestModel::testToModelXYZTopo();
+}
+TEST_CASE("TestModel::testContains", "[TestModel]") {
+    geomodelgrids::serial::TestModel::testContains();
+}
+TEST_CASE("TestModel::testQueryTopElevation", "[TestModel]") {
+    geomodelgrids::serial::TestModel::testQueryTopElevation();
+}
+TEST_CASE("TestModel::testQueryTopoBathyElevation", "[TestModel]") {
+    geomodelgrids::serial::TestModel::testQueryTopoBathyElevation();
+}
+TEST_CASE("TestModel::testQuery", "[TestModel]") {
+    geomodelgrids::serial::TestModel::testQuery();
+}
+TEST_CASE("TestModel::testQueryVarXYZ", "[TestModel]") {
+    geomodelgrids::serial::TestModel::testQueryVarXYZ();
+}
 
 // ------------------------------------------------------------------------------------------------
 // Test constructor.
@@ -89,21 +121,21 @@ void
 geomodelgrids::serial::TestModel::testConstructor(void) {
     Model model;
 
-    CPPUNIT_ASSERT_MESSAGE("Checking value names", model._valueNames.empty());
-    CPPUNIT_ASSERT_MESSAGE("Checking value units", model._valueUnits.empty());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking CRS string", std::string(""), model._modelCRSString);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking origin x", 0.0, model._origin[0]);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking origin y", 0.0, model._origin[1]);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking y azimuth", 0.0, model._yazimuth);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking dims[0]", 0.0, model._dims[0]);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking dims[1]", 0.0, model._dims[1]);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking dims[2]", 0.0, model._dims[2]);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking h5", (HDF5*)NULL, model._h5);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking info", (ModelInfo*)NULL, model._info);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking top surface", (Surface*)NULL, model._surfaceTop);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking topography/bathymetry", (Surface*)NULL, model._surfaceTopoBathy);
-    // CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking CRS", (HDF5*)NULL, model._h5);
-    CPPUNIT_ASSERT_MESSAGE("Checking blocks", model._blocks.empty());
+    CHECK(model._valueNames.empty());
+    CHECK(model._valueUnits.empty());
+    CHECK(std::string("") == model._modelCRSString);
+    CHECK(0.0 == model._origin[0]);
+    CHECK(0.0 == model._origin[1]);
+    CHECK(0.0 == model._yazimuth);
+    CHECK(0.0 == model._dims[0]);
+    CHECK(0.0 == model._dims[1]);
+    CHECK(0.0 == model._dims[2]);
+    CHECK((HDF5*)NULL == model._h5);
+    CHECK((ModelInfo*)NULL == model._info);
+    CHECK((Surface*)NULL == model._surfaceTop);
+    CHECK((Surface*)NULL == model._surfaceTopoBathy);
+    // CHECK("Checking CRS", (HDF5*)NULL, model._h5);
+    CHECK(model._blocks.empty());
 } // testConstructor
 
 
@@ -143,48 +175,48 @@ geomodelgrids::serial::TestModel::testAccessors(void) {
     const double tolerance = 1.0e-6;
 
     const std::vector<std::string>& valueNamesT = model.getValueNames();
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking names of values size", valueNames.size(), valueNamesT.size());
+    REQUIRE(valueNames.size() == valueNamesT.size());
     for (size_t i = 0; i < valueNames.size(); ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking names of values", valueNames[i], valueNamesT[i]);
+        CHECK(valueNames[i] == valueNamesT[i]);
     } // for
 
     const std::vector<std::string>& valueUnitsT = model.getValueUnits();
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking names of values size", valueUnits.size(), valueUnitsT.size());
+    REQUIRE(valueUnits.size() == valueUnitsT.size());
     for (size_t i = 0; i < valueUnits.size(); ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking names of values", valueUnits[i], valueUnitsT[i]);
+        CHECK(valueUnits[i] == valueUnitsT[i]);
     } // for
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking CRS string", modelCRSString, model.getCRSString());
+    CHECK(modelCRSString == model.getCRSString());
 
     const double* originT = model.getOrigin();
-    CPPUNIT_ASSERT_MESSAGE("Checking origin pointer", originT);
+    CHECK(originT);
     for (size_t i = 0; i < 2; ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking origin", origin[i], originT[i]);
+        CHECK(origin[i] == originT[i]);
     } // for
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking yazimuth", yazimuth, model.getYAzimuth(), tolerance);
+    CHECK_THAT(model.getYAzimuth(), Catch::Matchers::WithinAbs(yazimuth, tolerance));
 
     const double* dimsT = model.getDims();
-    CPPUNIT_ASSERT_MESSAGE("Checking dims pointer", dimsT);
+    REQUIRE(dimsT);
     for (size_t i = 0; i < 2; ++i) {
-        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking dims", dims[i], dimsT[i], tolerance);
+        CHECK_THAT(dimsT[i], Catch::Matchers::WithinAbs(dims[i], tolerance));
     } // for
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking info", const_cast<const ModelInfo*>(info), model.getInfo());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking top surface", const_cast<const Surface*>(surfaceTop), model.getTopSurface());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking topography/bathymetry", const_cast<const Surface*>(surfaceTopoBathy), model.getTopoBathy());
+    CHECK(const_cast<const ModelInfo*>(info) == model.getInfo());
+    CHECK(const_cast<const Surface*>(surfaceTop) == model.getTopSurface());
+    CHECK(const_cast<const Surface*>(surfaceTopoBathy) == model.getTopoBathy());
 
     const std::vector<Block*>& blocksT = model.getBlocks();
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking blocks size", blocks.size(), blocksT.size());
+    REQUIRE(blocks.size() == blocksT.size());
     for (size_t i = 0; i < blocks.size(); ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking blocks", blocks[i], blocksT[i]);
+        CHECK(blocks[i] == blocksT[i]);
     } // for
 
     Block* block = model._findBlock(0, 0, 0);
-    CPPUNIT_ASSERT_MESSAGE("Failed to find block.", block);
+    CHECK(block);
 
     block = model._findBlock(0, 0, 1.0e+20);
-    CPPUNIT_ASSERT_MESSAGE("Found block for invalid point.", !block);
+    CHECK(!block);
 } // testAccessors
 
 
@@ -195,15 +227,15 @@ geomodelgrids::serial::TestModel::testOpenClose(void) {
     Model model;
 
     model.open("../../data/three-blocks-topo.h5", Model::READ);
-    CPPUNIT_ASSERT_MESSAGE("Open with read access failed.", model._h5);
+    CHECK(model._h5);
     model.close();
 
     model.open("../../data/three-blocks-topo.h5", Model::READ_WRITE);
-    CPPUNIT_ASSERT_MESSAGE("Open with read/write access failed.", model._h5);
+    CHECK(model._h5);
     model.close();
 
     model.open("../../data/tmp.h5", Model::READ_WRITE_TRUNCATE);
-    CPPUNIT_ASSERT_MESSAGE("Open with read/write access and truncate failed.", model._h5);
+    CHECK(model._h5);
     model.close();
 } // testOpenClose
 
@@ -235,68 +267,64 @@ geomodelgrids::serial::TestModel::testLoadMetadata(void) {
     const double tolerance = 1.0e-6;
 
     Model model;
-    CPPUNIT_ASSERT_THROW(model.loadMetadata(), std::logic_error); // Model not open
+    CHECK_THROWS_AS(model.loadMetadata(), std::logic_error); // Model not open
 
     model.open("../../data/three-blocks-topo.h5", Model::READ);
     model.loadMetadata();
 
     const std::vector<std::string>& valueNamesT = model.getValueNames();
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking names of values size", valueNames.size(), valueNamesT.size());
+    REQUIRE(valueNames.size() == valueNamesT.size());
     for (size_t i = 0; i < valueNames.size(); ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking names of values", valueNames[i], valueNamesT[i]);
+        CHECK(valueNames[i] == valueNamesT[i]);
     } // for
 
     const std::vector<std::string>& valueUnitsT = model.getValueUnits();
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking names of values size", valueUnits.size(), valueUnitsT.size());
+    REQUIRE(valueUnits.size() == valueUnitsT.size());
     for (size_t i = 0; i < valueUnits.size(); ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking names of values", valueUnits[i], valueUnitsT[i]);
+        CHECK(valueUnits[i] == valueUnitsT[i]);
     } // for
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking CRS string", modelCRSString, model.getCRSString());
+    CHECK(modelCRSString == model.getCRSString());
 
     const double* originT = model.getOrigin();
-    CPPUNIT_ASSERT_MESSAGE("Checking origin pointer", originT);
+    CHECK(originT);
     for (size_t i = 0; i < 2; ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking origin", origin[i], originT[i]);
+        CHECK(origin[i] == originT[i]);
     } // for
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking yazimuth", yazimuth, model.getYAzimuth(), tolerance);
+    CHECK_THAT(model.getYAzimuth(), Catch::Matchers::WithinAbs(yazimuth, tolerance));
 
     const double* dimsT = model.getDims();
-    CPPUNIT_ASSERT_MESSAGE("Checking dims pointer", dimsT);
+    REQUIRE(dimsT);
     for (size_t i = 0; i < 2; ++i) {
-        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking dims", dims[i], dimsT[i], tolerance);
+        CHECK_THAT(dimsT[i], Catch::Matchers::WithinAbs(dims[i], tolerance));
     } // for
 
     const ModelInfo* info = model.getInfo();
-    CPPUNIT_ASSERT_MESSAGE("Checking model info pointer", info);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking model title", title, info->getTitle());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking model id", id, info->getId());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking model repositoryDOI", doi, info->getRepositoryDOI());
+    CHECK(info);
+    CHECK(title == info->getTitle());
+    CHECK(id == info->getId());
+    CHECK(doi == info->getRepositoryDOI());
 
     const Surface* surfaceTop = model.getTopSurface();
-    CPPUNIT_ASSERT_MESSAGE("Checking top surface pointer", surfaceTop);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking x resolution of top surface",
-                                         topoResX, surfaceTop->getResolutionX(), tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking y resolution of top surface",
-                                         topoResY, surfaceTop->getResolutionY(), tolerance);
+    REQUIRE(surfaceTop);
+    CHECK_THAT(surfaceTop->getResolutionX(), Catch::Matchers::WithinAbs(topoResX, tolerance));
+    CHECK_THAT(surfaceTop->getResolutionY(), Catch::Matchers::WithinAbs(topoResY, tolerance));
 
     const Surface* surfaceTopoBathy = model.getTopoBathy();
-    CPPUNIT_ASSERT_MESSAGE("Checking topography/bathymetry pointer", surfaceTopoBathy);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking x resolution of topography/bathymetry",
-                                         topoResX, surfaceTopoBathy->getResolutionX(), tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Checking y resolution of topography/bathymetry",
-                                         topoResY, surfaceTopoBathy->getResolutionY(), tolerance);
+    REQUIRE(surfaceTopoBathy);
+    CHECK_THAT(surfaceTopoBathy->getResolutionX(), Catch::Matchers::WithinAbs(topoResX, tolerance));
+    CHECK_THAT(surfaceTopoBathy->getResolutionY(), Catch::Matchers::WithinAbs(topoResY, tolerance));
 
     const std::vector<Block*>& blocksT = model.getBlocks();
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking blocks size", numBlocks, blocksT.size());
+    REQUIRE(numBlocks == blocksT.size());
     for (size_t i = 0; i < numBlocks; ++i) {
-        CPPUNIT_ASSERT_MESSAGE("Checking block pointer", blocksT[i]);
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking block names", blockNames[i], blocksT[i]->getName());
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking block z_top", blockZTop[i], blocksT[i]->getZTop());
+        REQUIRE(blocksT[i]);
+        CHECK(blockNames[i] == blocksT[i]->getName());
+        CHECK(blockZTop[i] == blocksT[i]->getZTop());
 
     } // for
-    CPPUNIT_ASSERT_NO_THROW(model.loadMetadata());
+    CHECK_NOTHROW(model.loadMetadata());
 
     model.close();
 } // testLoadMetadata
@@ -311,16 +339,16 @@ geomodelgrids::serial::TestModel::testInitialize(void) {
     model.loadMetadata();
     model.initialize();
 
-    CPPUNIT_ASSERT_MESSAGE("CRS transformer not created.", model._crsTransformer);
+    CHECK(model._crsTransformer);
 
     Surface* const surfaceTop = model._surfaceTop;
     if (surfaceTop) {
-        CPPUNIT_ASSERT_NO_THROW(surfaceTop->query(0.0, 0.0));
+        CHECK_NOTHROW(surfaceTop->query(0.0, 0.0));
     } // if
 
     Surface* const surfaceTopoBathy = model._surfaceTopoBathy;
     if (surfaceTopoBathy) {
-        CPPUNIT_ASSERT_NO_THROW(surfaceTopoBathy->query(0.0, 0.0));
+        CHECK_NOTHROW(surfaceTopoBathy->query(0.0, 0.0));
     } // if
 
     model.close();
@@ -347,13 +375,12 @@ geomodelgrids::serial::TestModel::testToModelXYZFlat(void) {
         model._toModelXYZ(&xyz[0], &xyz[1], &xyz[2],
                           pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
         for (size_t iDim = 0; iDim < spaceDim; ++iDim) {
-            std::ostringstream msg;
-            msg << "Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
-                << ", " << pointsLLE[iPt*spaceDim+2] << ") for component " << iDim << ".";
+            INFO("Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                                        << ", " << pointsLLE[iPt*spaceDim+2] << ") for component " << iDim << ".");
             const double valueE = pointsXYZ[iPt*spaceDim+iDim];
             const double tolerance = 1.0e-6;
             const double valueTolerance = std::max(tolerance, tolerance*fabs(valueE));
-            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, xyz[iDim], valueTolerance);
+            CHECK_THAT(xyz[iDim], Catch::Matchers::WithinAbs(valueE, valueTolerance));
         } // for
     } // for
 } // testToModelXYZFlat
@@ -380,13 +407,12 @@ geomodelgrids::serial::TestModel::testToModelXYZTopo(void) {
                           pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
 
         for (size_t iDim = 0; iDim < spaceDim; ++iDim) {
-            std::ostringstream msg;
-            msg << "Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
-                << ", " << pointsLLE[iPt*spaceDim+2] << ") for component " << iDim << ".";
+            INFO("Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                                        << ", " << pointsLLE[iPt*spaceDim+2] << ") for component " << iDim << ".");
             const double valueE = pointsXYZ[iPt*spaceDim+iDim];
             const double tolerance = 1.0e-6;
             const double valueTolerance = std::max(tolerance, tolerance*fabs(valueE));
-            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, xyz[iDim], valueTolerance);
+            CHECK_THAT(xyz[iDim], Catch::Matchers::WithinAbs(valueE, valueTolerance));
         } // for
     } // for
 } // testToModelXYZTopo
@@ -409,20 +435,18 @@ geomodelgrids::serial::TestModel::testContains(void) {
 
         for (size_t iPt = 0; iPt < numPoints; ++iPt) {
             const bool flag = model.contains(pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
-            std::ostringstream msg;
-            msg << "Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
-                << ", " << pointsLLE[iPt*spaceDim+2] << ").";
-            CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.str().c_str(), true, flag);
+            INFO("Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                                        << ", " << pointsLLE[iPt*spaceDim+2] << ").");
+            CHECK(flag);
         } // for
 
         // Verify points slightly above topography are considered in the domain.
         for (size_t iPt = 0; iPt < numPoints; ++iPt) {
             const double elev = model.queryTopElevation(pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1]) + 0.5*TOLERANCE;
             const bool flag = model.contains(pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], elev);
-            std::ostringstream msg;
-            msg << "Mismatch for surface point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
-                << ", " << elev << ").";
-            CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.str().c_str(), true, flag);
+            INFO("Mismatch for surface point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                                                << ", " << elev << ").");
+            CHECK(flag);
         } // for
 
     } // inside domain
@@ -435,10 +459,9 @@ geomodelgrids::serial::TestModel::testContains(void) {
 
         for (size_t iPt = 0; iPt < numPoints; ++iPt) {
             const bool flag = model.contains(pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
-            std::ostringstream msg;
-            msg << "Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
-                << ", " << pointsLLE[iPt*spaceDim+2] << ").";
-            CPPUNIT_ASSERT_EQUAL_MESSAGE(msg.str().c_str(), false, flag);
+            INFO("Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                                        << ", " << pointsLLE[iPt*spaceDim+2] << ").");
+            CHECK(false == flag);
         } // for
     } // outside domain
 } // testContains
@@ -463,11 +486,10 @@ geomodelgrids::serial::TestModel::testQueryTopElevation(void) {
         const double elevation = model.queryTopElevation(pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1]);
         const double elevationE = points.computeTopElevation(pointsXYZ[iPt*spaceDim+0], pointsXYZ[iPt*spaceDim+1]);
 
-        std::ostringstream msg;
-        msg << "Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").";
+        INFO("Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").");
         const double tolerance = 1.0e-6;
         const double valueTolerance = std::max(tolerance, tolerance*fabs(elevationE));
-        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), elevationE, elevation, valueTolerance);
+        CHECK_THAT(elevation, Catch::Matchers::WithinAbs(elevationE, valueTolerance));
     } // for
 } // testQueryElevation
 
@@ -491,11 +513,10 @@ geomodelgrids::serial::TestModel::testQueryTopoBathyElevation(void) {
         const double elevation = model.queryTopoBathyElevation(pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1]);
         const double elevationE = points.computeTopoBathyElevation(pointsXYZ[iPt*spaceDim+0], pointsXYZ[iPt*spaceDim+1]);
 
-        std::ostringstream msg;
-        msg << "Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").";
+        INFO("Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").");
         const double tolerance = 1.0e-6;
         const double valueTolerance = std::max(tolerance, tolerance*fabs(elevationE));
-        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), elevationE, elevation, valueTolerance);
+        CHECK_THAT(elevation, Catch::Matchers::WithinAbs(elevationE, valueTolerance));
     } // for
 } // testQueryTopoBathyElevation
 
@@ -526,21 +547,19 @@ geomodelgrids::serial::TestModel::testQuery(void) {
         { // Value 0
             const double valueE = points.computeValueOne(x, y, z);
 
-            std::ostringstream msg;
-            msg << "Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
-                << ", " << pointsLLE[iPt*spaceDim+2] << ") for value 0.";
+            INFO("Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                                        << ", " << pointsLLE[iPt*spaceDim+2] << ") for value 0.");
             const double valueTolerance = std::max(tolerance, tolerance*fabs(valueE));
-            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[0], valueTolerance);
+            CHECK_THAT(values[0], Catch::Matchers::WithinAbs(valueE, valueTolerance));
         } // Value 0
 
         { // Value 1
             const double valueE = points.computeValueTwo(x, y, z);
 
-            std::ostringstream msg;
-            msg << "Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
-                << ", " << pointsLLE[iPt*spaceDim+2] << ") for value 1.";
+            INFO("Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                                        << ", " << pointsLLE[iPt*spaceDim+2] << ") for value 1.");
             const double valueTolerance = std::max(tolerance, tolerance*fabs(valueE));
-            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[1], valueTolerance);
+            CHECK_THAT(values[1], Catch::Matchers::WithinAbs(valueE, valueTolerance));
         } // Value 1
     } // for
 } // testQuery
@@ -574,21 +593,19 @@ geomodelgrids::serial::TestModel::testQueryVarXYZ(void) {
         { // Value 0
             const double valueE = points.computeValueOne(x, y, z);
 
-            std::ostringstream msg;
-            msg << "Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
-                << ", " << pointsLLE[iPt*spaceDim+2] << ") for value 0.";
+            INFO("Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                                        << ", " << pointsLLE[iPt*spaceDim+2] << ") for value 0.");
             const double valueTolerance = std::max(tolerance, tolerance*fabs(valueE));
-            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[0], valueTolerance);
+            CHECK_THAT(values[0], Catch::Matchers::WithinAbs(valueE, valueTolerance));
         } // Value 0
 
         { // Value 1
             const double valueE = points.computeValueTwo(x, y, z);
 
-            std::ostringstream msg;
-            msg << "Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
-                << ", " << pointsLLE[iPt*spaceDim+2] << ") for value 1.";
+            INFO("Mismatch for point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                                        << ", " << pointsLLE[iPt*spaceDim+2] << ") for value 1.");
             const double valueTolerance = std::max(tolerance, tolerance*fabs(valueE));
-            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, values[1], valueTolerance);
+            CHECK_THAT(values[1], Catch::Matchers::WithinAbs(valueE, valueTolerance));
         } // Value 1
     } // for
 } // testQueryVarXYZ

@@ -7,7 +7,7 @@
 #include "geomodelgrids/serial/ModelInfo.hh" // USES ModelInfo
 #include "geomodelgrids/serial/HDF5.hh" // USES HDF5
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "catch2/catch_test_macros.hpp"
 
 namespace geomodelgrids {
     namespace serial {
@@ -15,30 +15,34 @@ namespace geomodelgrids {
     } // serial
 } // geomodelgrids
 
-class geomodelgrids::serial::TestModelInfo : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE -------------------------------------------------------------------------
-    CPPUNIT_TEST_SUITE(TestModelInfo);
-
-    CPPUNIT_TEST(testConstructor);
-    CPPUNIT_TEST(testAccessors);
-    CPPUNIT_TEST(testLoad);
-
-    CPPUNIT_TEST_SUITE_END();
-
-    // PUBLIC METHODS -----------------------------------------------------------------------------
+class geomodelgrids::serial::TestModelInfo {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Test constructor.
+    static
     void testConstructor(void);
 
     /// Test getters.
+    static
     void testAccessors(void);
 
     /// Test load().
+    static
     void testLoad(void);
 
 }; // class TestModelInfo
-CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::serial::TestModelInfo);
+
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestModelInfo::testConstructor", "[TestModelInfo]") {
+    geomodelgrids::serial::TestModelInfo::testConstructor();
+}
+TEST_CASE("TestModelInfo::testAccessors", "[TestModelInfo]") {
+    geomodelgrids::serial::TestModelInfo::testAccessors();
+}
+TEST_CASE("TestModelInfo::testLoad", "[TestModelInfo]") {
+    geomodelgrids::serial::TestModelInfo::testLoad();
+}
 
 // ------------------------------------------------------------------------------------------------
 // Test constructor.
@@ -46,25 +50,25 @@ void
 geomodelgrids::serial::TestModelInfo::testConstructor(void) {
     ModelInfo info;
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Expect empty title", std::string(""), info._title);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Expect empty id", std::string(""), info._id);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Expect empty description", std::string(""), info._description);
-    CPPUNIT_ASSERT_MESSAGE("Expect empty keywords array", info._keywords.empty());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Expect empty history", std::string(""), info._history);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Expect empty comment", std::string(""), info._comment);
+    CHECK(std::string("") == info._title);
+    CHECK(std::string("") == info._id);
+    CHECK(std::string("") == info._description);
+    CHECK(info._keywords.empty());
+    CHECK(std::string("") == info._history);
+    CHECK(std::string("") == info._comment);
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Expect empty creator name", std::string(""), info._creatorName);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Expect empty creator institution", std::string(""), info._creatorInstitution);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Expect empty creator email", std::string(""), info._creatorEmail);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Expect empty acknowledgement", std::string(""), info._acknowledgement);
-    CPPUNIT_ASSERT_MESSAGE("Expect empty authors array", info._authors.empty());
-    CPPUNIT_ASSERT_MESSAGE("Expect empty references array", info._references.empty());
+    CHECK(std::string("") == info._creatorName);
+    CHECK(std::string("") == info._creatorInstitution);
+    CHECK(std::string("") == info._creatorEmail);
+    CHECK(std::string("") == info._acknowledgement);
+    CHECK(info._authors.empty());
+    CHECK(info._references.empty());
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Expect empty repository name", std::string(""), info._repositoryName);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Expect empty repository URL", std::string(""), info._repositoryURL);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Expect empty repository DOI", std::string(""), info._repositoryDOI);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Expect empty version", std::string(""), info._version);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Expect empty license", std::string(""), info._license);
+    CHECK(std::string("") == info._repositoryName);
+    CHECK(std::string("") == info._repositoryURL);
+    CHECK(std::string("") == info._repositoryDOI);
+    CHECK(std::string("") == info._version);
+    CHECK(std::string("") == info._license);
 } // testConstructor
 
 
@@ -105,43 +109,43 @@ geomodelgrids::serial::TestModelInfo::testAccessors(void) {
     const std::string license("1.2.3");info._license = license;
     const std::string auxiliary("{'a': 1}");info._auxiliary = auxiliary;
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking title", title, info.getTitle());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking id", id, info.getId());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking description", description, info.getDescription());
+    CHECK(title == info.getTitle());
+    CHECK(id == info.getId());
+    CHECK(description == info.getDescription());
 
     const std::vector<std::string>& keywordsT = info.getKeywords();
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking keywords size", keywords.size(), keywordsT.size());
+    REQUIRE(keywords.size() == keywordsT.size());
     for (size_t i = 0; i < keywords.size(); ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking keywords", keywords[i], keywordsT[i]);
+        CHECK(keywords[i] == keywordsT[i]);
     } // for
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking history", history, info.getHistory());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking comment", comment, info.getComment());
+    CHECK(history == info.getHistory());
+    CHECK(comment == info.getComment());
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking creatorName", creatorName, info.getCreatorName());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking creatorInstitution", creatorInstitution, info.getCreatorInstitution());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking creatorEmail", creatorEmail, info.getCreatorEmail());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking acknowledgement", acknowledgement, info.getAcknowledgement());
+    CHECK(creatorName == info.getCreatorName());
+    CHECK(creatorInstitution == info.getCreatorInstitution());
+    CHECK(creatorEmail == info.getCreatorEmail());
+    CHECK(acknowledgement == info.getAcknowledgement());
 
     const std::vector<std::string>& authorsT = info.getAuthors();
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking authors size", authors.size(), authorsT.size());
+    REQUIRE(authors.size() == authorsT.size());
     for (size_t i = 0; i < authors.size(); ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking authors", authors[i], authorsT[i]);
+        CHECK(authors[i] == authorsT[i]);
     } // for
 
     const std::vector<std::string>& referencesT = info.getReferences();
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking references size", references.size(), referencesT.size());
+    REQUIRE(references.size() == referencesT.size());
     for (size_t i = 0; i < references.size(); ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking references", references[i], referencesT[i]);
+        CHECK(references[i] == referencesT[i]);
     } // for
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking repository name", repositoryName, info.getRepositoryName());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking repository URL", repositoryURL, info.getRepositoryURL());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking repository DOI", repositoryDOI, info.getRepositoryDOI());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking version", version, info.getVersion());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking license", license, info.getLicense());
+    CHECK(repositoryName == info.getRepositoryName());
+    CHECK(repositoryURL == info.getRepositoryURL());
+    CHECK(repositoryDOI == info.getRepositoryDOI());
+    CHECK(version == info.getVersion());
+    CHECK(license == info.getLicense());
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking auxiliary", auxiliary, info.getAuxiliary());
+    CHECK(auxiliary == info.getAuxiliary());
 } // testAccessors
 
 
@@ -185,47 +189,46 @@ geomodelgrids::serial::TestModelInfo::testLoad(void) {
     const std::string version("1.0.0");
     const std::string license("CC0");
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking title", title, info.getTitle());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking id", id, info.getId());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking description", description, info.getDescription());
+    CHECK(title == info.getTitle());
+    CHECK(id == info.getId());
+    CHECK(description == info.getDescription());
 
     const std::vector<std::string>& keywordsT = info.getKeywords();
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking keywords size", keywords.size(), keywordsT.size());
+    REQUIRE(keywords.size() == keywordsT.size());
     for (size_t i = 0; i < keywords.size(); ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking keywords", keywords[i], keywordsT[i]);
+        CHECK(keywords[i] == keywordsT[i]);
     } // for
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking history", history, info.getHistory());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking comment", comment, info.getComment());
+    CHECK(history == info.getHistory());
+    CHECK(comment == info.getComment());
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking creatorName", creatorName, info.getCreatorName());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking creatorInstitution", creatorInstitution, info.getCreatorInstitution());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking creatorEmail", creatorEmail, info.getCreatorEmail());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking acknowledgement", acknowledgement, info.getAcknowledgement());
+    CHECK(creatorName == info.getCreatorName());
+    CHECK(creatorInstitution == info.getCreatorInstitution());
+    CHECK(creatorEmail == info.getCreatorEmail());
+    CHECK(acknowledgement == info.getAcknowledgement());
 
     const std::vector<std::string>& authorsT = info.getAuthors();
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking authors size", authors.size(), authorsT.size());
+    REQUIRE(authors.size() == authorsT.size());
     for (size_t i = 0; i < authors.size(); ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking authors", authors[i], authorsT[i]);
+        CHECK(authors[i] == authorsT[i]);
     } // for
 
     const std::vector<std::string>& referencesT = info.getReferences();
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking references size", references.size(), referencesT.size());
+    REQUIRE(references.size() == referencesT.size());
     for (size_t i = 0; i < references.size(); ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking references", references[i], referencesT[i]);
+        CHECK(references[i] == referencesT[i]);
     } // for
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking repository name", repositoryName, info.getRepositoryName());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking repository URL", repositoryURL, info.getRepositoryURL());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking repository DOI", repositoryDOI, info.getRepositoryDOI());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking version", version, info.getVersion());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Checking license", license, info.getLicense());
+    CHECK(repositoryName == info.getRepositoryName());
+    CHECK(repositoryURL == info.getRepositoryURL());
+    CHECK(repositoryDOI == info.getRepositoryDOI());
+    CHECK(version == info.getVersion());
+    CHECK(license == info.getLicense());
 
     h5.close();
 
     h5.open("../../data/three-blocks-topo-missing-metadata.h5", H5F_ACC_RDONLY);
-    CPPUNIT_ASSERT_THROW_MESSAGE("Checking missing metadata.", info.load(&h5), std::runtime_error);
-
+    CHECK_THROWS_AS(info.load(&h5), std::runtime_error);
 } // testLoad
 
 

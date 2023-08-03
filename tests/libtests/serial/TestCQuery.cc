@@ -4,7 +4,7 @@
 
 #include <portinfo>
 
-#include "ModelPoints.hh"
+#include "tests/data/ModelPoints.hh"
 
 extern "C" {
 #include "geomodelgrids/serial/cquery.h"
@@ -13,7 +13,8 @@ extern "C" {
 #include "geomodelgrids/utils/ErrorHandler.hh" // USES ErrorHandler
 #include "geomodelgrids/utils/constants.hh" // USES NODATA_VALUE
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "catch2/catch_test_macros.hpp"
+#include "catch2/matchers/catch_matchers_floating_point.hpp"
 
 #include <cmath>
 
@@ -23,22 +24,7 @@ namespace geomodelgrids {
     } // serial
 } // geomodelgrids
 
-class geomodelgrids::serial::TestCQuery : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE -------------------------------------------------------------------------
-    CPPUNIT_TEST_SUITE(TestCQuery);
-
-    CPPUNIT_TEST(testCreateDestroy);
-    CPPUNIT_TEST(testAccessors);
-    CPPUNIT_TEST(testInitialize);
-    CPPUNIT_TEST(testQueryTopElevation);
-    CPPUNIT_TEST(testQueryTopoBathyElevation);
-    CPPUNIT_TEST(testQueryFlat);
-    CPPUNIT_TEST(testQueryTopo);
-    CPPUNIT_TEST(testQuerySquashTop);
-    CPPUNIT_TEST(testQuerySquashTopoBathy);
-
-    CPPUNIT_TEST_SUITE_END();
-
+class geomodelgrids::serial::TestCQuery {
     // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
@@ -70,17 +56,16 @@ public:
     void testQuerySquashTopoBathy(void);
 
 }; // class TestCQuery
-CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::serial::TestCQuery);
 
 // ------------------------------------------------------------------------------------------------
 // Test constructor.
 void
 geomodelgrids::serial::TestCQuery::testCreateDestroy(void) {
     void* handle = geomodelgrids_squery_create();
-    CPPUNIT_ASSERT_MESSAGE("Create failed.", handle);
+    CHECK(handle);
 
     geomodelgrids_squery_destroy(&handle);
-    CPPUNIT_ASSERT_MESSAGE("Destroy failed.", !handle);
+    CHECK(!handle);
 } // testCreateDestroy
 
 
@@ -88,37 +73,33 @@ geomodelgrids::serial::TestCQuery::testCreateDestroy(void) {
 // Test setters.
 void
 geomodelgrids::serial::TestCQuery::testAccessors(void) {
-    void* handle = geomodelgrids_squery_create();CPPUNIT_ASSERT(handle);
-    geomodelgrids::serial::Query* query = (geomodelgrids::serial::Query*) handle;CPPUNIT_ASSERT(query);
+    void* handle = geomodelgrids_squery_create();REQUIRE(handle);
+    geomodelgrids::serial::Query* query = (geomodelgrids::serial::Query*) handle;REQUIRE(query);
 
     void* errorHandler = geomodelgrids_squery_getErrorHandler(handle);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in error handler.", (geomodelgrids::utils::ErrorHandler*)errorHandler,
-                                 query->_errorHandler);
+    CHECK((geomodelgrids::utils::ErrorHandler*)errorHandler == query->_errorHandler);
 
     const double minElev(-2.0e+3);
-    int err = geomodelgrids_squery_setSquashMinElev(handle, minElev);CPPUNIT_ASSERT(!err);
+    int err = geomodelgrids_squery_setSquashMinElev(handle, minElev);REQUIRE(!err);
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in squashing flag.", geomodelgrids::serial::Query::SQUASH_TOP_SURFACE, query->_squash);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Mismatch in minimum squashing elevation.", minElev, query->_squashMinElev,
-                                         1.0e-6);
+    CHECK(geomodelgrids::serial::Query::SQUASH_TOP_SURFACE == query->_squash);
+    CHECK(minElev == query->_squashMinElev);
 
-    err = geomodelgrids_squery_setSquashing(handle, GEOMODELGRIDS_SQUASH_TOPOGRAPHY_BATHYMETRY);CPPUNIT_ASSERT(!err);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in squashing flag.", geomodelgrids::serial::Query::SQUASH_TOPOGRAPHY_BATHYMETRY, query->_squash);
-    err = geomodelgrids_squery_setSquashing(handle, GEOMODELGRIDS_SQUASH_NONE);CPPUNIT_ASSERT(!err);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in squashing flag.", geomodelgrids::serial::Query::SQUASH_NONE, query->_squash);
-    err = geomodelgrids_squery_setSquashing(handle, GEOMODELGRIDS_SQUASH_TOP_SURFACE);CPPUNIT_ASSERT(!err);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in squashing flag.", geomodelgrids::serial::Query::SQUASH_TOP_SURFACE, query->_squash);
+    err = geomodelgrids_squery_setSquashing(handle, GEOMODELGRIDS_SQUASH_TOPOGRAPHY_BATHYMETRY);REQUIRE(!err);
+    CHECK(geomodelgrids::serial::Query::SQUASH_TOPOGRAPHY_BATHYMETRY == query->_squash);
+    err = geomodelgrids_squery_setSquashing(handle, GEOMODELGRIDS_SQUASH_NONE);REQUIRE(!err);
+    CHECK(geomodelgrids::serial::Query::SQUASH_NONE == query->_squash);
+    err = geomodelgrids_squery_setSquashing(handle, GEOMODELGRIDS_SQUASH_TOP_SURFACE);REQUIRE(!err);
+    CHECK(geomodelgrids::serial::Query::SQUASH_TOP_SURFACE == query->_squash);
 
     // Bad handles
     err = geomodelgrids_squery_setSquashMinElev(NULL, minElev);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in bad handle error code.", int(geomodelgrids::utils::ErrorHandler::ERROR),
-                                 err);
+    CHECK(int(geomodelgrids::utils::ErrorHandler::ERROR) == err);
 
     err = geomodelgrids_squery_setSquashing(NULL, false);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in bad handle error code.", int(geomodelgrids::utils::ErrorHandler::ERROR),
-                                 err);
+    CHECK(int(geomodelgrids::utils::ErrorHandler::ERROR) == err);
 
-    geomodelgrids_squery_destroy(&handle);CPPUNIT_ASSERT(!handle);
+    geomodelgrids_squery_destroy(&handle);REQUIRE(!handle);
 } // testAccessors
 
 
@@ -138,40 +119,38 @@ geomodelgrids::serial::TestCQuery::testInitialize(void) {
 
     const char* const crs = "EPSG:4326";
 
-    void* handle = geomodelgrids_squery_create();CPPUNIT_ASSERT(handle);
+    void* handle = geomodelgrids_squery_create();REQUIRE(handle);
     int err = geomodelgrids_squery_initialize(handle, filenames, numModels, valueNames, numValues, crs);
-    CPPUNIT_ASSERT(!err);
+    REQUIRE(!err);
 
-    geomodelgrids::serial::Query* query = (geomodelgrids::serial::Query*) handle;CPPUNIT_ASSERT(query);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of models.", numModels, query->_models.size());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in size of model values map.", numModels, query->_valuesIndex.size());
+    geomodelgrids::serial::Query* query = (geomodelgrids::serial::Query*) handle;REQUIRE(query);
+    REQUIRE(numModels == query->_models.size());
+    REQUIRE(numModels == query->_valuesIndex.size());
     for (size_t iModel = 0; iModel < numModels; ++iModel) {
-        CPPUNIT_ASSERT(query->_models[iModel]);
+        REQUIRE(query->_models[iModel]);
 
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of values.", numValues, query->_valuesIndex[iModel].size());
+        REQUIRE(numValues == query->_valuesIndex[iModel].size());
         for (size_t iValue = 0; iValue < numValues; ++iValue) {
-            CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in value index.", valueIndexE[iValue], query->_valuesIndex[iModel][iValue]);
+            CHECK(valueIndexE[iValue] == query->_valuesIndex[iModel][iValue]);
         } // for
 
     } // for
 
-    err = geomodelgrids_squery_initialize(handle, filenames, numModels, valueNames, numValues, crs);CPPUNIT_ASSERT(!err);
-    err = geomodelgrids_squery_finalize(handle);CPPUNIT_ASSERT(!err);
+    err = geomodelgrids_squery_initialize(handle, filenames, numModels, valueNames, numValues, crs);REQUIRE(!err);
+    err = geomodelgrids_squery_finalize(handle);REQUIRE(!err);
 
     // Bad value
     const char* const valueNamesBad[numValues] = { "two", "blah" };
-    err = geomodelgrids_squery_initialize(handle, filenames, numModels, valueNamesBad, numValues, crs);CPPUNIT_ASSERT(err);
+    err = geomodelgrids_squery_initialize(handle, filenames, numModels, valueNamesBad, numValues, crs);REQUIRE(err);
 
     // Bad handle
     err = geomodelgrids_squery_initialize(NULL, filenames, numModels, valueNames, numValues, crs);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in bad handle error code.", int(geomodelgrids::utils::ErrorHandler::ERROR),
-                                 err);
+    CHECK(int(geomodelgrids::utils::ErrorHandler::ERROR) == err);
 
     err = geomodelgrids_squery_finalize(NULL);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in bad handle error code.", int(geomodelgrids::utils::ErrorHandler::ERROR),
-                                 err);
+    CHECK(int(geomodelgrids::utils::ErrorHandler::ERROR) == err);
 
-    geomodelgrids_squery_destroy(&handle);CPPUNIT_ASSERT(!handle);
+    geomodelgrids_squery_destroy(&handle);REQUIRE(!handle);
 } // testInitialize
 
 
@@ -192,9 +171,9 @@ geomodelgrids::serial::TestCQuery::testQueryTopElevation(void) {
     const std::string& crs = pointsOne.getCRSLatLonElev();
     const size_t spaceDim = 3;
 
-    void* handle = geomodelgrids_squery_create();CPPUNIT_ASSERT(handle);
+    void* handle = geomodelgrids_squery_create();REQUIRE(handle);
     int err = geomodelgrids_squery_initialize(handle, filenames, numModels, valueNames, numValues, crs.c_str());
-    CPPUNIT_ASSERT(!err);
+    REQUIRE(!err);
 
     const double tolerance = 1.0e-5;
     { // One Block Flat
@@ -206,11 +185,10 @@ geomodelgrids::serial::TestCQuery::testQueryTopElevation(void) {
             const double elevation = geomodelgrids_squery_queryTopElevation(handle, pointsLLE[iPt*spaceDim+0],
                                                                             pointsLLE[iPt*spaceDim+1]);
 
-            std::ostringstream msg;
-            msg << "Mismatch for point in one-block-flat ("
-                << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").";
+            INFO("Mismatch for point in one-block-flat ("
+                 << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").");
             const double valueTolerance = std::max(tolerance, tolerance*fabs(elevationE));
-            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), elevationE, elevation, valueTolerance);
+            CHECK_THAT(elevation, Catch::Matchers::WithinAbs(elevationE, valueTolerance));
         } // for
     } // One Block Flat
 
@@ -225,11 +203,10 @@ geomodelgrids::serial::TestCQuery::testQueryTopElevation(void) {
             const double elevation = geomodelgrids_squery_queryTopElevation(handle, pointsLLE[iPt*spaceDim+0],
                                                                             pointsLLE[iPt*spaceDim+1]);
 
-            std::ostringstream msg;
-            msg << "Mismatch for point in three-blocks-topo ("
-                << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").";
+            INFO("Mismatch for point in three-blocks-topo ("
+                 << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").");
             const double valueTolerance = std::max(tolerance, tolerance*fabs(elevationE));
-            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), elevationE, elevation, valueTolerance);
+            CHECK_THAT(elevation, Catch::Matchers::WithinAbs(elevationE, valueTolerance));
         } // for
     } // Three Blocks Topo
 
@@ -244,24 +221,23 @@ geomodelgrids::serial::TestCQuery::testQueryTopElevation(void) {
             const double elevation = geomodelgrids_squery_queryTopElevation(handle, pointsLLE[iPt*spaceDim+0],
                                                                             pointsLLE[iPt*spaceDim+1]);
 
-            std::ostringstream msg;
-            msg << "Mismatch for point outside domains ("
-                << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").";
+            INFO("Mismatch for point outside domains ("
+                 << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").");
             const double valueTolerance = std::max(tolerance, tolerance*fabs(elevationE));
-            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), elevationE, elevation, valueTolerance);
+            CHECK_THAT(elevation, Catch::Matchers::WithinAbs(elevationE, valueTolerance));
         } // for
     } // Outside domains
 
-    geomodelgrids::serial::Query* query = (geomodelgrids::serial::Query*) handle;CPPUNIT_ASSERT(query);
+    geomodelgrids::serial::Query* query = (geomodelgrids::serial::Query*) handle;REQUIRE(query);
     geomodelgrids::utils::ErrorHandler& errorHandler = query->getErrorHandler();
     errorHandler.resetStatus();
 
     // Bad handle
     double elevation = geomodelgrids_squery_queryTopElevation(NULL, 0.0, 0.0);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in elevation for bad handle.", geomodelgrids::NODATA_VALUE, elevation);
+    CHECK(geomodelgrids::NODATA_VALUE == elevation);
     errorHandler.resetStatus();
 
-    geomodelgrids_squery_destroy(&handle);CPPUNIT_ASSERT(!handle);
+    geomodelgrids_squery_destroy(&handle);REQUIRE(!handle);
 } // testQueryTopElevation
 
 
@@ -282,9 +258,9 @@ geomodelgrids::serial::TestCQuery::testQueryTopoBathyElevation(void) {
     const std::string& crs = pointsOne.getCRSLatLonElev();
     const size_t spaceDim = 3;
 
-    void* handle = geomodelgrids_squery_create();CPPUNIT_ASSERT(handle);
+    void* handle = geomodelgrids_squery_create();REQUIRE(handle);
     int err = geomodelgrids_squery_initialize(handle, filenames, numModels, valueNames, numValues, crs.c_str());
-    CPPUNIT_ASSERT(!err);
+    REQUIRE(!err);
 
     const double tolerance = 1.0e-5;
     { // One Block Flat
@@ -296,11 +272,10 @@ geomodelgrids::serial::TestCQuery::testQueryTopoBathyElevation(void) {
             const double elevation = geomodelgrids_squery_queryTopoBathyElevation(handle, pointsLLE[iPt*spaceDim+0],
                                                                                   pointsLLE[iPt*spaceDim+1]);
 
-            std::ostringstream msg;
-            msg << "Mismatch for point in one-block-flat ("
-                << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").";
+            INFO("Mismatch for point in one-block-flat ("
+                 << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").");
             const double valueTolerance = std::max(tolerance, tolerance*fabs(elevationE));
-            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), elevationE, elevation, valueTolerance);
+            CHECK_THAT(elevation, Catch::Matchers::WithinAbs(elevationE, valueTolerance));
         } // for
     } // One Block Flat
 
@@ -315,11 +290,10 @@ geomodelgrids::serial::TestCQuery::testQueryTopoBathyElevation(void) {
             const double elevation = geomodelgrids_squery_queryTopoBathyElevation(handle, pointsLLE[iPt*spaceDim+0],
                                                                                   pointsLLE[iPt*spaceDim+1]);
 
-            std::ostringstream msg;
-            msg << "Mismatch for point in three-blocks-topo ("
-                << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").";
+            INFO("Mismatch for point in three-blocks-topo ("
+                 << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").");
             const double valueTolerance = std::max(tolerance, tolerance*fabs(elevationE));
-            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), elevationE, elevation, valueTolerance);
+            CHECK_THAT(elevation, Catch::Matchers::WithinAbs(elevationE, valueTolerance));
         } // for
     } // Three Blocks Topo
 
@@ -334,24 +308,23 @@ geomodelgrids::serial::TestCQuery::testQueryTopoBathyElevation(void) {
             const double elevation = geomodelgrids_squery_queryTopoBathyElevation(handle, pointsLLE[iPt*spaceDim+0],
                                                                                   pointsLLE[iPt*spaceDim+1]);
 
-            std::ostringstream msg;
-            msg << "Mismatch for point outside domains ("
-                << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").";
+            INFO("Mismatch for point outside domains ("
+                 << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").");
             const double valueTolerance = std::max(tolerance, tolerance*fabs(elevationE));
-            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), elevationE, elevation, valueTolerance);
+            CHECK_THAT(elevation, Catch::Matchers::WithinAbs(elevationE, valueTolerance));
         } // for
     } // Outside domains
 
-    geomodelgrids::serial::Query* query = (geomodelgrids::serial::Query*) handle;CPPUNIT_ASSERT(query);
+    geomodelgrids::serial::Query* query = (geomodelgrids::serial::Query*) handle;REQUIRE(query);
     geomodelgrids::utils::ErrorHandler& errorHandler = query->getErrorHandler();
     errorHandler.resetStatus();
 
     // Bad handle
     double elevation = geomodelgrids_squery_queryTopoBathyElevation(NULL, 0.0, 0.0);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in elevation for bad handle.", geomodelgrids::NODATA_VALUE, elevation);
+    CHECK(geomodelgrids::NODATA_VALUE == elevation);
     errorHandler.resetStatus();
 
-    geomodelgrids_squery_destroy(&handle);CPPUNIT_ASSERT(!handle);
+    geomodelgrids_squery_destroy(&handle);REQUIRE(!handle);
 } // testQueryTopElevation
 
 
@@ -372,9 +345,9 @@ geomodelgrids::serial::TestCQuery::testQueryFlat(void) {
     const std::string& crs = pointsOne.getCRSLatLonElev();
     const size_t spaceDim = 3;
 
-    void* handle = geomodelgrids_squery_create();CPPUNIT_ASSERT(handle);
+    void* handle = geomodelgrids_squery_create();REQUIRE(handle);
     int err = geomodelgrids_squery_initialize(handle, filenames, numModels, valueNames, numValues, crs.c_str());
-    CPPUNIT_ASSERT(!err);
+    REQUIRE(!err);
 
     const double tolerance = 2.0e-5;
     { // One Block Flat
@@ -385,7 +358,7 @@ geomodelgrids::serial::TestCQuery::testQueryFlat(void) {
         for (size_t iPt = 0; iPt < numPoints; ++iPt) {
             double values[numValues];
             const int err = geomodelgrids_squery_query(handle, values, pointsLLE[iPt*spaceDim+0], pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
-            CPPUNIT_ASSERT_MESSAGE("Mismatch in err value in one-block-flat", !err);
+            CHECK(!err);
 
             const double x = pointsXYZ[iPt*spaceDim+0];
             const double y = pointsXYZ[iPt*spaceDim+1];
@@ -395,12 +368,10 @@ geomodelgrids::serial::TestCQuery::testQueryFlat(void) {
             valuesE[1] = pointsOne.computeValueOne(x, y, z);
 
             for (size_t iValue = 0; iValue < numValues; ++iValue) {
-                std::ostringstream msg;
-                msg << "Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
-                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in one-block-flat.";
+                INFO("Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                                           << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in one-block-flat.");
                 const double toleranceV = std::max(tolerance, tolerance*fabs(valuesE[iValue]));
-                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valuesE[iValue], values[iValue],
-                                                     toleranceV);
+                CHECK_THAT(values[iValue], Catch::Matchers::WithinAbs(valuesE[iValue], toleranceV));
             } // for
         } // for
     } // One Block Flat
@@ -415,7 +386,7 @@ geomodelgrids::serial::TestCQuery::testQueryFlat(void) {
             double values[numValues];
             const int err = geomodelgrids_squery_query(handle, values, pointsLLE[iPt*spaceDim+0],
                                                        pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
-            CPPUNIT_ASSERT_MESSAGE("Mismatch in err value in three-blocks-flat", !err);
+            CHECK(!err);
 
             const double x = pointsXYZ[iPt*spaceDim+0];
             const double y = pointsXYZ[iPt*spaceDim+1];
@@ -425,13 +396,11 @@ geomodelgrids::serial::TestCQuery::testQueryFlat(void) {
             valuesE[1] = pointsThree.computeValueOne(x, y, z);
 
             for (size_t iValue = 0; iValue < numValues; ++iValue) {
-                std::ostringstream msg;
-                msg << "Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
-                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue]
-                    << "' in three-blocks-flat.";
+                INFO("Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                                           << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue]
+                                           << "' in three-blocks-flat.");
                 const double toleranceV = std::max(tolerance, tolerance*fabs(valuesE[iValue]));
-                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valuesE[iValue], values[iValue],
-                                                     toleranceV);
+                CHECK_THAT(values[iValue], Catch::Matchers::WithinAbs(valuesE[iValue], toleranceV));
             } // for
         } // for
     } // Three Block Flat
@@ -445,25 +414,22 @@ geomodelgrids::serial::TestCQuery::testQueryFlat(void) {
             double values[numValues];
             const int err = geomodelgrids_squery_query(handle, values, pointsLLE[iPt*spaceDim+0],
                                                        pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
-            CPPUNIT_ASSERT_MESSAGE("Mismatch in err value in outside-domain", err);
+            CHECK(err);
 
             for (size_t iValue = 0; iValue < numValues; ++iValue) {
-                std::ostringstream msg;
-                msg << "Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
-                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in outside-domain.";
+                INFO("Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                                           << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in outside-domain.");
                 const double toleranceV = std::max(tolerance, tolerance*fabs(NODATA_VALUE));
-                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), NODATA_VALUE, values[iValue],
-                                                     toleranceV);
+                CHECK_THAT(values[iValue], Catch::Matchers::WithinAbs(NODATA_VALUE, toleranceV));
             } // for
         } // for
     } // Outside domain
 
     // Bad handle
     err = geomodelgrids_squery_query(NULL, NULL, 0.0, 0.0, 0.0);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in bad handle error code.", int(geomodelgrids::utils::ErrorHandler::ERROR),
-                                 err);
+    CHECK(int(geomodelgrids::utils::ErrorHandler::ERROR) == err);
 
-    geomodelgrids_squery_destroy(&handle);CPPUNIT_ASSERT(!handle);
+    geomodelgrids_squery_destroy(&handle);REQUIRE(!handle);
 } // testQueryFlat
 
 
@@ -484,9 +450,9 @@ geomodelgrids::serial::TestCQuery::testQueryTopo(void) {
     const std::string& crs = pointsOne.getCRSLatLonElev();
     const size_t spaceDim = 3;
 
-    void* handle = geomodelgrids_squery_create();CPPUNIT_ASSERT(handle);
+    void* handle = geomodelgrids_squery_create();REQUIRE(handle);
     int err = geomodelgrids_squery_initialize(handle, filenames, numModels, valueNames, numValues, crs.c_str());
-    CPPUNIT_ASSERT(!err);
+    REQUIRE(!err);
 
     const double tolerance = 1.0e-5;
     { // One Block Topo
@@ -498,7 +464,7 @@ geomodelgrids::serial::TestCQuery::testQueryTopo(void) {
             double values[numValues];
             err = geomodelgrids_squery_query(handle, values, pointsLLE[iPt*spaceDim+0],
                                              pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
-            CPPUNIT_ASSERT_MESSAGE("Mismatch in err value in one-block-topo.", !err);
+            CHECK(!err);
 
             const double x = pointsXYZ[iPt*spaceDim+0];
             const double y = pointsXYZ[iPt*spaceDim+1];
@@ -508,12 +474,10 @@ geomodelgrids::serial::TestCQuery::testQueryTopo(void) {
             valuesE[1] = pointsOne.computeValueOne(x, y, z);
 
             for (size_t iValue = 0; iValue < numValues; ++iValue) {
-                std::ostringstream msg;
-                msg << "Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
-                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in one-block-topo.";
+                INFO("Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                                           << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in one-block-topo.");
                 const double toleranceV = std::max(tolerance, tolerance*fabs(valuesE[iValue]));
-                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valuesE[iValue], values[iValue],
-                                                     toleranceV);
+                CHECK_THAT(values[iValue], Catch::Matchers::WithinAbs(valuesE[iValue], toleranceV));
             } // for
         } // for
     } // One Block Topo
@@ -528,7 +492,7 @@ geomodelgrids::serial::TestCQuery::testQueryTopo(void) {
             double values[numValues];
             err = geomodelgrids_squery_query(handle, values, pointsLLE[iPt*spaceDim+0],
                                              pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
-            CPPUNIT_ASSERT_MESSAGE("Mismatch in err value in three-blocks-topo.", !err);
+            CHECK(!err);
 
             const double x = pointsXYZ[iPt*spaceDim+0];
             const double y = pointsXYZ[iPt*spaceDim+1];
@@ -538,13 +502,11 @@ geomodelgrids::serial::TestCQuery::testQueryTopo(void) {
             valuesE[1] = pointsThree.computeValueOne(x, y, z);
 
             for (size_t iValue = 0; iValue < numValues; ++iValue) {
-                std::ostringstream msg;
-                msg << "Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
-                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue]
-                    << "' in three-blocks-topo.";
+                INFO("Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                                           << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue]
+                                           << "' in three-blocks-topo.");
                 const double toleranceV = std::max(tolerance, tolerance*fabs(valuesE[iValue]));
-                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valuesE[iValue], values[iValue],
-                                                     toleranceV);
+                CHECK_THAT(values[iValue], Catch::Matchers::WithinAbs(valuesE[iValue], toleranceV));
             } // for
         } // for
     } // Three Block Topo
@@ -558,25 +520,23 @@ geomodelgrids::serial::TestCQuery::testQueryTopo(void) {
             double values[numValues];
             err = geomodelgrids_squery_query(handle, values, pointsLLE[iPt*spaceDim+0],
                                              pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
-            CPPUNIT_ASSERT_MESSAGE("Mismatch in err value in outside-domain.", err);
+            CHECK(err);
 
             for (size_t iValue = 0; iValue < numValues; ++iValue) {
-                std::ostringstream msg;
-                msg << "Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
-                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in outside-domain.";
+                INFO("Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                                           << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in outside-domain.");
                 const double toleranceV = std::max(tolerance, tolerance*fabs(NODATA_VALUE));
-                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), NODATA_VALUE, values[iValue],
-                                                     toleranceV);
+                CHECK_THAT(values[iValue], Catch::Matchers::WithinAbs(NODATA_VALUE, toleranceV));
             } // for
         } // for
     } // Outside domain
 
     { // NULL values
         err = geomodelgrids_squery_query(handle, NULL, 0, 0, 0);
-        CPPUNIT_ASSERT_MESSAGE("Mismatch in err value for NULL values.", err);
+        CHECK(err);
     } // NULL values
 
-    geomodelgrids_squery_destroy(&handle);CPPUNIT_ASSERT(!handle);
+    geomodelgrids_squery_destroy(&handle);REQUIRE(!handle);
 } // testQueryTopo
 
 
@@ -599,10 +559,10 @@ geomodelgrids::serial::TestCQuery::testQuerySquashTop(void) {
     const std::string& crs = pointsOne.getCRSLatLonElev();
     const size_t spaceDim = 3;
 
-    void* handle = geomodelgrids_squery_create();CPPUNIT_ASSERT(handle);
-    int err = geomodelgrids_squery_setSquashMinElev(handle, squashMinElev);CPPUNIT_ASSERT(!err);
+    void* handle = geomodelgrids_squery_create();REQUIRE(handle);
+    int err = geomodelgrids_squery_setSquashMinElev(handle, squashMinElev);REQUIRE(!err);
     err = geomodelgrids_squery_initialize(handle, filenames, numModels, valueNames, numValues, crs.c_str());
-    CPPUNIT_ASSERT(!err);
+    REQUIRE(!err);
 
     const double tolerance = 1.0e-5;
     { // One Block Squash
@@ -614,7 +574,7 @@ geomodelgrids::serial::TestCQuery::testQuerySquashTop(void) {
             double values[numValues];
             err = geomodelgrids_squery_query(handle, values, pointsLLE[iPt*spaceDim+0],
                                              pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
-            CPPUNIT_ASSERT_MESSAGE("Mismatch in err value in one-block-topo.", !err);
+            CHECK(!err);
 
             const double x = pointsXYZ[iPt*spaceDim+0];
             const double y = pointsXYZ[iPt*spaceDim+1];
@@ -625,12 +585,10 @@ geomodelgrids::serial::TestCQuery::testQuerySquashTop(void) {
             valuesE[1] = pointsOne.computeValueOne(x, y, z);
 
             for (size_t iValue = 0; iValue < numValues; ++iValue) {
-                std::ostringstream msg;
-                msg << "Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
-                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in one-block-topo.";
+                INFO("Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                                           << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in one-block-topo.");
                 const double toleranceV = std::max(tolerance, tolerance*fabs(valuesE[iValue]));
-                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valuesE[iValue], values[iValue],
-                                                     toleranceV);
+                CHECK_THAT(values[iValue], Catch::Matchers::WithinAbs(valuesE[iValue], toleranceV));
             } // for
         } // for
     } // One Block Squash
@@ -645,7 +603,7 @@ geomodelgrids::serial::TestCQuery::testQuerySquashTop(void) {
             double values[numValues];
             err = geomodelgrids_squery_query(handle, values, pointsLLE[iPt*spaceDim+0],
                                              pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
-            CPPUNIT_ASSERT_MESSAGE("Mismatch in err value in three-blocks-topo.", !err);
+            CHECK(!err);
 
             const double x = pointsXYZ[iPt*spaceDim+0];
             const double y = pointsXYZ[iPt*spaceDim+1];
@@ -656,13 +614,11 @@ geomodelgrids::serial::TestCQuery::testQuerySquashTop(void) {
             valuesE[1] = pointsThree.computeValueOne(x, y, z);
 
             for (size_t iValue = 0; iValue < numValues; ++iValue) {
-                std::ostringstream msg;
-                msg << "Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
-                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue]
-                    << "' in three-blocks-topo.";
+                INFO("Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                                           << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue]
+                                           << "' in three-blocks-topo.");
                 const double toleranceV = std::max(tolerance, tolerance*fabs(valuesE[iValue]));
-                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valuesE[iValue], values[iValue],
-                                                     toleranceV);
+                CHECK_THAT(values[iValue], Catch::Matchers::WithinAbs(valuesE[iValue], toleranceV));
             } // for
         } // for
     } // Three Block Squash
@@ -676,20 +632,18 @@ geomodelgrids::serial::TestCQuery::testQuerySquashTop(void) {
             double values[numValues];
             err = geomodelgrids_squery_query(handle, values, pointsLLE[iPt*spaceDim+0],
                                              pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
-            CPPUNIT_ASSERT_MESSAGE("Mismatch in err value in outside-domain.", err);
+            CHECK(err);
 
             for (size_t iValue = 0; iValue < numValues; ++iValue) {
-                std::ostringstream msg;
-                msg << "Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
-                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in outside-domain.";
+                INFO("Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                                           << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in outside-domain.");
                 const double toleranceV = std::max(tolerance, tolerance*fabs(NODATA_VALUE));
-                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), NODATA_VALUE, values[iValue],
-                                                     toleranceV);
+                CHECK_THAT(values[iValue], Catch::Matchers::WithinAbs(NODATA_VALUE, toleranceV));
             } // for
         } // for
     } // Outside domain
 
-    geomodelgrids_squery_destroy(&handle);CPPUNIT_ASSERT(!handle);
+    geomodelgrids_squery_destroy(&handle);REQUIRE(!handle);
 } // testQuerySquashTop
 
 
@@ -712,11 +666,11 @@ geomodelgrids::serial::TestCQuery::testQuerySquashTopoBathy(void) {
     const std::string& crs = pointsOne.getCRSLatLonElev();
     const size_t spaceDim = 3;
 
-    void* handle = geomodelgrids_squery_create();CPPUNIT_ASSERT(handle);
-    int err = geomodelgrids_squery_setSquashing(handle, GEOMODELGRIDS_SQUASH_TOPOGRAPHY_BATHYMETRY);CPPUNIT_ASSERT(!err);
-    err = geomodelgrids_squery_setSquashMinElev(handle, squashMinElev);CPPUNIT_ASSERT(!err);
+    void* handle = geomodelgrids_squery_create();REQUIRE(handle);
+    int err = geomodelgrids_squery_setSquashing(handle, GEOMODELGRIDS_SQUASH_TOPOGRAPHY_BATHYMETRY);REQUIRE(!err);
+    err = geomodelgrids_squery_setSquashMinElev(handle, squashMinElev);REQUIRE(!err);
     err = geomodelgrids_squery_initialize(handle, filenames, numModels, valueNames, numValues, crs.c_str());
-    CPPUNIT_ASSERT(!err);
+    REQUIRE(!err);
 
     const double tolerance = 1.0e-5;
     { // One Block Squash
@@ -728,7 +682,7 @@ geomodelgrids::serial::TestCQuery::testQuerySquashTopoBathy(void) {
             double values[numValues];
             err = geomodelgrids_squery_query(handle, values, pointsLLE[iPt*spaceDim+0],
                                              pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
-            CPPUNIT_ASSERT_MESSAGE("Mismatch in err value in one-block-topo.", !err);
+            CHECK(!err);
 
             const double x = pointsXYZ[iPt*spaceDim+0];
             const double y = pointsXYZ[iPt*spaceDim+1];
@@ -739,12 +693,10 @@ geomodelgrids::serial::TestCQuery::testQuerySquashTopoBathy(void) {
             valuesE[1] = pointsOne.computeValueOne(x, y, z);
 
             for (size_t iValue = 0; iValue < numValues; ++iValue) {
-                std::ostringstream msg;
-                msg << "Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
-                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in one-block-topo.";
+                INFO("Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                                           << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in one-block-topo.");
                 const double toleranceV = std::max(tolerance, tolerance*fabs(valuesE[iValue]));
-                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valuesE[iValue], values[iValue],
-                                                     toleranceV);
+                CHECK_THAT(values[iValue], Catch::Matchers::WithinAbs(valuesE[iValue], toleranceV));
             } // for
         } // for
     } // One Block Squash
@@ -759,7 +711,7 @@ geomodelgrids::serial::TestCQuery::testQuerySquashTopoBathy(void) {
             double values[numValues];
             err = geomodelgrids_squery_query(handle, values, pointsLLE[iPt*spaceDim+0],
                                              pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
-            CPPUNIT_ASSERT_MESSAGE("Mismatch in err value in three-blocks-topo.", !err);
+            CHECK(!err);
 
             const double x = pointsXYZ[iPt*spaceDim+0];
             const double y = pointsXYZ[iPt*spaceDim+1];
@@ -770,13 +722,11 @@ geomodelgrids::serial::TestCQuery::testQuerySquashTopoBathy(void) {
             valuesE[1] = pointsThree.computeValueOne(x, y, z);
 
             for (size_t iValue = 0; iValue < numValues; ++iValue) {
-                std::ostringstream msg;
-                msg << "Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
-                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue]
-                    << "' in three-blocks-topo.";
+                INFO("Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                                           << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue]
+                                           << "' in three-blocks-topo.");
                 const double toleranceV = std::max(tolerance, tolerance*fabs(valuesE[iValue]));
-                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valuesE[iValue], values[iValue],
-                                                     toleranceV);
+                CHECK_THAT(values[iValue], Catch::Matchers::WithinAbs(valuesE[iValue], toleranceV));
             } // for
         } // for
     } // Three Block Squash
@@ -790,20 +740,18 @@ geomodelgrids::serial::TestCQuery::testQuerySquashTopoBathy(void) {
             double values[numValues];
             err = geomodelgrids_squery_query(handle, values, pointsLLE[iPt*spaceDim+0],
                                              pointsLLE[iPt*spaceDim+1], pointsLLE[iPt*spaceDim+2]);
-            CPPUNIT_ASSERT_MESSAGE("Mismatch in err value in outside-domain.", err);
+            CHECK(err);
 
             for (size_t iValue = 0; iValue < numValues; ++iValue) {
-                std::ostringstream msg;
-                msg << "Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
-                    << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in outside-domain.";
+                INFO("Mismatch at point (" << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1]
+                                           << ", " << pointsLLE[iPt*spaceDim+2] << ") for value '" << valueNames[iValue] << "' in outside-domain.");
                 const double toleranceV = std::max(tolerance, tolerance*fabs(NODATA_VALUE));
-                CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), NODATA_VALUE, values[iValue],
-                                                     toleranceV);
+                CHECK_THAT(values[iValue], Catch::Matchers::WithinAbs(NODATA_VALUE, toleranceV));
             } // for
         } // for
     } // Outside domain
 
-    geomodelgrids_squery_destroy(&handle);CPPUNIT_ASSERT(!handle);
+    geomodelgrids_squery_destroy(&handle);REQUIRE(!handle);
 } // testQuerySquashTopoBathy
 
 

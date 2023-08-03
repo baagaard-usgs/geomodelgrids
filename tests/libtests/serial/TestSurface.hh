@@ -4,7 +4,7 @@
 
 #include <portinfo>
 
-#include <cppunit/extensions/HelperMacros.h>
+#include <cstddef> // HASA size_t
 
 namespace geomodelgrids {
     namespace serial {
@@ -13,42 +13,33 @@ namespace geomodelgrids {
     } // serial
 } // geomodelgrids
 
-class geomodelgrids::serial::TestSurface : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE -------------------------------------------------------------------------
-    CPPUNIT_TEST_SUITE(TestSurface);
-
-    CPPUNIT_TEST(testConstructor);
-    CPPUNIT_TEST(testAccessors);
-    CPPUNIT_TEST(testSetHyperslabDims);
-    CPPUNIT_TEST(testLoadMetadata);
-    CPPUNIT_TEST(testLoadBadMetadata);
-    CPPUNIT_TEST(testQuery);
-
-    CPPUNIT_TEST_SUITE_END();
-
+class geomodelgrids::serial::TestSurface {
     // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
-    /// Setup.
-    void setUp(void);
+    /// Constructor.
+    TestSurface(TestSurface_Data* data);
 
-    /// Tear down.
-    void tearDown(void);
+    /// Destructor.
+    ~TestSurface(void);
 
     /// Test constructor.
+    static
     void testConstructor(void);
+
+    /// Test setHyperslabDims.
+    static
+    void testSetHyperslabDims(void);
+
+    /// Test loadMetadata() with bad variable resolution data.
+    static
+    void testLoadBadMetadata(void);
 
     /// Test getters.
     void testAccessors(void);
 
-    /// Test setHyperslabDims.
-    void testSetHyperslabDims(void);
-
     /// Test loadMetadata().
     void testLoadMetadata(void);
-
-    /// Test loadMetadata() with bad variable resolution data.
-    void testLoadBadMetadata(void);
 
     /// Test query().
     void testQuery(void);
@@ -71,7 +62,7 @@ public:
     /// Destructor
     ~TestSurface_Data(void);
 
-    // PUBLIC MEMBERS //////////////////////////////////////////////////////////////////////////////////////////////////
+    // PUBLIC MEMBERS -----------------------------------------------------------------------------
 public:
 
     const char* filename; ///< Name of file with ASCII mesh.
