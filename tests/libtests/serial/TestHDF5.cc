@@ -105,7 +105,7 @@ TEST_CASE("TestHDF5::testReadDatasetHyperslab", "[TestHDF5]") {
 geomodelgrids::serial::TestHDF5::TestHDF5(void) {
     // Temporarily turn off HDF5 error handler.
     H5Eget_auto(H5E_DEFAULT, &_errFunc, &_errData);
-    H5Eset_auto(H5E_DEFAULT, NULL, NULL);
+    H5Eset_auto(H5E_DEFAULT, nullptr, nullptr);
 } // constructor
 
 
@@ -189,14 +189,14 @@ geomodelgrids::serial::TestHDF5::testGetDatasetDims(void) {
 
     const int ndimsE = 4;
     const hsize_t dimsE[ndimsE] = { 4, 7, 3, 2 };
-    hsize_t* dims = NULL;
+    hsize_t* dims = nullptr;
     int ndims = 0;
     h5.getDatasetDims(&dims, &ndims, "/blocks/middle");
     REQUIRE(ndimsE == ndims);
     for (int i = 0; i < ndimsE; ++i) {
         CHECK(dimsE[i] == dims[i]);
     } // for
-    delete[] dims;dims = NULL;
+    delete[] dims;dims = nullptr;
 
     CHECK_THROWS_AS(h5.getDatasetDims(&dims, &ndims, "blah"), std::runtime_error);
 

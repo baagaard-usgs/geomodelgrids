@@ -40,7 +40,7 @@ geomodelgrids::utils::IndexingVariable::IndexingVariable(const double* x,
     _numX(numX) {
     if (!x) {
         std::ostringstream msg;
-        msg << "NULL coordinates array for variable resolution indexing.";
+        msg << "nullptr coordinates array for variable resolution indexing.";
         throw std::invalid_argument(msg.str());
     } // if
     if (!numX) {
@@ -49,7 +49,7 @@ geomodelgrids::utils::IndexingVariable::IndexingVariable(const double* x,
         throw std::invalid_argument(msg.str());
     } // if
 
-    _x = (numX > 0) ? new double[numX] : NULL;
+    _x = (numX > 0) ? new double[numX] : nullptr;
     for (size_t i = 0; i < _numX; ++i) {
         _x[i] = x[i];
     } // for
@@ -65,7 +65,7 @@ geomodelgrids::utils::IndexingVariable::IndexingVariable(const double* x,
 
 // ------------------------------------------------------------------------------------------------
 geomodelgrids::utils::IndexingVariable::~IndexingVariable(void) {
-    delete[] _x;_x = NULL;
+    delete[] _x;_x = nullptr;
 }
 
 

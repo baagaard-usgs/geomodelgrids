@@ -40,7 +40,7 @@ Initialize transformer.
 (cxx-api-utils-crs-transform)=
 ### transform(double* destX, double* destY, const double* destZ, const double srcX, const double srcY, const double srcZ)
 
-Transform coordinates from source to destination coordinate system. If `destZ` is `NULL`, then the z coordinate in the destination coordinate system is not computed.
+Transform coordinates from source to destination coordinate system. If `destZ` is `nullptr`, then the z coordinate in the destination coordinate system is not computed.
 
 * **destX**[out] X coordinate in destination coordinate system.
 * **destY**[out] Y coordinate in destination coordinate system.
@@ -56,7 +56,7 @@ Transform coordinates from destination to source coordinate system.
 
 * **srcX[out]** X coordinate in source coordinate system.
 * **srcY[out]** Y coordinate in source coordinate system.
-* **srcZ[out]** Z coordinate in source coordinate system (can be NULL).
+* **srcZ[out]** Z coordinate in source coordinate system (can be `nullptr`).
 * **destX[in]** X coordinate in destination coordinate system.
 * **destY[in]** Y coordinate in destination coordinate system.
 * **destZ[in]** Z coordinate in destination coordinate system.

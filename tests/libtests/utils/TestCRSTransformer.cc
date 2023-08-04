@@ -87,7 +87,7 @@ geomodelgrids::utils::TestCRSTransformer::testFactories(void) {
 
     CHECK_THROWS_AS(CRSTransformer::createGeoToXYAxisOrder("nonsense"), std::runtime_error);
 
-    delete transformer;transformer = NULL;
+    delete transformer;transformer = nullptr;
 } // testFactories
 
 
@@ -140,7 +140,7 @@ geomodelgrids::utils::TestCRSTransformer::testTransform(void) {
         const double srcLonLat[2] = { 37.5, -122.0 };
         const double destXYE[2] = { -176555.43141012415, -55540.14575705351 };
 
-        transformer.transform(&destXYZ[0], &destXYZ[1], NULL, srcLonLat[0], srcLonLat[1], 0.0);
+        transformer.transform(&destXYZ[0], &destXYZ[1], nullptr, srcLonLat[0], srcLonLat[1], 0.0);
         const double tolerance = 1.0e-6;
         CHECK_THAT(destXYZ[0], Catch::Matchers::WithinAbs(destXYE[0], fabs(tolerance*destXYE[0])));
         CHECK_THAT(destXYZ[1], Catch::Matchers::WithinAbs(destXYE[1], fabs(tolerance*destXYE[1])));
@@ -173,7 +173,7 @@ geomodelgrids::utils::TestCRSTransformer::testUnits(void) {
     CHECK(std::string("degree") == yUnit);
     CHECK(std::string("meter (assumed)") == zUnit);
 
-    CRSTransformer::getCRSUnits(&xUnit, &yUnit, NULL, "EPSG:3488"); // CA Albers equal area
+    CRSTransformer::getCRSUnits(&xUnit, &yUnit, nullptr, "EPSG:3488"); // CA Albers equal area
     CHECK(std::string("meter") == xUnit);
     CHECK(std::string("meter") == yUnit);
     CHECK(std::string("meter (assumed)") == zUnit);

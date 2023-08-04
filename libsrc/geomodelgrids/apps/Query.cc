@@ -110,21 +110,21 @@ void
 geomodelgrids::apps::Query::_parseArgs(int argc,
                                        char* argv[]) {
     static struct option options[10] = {
-        {"help", no_argument, NULL, 'h'},
-        {"values", required_argument, NULL, 'v'},
-        {"squash-min-elev", required_argument, NULL, 's'},
-        {"squash-surface", required_argument, NULL, 'r'},
-        {"points", required_argument, NULL, 'p'},
-        {"points-coordsys", required_argument, NULL, 'c'},
-        {"output", required_argument, NULL, 'o'},
-        {"log", required_argument, NULL, 'l'},
-        {"models", required_argument, NULL, 'm'},
+        {"help", no_argument, nullptr, 'h'},
+        {"values", required_argument, nullptr, 'v'},
+        {"squash-min-elev", required_argument, nullptr, 's'},
+        {"squash-surface", required_argument, nullptr, 'r'},
+        {"points", required_argument, nullptr, 'p'},
+        {"points-coordsys", required_argument, nullptr, 'c'},
+        {"output", required_argument, nullptr, 'o'},
+        {"log", required_argument, nullptr, 'l'},
+        {"models", required_argument, nullptr, 'm'},
         {0, 0, 0, 0}
     };
 
     while (true) {
         // extern char* optarg;
-        const char c = getopt_long(argc, argv, "hv:s:r:p:c:o:l:m:", options, NULL);
+        const char c = getopt_long(argc, argv, "hv:s:r:p:c:o:l:m:", options, nullptr);
         if (-1 == c) { break; }
         switch (c) {
         case 'h':

@@ -25,7 +25,7 @@ geomodelgrids::serial::TestBlock::TestBlock(TestBlock_Data* data) :
 
 // ------------------------------------------------------------------------------------------------
 geomodelgrids::serial::TestBlock::~TestBlock(void) {
-    delete _data;_data = NULL;
+    delete _data;_data = nullptr;
 }
 
 
@@ -40,20 +40,20 @@ geomodelgrids::serial::TestBlock::testConstructor(void) {
     CHECK(0.0 == block._resolutionX);
     CHECK(0.0 == block._resolutionY);
     CHECK(0.0 == block._resolutionZ);
-    CHECK((double*)NULL == block._coordinatesX);
-    CHECK((double*)NULL == block._coordinatesY);
-    CHECK((double*)NULL == block._coordinatesZ);
-    CHECK((geomodelgrids::utils::Indexing*)NULL == block._indexingX);
-    CHECK((geomodelgrids::utils::Indexing*)NULL == block._indexingY);
-    CHECK((geomodelgrids::utils::Indexing*)NULL == block._indexingZ);
+    CHECK((double*)nullptr == block._coordinatesX);
+    CHECK((double*)nullptr == block._coordinatesY);
+    CHECK((double*)nullptr == block._coordinatesZ);
+    CHECK((geomodelgrids::utils::Indexing*)nullptr == block._indexingX);
+    CHECK((geomodelgrids::utils::Indexing*)nullptr == block._indexingY);
+    CHECK((geomodelgrids::utils::Indexing*)nullptr == block._indexingZ);
     CHECK(0.0 == block._zTop);
-    CHECK((double*)NULL == block._values);
+    CHECK((double*)nullptr == block._values);
     CHECK(size_t(0) == block._numValues);
     CHECK(size_t(0) == block._dims[0]);
     CHECK(size_t(0) == block._dims[1]);
     CHECK(size_t(0) == block._dims[2]);
 
-    CHECK(true == Block::compare(&block, NULL));
+    CHECK(true == Block::compare(&block, nullptr));
 } // testConstructor
 
 
@@ -147,9 +147,9 @@ geomodelgrids::serial::TestBlock::testAccessors(void) {
     CHECK(_data->numValues == block.getNumValues());
 
     // Memory managed by _data.
-    block._coordinatesX = NULL;
-    block._coordinatesY = NULL;
-    block._coordinatesZ = NULL;
+    block._coordinatesX = nullptr;
+    block._coordinatesY = nullptr;
+    block._coordinatesZ = nullptr;
 } // testAccessors
 
 
@@ -262,23 +262,23 @@ const size_t geomodelgrids::serial::TestBlock_Data::numValues = 2;
 
 // ------------------------------------------------------------------------------------------------
 geomodelgrids::serial::TestBlock_Data::TestBlock_Data(void) :
-    filename(NULL),
+    filename(nullptr),
     resolutionX(0.0),
     resolutionY(0.0),
     resolutionZ(0.0),
     zTop(0.0),
-    coordinatesX(NULL),
-    coordinatesY(NULL),
-    coordinatesZ(NULL),
+    coordinatesX(nullptr),
+    coordinatesY(nullptr),
+    coordinatesZ(nullptr),
     numX(0),
     numY(0),
     numZ(0),
-    points(NULL) {}
+    points(nullptr) {}
 
 
 // ------------------------------------------------------------------------------------------------
 geomodelgrids::serial::TestBlock_Data::~TestBlock_Data(void) {
-    delete points;points = NULL;
+    delete points;points = nullptr;
 }
 
 

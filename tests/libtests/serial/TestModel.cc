@@ -130,11 +130,11 @@ geomodelgrids::serial::TestModel::testConstructor(void) {
     CHECK(0.0 == model._dims[0]);
     CHECK(0.0 == model._dims[1]);
     CHECK(0.0 == model._dims[2]);
-    CHECK((HDF5*)NULL == model._h5);
-    CHECK((ModelInfo*)NULL == model._info);
-    CHECK((Surface*)NULL == model._surfaceTop);
-    CHECK((Surface*)NULL == model._surfaceTopoBathy);
-    // CHECK("Checking CRS", (HDF5*)NULL, model._h5);
+    CHECK((HDF5*)nullptr == model._h5);
+    CHECK((ModelInfo*)nullptr == model._info);
+    CHECK((Surface*)nullptr == model._surfaceTop);
+    CHECK((Surface*)nullptr == model._surfaceTopoBathy);
+    // CHECK("Checking CRS", (HDF5*)nullptr, model._h5);
     CHECK(model._blocks.empty());
 } // testConstructor
 

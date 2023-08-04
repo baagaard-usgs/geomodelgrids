@@ -27,7 +27,7 @@ These functions are prefixed by `geomodelgrids_squery`.
 
 Create C++ query object.
 
-* **returns** Pointer to C++ query object (NULL on failure).
+* **returns** Pointer to C++ query object (`NULL` on failure).
 
 
 ### geomodelgrids_squery_destroy(void** handle)

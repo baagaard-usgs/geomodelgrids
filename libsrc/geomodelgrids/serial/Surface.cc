@@ -16,14 +16,14 @@
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
 geomodelgrids::serial::Surface::Surface(const char* const name) :
-    _hyperslab(NULL),
+    _hyperslab(nullptr),
     _name(name),
     _resolutionX(0.0),
     _resolutionY(0.0),
-    _coordinatesX(NULL),
-    _coordinatesY(NULL),
-    _indexingX(NULL),
-    _indexingY(NULL) {
+    _coordinatesX(nullptr),
+    _coordinatesY(nullptr),
+    _indexingX(nullptr),
+    _indexingY(nullptr) {
     _dims[0] = 0;
     _dims[1] = 0;
 
@@ -36,12 +36,12 @@ geomodelgrids::serial::Surface::Surface(const char* const name) :
 // ------------------------------------------------------------------------------------------------
 // Destructor
 geomodelgrids::serial::Surface::~Surface(void) {
-    delete[] _coordinatesX;_coordinatesX = NULL;
-    delete[] _coordinatesY;_coordinatesY = NULL;
+    delete[] _coordinatesX;_coordinatesX = nullptr;
+    delete[] _coordinatesY;_coordinatesY = nullptr;
 
-    delete _indexingX;_indexingX = NULL;
-    delete _indexingY;_indexingY = NULL;
-    delete _hyperslab;_hyperslab = NULL;
+    delete _indexingX;_indexingX = nullptr;
+    delete _indexingY;_indexingY = nullptr;
+    delete _hyperslab;_hyperslab = nullptr;
 } // destructor
 
 
@@ -82,14 +82,14 @@ geomodelgrids::serial::Surface::loadMetadata(geomodelgrids::serial::HDF5* const 
         } // if/else
     } // if/else
 
-    hsize_t* hdims = NULL;
+    hsize_t* hdims = nullptr;
     int ndims = 0;
     h5->getDatasetDims(&hdims, &ndims, surfacePath.c_str());
     assert(3 == ndims);
     for (int i = 0; i < 2; ++i) {
         _dims[i] = hdims[i];
     } // for
-    delete[] hdims;hdims = NULL;
+    delete[] hdims;hdims = nullptr;
 
     // Check to make sure dimensions of surface match coordinates (if provided).
     if (_coordinatesX && (dims[0] != _dims[0])) {
@@ -105,8 +105,8 @@ geomodelgrids::serial::Surface::loadMetadata(geomodelgrids::serial::HDF5* const 
 
     if (attributeErrors) { throw std::runtime_error(msg.str().c_str()); }
 
-    delete _indexingX;_indexingX = NULL;
-    delete _indexingY;_indexingY = NULL;
+    delete _indexingX;_indexingX = nullptr;
+    delete _indexingY;_indexingY = nullptr;
     if (!_coordinatesX) {
         _indexingX = new geomodelgrids::utils::IndexingUniform(_resolutionX);
     } else {
@@ -200,7 +200,7 @@ geomodelgrids::serial::Surface::openQuery(geomodelgrids::serial::HDF5* const h5)
 // Cleanup after querying.
 void
 geomodelgrids::serial::Surface::closeQuery(void) {
-    delete _hyperslab;_hyperslab = NULL;
+    delete _hyperslab;_hyperslab = nullptr;
 } // closeQuery
 
 

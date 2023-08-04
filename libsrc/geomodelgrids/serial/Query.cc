@@ -72,9 +72,9 @@ geomodelgrids::serial::Query::Query() :
 // Destructor
 geomodelgrids::serial::Query::~Query(void) {
     for (size_t i = 0; i < _models.size(); ++i) {
-        delete _models[i];_models[i] = NULL;
+        delete _models[i];_models[i] = nullptr;
     } // for
-    delete _errorHandler;_errorHandler = NULL;
+    delete _errorHandler;_errorHandler = nullptr;
 } // destructor
 
 
@@ -96,7 +96,7 @@ geomodelgrids::serial::Query::initialize(const std::vector<std::string>& modelFi
     _valuesLowercase = _Query::toLower(valueNames);
 
     for (size_t i = 0; i < _models.size(); ++i) {
-        delete _models[i];_models[i] = NULL;
+        delete _models[i];_models[i] = nullptr;
     } // for
 
     const size_t numModels = modelFilenames.size();
@@ -187,7 +187,7 @@ geomodelgrids::serial::Query::query(double* const values,
                                     const double z) {
     if (!values) {
         assert(_errorHandler);
-        _errorHandler->setError("geomodelgrids::serial::Query::query() passed NULL for values argument.");
+        _errorHandler->setError("geomodelgrids::serial::Query::query() passed nullptr for values argument.");
         return geomodelgrids::utils::ErrorHandler::ERROR;
     } // if
 

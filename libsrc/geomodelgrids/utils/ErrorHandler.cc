@@ -13,8 +13,7 @@ geomodelgrids::utils::ErrorHandler::ErrorHandler(void) :
     _message(""),
     _logFilename(_NULLFILE),
     _log(new std::ofstream(_NULLFILE)),
-    _status(OK)
-{}
+    _status(OK) {}
 
 
 // ------------------------------------------------------------------------------------------------
@@ -22,7 +21,7 @@ geomodelgrids::utils::ErrorHandler::~ErrorHandler(void) {
     if (_log) {
         _log->close();
     } // if
-    delete _log;_log = NULL;
+    delete _log;_log = nullptr;
 } // destructor
 
 

@@ -24,11 +24,11 @@ geomodelgrids::serial::Model::Model(void) :
     _modelCRSString(""),
     _inputCRSString("EPSG:4326"),
     _yazimuth(0.0),
-    _h5(NULL),
-    _info(NULL),
-    _surfaceTop(NULL),
-    _surfaceTopoBathy(NULL),
-    _crsTransformer(NULL) {
+    _h5(nullptr),
+    _info(nullptr),
+    _surfaceTop(nullptr),
+    _surfaceTopoBathy(nullptr),
+    _crsTransformer(nullptr) {
     _origin[0] = 0.0;
     _origin[1] = 0.0;
     _dims[0] = 0.0;
@@ -101,15 +101,15 @@ geomodelgrids::serial::Model::close(void) {
 
     if (_h5) {
         _h5->close();
-        delete _h5;_h5 = NULL;
+        delete _h5;_h5 = nullptr;
     } // if
 
-    delete _info;_info = NULL;
-    delete _crsTransformer;_crsTransformer = NULL;
-    delete _surfaceTop;_surfaceTop = NULL;
-    delete _surfaceTopoBathy;_surfaceTopoBathy = NULL;
+    delete _info;_info = nullptr;
+    delete _crsTransformer;_crsTransformer = nullptr;
+    delete _surfaceTop;_surfaceTop = nullptr;
+    delete _surfaceTopoBathy;_surfaceTopoBathy = nullptr;
     for (size_t i = 0; i < _blocks.size(); ++i) {
-        delete _blocks[i];_blocks[i] = NULL;
+        delete _blocks[i];_blocks[i] = nullptr;
     } // for
 } // close
 
@@ -206,8 +206,8 @@ geomodelgrids::serial::Model::loadMetadata(void) {
         missingAttributes = true;
     } // if/else
 
-    delete _surfaceTop;_surfaceTop = NULL;
-    delete _surfaceTopoBathy;_surfaceTopoBathy = NULL;
+    delete _surfaceTop;_surfaceTop = nullptr;
+    delete _surfaceTopoBathy;_surfaceTopoBathy = nullptr;
     if (_h5->hasGroup("surfaces")) {
         if (_h5->hasDataset("surfaces/top_surface")) {
             _surfaceTop = new geomodelgrids::serial::Surface("top_surface");assert(_surfaceTop);
@@ -232,7 +232,7 @@ geomodelgrids::serial::Model::loadMetadata(void) {
 
     if (_blocks.size() > 0) {
         for (size_t i = 0; i < _blocks.size(); ++i) {
-            delete _blocks[i];_blocks[i] = NULL;
+            delete _blocks[i];_blocks[i] = nullptr;
         } // for
         _blocks.clear();
     } // if
@@ -401,7 +401,7 @@ geomodelgrids::serial::Model::queryTopElevation(const double x,
     if (_surfaceTop) {
         double xModel = 0.0;
         double yModel = 0.0;
-        _toModelXYZ(&xModel, &yModel, NULL, x, y, 0.0);
+        _toModelXYZ(&xModel, &yModel, nullptr, x, y, 0.0);
         const double zModelCRS = _surfaceTop->query(xModel, yModel);
 
         const double yazimuthRad = _yazimuth * M_PI / 180.0;
@@ -431,7 +431,7 @@ geomodelgrids::serial::Model::queryTopoBathyElevation(const double x,
     if (_surfaceTopoBathy || _surfaceTop) {
         double xModel = 0.0;
         double yModel = 0.0;
-        _toModelXYZ(&xModel, &yModel, NULL, x, y, 0.0);
+        _toModelXYZ(&xModel, &yModel, nullptr, x, y, 0.0);
         const double zModelCRS = (_surfaceTopoBathy) ? _surfaceTopoBathy->query(xModel, yModel) : _surfaceTop->query(xModel, yModel);
 
         const double yazimuthRad = _yazimuth * M_PI / 180.0;
@@ -517,7 +517,7 @@ geomodelgrids::serial::Model::_findBlock(const double x,
             return block;
         } // if
     } // for
-    return NULL;
+    return nullptr;
 } // _findBlock
 
 

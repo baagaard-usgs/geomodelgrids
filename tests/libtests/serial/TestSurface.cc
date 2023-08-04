@@ -27,7 +27,7 @@ geomodelgrids::serial::TestSurface::TestSurface(TestSurface_Data* data) :
 
 // ------------------------------------------------------------------------------------------------
 geomodelgrids::serial::TestSurface::~TestSurface(void) {
-    delete _data;_data = NULL;
+    delete _data;_data = nullptr;
 }
 
 
@@ -41,10 +41,10 @@ geomodelgrids::serial::TestSurface::testConstructor(void) {
     CHECK(surfaceName == surf._name);
     CHECK(0.0 == surf._resolutionX);
     CHECK(0.0 == surf._resolutionY);
-    CHECK((double*)NULL == surf._coordinatesX);
-    CHECK((double*)NULL == surf._coordinatesY);
-    CHECK((geomodelgrids::utils::Indexing*)NULL == surf._indexingX);
-    CHECK((geomodelgrids::utils::Indexing*)NULL == surf._indexingY);
+    CHECK((double*)nullptr == surf._coordinatesX);
+    CHECK((double*)nullptr == surf._coordinatesY);
+    CHECK((geomodelgrids::utils::Indexing*)nullptr == surf._indexingX);
+    CHECK((geomodelgrids::utils::Indexing*)nullptr == surf._indexingY);
     CHECK(size_t(0) == surf._dims[0]);
     CHECK(size_t(0) == surf._dims[1]);
 } // testConstructor
@@ -122,8 +122,8 @@ geomodelgrids::serial::TestSurface::testAccessors(void) {
     } // if
 
     // Memory managed by _data
-    surf._coordinatesX = NULL;
-    surf._coordinatesY = NULL;
+    surf._coordinatesX = nullptr;
+    surf._coordinatesY = nullptr;
 } // testAccessors
 
 
@@ -207,11 +207,11 @@ geomodelgrids::serial::TestSurface::testQuery(void) {
 
 // ------------------------------------------------------------------------------------------------
 geomodelgrids::serial::TestSurface_Data::TestSurface_Data(void) :
-    filename(NULL),
+    filename(nullptr),
     resolutionX(0.0),
     resolutionY(0.0),
-    coordinatesX(NULL),
-    coordinatesY(NULL),
+    coordinatesX(nullptr),
+    coordinatesY(nullptr),
     numX(0),
     numY(0) {}
 

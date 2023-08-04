@@ -100,19 +100,19 @@ void
 geomodelgrids::apps::QueryElev::_parseArgs(int argc,
                                            char* argv[]) {
     static struct option options[10] = {
-        {"help", no_argument, NULL, 'h'},
-        {"points", required_argument, NULL, 'p'},
-        {"points-coordsys", required_argument, NULL, 'c'},
-        {"output", required_argument, NULL, 'o'},
-        {"log", required_argument, NULL, 'l'},
-        {"models", required_argument, NULL, 'm'},
-        {"surface", required_argument, NULL, 's'},
+        {"help", no_argument, nullptr, 'h'},
+        {"points", required_argument, nullptr, 'p'},
+        {"points-coordsys", required_argument, nullptr, 'c'},
+        {"output", required_argument, nullptr, 'o'},
+        {"log", required_argument, nullptr, 'l'},
+        {"models", required_argument, nullptr, 'm'},
+        {"surface", required_argument, nullptr, 's'},
         {0, 0, 0, 0}
     };
 
     while (true) {
         // extern char* optarg;
-        const char c = getopt_long(argc, argv, "hv:s:p:c:o:l:m:s:", options, NULL);
+        const char c = getopt_long(argc, argv, "hv:s:p:c:o:l:m:s:", options, nullptr);
         if (-1 == c) { break; }
         switch (c) {
         case 'h':

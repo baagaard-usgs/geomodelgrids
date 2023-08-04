@@ -93,10 +93,10 @@ geomodelgrids::serial::TestCQuery::testAccessors(void) {
     CHECK(geomodelgrids::serial::Query::SQUASH_TOP_SURFACE == query->_squash);
 
     // Bad handles
-    err = geomodelgrids_squery_setSquashMinElev(NULL, minElev);
+    err = geomodelgrids_squery_setSquashMinElev(nullptr, minElev);
     CHECK(int(geomodelgrids::utils::ErrorHandler::ERROR) == err);
 
-    err = geomodelgrids_squery_setSquashing(NULL, false);
+    err = geomodelgrids_squery_setSquashing(nullptr, false);
     CHECK(int(geomodelgrids::utils::ErrorHandler::ERROR) == err);
 
     geomodelgrids_squery_destroy(&handle);REQUIRE(!handle);
@@ -144,10 +144,10 @@ geomodelgrids::serial::TestCQuery::testInitialize(void) {
     err = geomodelgrids_squery_initialize(handle, filenames, numModels, valueNamesBad, numValues, crs);REQUIRE(err);
 
     // Bad handle
-    err = geomodelgrids_squery_initialize(NULL, filenames, numModels, valueNames, numValues, crs);
+    err = geomodelgrids_squery_initialize(nullptr, filenames, numModels, valueNames, numValues, crs);
     CHECK(int(geomodelgrids::utils::ErrorHandler::ERROR) == err);
 
-    err = geomodelgrids_squery_finalize(NULL);
+    err = geomodelgrids_squery_finalize(nullptr);
     CHECK(int(geomodelgrids::utils::ErrorHandler::ERROR) == err);
 
     geomodelgrids_squery_destroy(&handle);REQUIRE(!handle);
@@ -165,7 +165,7 @@ geomodelgrids::serial::TestCQuery::testQueryTopElevation(void) {
     };
 
     const size_t numValues = 0;
-    const char* const* valueNames = NULL;
+    const char* const* valueNames = nullptr;
 
     geomodelgrids::testdata::OneBlockFlatPoints pointsOne;
     const std::string& crs = pointsOne.getCRSLatLonElev();
@@ -233,7 +233,7 @@ geomodelgrids::serial::TestCQuery::testQueryTopElevation(void) {
     errorHandler.resetStatus();
 
     // Bad handle
-    double elevation = geomodelgrids_squery_queryTopElevation(NULL, 0.0, 0.0);
+    double elevation = geomodelgrids_squery_queryTopElevation(nullptr, 0.0, 0.0);
     CHECK(geomodelgrids::NODATA_VALUE == elevation);
     errorHandler.resetStatus();
 
@@ -252,7 +252,7 @@ geomodelgrids::serial::TestCQuery::testQueryTopoBathyElevation(void) {
     };
 
     const size_t numValues = 0;
-    const char* const* valueNames = NULL;
+    const char* const* valueNames = nullptr;
 
     geomodelgrids::testdata::OneBlockFlatPoints pointsOne;
     const std::string& crs = pointsOne.getCRSLatLonElev();
@@ -320,7 +320,7 @@ geomodelgrids::serial::TestCQuery::testQueryTopoBathyElevation(void) {
     errorHandler.resetStatus();
 
     // Bad handle
-    double elevation = geomodelgrids_squery_queryTopoBathyElevation(NULL, 0.0, 0.0);
+    double elevation = geomodelgrids_squery_queryTopoBathyElevation(nullptr, 0.0, 0.0);
     CHECK(geomodelgrids::NODATA_VALUE == elevation);
     errorHandler.resetStatus();
 
@@ -426,7 +426,7 @@ geomodelgrids::serial::TestCQuery::testQueryFlat(void) {
     } // Outside domain
 
     // Bad handle
-    err = geomodelgrids_squery_query(NULL, NULL, 0.0, 0.0, 0.0);
+    err = geomodelgrids_squery_query(nullptr, nullptr, 0.0, 0.0, 0.0);
     CHECK(int(geomodelgrids::utils::ErrorHandler::ERROR) == err);
 
     geomodelgrids_squery_destroy(&handle);REQUIRE(!handle);
@@ -531,10 +531,10 @@ geomodelgrids::serial::TestCQuery::testQueryTopo(void) {
         } // for
     } // Outside domain
 
-    { // NULL values
-        err = geomodelgrids_squery_query(handle, NULL, 0, 0, 0);
+    { // nullptr values
+        err = geomodelgrids_squery_query(handle, nullptr, 0, 0, 0);
         CHECK(err);
-    } // NULL values
+    } // nullptr values
 
     geomodelgrids_squery_destroy(&handle);REQUIRE(!handle);
 } // testQueryTopo

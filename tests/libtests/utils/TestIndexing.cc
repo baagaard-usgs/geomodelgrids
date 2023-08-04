@@ -81,7 +81,7 @@ geomodelgrids::utils::TestIndexing::testVariableAscending(void) {
     CHECK_THAT(indexing.getIndex(+4.0+9.0), Catch::Matchers::WithinAbs(4.8, tolerance));
     CHECK_THAT(indexing.getIndex(+4.0+4.0), Catch::Matchers::WithinAbs(3.5, tolerance));
 
-    CHECK_THROWS_AS(IndexingVariable(NULL, 1), std::invalid_argument);
+    CHECK_THROWS_AS(IndexingVariable(nullptr, 1), std::invalid_argument);
     CHECK_THROWS_AS(IndexingVariable(x, 0), std::invalid_argument);
 } // testVariableAscending
 

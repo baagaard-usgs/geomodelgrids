@@ -160,8 +160,8 @@ geomodelgrids::apps::Isosurface::run(int argc,
     geomodelgrids::utils::CRSTransformer* toXYOrder =
         geomodelgrids::utils::CRSTransformer::createGeoToXYAxisOrder(_bboxCRS.c_str());
     assert(toXYOrder);
-    toXYOrder->transform(&_minX, &_minY, NULL, _minX, _minY, 0.0);
-    toXYOrder->transform(&_maxX, &_maxY, NULL, _maxX, _maxY, 0.0);
+    toXYOrder->transform(&_minX, &_minY, nullptr, _minX, _minY, 0.0);
+    toXYOrder->transform(&_maxX, &_maxY, nullptr, _maxX, _maxY, 0.0);
 
     try {
         Isosurfacer isosurfacer(*this);
@@ -205,22 +205,22 @@ geomodelgrids::apps::Isosurface::run(int argc,
                 const size_t col = iX;
                 const double x = _minX + (iX + 0.5) * _horizRes;
 
-                toXYOrder->inverse_transform(&xCRS, &yCRS, NULL, x, y, 0.0);
+                toXYOrder->inverse_transform(&xCRS, &yCRS, nullptr, x, y, 0.0);
                 isosurfacer.query(&values[0], xCRS, yCRS);
                 for (size_t iValue = 0; iValue < numIsosurfaces; ++iValue) {
                     buffer[iValue*numY*numX + row*numX + col] = values[iValue];
                 } // for
             } // for
         } // for
-        delete toXYOrder;toXYOrder = NULL;
+        delete toXYOrder;toXYOrder = nullptr;
         writer.write();
         writer.close();
         isosurfacer.finalize();
     } catch (const std::exception& err) {
-        delete toXYOrder;toXYOrder = NULL;
+        delete toXYOrder;toXYOrder = nullptr;
         throw;
     } catch (...) {
-        delete toXYOrder;toXYOrder = NULL;
+        delete toXYOrder;toXYOrder = nullptr;
         throw;
     } // try/catch
 
@@ -235,26 +235,26 @@ void
 geomodelgrids::apps::Isosurface::_parseArgs(int argc,
                                             char* argv[]) {
     static struct option options[14] = {
-        {"help", no_argument, NULL, 'h'},
-        {"log", required_argument, NULL, 'l'},
-        {"bbox", required_argument, NULL, 'b'},
-        {"hresolution", required_argument, NULL, 'r'},
-        {"vresolution", required_argument, NULL, 'v'},
-        {"isosurface", required_argument, NULL, 'i'},
-        {"depth-reference", required_argument, NULL, 's'},
-        {"max-depth", required_argument, NULL, 'd'},
-        {"num-search-points", required_argument, NULL, 'n'},
-        {"models", required_argument, NULL, 'm'},
-        {"output", required_argument, NULL, 'o'},
-        {"prefer-deep", no_argument, NULL, 'p'},
-        {"bbox-coordsys", required_argument, NULL, 'c'},
+        {"help", no_argument, nullptr, 'h'},
+        {"log", required_argument, nullptr, 'l'},
+        {"bbox", required_argument, nullptr, 'b'},
+        {"hresolution", required_argument, nullptr, 'r'},
+        {"vresolution", required_argument, nullptr, 'v'},
+        {"isosurface", required_argument, nullptr, 'i'},
+        {"depth-reference", required_argument, nullptr, 's'},
+        {"max-depth", required_argument, nullptr, 'd'},
+        {"num-search-points", required_argument, nullptr, 'n'},
+        {"models", required_argument, nullptr, 'm'},
+        {"output", required_argument, nullptr, 'o'},
+        {"prefer-deep", no_argument, nullptr, 'p'},
+        {"bbox-coordsys", required_argument, nullptr, 'c'},
         {0, 0, 0, 0}
     };
 
     _isosurfaces.clear();
     while (true) {
         // extern char* optarg;
-        const char c = getopt_long(argc, argv, "hl:b:r:v:i:s:d:m:o:pc:", options, NULL);
+        const char c = getopt_long(argc, argv, "hl:b:r:v:i:s:d:m:o:pc:", options, nullptr);
         if (-1 == c) { break; }
         switch (c) {
         case 'h':
@@ -449,12 +449,12 @@ geomodelgrids::apps::Isosurface::_printHelp(void) {
 // ------------------------------------------------------------------------------------------------
 geomodelgrids::apps::Isosurfacer::Isosurfacer(const Isosurface& app) :
     _app(app),
-    _query(NULL) {}
+    _query(nullptr) {}
 
 
 // ------------------------------------------------------------------------------------------------
 geomodelgrids::apps::Isosurfacer::~Isosurfacer(void) {
-    delete _query;_query = NULL;
+    delete _query;_query = nullptr;
 }
 
 
@@ -549,7 +549,7 @@ geomodelgrids::apps::Isosurfacer::query(double* values,
 
     } // for
 
-    delete lineSearch;lineSearch = NULL;
+    delete lineSearch;lineSearch = nullptr;
 }
 
 
