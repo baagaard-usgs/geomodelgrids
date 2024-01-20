@@ -1,16 +1,16 @@
 #!/usr/bin/env python3
-"""Application for building and pushing docker images.
+"""Application for building and pushing Docker images.
 """
 
-
-import os
 import argparse
 import subprocess
 import pathlib
 
+
 class DockerApp(object):
-    """Application for building and pushing docker images.
+    """Application for building and pushing Docker images.
     """
+
     def __init__(self, docker_file, registry="code.usgs.gov:5001/ghsc/gmp/earth-structure/cvms/geomodelgrids", prefix="testenv"):
         self.docker_filename = docker_file
         self.registry = registry
@@ -56,11 +56,13 @@ def cli():
     """
     parser = argparse.ArgumentParser()
     parser.add_argument("--dockerfile", action="store", dest="docker_file", required=True)
-    parser.add_argument("--registry", action="store", dest="registry", default="code.usgs.gov:5001/ghsc/gmp/earth-structure/cvms/geomodelgrids")
+    parser.add_argument("--registry", action="store", dest="registry",
+                        default="code.usgs.gov:5001/ghsc/gmp/earth-structure/cvms/geomodelgrids")
     parser.add_argument("--prefix", action="store", dest="prefix", default="testenv")
     parser.add_argument("--build", action="store_true", dest="build")
     parser.add_argument("--push", action="store_true", dest="push")
-    parser.add_argument("--build-env", action="store", dest="build_env", default=None, choices=(None,"nocerts","certs-doi"))
+    parser.add_argument("--build-env", action="store", dest="build_env",
+                        default=None, choices=(None, "nocerts", "certs-doi"))
 
     args = parser.parse_args()
 

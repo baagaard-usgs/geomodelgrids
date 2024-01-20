@@ -70,7 +70,8 @@ ENV HOME=/home/$GMG_USER \
 RUN useradd --create-home --shell /bin/bash $GMG_USER \
   && mkdir -p ${INSTALL_DIR} \
   && chown ${GMG_USER} ${INSTALL_DIR} \
-  && chgrp ${GMG_USER} ${INSTALL_DIR}
+  && chgrp ${GMG_USER} ${INSTALL_DIR} \
+  && projsync --system-directory --bbox -128.0,34.0,-118.0,42.0
 
 ENV TOP_SRCDIR=$HOME/src \
   TOP_BUILDDIR=$HOME/build
@@ -98,11 +99,11 @@ RUN cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} ${src_dir}/Catch2-${CATCH2_VER} 
 RUN python3 -m venv ${INSTALL_DIR} && \
   if [ x${CERT_FILE} = x"no" ]; then \
   python3 -m pip install --upgrade pip setuptools && \
-  python3 -m pip install numpy coverage && \
+  python3 -m pip install numpy coverage pybind11 && \
   CC=gcc HDF5_LIBDIR=${HDF5_LIBDIR} HDF5_INCLUDEDIR=${HDF5_INCDIR} python3 -m pip install --no-binary h5py h5py; \
   else \
   SSL_CERT_FILE=${CERT_FILE} REQUESTS_CA_BUNDLE=${CERT_FILE} python3 -m pip install --upgrade pip setuptools && \
-  SSL_CERT_FILE=${CERT_FILE} REQUESTS_CA_BUNDLE=${CERT_FILE} python3 -m pip install numpy coverage && \
+  SSL_CERT_FILE=${CERT_FILE} REQUESTS_CA_BUNDLE=${CERT_FILE} python3 -m pip install numpy coverage pybind11 && \
   SSL_CERT_FILE=${CERT_FILE} REQUESTS_CA_BUNDLE=${CERT_FILE} CC=gcc HDF5_LIBDIR=${HDF5_LIBDIR} HDF5_INCLUDEDIR=${HDF5_INCDIR} python3 -m pip install --no-binary h5py h5py; \
   fi
 

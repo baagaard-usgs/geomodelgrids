@@ -1,71 +1,108 @@
+ARG BUILD_ENV=nocerts
 FROM ubuntu:22.04 as os-update
 LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
 
+ARG TARGETARCH
+
+ENV BUILD_ENV=${BUILD_ENV} TARGET_PLATFORM=${TARGETPLATFORM}
+RUN echo "Building for ${TARGETARCH}"
+
 RUN apt-get update \
-  && DEBIAN_FRONTEND="noninteractive" apt-get install -y --no-install-recommends \
-  g++ \
-  make \
-  file \
-  automake \
-  autoconf \
-  libtool \
-  cmake \
-  curl \
-  locales \
-  libpython3.10 \
-  python3-dev \
-  python3-venv \
-  python3-pip \
-  zlib1g-dev \
-  unzip \
-  git \
-  ca-certificates \
-  hdf5-tools \
-  libhdf5-dev \
-  sqlite3 \
-  libsqlite3-0 \
-  libsqlite3-dev \
-  proj-bin \
-  proj-data \
-  libproj-dev \
-  gdal-bin \
-  libgdal-dev \
-  swig \
-  lcov \
-  gdb \
-  valgrind \
-  tree \
-  less \
-  uncrustify \
-  libenchant-2-2 \
-  gnupg2 \
-  vim-common \
-  vim-runtime \
-  vim-nox
+     && DEBIAN_FRONTEND="noninteractive" apt-get install -y --no-install-recommends \
+     g++ \
+     make \
+     file \
+     automake \
+     autoconf \
+     libtool \
+     cmake \
+     curl \
+     locales \
+     libpython3.10 \
+     python3-dev \
+     python3-venv \
+     python3-pip \
+     zlib1g-dev \
+     unzip \
+     git \
+     ca-certificates \
+     hdf5-tools \
+     libhdf5-dev \
+     sqlite3 \
+     libsqlite3-0 \
+     libsqlite3-dev \
+     proj-bin \
+     proj-data \
+     libproj-dev \
+     gdal-bin \
+     libgdal-dev \
+     swig \
+     lcov \
+     gdb \
+     valgrind \
+     tree \
+     less \
+     uncrustify \
+     libenchant-2-2 \
+     gnupg2 \
+     vim-common \
+     vim-runtime \
+     vim-nox
 
-COPY docker/certs/ /usr/local/share/ca-certificates
-RUN update-ca-certificates
-
-ENV PYTHON_VERSION 3.10
-ENV HDF5_INCDIR=/usr/include/hdf5/serial  HDF5_LIBDIR=/usr/lib/x86_64-linux-gnu/hdf5/serial
+RUN locale-gen en_US.UTF-8
+RUN echo "kernel.yama.ptrace_scope = 0" > /etc/sysctl.d/10-ptrace.conf && service procps restart
 
 # ------------------------------------------------------------------------------
-from os-update as user-setup
+from os-update as build-certs-doi
+
+ONBUILD COPY docker/certs/ /usr/local/share/ca-certificates
+ONBUILD RUN update-ca-certificates
+ONBUILD ENV CERT_PATH=/etc/ssl/certs CERT_FILE=DOIRootCA2.pem
+
+from os-update as build-nocerts
+ONBUILD ENV CERT_PATH=no  CERT_FILE=no
+
+
+# ------------------------------------------------------------------------------
+from build-${BUILD_ENV} as arch-amd64
+ONBUILD ENV ARCH_LIBPATH="x86_64-linux-gnu"
+
+from build-${BUILD_ENV} as arch-arm64
+ONBUILD ENV ARCH_LIBPATH="aarch64-linux-gnu"
+
+
+# ------------------------------------------------------------------------------
+from arch-${TARGETARCH} as setup-env
 
 # Base directory is /opt/geomodelgrids (docker volume for persistent storage)
 
-# Create 'gmg-user' user
-ENV GMG_USER gmg-dev
-RUN useradd --create-home --shell /bin/bash $GMG_USER
-ENV  BASE_DIR=/opt/geomodelgrids  HOME=/home/$GMG_USER
-ENV  INSTALL_DIR=$BASE_DIR/dest/debug  TOP_SRCDIR=$BASE_DIR/src  TOP_BUILDDIR=$BASE_DIR/build/debug
-ENV  GEOMODELGRIDS_BUILDDIR=${TOP_BUILDDIR}  \
-  PYTHON_INCDIR=/usr/include/python3.8 \
-  MPI_INCDIR=/usr/include \
-  PROJ_INCDIR=/usr/include \
-  CPPUNIT_INCDIR=/usr/include
+ENV GMG_USER=gmg-dev \
+     GMGDEPS_DIR=/opt/dependencies \
+     DEV_DIR=/opt/geomodelgrids \
+     PYTHON_VERSION=3.10 \
+     HDF5_INCDIR=/usr/include/hdf5/serial \
+     HDF5_LIBDIR=/usr/lib/${ARCH_LIBPATH}/hdf5/serial \
+     PATH_ORIG=${PATH}
 
-ENV LD_LIBRARY_PATH=$INSTALL_DIR/lib
+ENV  HOME=/home/$GMG_USER \
+     INSTALL_DIR=$DEV_DIR/dest-debug \
+     TOP_SRCDIR=$DEV_DIR/src \
+     TOP_BUILDDIR=$DEV_DIR/build
+
+# Create 'gmg-user'
+RUN useradd --create-home --shell /bin/bash $GMG_USER \
+     && mkdir -p ${GMGDEPS_DIR} \
+     && mkdir -p ${DEV_DIR} \
+     && chown ${GMG_USER} ${DEV_DIR} \
+     && chgrp ${GMG_USER} ${DEV_DIR} \
+     && projsync --system-directory --all
+
+ENV PATH=${GMGDEPS_DIR}/bin:$PATH \
+     LD_LIBRARY_PATH=${GMGDEPS_DIR}/lib \
+     PYTHONPATH=${GMGDEPS_DIR}/lib/python${PYTHON_VERSION}/site-packages
+
+# ------------------------------------------------------------------------------
+from setup-env as build-deps
 
 # --------------------------------------
 # Catch2
@@ -74,34 +111,49 @@ ENV CATCH2_VER=3.3.2  src_dir=${TOP_SRCDIR}/catch2  build_dir=${TOP_BUILDDIR}/ca
 RUN mkdir -p ${src_dir} && mkdir -p ${build_dir}
 WORKDIR ${src_dir}
 RUN curl -L -O https://github.com/catchorg/Catch2/archive/refs/tags/v${CATCH2_VER}.tar.gz \
-  && tar -xf v${CATCH2_VER}.tar.gz
+     && tar -xf v${CATCH2_VER}.tar.gz
 
 WORKDIR ${build_dir}
 RUN cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} ${src_dir}/Catch2-${CATCH2_VER} \
-  && make -j$(nproc) \
-  && make install \
-  && rm -r ${build_dir}
+     && make -j$(nproc) \
+     && make install \
+     && rm -r ${build_dir}
 
 # --------------------------------------
 # Python packages
 # --------------------------------------
-RUN python3 -m venv ${INSTALL_DIR} && \
-  if [ x${CERT_FILE} = x"no" ]; then \
-  python3 -m pip install --upgrade pip setuptools && \
-  python3 -m pip install numpy coverage && \
-  CC=gcc HDF5_LIBDIR=${HDF5_LIBDIR} HDF5_INCLUDEDIR=${HDF5_INCDIR} python3 -m pip install --no-binary h5py h5py; \
-  else \
-  SSL_CERT_FILE=${CERT_FILE} REQUESTS_CA_BUNDLE=${CERT_FILE} python3 -m pip install --upgrade pip setuptools && \
-  SSL_CERT_FILE=${CERT_FILE} REQUESTS_CA_BUNDLE=${CERT_FILE} python3 -m pip install numpy coverage && \
-  SSL_CERT_FILE=${CERT_FILE} REQUESTS_CA_BUNDLE=${CERT_FILE} CC=gcc HDF5_LIBDIR=${HDF5_LIBDIR} HDF5_INCLUDEDIR=${HDF5_INCDIR} python3 -m pip install --no-binary h5py h5py; \
-  fi
+RUN python3 -m venv ${GMGDEPS_DIR} && \
+     if [ x${CERT_FILE} = x"no" ]; then \
+     python3 -m pip install --upgrade pip setuptools && \
+     python3 -m pip install numpy coverage && \
+     CC=gcc HDF5_DIR=${HDF5_LIBDIR} python3 -m pip install --no-binary h5py h5py; \
+     else \
+     SSL_CERT_FILE=${CERT_PATH}/${CERT_FILE} REQUESTS_CA_BUNDLE=${CERT_PATH}/${CERT_FILE} python3 -m pip install --upgrade pip setuptools && \
+     SSL_CERT_FILE=${CERT_PATH}/${CERT_FILE} REQUESTS_CA_BUNDLE=${CERT_PATH}/${CERT_FILE} python3 -m pip install numpy coverage pybind11 && \
+     SSL_CERT_FILE=${CERT_PATH}/${CERT_FILE} REQUESTS_CA_BUNDLE=${CERT_PATH}/${CERT_FILE} CC=gcc HDF5_LIBDIR=${HDF5_LIBDIR} HDF5_INCLUDEDIR=${HDF5_INCDIR} python3 -m pip install --no-binary h5py h5py; \
+     fi
 
 
-WORKDIR $HOME
-RUN mkdir -p ${BASE_DIR} \
-  && chown ${GMG_USER} ${BASE_DIR} \
-  && chgrp ${GMG_USER} ${BASE_DIR}
+# ------------------------------------------------------------------------------
+from build-deps as setup-workspace
+
+WORKDIR ${HOME}
 USER ${GMG_USER}
 
+ENV  GEOMODELGRIDS_DIR=${INSTALL_DIR} \
+     GEOMODELGRIDS_BUILDDIR=${TOP_BUILDDIR}/geomodelgrids-debug \
+     PYTHON_INCDIR=/usr/include/python${PYTHON_VERSION} \
+     PYBIND11_INCDIR=${GMGDEPS_DIR}/lib/pylith${PYTHON_VERSION}/site-packages/pybind11 \
+     PROJ_INCDIR=/usr/include \
+     GDAL_INCDIR=/usr/include \
+     CATCH2_INCDIR=${GMGDEPS_DIR}/include
 
-CMD /bin/bash -c 'source ${INSTALL_DIR}/bin/activate'
+ENV PATH=${GEOMODELGRIDS_DIR}/bin:${GMGDEPS_DIR}/bin:${PATH_ORIG} \
+     LD_LIBRARY_PATH=${GEOMODELGRIDS_DIR}/lib:${GMGDEPS_DIR}/lib \
+     PYTHONPATH=${GEOMOELGRIDS_DIR}/lib/python${PYTHON_VERSION}/site-packages:${GMGDEPS_DIR}/lib/python${PYTHON_VERSION}/site-packages
+
+CMD /bin/bash
+
+# docker run -ti --rm -u root registry.gitlab.com/cig-pylith/pylith_installer/pylith-devenv /bin/bash
+# service procps restart
+# cat /proc/sys/kernel/yama/ptrace_scope

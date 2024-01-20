@@ -1,5 +1,5 @@
 ARG BUILD_ENV=nocerts
-FROM ubuntu:23.04 as os-update
+FROM ubuntu:23.10 as os-update
 LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
 
 ENV BUILD_ENV=${BUILD_ENV}
@@ -70,7 +70,8 @@ ENV HOME=/home/$GMG_USER \
 RUN useradd --create-home --shell /bin/bash $GMG_USER \
   && mkdir -p ${INSTALL_DIR} \
   && chown ${GMG_USER} ${INSTALL_DIR} \
-  && chgrp ${GMG_USER} ${INSTALL_DIR}
+  && chgrp ${GMG_USER} ${INSTALL_DIR} \
+  && projsync --system-directory --bbox -128.0,34.0,-118.0,42.0
 
 ENV TOP_SRCDIR=$HOME/src \
   TOP_BUILDDIR=$HOME/build

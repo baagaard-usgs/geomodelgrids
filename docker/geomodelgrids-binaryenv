@@ -69,9 +69,9 @@ COPY --chown=gmg-user:gmg-user docker/build_binary.py ${BUILD_DIR}
 WORKDIR $BUILD_DIR
 
 RUN mv ${SRC_DIR}/geomodelgrids-*.tar.gz ${BUILD_DIR}
-RUN scl enable rh-python38 -- ${SRC_DIR}/docker/build_binary.py --install-dir=${INSTALL_DIR} --version=1.0.0rc1 --gcc
-RUN scl enable rh-python38 -- ${SRC_DIR}/docker/build_binary.py --install-dir=${INSTALL_DIR} --version=1.0.0rc1 --tiff --sqlite --openssl --curl --proj --hdf5
-RUN scl enable rh-python38 -- ${SRC_DIR}/docker/build_binary.py --install-dir=${INSTALL_DIR} --version=1.0.0rc1 --geomodelgrids --create-setup --create-tarball
+RUN scl enable rh-python38 -- ${SRC_DIR}/docker/build_binary.py --install-dir=${INSTALL_DIR} --version=1.0.0rc3 --gcc
+RUN scl enable rh-python38 -- ${SRC_DIR}/docker/build_binary.py --install-dir=${INSTALL_DIR} --version=1.0.0rc3 --tiff --sqlite --openssl --curl --proj --hdf5
+RUN scl enable rh-python38 -- ${SRC_DIR}/docker/build_binary.py --install-dir=${INSTALL_DIR} --version=1.0.0rc3 --geomodelgrids --create-setup --create-tarball
 
 
 CMD /bin/bash

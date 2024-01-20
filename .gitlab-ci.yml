@@ -48,18 +48,18 @@ ubuntu-23.10:
   extends: .builder
   image: $IMAGE_REGISTRY/testenv-ubuntu-23.10
 
-deb-stable-coverage:
+deb-stable-valgrind:
   extends: .builder
   image: $IMAGE_REGISTRY/testenv-debian-stable
   variables:
-    TEST_COVERAGE: "yes"
-    PYTHON_COVERAGE: "coverage3"
+    ENABLE_VALGRIND: "yes"
 
-deb-testing-valgrind:
+deb-testing-coverage:
   extends: .builder
   image: $IMAGE_REGISTRY/testenv-debian-testing
   variables:
-    ENABLE_VALGRIND: "yes"
+    TEST_COVERAGE: "yes"
+    PYTHON_COVERAGE: "coverage3"
 
 fedora-38:
   extends: .builder
