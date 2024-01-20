@@ -6,7 +6,8 @@ bin_PROGRAMS = \
 	geomodelgrids_isosurface
 
 if ENABLE_PYTHON
-bin_SCRIPTS = \
+# Installation handled by Python
+EXTRA_DIST = \
 	geomodelgrids_create_model
 endif
 

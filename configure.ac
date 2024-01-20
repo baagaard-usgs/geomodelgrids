@@ -119,6 +119,7 @@ AC_ARG_WITH([gdal-libdir],
 	[with_gdal_libdir=no])
 AC_SUBST(with_gdal_libdir)
 
+
 # ----------------------------------------------------------------------
 # BASIC TOOLS
 # ----------------------------------------------------------------------
@@ -188,12 +189,16 @@ if test "$enable_python" = "yes" ; then
   AM_PATH_PYTHON([3.7])
   CIT_PYTHON_SYSCONFIG
 
+  # PYBIND11
+  CIT_PYBIND11_INCLUDES
+
   # NUMPY
   CIT_NUMPY_PYTHON_MODULE
   CIT_NUMPY_INCDIR
 
   # H5PY
   CIT_PYTHON_MODULE([h5py],[3.0.0])
+  CIT_PYTHON_MODULE([pybind11],[2.0.0])
 fi
 
 # CATCH2
@@ -275,6 +280,7 @@ AC_CONFIG_FILES([Makefile
 	libsrc/geomodelgrids/apps/Makefile
 	libsrc/geomodelgrids/serial/Makefile
 	libsrc/geomodelgrids/utils/Makefile
+	modulesrc/Makefile
 	bin/Makefile
 	examples/Makefile
 	examples/cxx-api/Makefile
@@ -282,7 +288,7 @@ AC_CONFIG_FILES([Makefile
 	geomodelgrids/Makefile
 	tests/Makefile
 	tests/data/Makefile
-  tests/src/Makefile
+        tests/src/Makefile
 	tests/libtests/Makefile
 	tests/libtests/utils/Makefile
 	tests/libtests/serial/Makefile

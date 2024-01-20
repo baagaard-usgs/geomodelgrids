@@ -6,11 +6,13 @@ SUBDIRS = \
 	examples
 
 if ENABLE_PYTHON
-  SUBDIRS += geomodelgrids
+SUBDIRS += \
+  	modulesrc \
+	geomodelgrids
 endif
 
 if ENABLE_TESTING
-  SUBDIRS += tests
+SUBDIRS += tests
 endif
 
 DIST_SUBDIRS = $(SUBDIRS) \
@@ -36,12 +38,14 @@ EXTRA_DIST = \
 	docker/debian-stable \
 	docker/debian-testing \
 	docker/ubuntu-20.04 \
-	docker/ubuntu-21.04 \
-	docker/ubuntu-21.10 \
-	docker/fedora-33 \
-	docker/fedora-34 \
-	docker/fedora-35 \
-	docker/centos-8 \
+	docker/ubuntu-22.04 \
+	docker/ubuntu-23.04 \
+	docker/ubuntu-23.10 \
+	docker/fedora-38 \
+	docker/fedora-39 \
+	docker/rockylinux-8 \
+	docker/rockylinux-9 \
+	docker/geomodelgrids-binaryenv \
 	docker/geomodelgrids-testenv \
 	docker/geomodelgrids-devenv \
 	docker/geomodelgrids-userenv \

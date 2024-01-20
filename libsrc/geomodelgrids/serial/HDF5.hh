@@ -1,8 +1,6 @@
 /** Model stored as HDF5 file.
  */
-
-#if !defined(geomodelgrids_serial_hdf5_hh)
-#define geomodelgrids_serial_hdf5_hh
+#pragma once
 
 #include "serialfwd.hh" // forward declarations
 
@@ -183,7 +181,5 @@ private:
     const HDF5& operator=(const HDF5&); ///< Not implemented
 
 }; // HDF5
-
-#endif // geomodelgrids_serial_hdf5_hh
 
 // End of file

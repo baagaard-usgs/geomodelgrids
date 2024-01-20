@@ -54,9 +54,9 @@ geomodelgrids::apps::Borehole::run(int argc,
 
     geomodelgrids::serial::Query query;
     if (!_logFilename.empty()) {
-        geomodelgrids::utils::ErrorHandler& errorHandler = query.getErrorHandler();
-        errorHandler.setLogFilename(_logFilename.c_str());
-        errorHandler.setLoggingOn(true);
+        std::shared_ptr<geomodelgrids::utils::ErrorHandler>& errorHandler = query.getErrorHandler();
+        errorHandler->setLogFilename(_logFilename.c_str());
+        errorHandler->setLoggingOn(true);
     } // if
     query.initialize(_modelFilenames, _valueNames, _pointsCRS);
 

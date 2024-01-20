@@ -1,3 +1,3 @@
 """Initialization of geomodelgrids."""
 
-from . import create
+from ._geomodelgrids import (Model, ModelInfo, Query, ErrorHandler)

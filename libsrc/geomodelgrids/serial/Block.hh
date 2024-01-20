@@ -1,13 +1,12 @@
 /** Block stored as HDF5 file.
  */
-
-#if !defined(geomodelgrids_serial_block_hh)
-#define geomodelgrids_serial_block_hh
+#pragma once
 
 #include "serialfwd.hh" // forward declarations
 
 #include "geomodelgrids/utils/utilsfwd.hh" // forward declarations
 
+#include <memory> // HASA std::std::vector
 #include <vector> // HASA std::std::vector
 #include <string> // HASA std::string
 
@@ -133,8 +132,8 @@ public:
      * @returns True if a.z_top > b.z_top, else false.
      */
     static
-    bool compare(const Block* a,
-                 const Block* b);
+    bool compare(const std::shared_ptr<Block>& a,
+                 const std::shared_ptr<Block>& b);
 
     // PRIVATE MEMBERS ----------------------------------------------------------------------------
 private:
@@ -166,7 +165,5 @@ private:
     const Block& operator=(const Block&); ///< Not implemented
 
 }; // Block
-
-#endif // geomodelgrids_serial_block_hh
 
 // End of file

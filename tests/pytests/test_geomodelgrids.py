@@ -10,65 +10,68 @@ import unittest
 import sys
 
 
-class TestApp(object):
-    """Application to run tests.
-    """
-    cov = None
+def create_coverage():
+    """Create test coverage, return None if not available."""
+    _cov = None
     try:
         import coverage
         src_dirs = [
+            "geomodelgrids",
             "geomodelgrids.create.apps",
             "geomodelgrids.create.core",
             "geomodelgrids.create.io",
             "geomodelgrids.create.testing",
             "geomodelgrids.create.utils",
         ]
-        cov = coverage.Coverage(source=src_dirs)
+        _cov = coverage.Coverage(source=src_dirs)
+        _cov.start()
     except ImportError:
         pass
+    return _cov
 
-    def main(self):
-        """
-        Run the application.
-        """
-        if self.cov:
-            self.cov.start()
 
-        success = unittest.TextTestRunner(verbosity=2).run(self._suite()).wasSuccessful()
-        if not success:
-            sys.exit(1)
+def close_coverage(_cov):
+    """End test coverage measurement and generate coverage report."""
+    if _cov:
+        _cov.stop()
+        _cov.save()
+        _cov.report()
+        _cov.xml_report(outfile="coverage.xml")
 
-        if self.cov:
-            self.cov.stop()
-            self.cov.save()
-            self.cov.report()
-            self.cov.xml_report(outfile="coverage.xml")
 
-    def _suite(self):
-        """Setup the test suite.
-        """
-        import test_units
-        import test_batch
-        import test_createapp
+def load_tests(loader, tests, pattern):
+    """Load tests for unittest module."""
+    import test_units
+    import test_batch
+    import test_createapp
+    import test_query
+    import test_model
+    import test_modelinfo
+    import test_errorhandler
 
-        test_cases = []
-        for mod in [
-            test_units,
-            test_batch,
-            test_createapp,
-        ]:
-            test_cases += mod.test_classes()
-
-        suite = unittest.TestSuite()
-        for test_case in test_cases:
-            suite.addTest(unittest.makeSuite(test_case))
-
-        return suite
+    _suite = unittest.TestSuite()
+    for mod in [
+        test_units,
+        test_batch,
+        test_createapp,
+        test_query,
+        test_model,
+        test_modelinfo,
+        test_errorhandler,
+    ]:
+        _suite.addTests(loader.loadTestsFromModule(mod))
+    return _suite
 
 
 # ----------------------------------------------------------------------
 if __name__ == '__main__':
-    TestApp().main()
+    cov = create_coverage()
+
+    suite = load_tests(unittest.defaultTestLoader, tests=None, pattern=None)
+    success = unittest.TextTestRunner(verbosity=2).run(suite).wasSuccessful()
+    close_coverage(cov)
+    if not success:
+        sys.exit(1)
 
 
 # End of file

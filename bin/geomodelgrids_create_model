@@ -5,7 +5,7 @@
 
 if __name__ == "__main__":
     from geomodelgrids.create.apps import create_model
-    create_model.App().main()
+    create_model.cli()
 
 
 # End of file

@@ -1,7 +1,6 @@
 /* C interface for querying a model.
  */
-#if !defined(geomodelgrids_serial_cquery_h)
-#define geomodelgrids_serial_cquery_h
+#pragma once
 
 #define GEOMODELGRIDS_NODATA_VALUE -1.0e+20
 #define GEOMODELGRIDS_SQUASH_NONE 0
@@ -108,7 +107,5 @@ int geomodelgrids_squery_query(void* handle,
  * @param[inout] handle Handle to query object.
  */
 int geomodelgrids_squery_finalize(void* handle);
-
-#endif // geomodelgrids_serial_cquery_h
 
 // End of file

@@ -1,5 +1,4 @@
-#if !defined(geomodelgrids_apps_appsfwd_hh)
-#define geomodelgrids_apps_appsfwd_hh
+#pragma once
 
 namespace geomodelgrids {
     namespace apps {
@@ -10,7 +9,5 @@ namespace geomodelgrids {
         class Isosurface;
     } // apps
 } // geomodelgrids
-
-#endif // geomodelgrids_apps_appsfwd_hh
 
 // End of file

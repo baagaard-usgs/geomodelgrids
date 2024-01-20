@@ -50,9 +50,9 @@ geomodelgrids::apps::QueryElev::run(int argc,
 
     geomodelgrids::serial::Query query;
     if (!_logFilename.empty()) {
-        geomodelgrids::utils::ErrorHandler& errorHandler = query.getErrorHandler();
-        errorHandler.setLogFilename(_logFilename.c_str());
-        errorHandler.setLoggingOn(true);
+        std::shared_ptr<geomodelgrids::utils::ErrorHandler>& errorHandler = query.getErrorHandler();
+        errorHandler->setLogFilename(_logFilename.c_str());
+        errorHandler->setLoggingOn(true);
     } // if
     std::vector<std::string> valueNames;
     query.initialize(_modelFilenames, valueNames, _pointsCRS);

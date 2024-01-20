@@ -130,10 +130,10 @@ geomodelgrids::serial::TestModel::testConstructor(void) {
     CHECK(0.0 == model._dims[0]);
     CHECK(0.0 == model._dims[1]);
     CHECK(0.0 == model._dims[2]);
-    CHECK((HDF5*)nullptr == model._h5);
-    CHECK((ModelInfo*)nullptr == model._info);
-    CHECK((Surface*)nullptr == model._surfaceTop);
-    CHECK((Surface*)nullptr == model._surfaceTopoBathy);
+    CHECK(nullptr == model._h5.get());
+    CHECK(nullptr == model._info.get());
+    CHECK(nullptr == model._surfaceTop.get());
+    CHECK(nullptr == model._surfaceTopoBathy.get());
     // CHECK("Checking CRS", (HDF5*)nullptr, model._h5);
     CHECK(model._blocks.empty());
 } // testConstructor
@@ -160,9 +160,9 @@ geomodelgrids::serial::TestModel::testAccessors(void) {
     model._dims[1] = dims[1];
     model._dims[2] = dims[2];
 
-    ModelInfo* info = new ModelInfo();model._info = info;
-    Surface* surfaceTop = new Surface("top_surface");model._surfaceTop = surfaceTop;
-    Surface* surfaceTopoBathy = new Surface("topography_bathymetry");model._surfaceTopoBathy = surfaceTopoBathy;
+    std::shared_ptr<ModelInfo> info = std::make_shared<ModelInfo>();model._info = info;
+    std::shared_ptr<Surface> surfaceTop = std::make_shared<Surface>("top_surface");model._surfaceTop = surfaceTop;
+    std::shared_ptr<Surface> surfaceTopoBathy = std::make_shared<Surface>("topography_bathymetry");model._surfaceTopoBathy = surfaceTopoBathy;
 
     const size_t numBlocks(3);
     Block* blocksPtr[numBlocks] = {
@@ -170,7 +170,7 @@ geomodelgrids::serial::TestModel::testAccessors(void) {
         new Block("three"),
         new Block("five"),
     };
-    const std::vector<Block*> blocks(blocksPtr, blocksPtr+numBlocks);model._blocks = blocks;
+    const std::vector<std::shared_ptr<Block> > blocks(blocksPtr, blocksPtr+numBlocks);model._blocks = blocks;
 
     const double tolerance = 1.0e-6;
 
@@ -202,17 +202,17 @@ geomodelgrids::serial::TestModel::testAccessors(void) {
         CHECK_THAT(dimsT[i], Catch::Matchers::WithinAbs(dims[i], tolerance));
     } // for
 
-    CHECK(const_cast<const ModelInfo*>(info) == model.getInfo());
-    CHECK(const_cast<const Surface*>(surfaceTop) == model.getTopSurface());
-    CHECK(const_cast<const Surface*>(surfaceTopoBathy) == model.getTopoBathy());
+    CHECK(info == model.getInfo());
+    CHECK(surfaceTop == model.getTopSurface());
+    CHECK(surfaceTopoBathy == model.getTopoBathy());
 
-    const std::vector<Block*>& blocksT = model.getBlocks();
+    const std::vector<std::shared_ptr<Block> >& blocksT = model.getBlocks();
     REQUIRE(blocks.size() == blocksT.size());
     for (size_t i = 0; i < blocks.size(); ++i) {
         CHECK(blocks[i] == blocksT[i]);
     } // for
 
-    Block* block = model._findBlock(0, 0, 0);
+    std::shared_ptr<Block> block = model._findBlock(0, 0, 0);
     CHECK(block);
 
     block = model._findBlock(0, 0, 1.0e+20);
@@ -300,23 +300,23 @@ geomodelgrids::serial::TestModel::testLoadMetadata(void) {
         CHECK_THAT(dimsT[i], Catch::Matchers::WithinAbs(dims[i], tolerance));
     } // for
 
-    const ModelInfo* info = model.getInfo();
+    const std::shared_ptr<ModelInfo>& info = model.getInfo();
     CHECK(info);
     CHECK(title == info->getTitle());
     CHECK(id == info->getId());
     CHECK(doi == info->getRepositoryDOI());
 
-    const Surface* surfaceTop = model.getTopSurface();
+    const std::shared_ptr<Surface>& surfaceTop = model.getTopSurface();
     REQUIRE(surfaceTop);
     CHECK_THAT(surfaceTop->getResolutionX(), Catch::Matchers::WithinAbs(topoResX, tolerance));
     CHECK_THAT(surfaceTop->getResolutionY(), Catch::Matchers::WithinAbs(topoResY, tolerance));
 
-    const Surface* surfaceTopoBathy = model.getTopoBathy();
+    const std::shared_ptr<Surface>& surfaceTopoBathy = model.getTopoBathy();
     REQUIRE(surfaceTopoBathy);
     CHECK_THAT(surfaceTopoBathy->getResolutionX(), Catch::Matchers::WithinAbs(topoResX, tolerance));
     CHECK_THAT(surfaceTopoBathy->getResolutionY(), Catch::Matchers::WithinAbs(topoResY, tolerance));
 
-    const std::vector<Block*>& blocksT = model.getBlocks();
+    const std::vector<std::shared_ptr<Block> >& blocksT = model.getBlocks();
     REQUIRE(numBlocks == blocksT.size());
     for (size_t i = 0; i < numBlocks; ++i) {
         REQUIRE(blocksT[i]);
@@ -341,12 +341,12 @@ geomodelgrids::serial::TestModel::testInitialize(void) {
 
     CHECK(model._crsTransformer);
 
-    Surface* const surfaceTop = model._surfaceTop;
+    std::shared_ptr<Surface>& surfaceTop = model._surfaceTop;
     if (surfaceTop) {
         CHECK_NOTHROW(surfaceTop->query(0.0, 0.0));
     } // if
 
-    Surface* const surfaceTopoBathy = model._surfaceTopoBathy;
+    std::shared_ptr<Surface>& surfaceTopoBathy = model._surfaceTopoBathy;
     if (surfaceTopoBathy) {
         CHECK_NOTHROW(surfaceTopoBathy->query(0.0, 0.0));
     } // if

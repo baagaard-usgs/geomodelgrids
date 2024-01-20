@@ -52,8 +52,6 @@ geomodelgrids::serial::TestBlock::testConstructor(void) {
     CHECK(size_t(0) == block._dims[0]);
     CHECK(size_t(0) == block._dims[1]);
     CHECK(size_t(0) == block._dims[2]);
-
-    CHECK(true == Block::compare(&block, nullptr));
 } // testConstructor
 
 

@@ -115,7 +115,7 @@ geomodelgrids::serial::TestCQuery::testAccessors(void) {
     geomodelgrids::serial::Query* query = (geomodelgrids::serial::Query*) handle;REQUIRE(query);
 
     void* errorHandler = geomodelgrids_squery_getErrorHandler(handle);
-    CHECK((geomodelgrids::utils::ErrorHandler*)errorHandler == query->_errorHandler);
+    CHECK((geomodelgrids::utils::ErrorHandler*)errorHandler == query->_errorHandler.get());
 
     const double minElev(-2.0e+3);
     int err = geomodelgrids_squery_setSquashMinElev(handle, minElev);REQUIRE(!err);
@@ -267,13 +267,13 @@ geomodelgrids::serial::TestCQuery::testQueryTopElevation(void) {
     } // Outside domains
 
     geomodelgrids::serial::Query* query = (geomodelgrids::serial::Query*) handle;REQUIRE(query);
-    geomodelgrids::utils::ErrorHandler& errorHandler = query->getErrorHandler();
-    errorHandler.resetStatus();
+    std::shared_ptr<geomodelgrids::utils::ErrorHandler>& errorHandler = query->getErrorHandler();
+    errorHandler->resetStatus();
 
     // Bad handle
     double elevation = geomodelgrids_squery_queryTopElevation(nullptr, 0.0, 0.0);
     CHECK(geomodelgrids::NODATA_VALUE == elevation);
-    errorHandler.resetStatus();
+    errorHandler->resetStatus();
 
     geomodelgrids_squery_destroy(&handle);REQUIRE(!handle);
 } // testQueryTopElevation
@@ -354,13 +354,13 @@ geomodelgrids::serial::TestCQuery::testQueryTopoBathyElevation(void) {
     } // Outside domains
 
     geomodelgrids::serial::Query* query = (geomodelgrids::serial::Query*) handle;REQUIRE(query);
-    geomodelgrids::utils::ErrorHandler& errorHandler = query->getErrorHandler();
-    errorHandler.resetStatus();
+    std::shared_ptr<geomodelgrids::utils::ErrorHandler>& errorHandler = query->getErrorHandler();
+    errorHandler->resetStatus();
 
     // Bad handle
     double elevation = geomodelgrids_squery_queryTopoBathyElevation(nullptr, 0.0, 0.0);
     CHECK(geomodelgrids::NODATA_VALUE == elevation);
-    errorHandler.resetStatus();
+    errorHandler->resetStatus();
 
     geomodelgrids_squery_destroy(&handle);REQUIRE(!handle);
 } // testQueryTopElevation

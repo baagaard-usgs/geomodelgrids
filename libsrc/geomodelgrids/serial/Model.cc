@@ -23,12 +23,7 @@ geomodelgrids::serial::Model::Model(void) :
     _layout(VERTEX),
     _modelCRSString(""),
     _inputCRSString("EPSG:4326"),
-    _yazimuth(0.0),
-    _h5(nullptr),
-    _info(nullptr),
-    _surfaceTop(nullptr),
-    _surfaceTopoBathy(nullptr),
-    _crsTransformer(nullptr) {
+    _yazimuth(0.0) {
     _origin[0] = 0.0;
     _origin[1] = 0.0;
     _dims[0] = 0.0;
@@ -59,7 +54,7 @@ geomodelgrids::serial::Model::open(const char* filename,
                                    ModelMode mode) {
     assert(filename);
 
-    delete _h5;_h5 = new geomodelgrids::serial::HDF5();assert(_h5);
+    _h5 = std::make_unique<geomodelgrids::serial::HDF5>();
     hid_t h5Mode = H5F_ACC_RDONLY;
     switch (mode) {
     case READ:
@@ -101,15 +96,10 @@ geomodelgrids::serial::Model::close(void) {
 
     if (_h5) {
         _h5->close();
-        delete _h5;_h5 = nullptr;
     } // if
 
-    delete _info;_info = nullptr;
-    delete _crsTransformer;_crsTransformer = nullptr;
-    delete _surfaceTop;_surfaceTop = nullptr;
-    delete _surfaceTopoBathy;_surfaceTopoBathy = nullptr;
     for (size_t i = 0; i < _blocks.size(); ++i) {
-        delete _blocks[i];_blocks[i] = nullptr;
+        _blocks[i].reset();
     } // for
 } // close
 
@@ -127,9 +117,9 @@ geomodelgrids::serial::Model::loadMetadata(void) {
     msg << indent << "Missing attributes:\n";
     bool missingAttributes = false;
 
-    delete _info;_info = new geomodelgrids::serial::ModelInfo;assert(_info);
+    _info = std::make_shared<geomodelgrids::serial::ModelInfo>();
     try {
-        _info->load(_h5);
+        _info->load(_h5.get());
     } catch (const std::runtime_error& err) {
         msg << err.what();
         missingAttributes = true;
@@ -206,13 +196,13 @@ geomodelgrids::serial::Model::loadMetadata(void) {
         missingAttributes = true;
     } // if/else
 
-    delete _surfaceTop;_surfaceTop = nullptr;
-    delete _surfaceTopoBathy;_surfaceTopoBathy = nullptr;
+    _surfaceTop.reset();
+    _surfaceTopoBathy.reset();
     if (_h5->hasGroup("surfaces")) {
         if (_h5->hasDataset("surfaces/top_surface")) {
-            _surfaceTop = new geomodelgrids::serial::Surface("top_surface");assert(_surfaceTop);
+            _surfaceTop = std::make_shared<geomodelgrids::serial::Surface>("top_surface");
             try {
-                _surfaceTop->loadMetadata(_h5);
+                _surfaceTop->loadMetadata(_h5.get());
             } catch (const std::runtime_error& err) {
                 msg << err.what();
                 missingAttributes = true;
@@ -220,9 +210,9 @@ geomodelgrids::serial::Model::loadMetadata(void) {
         } // if
 
         if (_h5->hasDataset("surfaces/topography_bathymetry")) {
-            _surfaceTopoBathy = new geomodelgrids::serial::Surface("topography_bathymetry");assert(_surfaceTopoBathy);
+            _surfaceTopoBathy = std::make_shared<geomodelgrids::serial::Surface>("topography_bathymetry");
             try {
-                _surfaceTopoBathy->loadMetadata(_h5);
+                _surfaceTopoBathy->loadMetadata(_h5.get());
             } catch (const std::runtime_error& err) {
                 msg << err.what();
                 missingAttributes = true;
@@ -232,7 +222,7 @@ geomodelgrids::serial::Model::loadMetadata(void) {
 
     if (_blocks.size() > 0) {
         for (size_t i = 0; i < _blocks.size(); ++i) {
-            delete _blocks[i];_blocks[i] = nullptr;
+            _blocks[i].reset();
         } // for
         _blocks.clear();
     } // if
@@ -242,11 +232,11 @@ geomodelgrids::serial::Model::loadMetadata(void) {
 
     _blocks.resize(numBlocks);
     for (size_t i = 0; i < numBlocks; ++i) {
-        _blocks[i] = new geomodelgrids::serial::Block(blockNames[i].c_str());assert(_blocks[i]);
+        _blocks[i] = std::make_shared<geomodelgrids::serial::Block>(blockNames[i].c_str());
     } // for
     for (size_t i = 0; i < numBlocks; ++i) {
         try {
-            _blocks[i]->loadMetadata(_h5);
+            _blocks[i]->loadMetadata(_h5.get());
         } catch (std::runtime_error& err) {
             msg << err.what();
             missingAttributes = true;
@@ -263,20 +253,20 @@ geomodelgrids::serial::Model::loadMetadata(void) {
 void
 geomodelgrids::serial::Model::initialize(void) {
     // Initialize CRS transformation
-    delete _crsTransformer;_crsTransformer = new geomodelgrids::utils::CRSTransformer();assert(_crsTransformer);
+    _crsTransformer = std::make_shared<geomodelgrids::utils::CRSTransformer>();
     _crsTransformer->setSrc(_inputCRSString.c_str());
     _crsTransformer->setDest(_modelCRSString.c_str());
     _crsTransformer->initialize();
 
     if (_surfaceTop) {
-        _surfaceTop->openQuery(_h5);
+        _surfaceTop->openQuery(_h5.get());
     } // if
     if (_surfaceTopoBathy) {
-        _surfaceTopoBathy->openQuery(_h5);
+        _surfaceTopoBathy->openQuery(_h5.get());
     } // if
     size_t numBlocks = _blocks.size();
     for (size_t i = 0; i < numBlocks; ++i) {
-        _blocks[i]->openQuery(_h5);
+        _blocks[i]->openQuery(_h5.get());
     } // for
 } // initialize
 
@@ -339,7 +329,7 @@ geomodelgrids::serial::Model::getCRSString(void) const {
 
 // ------------------------------------------------------------------------------------------------
 // Get model description information.
-const geomodelgrids::serial::ModelInfo*
+const std::shared_ptr<geomodelgrids::serial::ModelInfo>&
 geomodelgrids::serial::Model::getInfo(void) const {
     return _info;
 } // getInfo
@@ -347,7 +337,7 @@ geomodelgrids::serial::Model::getInfo(void) const {
 
 // ------------------------------------------------------------------------------------------------
 // Get model topography.
-const geomodelgrids::serial::Surface*
+const std::shared_ptr<geomodelgrids::serial::Surface>&
 geomodelgrids::serial::Model::getTopSurface(void) const {
     return _surfaceTop;
 } // getTopSurface
@@ -355,7 +345,7 @@ geomodelgrids::serial::Model::getTopSurface(void) const {
 
 // ------------------------------------------------------------------------------------------------
 // Get model topography/bathymetry.
-const geomodelgrids::serial::Surface*
+const std::shared_ptr<geomodelgrids::serial::Surface>&
 geomodelgrids::serial::Model::getTopoBathy(void) const {
     return _surfaceTopoBathy;
 } // getTopoBathy
@@ -363,7 +353,7 @@ geomodelgrids::serial::Model::getTopoBathy(void) const {
 
 // ------------------------------------------------------------------------------------------------
 // Get model description.
-const std::vector<geomodelgrids::serial::Block*>&
+const std::vector<std::shared_ptr<geomodelgrids::serial::Block> >&
 geomodelgrids::serial::Model::getBlocks(void) const {
     return _blocks;
 } // getBlocks
@@ -463,7 +453,7 @@ geomodelgrids::serial::Model::query(const double x,
     _toModelXYZ(&xModel, &yModel, &zModel, x, y, z);
     assert(contains(x, y, z));
 
-    geomodelgrids::serial::Block* block = _findBlock(xModel, yModel, zModel);assert(block);
+    std::shared_ptr<geomodelgrids::serial::Block> block = _findBlock(xModel, yModel, zModel);assert(block);
     return block->query(xModel, yModel, zModel);
 } // query
 
@@ -507,17 +497,17 @@ geomodelgrids::serial::Model::_toModelXYZ(double* xModel,
 
 
 // ------------------------------------------------------------------------------------------------
-geomodelgrids::serial::Block*
+std::shared_ptr<geomodelgrids::serial::Block>
 geomodelgrids::serial::Model::_findBlock(const double x,
                                          const double y,
                                          const double z) const {
-    for (size_t i = 0; i < _blocks.size(); ++i) {
-        geomodelgrids::serial::Block* block = _blocks[i];assert(block);
+    for (auto block : _blocks) {
         if (( z <= block->getZTop()) && ( z >= block->getZBottom()) ) {
             return block;
         } // if
     } // for
-    return nullptr;
+    static std::shared_ptr<geomodelgrids::serial::Block> empty;
+    return empty;
 } // _findBlock
 
 

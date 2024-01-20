@@ -1,11 +1,11 @@
 /// C++ interface for querying a model.
-#if !defined(geomodelgrids_serial_query_hh)
-#define geomodelgrids_serial_query_hh
+#pragma once
 
 #include "serialfwd.hh" // forward declarations
 
 #include "geomodelgrids/utils/utilsfwd.hh" // HOLDSA ErrorHandler
 
+#include <memory> // USES std::vector
 #include <vector> // USES std::vector
 #include <map> // USES std::map
 #include <string> // USES std::string
@@ -37,7 +37,7 @@ public:
      *
      * @returns Error handler.
      */
-    geomodelgrids::utils::ErrorHandler& getErrorHandler(void);
+    std::shared_ptr<geomodelgrids::utils::ErrorHandler>& getErrorHandler(void);
 
     /** Do setup for querying.
      *
@@ -62,6 +62,12 @@ public:
      * @param[in] value Type of squashing.
      */
     void setSquashing(const SquashingEnum value);
+
+    /** Get names of values returned in queries.
+     *
+     * @returns Array of names of values in queries queries.
+     */
+    const std::vector<std::string>& getValueNames(void) const;
 
     /** Query for elevation of top of model at point.
      *
@@ -104,17 +110,14 @@ private:
 
     typedef std::map<size_t, size_t> values_map_type;
 
-    // PRIVATE METHODS ----------------------------------------------------------------------------
-private:
-
     // PRIVATE MEMBERS ----------------------------------------------------------------------------
 private:
 
-    std::vector<geomodelgrids::serial::Model*> _models;
+    std::vector<std::unique_ptr<geomodelgrids::serial::Model> > _models;
     std::vector<std::string> _valuesLowercase;
     std::vector<values_map_type> _valuesIndex;
     double _squashMinElev;
-    geomodelgrids::utils::ErrorHandler* _errorHandler;
+    std::shared_ptr<geomodelgrids::utils::ErrorHandler> _errorHandler;
     SquashingEnum _squash;
 
     // NOT IMPLEMENTED ----------------------------------------------------------------------------
@@ -124,7 +127,5 @@ private:
     const Query& operator=(const Query&); ///< Not implemented
 
 }; // Query
-
-#endif // geomodelgrids_serial_query_hh
 
 // End of file

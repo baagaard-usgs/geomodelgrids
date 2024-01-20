@@ -41,7 +41,7 @@ geomodelgrids_squery_getErrorHandler(void* handle) {
     geomodelgrids::serial::Query* query = (geomodelgrids::serial::Query*) handle;
     geomodelgrids::utils::ErrorHandler* errorHandler = NULL;
     if (query) {
-        errorHandler = &query->getErrorHandler();
+        errorHandler = query->getErrorHandler().get();
     } // if
 
     return errorHandler;
@@ -79,11 +79,11 @@ geomodelgrids_squery_initialize(void* handle,
     try {
         query->initialize(modelFilenamesCxx, valueNamesCxx, inputCRSStringCxx);
     } catch (const std::exception& err) {
-        geomodelgrids::utils::ErrorHandler& errorHandler = query->getErrorHandler();
-        errorHandler.setError(err.what());
+        std::shared_ptr<geomodelgrids::utils::ErrorHandler>& errorHandler = query->getErrorHandler();
+        errorHandler->setError(err.what());
     } // try/catch
 
-    return query->getErrorHandler().getStatus();
+    return query->getErrorHandler()->getStatus();
 } // initialize
 
 
@@ -101,7 +101,7 @@ geomodelgrids_squery_setSquashMinElev(void* handle,
     assert(query);
     query->setSquashMinElev(value);
 
-    return query->getErrorHandler().getStatus();
+    return query->getErrorHandler()->getStatus();
 } // setSquashMinElev
 
 
@@ -129,13 +129,13 @@ geomodelgrids_squery_setSquashing(void* handle,
         valueEnum = geomodelgrids::serial::Query::SQUASH_TOPOGRAPHY_BATHYMETRY;
         break;
     default:
-        geomodelgrids::utils::ErrorHandler& errorHandler = query->getErrorHandler();
-        errorHandler.setError("Unknown squashing type.");
+        std::shared_ptr<geomodelgrids::utils::ErrorHandler>& errorHandler = query->getErrorHandler();
+        errorHandler->setError("Unknown squashing type.");
 
     } // switch
     query->setSquashing(valueEnum);
 
-    return query->getErrorHandler().getStatus();
+    return query->getErrorHandler()->getStatus();
 } // setSquashing
 
 
@@ -163,9 +163,9 @@ geomodelgrids_squery_queryTopElevation(void* handle,
                     << std::setiosflags(std::ios::scientific)
                     << std::setprecision(6)
                     << x << ", " << y << ") when querying for elevation of top of model.";
-            geomodelgrids::utils::ErrorHandler& errorHandler = query->getErrorHandler();
-            errorHandler.setWarning(warning.str().c_str());
-            errorHandler.logMessage(warning.str().c_str());
+            std::shared_ptr<geomodelgrids::utils::ErrorHandler>& errorHandler = query->getErrorHandler();
+            errorHandler->setWarning(warning.str().c_str());
+            errorHandler->logMessage(warning.str().c_str());
         } // if
     } catch (const std::exception& err) {
         std::ostringstream error;
@@ -174,9 +174,9 @@ geomodelgrids_squery_queryTopElevation(void* handle,
               << std::setiosflags(std::ios::scientific)
               << std::setprecision(6)
               << x << ", " << y <<"\n" << err.what();
-        geomodelgrids::utils::ErrorHandler& errorHandler = query->getErrorHandler();
-        errorHandler.setError(error.str().c_str());
-        errorHandler.logMessage(error.str().c_str());
+        std::shared_ptr<geomodelgrids::utils::ErrorHandler>& errorHandler = query->getErrorHandler();
+        errorHandler->setError(error.str().c_str());
+        errorHandler->logMessage(error.str().c_str());
     } // try/catch
 
     return elevation;
@@ -207,9 +207,9 @@ geomodelgrids_squery_queryTopoBathyElevation(void* handle,
                     << std::setiosflags(std::ios::scientific)
                     << std::setprecision(6)
                     << x << ", " << y << ") when querying for elevation of ground surface.";
-            geomodelgrids::utils::ErrorHandler& errorHandler = query->getErrorHandler();
-            errorHandler.setWarning(warning.str().c_str());
-            errorHandler.logMessage(warning.str().c_str());
+            std::shared_ptr<geomodelgrids::utils::ErrorHandler>& errorHandler = query->getErrorHandler();
+            errorHandler->setWarning(warning.str().c_str());
+            errorHandler->logMessage(warning.str().c_str());
         } // if
     } catch (const std::exception& err) {
         std::ostringstream error;
@@ -218,9 +218,9 @@ geomodelgrids_squery_queryTopoBathyElevation(void* handle,
               << std::setiosflags(std::ios::scientific)
               << std::setprecision(6)
               << x << ", " << y <<"\n" << err.what();
-        geomodelgrids::utils::ErrorHandler& errorHandler = query->getErrorHandler();
-        errorHandler.setError(error.str().c_str());
-        errorHandler.logMessage(error.str().c_str());
+        std::shared_ptr<geomodelgrids::utils::ErrorHandler>& errorHandler = query->getErrorHandler();
+        errorHandler->setError(error.str().c_str());
+        errorHandler->logMessage(error.str().c_str());
     } // try/catch
 
     return elevation;
@@ -242,7 +242,7 @@ geomodelgrids_squery_query(void* handle,
     } // if
 
     assert(query);
-    geomodelgrids::utils::ErrorHandler& errorHandler = query->getErrorHandler();
+    std::shared_ptr<geomodelgrids::utils::ErrorHandler>& errorHandler = query->getErrorHandler();
     try {
         int err = query->query(values, x, y, z);
         if (err == geomodelgrids::utils::ErrorHandler::WARNING) {
@@ -252,8 +252,8 @@ geomodelgrids_squery_query(void* handle,
                     << std::setiosflags(std::ios::scientific)
                     << std::setprecision(6)
                     << x << ", " << y << ", " << z << ") during query.";
-            errorHandler.setWarning(warning.str().c_str());
-            errorHandler.logMessage(warning.str().c_str());
+            errorHandler->setWarning(warning.str().c_str());
+            errorHandler->logMessage(warning.str().c_str());
         } // if
     } catch (const std::exception& err) {
         std::ostringstream error;
@@ -262,11 +262,11 @@ geomodelgrids_squery_query(void* handle,
               << std::setiosflags(std::ios::scientific)
               << std::setprecision(6)
               << x << ", " << y << ", " << z <<"\n" << err.what();
-        errorHandler.setError(error.str().c_str());
-        errorHandler.logMessage(error.str().c_str());
+        errorHandler->setError(error.str().c_str());
+        errorHandler->logMessage(error.str().c_str());
     } // try/catch
 
-    return errorHandler.getStatus();
+    return errorHandler->getStatus();
 } // query
 
 
@@ -283,7 +283,7 @@ geomodelgrids_squery_finalize(void* handle) {
     assert(query);
     query->finalize();
 
-    return query->getErrorHandler().getStatus();
+    return query->getErrorHandler()->getStatus();
 } // finalize
 
 

@@ -1,6 +1,5 @@
 /// C++ application to query for elevation of isosurface.
-#if !defined(geomodelgrids_apps_isosurface_hh)
-#define geomodelgrids_apps_isosurface_hh
+#pragma once
 
 #include "appsfwd.hh" // forward declarations
 
@@ -97,7 +96,5 @@ private:
     const Isosurface& operator=(const Isosurface&); ///< Not implemented
 
 }; // Isosurface
-
-#endif // geomodelgrids_apps_isosurface_hh
 
 // End of file

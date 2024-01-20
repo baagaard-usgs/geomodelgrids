@@ -352,8 +352,8 @@ geomodelgrids::serial::Block::closeQuery(void) {
 // ------------------------------------------------------------------------------------------------
 // Compare order of blocks by z_top (descending order).
 bool
-geomodelgrids::serial::Block::compare(const Block* a,
-                                      const Block* b) {
+geomodelgrids::serial::Block::compare(const std::shared_ptr<Block>& a,
+                                      const std::shared_ptr<Block>& b) {
     if (a && b) { return a->_zTop > b->_zTop; }
 
     return true;

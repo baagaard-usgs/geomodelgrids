@@ -26,8 +26,7 @@ geomodelgrids::serial::ModelInfo::ModelInfo(void) :
     _repositoryDOI(""),
     _version(""),
     _license(""),
-    _auxiliary("")
-{} // constructor
+    _auxiliary("") {} // constructor
 
 
 // ------------------------------------------------------------------------------------------------

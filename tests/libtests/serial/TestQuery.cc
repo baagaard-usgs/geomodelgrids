@@ -139,6 +139,11 @@ geomodelgrids::serial::TestQuery::testInitialize(void) {
     Query query;
     query.initialize(filenames, valueNames, crs);
 
+    const std::vector<std::string> valuesLowercase = query.getValueNames();
+    for (size_t iValue = 0; iValue < numValues; ++iValue) {
+        REQUIRE(valueNames[iValue] == valuesLowercase[iValue]);
+    } // for
+
     REQUIRE(numModels == query._models.size());
     REQUIRE(numModels == query._valuesIndex.size());
     for (size_t iModel = 0; iModel < numModels; ++iModel) {
