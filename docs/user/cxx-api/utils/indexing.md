@@ -1,4 +1,4 @@
-# Utilities Indexing Objects
+# Indexing
 
 ## Classes
 

@@ -1,7 +1,7 @@
-(cxx-api-serial-modelinfo)=
+(python-api-modelinfo)=
 # ModelInfo
 
-**Full name**: geomodelgrids::serial::ModelInfo
+**Full name**: geomodelgrids.ModelInfo
 
 ## Methods
 
@@ -9,114 +9,110 @@
 
 Constructor.
 
-### const std::string& getTitle()
+### get_title()
 
 Get title.
 
 - **returns** Title of model.
 
-### const std::string& getId()
+### get_id()
 
 Get identifier.
 
 - **returns** Model identifier.
 
-### const std::string& getDescription()
+### get_description()
 
 Get description.
 
 - **returns** Model description.
 
-### const std::vector\<std::string\>& getKeywords()
+### get_keywords()
 
 Get keywords describing model.
 
-- **returns** Array of keywords.
+- **returns** List of keywords.
 
-### const std::string& getHistory()
+### get_history()
 
 Get model history.
 
 - **returns** Model history.
 
-### const std::string& getComment()
+### get_comment()
 
 Get comment.
 
 - **returns** Comment about model.
 
-### const std::string& getCreatorName()
+### get_creator_name()
 
 Get name of creator.
 
 - **returns** Name of creator.
 
-### const std::string& getCreatorInstitution()
+### get_creator_institution()
 
 Get institution of creator.
 
 - **returns** Institution of creator.
 
-### const std::string& getCreatorEmail()
+### get_creator_email()
 
 Get email of creator.
 
 - **returns** Email of creator.
 
-### const std::string& getAcknowledgement()
+### get_acknowledgement()
 
 Get acknowledgements for model.
 
 - **returns** acknowledgements for model.
 
-### const std::vector\<std::string\>& getAuthors()
+### get_authors()
 
 Get authors of model.
 
 - **returns** Array of author names.
 
-### const std::vector\<std::string\>& getReferences()
+### get_references()
 
 Get references associated with model.
 
 - **returns** Array of references.
 
-### const std::string& getRepositoryName()
+### get_repository_name()
 
 Get name of repository holding model.
 
 - **returns** Name of repository.
 
-### const std::string& getRepositoryURL()
+### get_repository_url()
 
 Get URL of repository holding model.
 
 - **returns** URL for repository.
 
-### const std::string& getRepositoryDOI()
+### get_repository_doi()
 
 Get DOI for model.
 
 - **returns** Digital Object Identifier.
 
-### const std::string& getVersion()
+### get_version()
 
 Get model version.
 
 - **returns** Model version.
 
-### const std::string& getLicense()
+### get_license()
 
 Get model license.
 
 - **returns** Name of license for model.
 
-### const std::string& getAuxiliary()
+### get_auxiliary()
 
 Get auxiliary information.
 
 - **returns** Auxiliary information as string.
-
-### load(geomodelgrids::serial::HDF5* const h5)
-
-Load model information.

@@ -84,7 +84,7 @@ We include the header files for the query and error handler interfaces as well a
 
 As mentioned earlier, in this example we hardwire all of the query parameters using local variables.
 
-Set the parameters indicating which model to query
+Set the parameters indicating which model to query.
 Multiple models can be queried and they will be accessed in the order given.
 Once values are found in one of the models, the rest of the models are skipped.
 
@@ -136,7 +136,7 @@ errorHandler.setLogFilename("error.log");
 In this example, we hardwire the query points using a local variable.
 The coordinate system is the one specified by the `crs` variable.
 
-```{code-block} c
+```{code-block} c++
 static const size_t numPoints = 5;
 static const double points[5*3] = {
    37.455, -121.941, 0.0,

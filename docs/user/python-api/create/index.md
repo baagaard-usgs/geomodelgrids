@@ -1,4 +1,4 @@
-# Serial C++ API
+# Model creation
 
 ```{toctree}
 classes.md

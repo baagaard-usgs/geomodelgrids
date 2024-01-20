@@ -1,4 +1,4 @@
-# Utilities CRSTransformer Object 
+# CRSTransformer
 
 **Full name**: geomodelgrids::utils::CRSTransformer
 

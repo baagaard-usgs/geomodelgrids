@@ -1,4 +1,4 @@
-# Serial C++ API
+# Query
 
 ```{toctree}
 classes.md

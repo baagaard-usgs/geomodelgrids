@@ -21,7 +21,7 @@ project = 'GeoModelGrids'
 author = 'Brad T. Aagaard'
 
 # The full version, including alpha/beta/rc tags
-release = '1.0.0rc2'
+release = '1.0.0rc3'
 
 
 # -- General configuration ---------------------------------------------------
@@ -31,11 +31,13 @@ release = '1.0.0rc2'
 # ones.
 extensions = [
     "myst_parser",
+    "sphinx_copybutton",
     #    "sphinxcontrib.spelling", # Requires pyenchant and enchant C library
 ]
 myst_enable_extensions = [
     "colon_fence",
     "deflist",
+    "fieldlist",
     "substitution",
     "dollarmath",
     "amsmath",
@@ -68,6 +70,7 @@ html_theme_options = {
             "icon": "fab fa-github-square",
         },
     ],
+    "use_edit_page_button": "github_user",
     "navbar_start": ["navbar-usgs", "navbar-logo"],
     "footer_end": ["last-updated"],
 }

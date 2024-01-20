@@ -1,6 +1,6 @@
-# Serial C++ API
+# Serial C API
 
 ```{toctree}
-classes.md
+functions.md
 examples.md
 ```
