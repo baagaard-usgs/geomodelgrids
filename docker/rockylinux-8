@@ -27,6 +27,7 @@ RUN dnf install -y \
   automake \
   autoconf \
   libtool \
+  cmake \
   curl \
   python38 \
   python38-devel \

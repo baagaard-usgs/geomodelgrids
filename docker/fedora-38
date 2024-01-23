@@ -13,6 +13,7 @@ RUN dnf install -y \
   automake \
   autoconf \
   libtool \
+  cmake \
   curl \
   python3 \
   python3-devel \

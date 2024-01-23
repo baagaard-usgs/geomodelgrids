@@ -13,6 +13,7 @@ RUN apt-get update \
   automake \
   autoconf \
   libtool \
+  cmake \
   curl \
   python3-dev \
   libpython3.11 \

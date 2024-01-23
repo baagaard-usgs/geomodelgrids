@@ -1,5 +1,5 @@
 ARG BUILD_ENV=nocerts
-FROM ubuntu:20.04 as os-update
+FROM ubuntu:23.04 as os-update
 LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
 
 ENV BUILD_ENV=${BUILD_ENV}
@@ -15,7 +15,7 @@ RUN apt-get update \
   libtool \
   cmake \
   curl \
-  libpython3.8 \
+  libpython3.11 \
   python3-dev \
   python3-venv \
   python3-pip \
@@ -59,7 +59,7 @@ FROM build-${BUILD_ENV} as build-deps
 # Build geomodelgrids in $HOME/build
 
 ENV GMG_USER=gmg-tester \
-  PYTHON_VERSION=3.8 \
+  PYTHON_VERSION=3.11 \
   INSTALL_DIR=/opt/geomodelgrids
 ENV HOME=/home/$GMG_USER \
   PATH=$INSTALL_DIR/bin:$PATH \
@@ -98,11 +98,11 @@ RUN cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} ${src_dir}/Catch2-${CATCH2_VER} 
 RUN python3 -m venv ${INSTALL_DIR} && \
   if [ x${CERT_FILE} = x"no" ]; then \
   python3 -m pip install --upgrade pip setuptools && \
-  python3 -m pip install numpy coverage && \
+  python3 -m pip install numpy coverage pybind11 && \
   CC=gcc HDF5_LIBDIR=${HDF5_LIBDIR} HDF5_INCLUDEDIR=${HDF5_INCDIR} python3 -m pip install --no-binary h5py h5py; \
   else \
   SSL_CERT_FILE=${CERT_FILE} REQUESTS_CA_BUNDLE=${CERT_FILE} python3 -m pip install --upgrade pip setuptools && \
-  SSL_CERT_FILE=${CERT_FILE} REQUESTS_CA_BUNDLE=${CERT_FILE} python3 -m pip install numpy coverage && \
+  SSL_CERT_FILE=${CERT_FILE} REQUESTS_CA_BUNDLE=${CERT_FILE} python3 -m pip install numpy coverage pybind11 && \
   SSL_CERT_FILE=${CERT_FILE} REQUESTS_CA_BUNDLE=${CERT_FILE} CC=gcc HDF5_LIBDIR=${HDF5_LIBDIR} HDF5_INCLUDEDIR=${HDF5_INCDIR} python3 -m pip install --no-binary h5py h5py; \
   fi
 

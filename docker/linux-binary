@@ -2,27 +2,29 @@ FROM centos:7 as os-update
 LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
 
 RUN yum install -y \
-    gcc \
-    gcc-c++ \
-    make \
-    file \
-    which \
-    diffutils \
-    gettext \
-    git \
-    uncrustify \
-    gnupg2 \
-    automake \
-    autoconf \
-    libtool \
-    openssh \
-    openssl \
-    zlib-devel \
-    libffi-devel \
-    ca-certificates \
-    vim-common \
-    vim-runtime \
-    centos-release-scl
+  gcc \
+  gcc-c++ \
+  make \
+  file \
+  which \
+  diffutils \
+  gettext \
+  git \
+  uncrustify \
+  gnupg2 \
+  automake \
+  autoconf \
+  libtool \
+  cmake \
+  openssh \
+  perl-IPC-Cmd \
+  openssl \
+  zlib-devel \
+  libffi-devel \
+  ca-certificates \
+  vim-common \
+  vim-runtime \
+  centos-release-scl
 RUN yum install -y rh-python38
 
 COPY docker/certs/ /usr/share/pki/ca-trust-source/anchors

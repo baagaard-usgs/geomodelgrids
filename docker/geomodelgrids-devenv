@@ -9,6 +9,7 @@ RUN apt-get update \
   automake \
   autoconf \
   libtool \
+  cmake \
   curl \
   locales \
   libpython3.10 \
