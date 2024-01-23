@@ -111,21 +111,21 @@ void
 geomodelgrids::apps::Info::_parseArgs(int argc,
                                       char* argv[]) {
     static struct option options[9] = {
-        {"help", no_argument, NULL, 'h'},
-        {"description", no_argument, NULL, 'd'},
-        {"blocks", no_argument, NULL, 'b'},
-        {"coordsys", no_argument, NULL, 'c'},
-        {"values", no_argument, NULL, 'v'},
-        {"verify", no_argument, NULL, 'q'},
-        {"all", no_argument, NULL, 'a'},
-        {"models", required_argument, NULL, 'm'},
+        {"help", no_argument, nullptr, 'h'},
+        {"description", no_argument, nullptr, 'd'},
+        {"blocks", no_argument, nullptr, 'b'},
+        {"coordsys", no_argument, nullptr, 'c'},
+        {"values", no_argument, nullptr, 'v'},
+        {"verify", no_argument, nullptr, 'q'},
+        {"all", no_argument, nullptr, 'a'},
+        {"models", required_argument, nullptr, 'm'},
         {0, 0, 0, 0}
     };
 
     bool optionsOk = false;
     while (true) {
         // extern char* optarg;
-        const char c = getopt_long(argc, argv, "hdbcvam:", options, NULL);
+        const char c = getopt_long(argc, argv, "hdbcvam:", options, nullptr);
         if (-1 == c) { break; }
         switch (c) {
         case 'h':
@@ -455,7 +455,7 @@ geomodelgrids::apps::_Info::verifyCoordSys(const geomodelgrids::serial::Model* m
 
     std::string xUnit;
     std::string yUnit;
-    geomodelgrids::utils::CRSTransformer::getCRSUnits(&xUnit, &yUnit, NULL,
+    geomodelgrids::utils::CRSTransformer::getCRSUnits(&xUnit, &yUnit, nullptr,
                                                       model->getCRSString().c_str());
     if (xUnit != yUnit) {
         if (ok) { std::cout << "FAIL\n"; }
@@ -633,7 +633,7 @@ geomodelgrids::apps::_Info::computeBoundingBox(const geomodelgrids::serial::Mode
     transformer.setDest("EPSG:4326");
     transformer.initialize();
     for (size_t i = 0; i < npts; ++i) {
-        transformer.transform(&bbox_geo[i*dim+0], &bbox_geo[i*dim+1], NULL, bbox_model[i*dim+0], bbox_model[i*dim+1], 0.0);
+        transformer.transform(&bbox_geo[i*dim+0], &bbox_geo[i*dim+1], nullptr, bbox_model[i*dim+0], bbox_model[i*dim+1], 0.0);
     } // for
 
     return bbox_geo;

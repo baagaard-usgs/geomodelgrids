@@ -1,38 +1,27 @@
-subpackage = apps
-include $(top_srcdir)/subpackage.am
-include $(top_srcdir)/check.am
+include $(top_srcdir)/tests/check.am
 
-TESTS = test_apps
+TESTS = libtest_apps
 
-check_PROGRAMS = test_apps
+check_PROGRAMS = libtest_apps
 
-test_apps_SOURCES = \
+libtest_apps_SOURCES = \
 	TestInfo.cc \
 	TestQuery.cc \
 	TestQueryElev.cc \
 	TestBorehole.cc \
-	../../data/ModelPoints.cc \
-	test_driver.cc
+	$(top_srcdir)/tests/data/ModelPoints.cc \
+	$(top_srcdir)/tests/src/driver_catch2.cc
+
 
 noinst_HEADERS =
 
-test_apps_CPPFLAGS = \
-	$(AM_CPPFLAGS) \
-	-I$(top_srcdir)/tests/data
-
-test_apps_LDFLAGS = $(AM_LDFLAGS)
-test_apps_LDADD = \
-	-lcppunit -ldl \
-	$(top_builddir)/libsrc/geomodelgrids/libgeomodelgrids.la \
-	-lhdf5 \
-	-lproj
 
 if ENABLE_GDAL
-test_apps_SOURCES += TestIsosurface.cc
-test_apps_LDADD += -lgdal
+libtest_apps_SOURCES += TestIsosurface.cc
 
-test_apps_CPPFLAGS += $(GDAL_INCLUDES) -DWITH_GDAL
-test_apps_LDFLAGS += $(GDAL_LDFLAGS)
+AM_CPPFLAGS += $(GDAL_INCLUDES) -DWITH_GDAL
+LDFLAGS += $(GDAL_LDFLAGS)
+LDADD += -lgdal
 endif
 
 

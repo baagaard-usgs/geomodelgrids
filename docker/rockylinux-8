@@ -112,20 +112,19 @@ RUN ${src_dir}/hdf5-${HDF5_VER}/configure --prefix=${INSTALL_DIR} --enable-share
   && rm -r ${build_dir}
 
 # --------------------------------------
-# CPPUNIT
+# Catch2
 # --------------------------------------
-ENV CPPUNIT_VER=1.15.1  src_dir=${TOP_SRCDIR}/cppunit  build_dir=${TOP_BUILDDIR}/cppunit
+ENV CATCH2_VER=3.3.2  src_dir=${TOP_SRCDIR}/catch2  build_dir=${TOP_BUILDDIR}/catch2
 RUN mkdir -p ${src_dir} && mkdir -p ${build_dir}
 WORKDIR ${src_dir}
-RUN curl -L -O http://dev-www.libreoffice.org/src/cppunit-${CPPUNIT_VER}.tar.gz \
-  && tar -xf cppunit-${CPPUNIT_VER}.tar.gz
+RUN curl -L -O https://github.com/catchorg/Catch2/archive/refs/tags/v${CATCH2_VER}.tar.gz \
+  && tar -xf v${CATCH2_VER}.tar.gz
 
 WORKDIR ${build_dir}
-RUN ${src_dir}/cppunit-${CPPUNIT_VER}/configure --prefix=${INSTALL_DIR} --enable-shared --disable-static \
+RUN cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} ${src_dir}/Catch2-${CATCH2_VER} \
   && make -j$(nproc) \
   && make install \
   && rm -r ${build_dir}
-
 
 # --------------------------------------
 # Python packages

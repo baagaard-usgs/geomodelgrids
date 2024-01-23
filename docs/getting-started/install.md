@@ -72,20 +72,20 @@ This will prevent most conflicts.
 
 Most Linux distributions can provide all of the prerequisites via the package manager.
 On macOS systems the operating system supplies with XCode command line tools installed supply the compiler, Sqlite, libtiff, openssl, and libcurl.
-You can use a package manager to install Proj.4, HDF5, and CppUnit (if desired) or build them from source.
+You can use a package manager to install Proj and HDF5or build them from source.
 You can also use the `build_binary.py` Python script in the `docker` directory of the GeoModelGrids source code to install the software and any prerequisites that you do not have.
 
 * C/C++ compiler supporting C++11
 * HDF5 (version 1.10.0 or later)
 * Sqlite (version 3 or later; required by Proj.4)
-* Proj.4 (version 6.3.0 or later). Proj 7.0.0 and later also require:
+* Proj (version 6.3.0 or later). Proj 7.0.0 and later also require:
   * libtiff
   * openssl
   * libcurl
 * Python 3 (version 3.7 or later; if generating models)
   * h5py
   * numpy
-* CppUnit (version 1.14.0 or later; if running test suite)
+* Catch2 (version 3.3.0 or later; if running test suite)
   
 ### Downloading the source code
 
@@ -108,9 +108,9 @@ Useful configure options (run `configure --help` to see all options):
 * `--prefix=DIR` Install GeoModelGrids in directory `DIR`.
 * `--enable-python` Enable building Python modules [default=no]
 * `--enable-gdal` Enable GDAL support for writing GeoTiff files [default=no]
-* `--enable-testing` Enable Python and C++ (requires cppunit) unit testing [default=no]
-* `--with-cppunit-incdir` Specify location of cppunit header files [default=no]
-* `--with-cppunit-libdir` Specify location of cppunit library [default=no]
+* `--enable-testing` Enable Python and C++ (requires Catch2) unit testing [default=no]
+* `--with-catch2-incdir` Specify location of Catch2 header files [default=no]
+* `--with-catch2-libdir` Specify location of Catch2 library [default=no]
 * `--with-proj-incdir` Specify location of proj header files [default=no]
 * `--with-proj-libdir` Specify location of proj library [default=no]
 * `--with-hdf5-incdir` Specify location of hdf5 header files [default=no]
@@ -145,7 +145,7 @@ make && make install
 
 ### Running tests (optional)
 
-If GeoModelGrids is configured with `--enable-testing` (requires CppUnit), then the test suite can be run via `make check`.
+If GeoModelGrids is configured with `--enable-testing` (requires Catch2), then the test suite can be run via `make check`.
 If GeoModelGrids was configured with Python enabled, then `make check` will also run the unit tests for the Python code.
 
 ### Setting environment variables

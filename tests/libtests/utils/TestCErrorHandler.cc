@@ -10,7 +10,9 @@ extern "C" {
 
 #include "geomodelgrids/utils/ErrorHandler.hh" // USES ErrorHandler
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "catch2/catch_test_macros.hpp"
+
+#include <cassert>
 
 namespace geomodelgrids {
     namespace utils {
@@ -18,24 +20,15 @@ namespace geomodelgrids {
     } // utils
 } // geomodelgrids
 
-class geomodelgrids::utils::TestCErrorHandler : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestCErrorHandler);
-
-    CPPUNIT_TEST(testLogFilename);
-    CPPUNIT_TEST(testStatus);
-    CPPUNIT_TEST(testGetMessage);
-
-    CPPUNIT_TEST_SUITE_END();
-
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+class geomodelgrids::utils::TestCErrorHandler {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     // Create test subject.
-    void setUp(void);
+    TestCErrorHandler(void);
 
     // Destroy test subject.
-    void tearDown(void);
+    ~TestCErrorHandler(void);
 
     /// Test get/setLogFilename().
     void testLogFilename(void);
@@ -46,40 +39,48 @@ public:
     /// Test getMessage().
     void testGetMessage(void);
 
-    // PRIVATE METHODS ///////////////////////////////////////////////////////
+    // PRIVATE METHODS ////////////////////////////////////////////////////////////////////////////
 private:
 
     ErrorHandler* _errorHandler;
 
 }; // class TestCErrorHandler
-CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::utils::TestCErrorHandler);
+
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestCErrorHandler::testLogFilename", "[TestCErrorHandler]") {
+    geomodelgrids::utils::TestCErrorHandler().testLogFilename();
+}
+TEST_CASE("TestCErrorHandler::testStatus", "[TestCErrorHandler]") {
+    geomodelgrids::utils::TestCErrorHandler().testStatus();
+}
+TEST_CASE("TestCErrorHandler::testGetMessage", "[TestCErrorHandler]") {
+    geomodelgrids::utils::TestCErrorHandler().testGetMessage();
+}
 
 // ------------------------------------------------------------------------------------------------
 // Create test subject.
-void
-geomodelgrids::utils::TestCErrorHandler::setUp(void) {
+geomodelgrids::utils::TestCErrorHandler::TestCErrorHandler(void) {
     _errorHandler = new geomodelgrids::utils::ErrorHandler();
-} // setUp
+} // constructor
 
 
 // ------------------------------------------------------------------------------------------------
 // Destroy test subject.
-void
-geomodelgrids::utils::TestCErrorHandler::tearDown(void) {
-    delete _errorHandler;_errorHandler = NULL;
-} // tearDown
+geomodelgrids::utils::TestCErrorHandler::~TestCErrorHandler(void) {
+    delete _errorHandler;_errorHandler = nullptr;
+} // destructor
 
 
 // ------------------------------------------------------------------------------------------------
 // Test set/getLogFilename().
 void
 geomodelgrids::utils::TestCErrorHandler::testLogFilename(void) {
-    CPPUNIT_ASSERT(_errorHandler);
+    assert(_errorHandler);
 
     const std::string& filenameE = "error.log";
     geomodelgrids_cerrorhandler_setLogFilename((void*)_errorHandler, filenameE.c_str());
     const std::string& filename = geomodelgrids_cerrorhandler_getLogFilename((void*)_errorHandler);
-    CPPUNIT_ASSERT_EQUAL(filenameE, filename);
+    CHECK(filenameE == filename);
 
     geomodelgrids_cerrorhandler_setLoggingOn((void*)_errorHandler, true);
     geomodelgrids_cerrorhandler_setLoggingOn((void*)_errorHandler, false);
@@ -90,26 +91,22 @@ geomodelgrids::utils::TestCErrorHandler::testLogFilename(void) {
 // Test resetStatus(), and getStatus().
 void
 geomodelgrids::utils::TestCErrorHandler::testStatus(void) {
-    CPPUNIT_ASSERT(_errorHandler);
+    assert(_errorHandler);
 
     GeomodelgridsStatusEnum status = GEOMODELGRIDS_OK;
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in default status.", status,
-                                 geomodelgrids_cerrorhandler_getStatus((void*)_errorHandler));
+    CHECK(status == geomodelgrids_cerrorhandler_getStatus((void*)_errorHandler));
 
     status = GEOMODELGRIDS_WARNING;
     _errorHandler->_status = geomodelgrids::utils::ErrorHandler::WARNING;
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in user status.", status,
-                                 geomodelgrids_cerrorhandler_getStatus((void*)_errorHandler));
+    CHECK(status == geomodelgrids_cerrorhandler_getStatus((void*)_errorHandler));
 
     status = GEOMODELGRIDS_ERROR;
     _errorHandler->_status = geomodelgrids::utils::ErrorHandler::ERROR;
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in user status.", status,
-                                 geomodelgrids_cerrorhandler_getStatus((void*)_errorHandler));
+    CHECK(status == geomodelgrids_cerrorhandler_getStatus((void*)_errorHandler));
 
     status = GEOMODELGRIDS_OK;
     geomodelgrids_cerrorhandler_resetStatus((void*)_errorHandler);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in user status.", status,
-                                 geomodelgrids_cerrorhandler_getStatus((void*)_errorHandler));
+    CHECK(status == geomodelgrids_cerrorhandler_getStatus((void*)_errorHandler));
 } // testStatus
 
 
@@ -117,16 +114,16 @@ geomodelgrids::utils::TestCErrorHandler::testStatus(void) {
 // Test getMessage().
 void
 geomodelgrids::utils::TestCErrorHandler::testGetMessage(void) {
-    CPPUNIT_ASSERT(_errorHandler);
+    assert(_errorHandler);
 
     std::string messageE = "";
     std::string message = geomodelgrids_cerrorhandler_getMessage((void*)_errorHandler);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in default message.", messageE, message);
+    CHECK(messageE == message);
 
     messageE = "Hello";
     _errorHandler->_message = messageE;
     message = geomodelgrids_cerrorhandler_getMessage((void*)_errorHandler);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in user message.", messageE, message);
+    CHECK(messageE == message);
 } // testGetMessage
 
 

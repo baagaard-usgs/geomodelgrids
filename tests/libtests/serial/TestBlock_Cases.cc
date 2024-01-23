@@ -6,102 +6,135 @@
 
 #include "TestBlock.hh"
 
+#include "catch2/catch_test_macros.hpp"
+
+// ------------------------------------------------------------------------------------------------
 namespace geomodelgrids {
     namespace serial {
-        class TestBlock_Uniform;
-        class TestBlock_VarZ;
-        class TestBlock_VarXY;
+        class TestBlock_Cases;
     } // serial
 } // geomodelgrids
 
-// ================================================================================================
-class geomodelgrids::serial::TestBlock_Uniform : public geomodelgrids::serial::TestBlock {
-    CPPUNIT_TEST_SUB_SUITE(TestBlock_Uniform, TestBlock);
-    CPPUNIT_TEST_SUITE_END();
+class geomodelgrids::serial::TestBlock_Cases {
+public:
 
-protected:
+    static TestBlock_Data* Uniform(void);
 
-    void setUp(void) {
-        TestBlock::setUp();
+    static TestBlock_Data* VarZ(void);
 
-        CPPUNIT_ASSERT(_data);
+    static TestBlock_Data* VarXY(void);
 
-        _data->filename = "../../data/one-block-flat.h5";
-        _data->resolutionX = 8.0e+3;
-        _data->resolutionY = 10.0e+3;
-        _data->resolutionZ = 5.0e+3;
-        _data->zTop = 0.0;
-        _data->numX = 5;
-        _data->numY = 5;
-        _data->numZ = 2;
+};
 
-        _data->points = new geomodelgrids::testdata::OneBlockFlatPoints;
-    } // setUp
+// ------------------------------------------------------------------------------------------------
+// Static
+TEST_CASE("TestBlock::testConstructor", "[TestBlock][testConstructor]") {
+    geomodelgrids::serial::TestBlock::testConstructor();
+}
+TEST_CASE("TestBlock::testSetHyperslabDims", "[TestBlock][testSetHyperslabDims]") {
+    geomodelgrids::serial::TestBlock::testSetHyperslabDims();
+}
+TEST_CASE("TestBlock::testLoadBadMetdata", "[TestBlock][testLoadBadMetdata]") {
+    geomodelgrids::serial::TestBlock::testLoadBadMetadata();
+}
 
-}; // TestBlock_Uniform
-CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::serial::TestBlock_Uniform);
+// ------------------------------------------------------------------------------------------------
+geomodelgrids::serial::TestBlock_Data*
+geomodelgrids::serial::TestBlock_Cases::Uniform(void) {
+    TestBlock_Data* data = new TestBlock_Data();assert(data);
 
-// ================================================================================================
-class geomodelgrids::serial::TestBlock_VarZ : public geomodelgrids::serial::TestBlock {
-    CPPUNIT_TEST_SUB_SUITE(TestBlock_VarZ, TestBlock);
-    CPPUNIT_TEST_SUITE_END();
+    data->filename = "../../data/one-block-flat.h5";
+    data->resolutionX = 8.0e+3;
+    data->resolutionY = 10.0e+3;
+    data->resolutionZ = 5.0e+3;
+    data->zTop = 0.0;
+    data->numX = 5;
+    data->numY = 5;
+    data->numZ = 2;
 
-protected:
+    data->points = new geomodelgrids::testdata::OneBlockFlatPoints;
 
-    void setUp(void) {
-        TestBlock::setUp();
+    return data;
+} // Uniform
 
-        CPPUNIT_ASSERT(_data);
 
-        _data->filename = "../../data/one-block-flat-varz.h5";
-        _data->resolutionX = 8.0e+3;
-        _data->resolutionY = 10.0e+3;
-        static const size_t numZ = 3;
-        static const double z[numZ] = { 0.0e+3, -2.0e+3, -5.0e+3 };
-        _data->coordinatesZ = const_cast<double*>(z);
-        _data->zTop = z[0];
-        _data->numX = 5;
-        _data->numY = 5;
-        _data->numZ = numZ;
+TEST_CASE("TestBlock::Uniform::testAccessors", "[TestBlock][Uniform][testAccessors]") {
+    geomodelgrids::serial::TestBlock(geomodelgrids::serial::TestBlock_Cases::Uniform()).testAccessors();
+}
+TEST_CASE("TestBlock::Uniform::testLoadMetadata", "[TestBlock][Uniform][testLoadMetadata]") {
+    geomodelgrids::serial::TestBlock(geomodelgrids::serial::TestBlock_Cases::Uniform()).testLoadMetadata();
+}
+TEST_CASE("TestBlock::Uniform::testQuery", "[TestBlock][Uniform][testQuery]") {
+    geomodelgrids::serial::TestBlock(geomodelgrids::serial::TestBlock_Cases::Uniform()).testQuery();
+}
 
-        _data->points = new geomodelgrids::testdata::OneBlockFlatPoints;
-    } // setUp
+// ------------------------------------------------------------------------------------------------
+geomodelgrids::serial::TestBlock_Data*
+geomodelgrids::serial::TestBlock_Cases::VarZ(void) {
+    TestBlock_Data* data = new TestBlock_Data();assert(data);
 
-}; // TestBlock_VarZ
-CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::serial::TestBlock_VarZ);
+    data->filename = "../../data/one-block-flat-varz.h5";
+    data->resolutionX = 8.0e+3;
+    data->resolutionY = 10.0e+3;
+    static const size_t numZ = 3;
+    static const double z[numZ] = { 0.0e+3, -2.0e+3, -5.0e+3 };
+    data->coordinatesZ = const_cast<double*>(z);
+    data->zTop = z[0];
+    data->numX = 5;
+    data->numY = 5;
+    data->numZ = numZ;
 
-// ================================================================================================
-class geomodelgrids::serial::TestBlock_VarXY : public geomodelgrids::serial::TestBlock {
-    CPPUNIT_TEST_SUB_SUITE(TestBlock_VarXY, TestBlock);
-    CPPUNIT_TEST_SUITE_END();
+    data->points = new geomodelgrids::testdata::OneBlockFlatPoints;
 
-protected:
+    return data;
+} // VarZ
 
-    void setUp(void) {
-        TestBlock::setUp();
 
-        CPPUNIT_ASSERT(_data);
+TEST_CASE("TestBlock::VarZ::testAccessors", "[TestBlock][VarZ][testAccessors]") {
+    geomodelgrids::serial::TestBlock(geomodelgrids::serial::TestBlock_Cases::VarZ()).testAccessors();
+}
+TEST_CASE("TestBlock::VarZ::testLoadMetadata", "[TestBlock][VarZ][testLoadMetadata]") {
+    geomodelgrids::serial::TestBlock(geomodelgrids::serial::TestBlock_Cases::VarZ()).testLoadMetadata();
+}
+TEST_CASE("TestBlock::VarZ::testQuery", "[TestBlock][VarZ][testQuery]") {
+    geomodelgrids::serial::TestBlock(geomodelgrids::serial::TestBlock_Cases::VarZ()).testQuery();
+}
 
-        _data->filename = "../../data/one-block-topo-varxy.h5";
+// ------------------------------------------------------------------------------------------------
+geomodelgrids::serial::TestBlock_Data*
+geomodelgrids::serial::TestBlock_Cases::VarXY(void) {
+    TestBlock_Data* data = new TestBlock_Data();assert(data);
 
-        static const size_t numX = 4;
-        static const double x[numX] = { 0.0e+3, 10.0e+3, 20.0e+3, 30.0e+3 };
-        _data->coordinatesX = const_cast<double*>(x);
+    data->filename = "../../data/one-block-topo-varxy.h5";
 
-        static const size_t numY = 4;
-        static const double y[numY] = { 0.0e+3, 8.0e+3, 16.0e+3, 40.0e+3 };
-        _data->coordinatesY = const_cast<double*>(y);
+    static const size_t numX = 4;
+    static const double x[numX] = { 0.0e+3, 10.0e+3, 20.0e+3, 30.0e+3 };
+    data->coordinatesX = const_cast<double*>(x);
 
-        _data->resolutionZ = 5.0e+3;
-        _data->zTop = 0.0;
-        _data->numX = numX;
-        _data->numY = numY;
-        _data->numZ = 2;
+    static const size_t numY = 4;
+    static const double y[numY] = { 0.0e+3, 8.0e+3, 16.0e+3, 40.0e+3 };
+    data->coordinatesY = const_cast<double*>(y);
 
-        _data->points = new geomodelgrids::testdata::OneBlockTopoPoints;
-    } // setUp
+    data->resolutionZ = 5.0e+3;
+    data->zTop = 0.0;
+    data->numX = numX;
+    data->numY = numY;
+    data->numZ = 2;
 
-}; // TestBlock_VarXY
-CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::serial::TestBlock_VarXY);
+    data->points = new geomodelgrids::testdata::OneBlockTopoPoints;
+
+    return data;
+} // VarXY
+
+
+TEST_CASE("TestBlock::VarXY::testAccessors", "[TestBlock][VarXY][testAccessors]") {
+    geomodelgrids::serial::TestBlock(geomodelgrids::serial::TestBlock_Cases::VarXY()).testAccessors();
+}
+TEST_CASE("TestBlock::VarXY::testLoadMetadata", "[TestBlock][VarXY][testLoadMetadata]") {
+    geomodelgrids::serial::TestBlock(geomodelgrids::serial::TestBlock_Cases::VarXY()).testLoadMetadata();
+}
+TEST_CASE("TestBlock::VarXY::testQuery", "[TestBlock][VarXY][testQuery]") {
+    geomodelgrids::serial::TestBlock(geomodelgrids::serial::TestBlock_Cases::VarXY()).testQuery();
+}
 
 // End of file

@@ -29,11 +29,11 @@ const double geomodelgrids::testdata::ModelPoints::squashMinElev = -4.999e+3;
 // ------------------------------------------------------------------------------------------------
 // Default constructor.
 geomodelgrids::testdata::ModelPoints::ModelPoints(const size_t numPoints) :
-    _pointsLLE(NULL),
+    _pointsLLE(nullptr),
     _pointsXYZ(new double[numPoints*3]),
     _numPoints(numPoints),
     _inCRS("EPSG:4326"),
-    _modelCRS(NULL) {
+    _modelCRS(nullptr) {
     assert(_pointsXYZ);
 } // constructor
 
@@ -41,7 +41,7 @@ geomodelgrids::testdata::ModelPoints::ModelPoints(const size_t numPoints) :
 // ------------------------------------------------------------------------------------------------
 // Destructor.
 geomodelgrids::testdata::ModelPoints::~ModelPoints(void) {
-    delete[] _pointsXYZ;_pointsXYZ = NULL;
+    delete[] _pointsXYZ;_pointsXYZ = nullptr;
 } // destructor
 
 
@@ -175,7 +175,7 @@ geomodelgrids::testdata::_ModelPoints::toXYZ(double* const coordsDest,
     assert(coordsSrc);
 
     PJ_CONTEXT* context = PJ_DEFAULT_CTX;
-    PJ* proj = proj_create_crs_to_crs(context, srcString, destString, NULL);assert(proj);
+    PJ* proj = proj_create_crs_to_crs(context, srcString, destString, nullptr);assert(proj);
 
     const size_t dim = 3;
     for (size_t i = 0; i < numPoints; ++i) {
@@ -195,7 +195,7 @@ geomodelgrids::testdata::_ModelPoints::toXYZ(double* const coordsDest,
         coordsDest[i*dim+2] = domain.zBottom * (zGroundSurf - coordsSrc[i*dim+2]) / (zGroundSurf - domain.zBottom);
     } // for
 
-    proj_destroy(proj);proj = NULL;
+    proj_destroy(proj);proj = nullptr;
 } // toXYZ
 
 

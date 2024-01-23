@@ -45,7 +45,7 @@ public:
      *
      * @param[out] destX X coordinate in destination coordinate system.
      * @param[out] destY Y coordinate in destination coordinate system.
-     * @param[out] destZ Z coordinate in destination coordinate system (can be NULL).
+     * @param[out] destZ Z coordinate in destination coordinate system (can be nullptr).
      * @param[in] srcX X coordinate in source coordinate system.
      * @param[in] srcY Y coordinate in source coordinate system.
      * @param[in] srcZ Z coordinate in source coordinate system.
@@ -61,7 +61,7 @@ public:
      *
      * @param[out] srcX X coordinate in source coordinate system.
      * @param[out] srcY Y coordinate in source coordinate system.
-     * @param[out] srcZ Z coordinate in source coordinate system (can be NULL).
+     * @param[out] srcZ Z coordinate in source coordinate system (can be nullptr).
      * @param[in] destX X coordinate in destination coordinate system.
      * @param[in] destY Y coordinate in destination coordinate system.
      * @param[in] destZ Z coordinate in destination coordinate system.
@@ -83,9 +83,9 @@ public:
 
     /** Get units for CRS.
      *
-     * @param[out] xUnit Units for x axis (can be NULL).
-     * @param[out] yUnit Units for y axis (can be NULL).
-     * @param[out] zUnit Units for z axis (can be NULL).
+     * @param[out] xUnit Units for x axis (can be nullptr).
+     * @param[out] yUnit Units for y axis (can be nullptr).
+     * @param[out] zUnit Units for z axis (can be nullptr).
      * @param[in] crsString CRS for coordinate system.
      */
     static

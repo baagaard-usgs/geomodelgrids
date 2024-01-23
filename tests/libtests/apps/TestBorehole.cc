@@ -7,13 +7,16 @@
 #include "geomodelgrids/apps/Borehole.hh" // USES Borehole
 #include "geomodelgrids/utils/constants.hh" // USES NODATA_VALUE
 
-#include "ModelPoints.hh"
+#include "tests/data/ModelPoints.hh"
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "catch2/catch_test_macros.hpp"
+#include "catch2/matchers/catch_matchers_floating_point.hpp"
 
-#include <fstream> // USES std::ifstream, std::ofstream
-#include <iomanip> // USES ios::setf(), ios::setprecision()
 #include <getopt.h> // USES optind
+#include <fstream> // USES std::ifstream, std::ofstream
+#include <iostream> // USES std::cout
+#include <sstream> // USES std::ostringstream
+#include <iomanip> // USES ios::setf(), ios::setprecision()
 #include <cmath> // USES fabs()
 
 namespace geomodelgrids {
@@ -22,34 +25,12 @@ namespace geomodelgrids {
     } // apps
 } // geomodelgrids
 
-class geomodelgrids::apps::TestBorehole : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE -------------------------------------------------------------------------
-    CPPUNIT_TEST_SUITE(TestBorehole);
-
-    CPPUNIT_TEST(testConstructor);
-    CPPUNIT_TEST(testParseNoArgs);
-    CPPUNIT_TEST(testParseArgsHelp);
-    CPPUNIT_TEST(testParseArgsNoLocation);
-    CPPUNIT_TEST(testParseArgsNoValues);
-    CPPUNIT_TEST(testParseArgsNoModels);
-    CPPUNIT_TEST(testParseArgsNoOutput);
-    CPPUNIT_TEST(testParseArgsWrong);
-    CPPUNIT_TEST(testParseArgsMinimal);
-    CPPUNIT_TEST(testParseArgsAll);
-    CPPUNIT_TEST(testPrintHelp);
-    CPPUNIT_TEST(testRunHelp);
-    CPPUNIT_TEST(testRunOneBlockFlat);
-    CPPUNIT_TEST(testRunThreeBlocksTopo);
-    CPPUNIT_TEST(testRunBadOutput);
-    CPPUNIT_TEST(testRunBadLocation);
-
-    CPPUNIT_TEST_SUITE_END();
-
+class geomodelgrids::apps::TestBorehole {
     // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
-    /// Setup test.
-    void setUp(void);
+    /// Constructor.
+    TestBorehole(void);
 
     /// Test constructor.
     void testConstructor(void);
@@ -100,7 +81,56 @@ public:
     void testRunBadLocation(void);
 
 }; // class TestBorehole
-CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::apps::TestBorehole);
+
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestBorehole::testConstructor", "[TestBorehole]") {
+    geomodelgrids::apps::TestBorehole().testConstructor();
+}
+TEST_CASE("TestBorehole::testParseNoArgs", "[TestBorehole]") {
+    geomodelgrids::apps::TestBorehole().testParseNoArgs();
+}
+TEST_CASE("TestBorehole::testParseArgsHelp", "[TestBorehole]") {
+    geomodelgrids::apps::TestBorehole().testParseArgsHelp();
+}
+TEST_CASE("TestBorehole::testParseArgsNoLocation", "[TestBorehole]") {
+    geomodelgrids::apps::TestBorehole().testParseArgsNoLocation();
+}
+TEST_CASE("TestBorehole::testParseArgsNoValues", "[TestBorehole]") {
+    geomodelgrids::apps::TestBorehole().testParseArgsNoValues();
+}
+TEST_CASE("TestBorehole::testParseArgsNoModels", "[TestBorehole]") {
+    geomodelgrids::apps::TestBorehole().testParseArgsNoModels();
+}
+TEST_CASE("TestBorehole::testParseArgsNoOutput", "[TestBorehole]") {
+    geomodelgrids::apps::TestBorehole().testParseArgsNoOutput();
+}
+TEST_CASE("TestBorehole::testParseArgsWrong", "[TestBorehole]") {
+    geomodelgrids::apps::TestBorehole().testParseArgsWrong();
+}
+TEST_CASE("TestBorehole::testParseArgsMinimal", "[TestBorehole]") {
+    geomodelgrids::apps::TestBorehole().testParseArgsMinimal();
+}
+TEST_CASE("TestBorehole::testParseArgsAll", "[TestBorehole]") {
+    geomodelgrids::apps::TestBorehole().testParseArgsAll();
+}
+TEST_CASE("TestBorehole::testPrintHelp", "[TestBorehole]") {
+    geomodelgrids::apps::TestBorehole().testPrintHelp();
+}
+TEST_CASE("TestBorehole::testRunHelp", "[TestBorehole]") {
+    geomodelgrids::apps::TestBorehole().testRunHelp();
+}
+TEST_CASE("TestBorehole::testRunOneBlockFlat", "[TestBorehole]") {
+    geomodelgrids::apps::TestBorehole().testRunOneBlockFlat();
+}
+TEST_CASE("TestBorehole::testRunThreeBlocksTopo", "[TestBorehole]") {
+    geomodelgrids::apps::TestBorehole().testRunThreeBlocksTopo();
+}
+TEST_CASE("TestBorehole::testRunBadOutput", "[TestBorehole]") {
+    geomodelgrids::apps::TestBorehole().testRunBadOutput();
+}
+TEST_CASE("TestBorehole::testRunBadLocation", "[TestBorehole]") {
+    geomodelgrids::apps::TestBorehole().testRunBadLocation();
+}
 
 // ------------------------------------------------------------------------------------------------
 namespace geomodelgrids {
@@ -118,8 +148,7 @@ public:
 
 }; // _TestBorehole
 // ------------------------------------------------------------------------------------------------
-void
-geomodelgrids::apps::TestBorehole::setUp(void) {
+geomodelgrids::apps::TestBorehole::TestBorehole(void) {
     optind = 1; // reset parsing of argc and argv
 } // setUp
 
@@ -130,10 +159,10 @@ void
 geomodelgrids::apps::TestBorehole::testConstructor(void) {
     Borehole borehole;
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in points CRS.", std::string("EPSG:4326"), borehole._pointsCRS);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in maximum depth.", 5000.0, borehole._maxDepth);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in resolution.", 10.0, borehole._dz);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in help flag.", false, borehole._showHelp);
+    CHECK(std::string("EPSG:4326") == borehole._pointsCRS);
+    CHECK(5000.0 == borehole._maxDepth);
+    CHECK(10.0 == borehole._dz);
+    CHECK(false == borehole._showHelp);
 } // testConstructor
 
 
@@ -146,7 +175,7 @@ geomodelgrids::apps::TestBorehole::testParseNoArgs(void) {
 
     Borehole borehole;
     borehole._parseArgs(nargs, const_cast<char**>(args));
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in help.", borehole._showHelp);
+    CHECK(borehole._showHelp);
 } // testParseNoArgs
 
 
@@ -159,7 +188,7 @@ geomodelgrids::apps::TestBorehole::testParseArgsHelp(void) {
 
     Borehole borehole;
     borehole._parseArgs(nargs, const_cast<char**>(args));
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in help.", borehole._showHelp);
+    CHECK(borehole._showHelp);
 } // testParseArgsHelp
 
 
@@ -171,7 +200,7 @@ geomodelgrids::apps::TestBorehole::testParseArgsNoLocation(void) {
     const char* const args[nargs] = { "test", "--values=A", "--models=B", "--output=C" };
 
     Borehole borehole;
-    CPPUNIT_ASSERT_THROW(borehole._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
+    CHECK_THROWS_AS(borehole._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
 } // testParseArgsNoPoints
 
 
@@ -183,7 +212,7 @@ geomodelgrids::apps::TestBorehole::testParseArgsNoValues(void) {
     const char* const args[nargs] = { "test", "--location=1.0,2.0", "--models=B", "--output=C" };
 
     Borehole borehole;
-    CPPUNIT_ASSERT_THROW(borehole._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
+    CHECK_THROWS_AS(borehole._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
 } // testParseArgsNoModels
 
 
@@ -195,7 +224,7 @@ geomodelgrids::apps::TestBorehole::testParseArgsNoModels(void) {
     const char* const args[nargs] = { "test", "--location=1.0,2.0", "--values=B", "--output=C" };
 
     Borehole borehole;
-    CPPUNIT_ASSERT_THROW(borehole._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
+    CHECK_THROWS_AS(borehole._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
 } // testParseArgsNoModels
 
 
@@ -207,7 +236,7 @@ geomodelgrids::apps::TestBorehole::testParseArgsNoOutput(void) {
     const char* const args[nargs] = { "test", "--location=1.0,2.0", "--values=A", "--models=B" };
 
     Borehole borehole;
-    CPPUNIT_ASSERT_THROW(borehole._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
+    CHECK_THROWS_AS(borehole._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
 } // testParseArgsNoOutput
 
 
@@ -219,7 +248,7 @@ geomodelgrids::apps::TestBorehole::testParseArgsWrong(void) {
     const char* const args[nargs] = { "test", "--blah" };
 
     Borehole borehole;
-    CPPUNIT_ASSERT_THROW(borehole._parseArgs(nargs, const_cast<char**>(args)), std::logic_error);
+    CHECK_THROWS_AS(borehole._parseArgs(nargs, const_cast<char**>(args)), std::logic_error);
 } // testParseArgsWrong
 
 
@@ -238,15 +267,15 @@ geomodelgrids::apps::TestBorehole::testParseArgsMinimal(void) {
 
     Borehole borehole;
     borehole._parseArgs(nargs, const_cast<char**>(args));
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of values.", size_t(2), borehole._valueNames.size());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in values.", std::string("one"), borehole._valueNames[0]);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in values.", std::string("two"), borehole._valueNames[1]);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of models.", size_t(1), borehole._modelFilenames.size());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in models.", std::string("A"), borehole._modelFilenames[0]);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in location x coordinate.", 1.0, borehole._location[0]);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in location y coordinate.", 2.0, borehole._location[1]);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in output.", std::string("points.out"), borehole._outputFilename);
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in help for minimal args.", !borehole._showHelp);
+    CHECK(size_t(2) == borehole._valueNames.size());
+    CHECK(std::string("one") == borehole._valueNames[0]);
+    CHECK(std::string("two") == borehole._valueNames[1]);
+    CHECK(size_t(1) == borehole._modelFilenames.size());
+    CHECK(std::string("A") == borehole._modelFilenames[0]);
+    CHECK(1.0 == borehole._location[0]);
+    CHECK(2.0 == borehole._location[1]);
+    CHECK(std::string("points.out") == borehole._outputFilename);
+    CHECK(!borehole._showHelp);
 } // testParseArgsMinimal
 
 
@@ -271,20 +300,20 @@ geomodelgrids::apps::TestBorehole::testParseArgsAll(void) {
 
     Borehole borehole;
     borehole._parseArgs(nargs, const_cast<char**>(args));
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of models.", size_t(1), borehole._modelFilenames.size());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of values.", numValues, borehole._valueNames.size());
+    CHECK(size_t(1) == borehole._modelFilenames.size());
+    REQUIRE(numValues == borehole._valueNames.size());
     for (size_t i = 0; i < numValues; ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in value name.", std::string(valueNamesE[i]), borehole._valueNames[i]);
+        CHECK(std::string(valueNamesE[i]) == borehole._valueNames[i]);
     } // for
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in models.", std::string("A"), borehole._modelFilenames[0]);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in location x coordinate.", 1.0, borehole._location[0]);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in location y coordinate.", 2.0, borehole._location[1]);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in output.", std::string("points.out"), borehole._outputFilename);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in points coordsys.", std::string("EPSG:26910"), borehole._pointsCRS);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in maximum depth.", 300.0, borehole._maxDepth);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in resolution.", 100.0, borehole._dz);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in log.", std::string("error.log"), borehole._logFilename);
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in help.", !borehole._showHelp);
+    CHECK(std::string("A") == borehole._modelFilenames[0]);
+    CHECK(1.0 == borehole._location[0]);
+    CHECK(2.0 == borehole._location[1]);
+    CHECK(std::string("points.out") == borehole._outputFilename);
+    CHECK(std::string("EPSG:26910") == borehole._pointsCRS);
+    CHECK(300.0 == borehole._maxDepth);
+    CHECK(100.0 == borehole._dz);
+    CHECK(std::string("error.log") == borehole._logFilename);
+    CHECK(!borehole._showHelp);
 } // testParseArgsAll
 
 
@@ -299,7 +328,7 @@ geomodelgrids::apps::TestBorehole::testPrintHelp(void) {
     Borehole borehole;
     borehole._printHelp();
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(1053), coutHelp.str().length());
+    CHECK(size_t(1053) == coutHelp.str().length());
 } // testPrintHelp
 
 
@@ -320,7 +349,7 @@ geomodelgrids::apps::TestBorehole::testRunHelp(void) {
     borehole.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(1053), coutHelp.str().length());
+    CHECK(size_t(1053) == coutHelp.str().length());
 } // testRunHelp
 
 
@@ -344,11 +373,11 @@ geomodelgrids::apps::TestBorehole::testRunOneBlockFlat(void) {
     Borehole borehole;
     borehole.run(nargs, const_cast<char**>(args));
 
-    std::ifstream sin("one-block-flat-borehole.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
+    std::ifstream sin("one-block-flat-borehole.out");assert(sin.is_open() && sin.good());
     _TestBorehole::checkBorehole(sin, boreholeOne);
     sin.close();
 
-    std::ifstream slog("error.log");CPPUNIT_ASSERT(slog.is_open() && slog.good());
+    std::ifstream slog("error.log");assert(slog.is_open() && slog.good());
 } // testRunOneBlockFlat
 
 
@@ -372,7 +401,7 @@ geomodelgrids::apps::TestBorehole::testRunThreeBlocksTopo(void) {
     Borehole borehole;
     borehole.run(nargs, const_cast<char**>(args));
 
-    std::ifstream sin("three-blocks-topo-borehole.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
+    std::ifstream sin("three-blocks-topo-borehole.out");assert(sin.is_open() && sin.good());
     _TestBorehole::checkBorehole(sin, boreholeThree);
     sin.close();
 } // testRunThreeBlocksTopo
@@ -394,7 +423,7 @@ geomodelgrids::apps::TestBorehole::testRunBadOutput(void) {
     geomodelgrids::testdata::ThreeBlocksTopoBorehole boreholeThree;
 
     Borehole borehole;
-    CPPUNIT_ASSERT_THROW(borehole.run(nargs, const_cast<char**>(args)), std::runtime_error);
+    CHECK_THROWS_AS(borehole.run(nargs, const_cast<char**>(args)), std::runtime_error);
 } // testRunBadOutput
 
 
@@ -414,7 +443,7 @@ geomodelgrids::apps::TestBorehole::testRunBadLocation(void) {
     geomodelgrids::testdata::ThreeBlocksTopoBorehole boreholeThree;
 
     Borehole borehole;
-    CPPUNIT_ASSERT_EQUAL(1, borehole.run(nargs, const_cast<char**>(args)));
+    CHECK(1 == borehole.run(nargs, const_cast<char**>(args)));
 } // testRunBadLocation
 
 
@@ -439,37 +468,35 @@ geomodelgrids::apps::_TestBorehole::checkBorehole(std::istream& sin,
 
         double elev, depth;
         const double tolerance = 1.0e-6;
-        sin >> elev;CPPUNIT_ASSERT_MESSAGE("Could not read elevation in borehole.", sin.good());
-        sin >> depth;CPPUNIT_ASSERT_MESSAGE("Could not read depth in borehole.", sin.good());
+        sin >> elev;CHECK(sin.good());
+        sin >> depth;CHECK(sin.good());
 
         const double elevE = pointsLLE[iPt*spaceDim+2];
-        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Mismatch in elevation.", elevE, elev, tolerance*fabs(elevE));
-        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE("Mismatch in depth.", groundSurf-elevE, depth, tolerance*fabs(groundSurf-elevE));
+        CHECK_THAT(elev, Catch::Matchers::WithinAbs(elevE, tolerance*fabs(elevE)));
+        CHECK_THAT(depth, Catch::Matchers::WithinAbs(groundSurf-elevE, tolerance*fabs(groundSurf-elevE)));
 
         { // Value 'two'
             double value = NODATA_VALUE;
-            sin >> value;CPPUNIT_ASSERT_MESSAGE("Could not read value 'two' in output.", sin.good());
+            sin >> value;CHECK(sin.good());
 
             const double valueE = points.computeValueTwo(x, y, z);
 
-            std::ostringstream msg;
-            msg << "Mismatch for value 'two' for point ("
-                << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ", " << pointsLLE[iPt*spaceDim+2] << ").";
+            INFO("Mismatch for value 'two' for point ("
+                 << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ", " << pointsLLE[iPt*spaceDim+2] << ").");
             const double valueTolerance = std::max(tolerance, tolerance*fabs(valueE));
-            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, value, valueTolerance);
+            CHECK_THAT(value, Catch::Matchers::WithinAbs(valueE, valueTolerance));
         } // Value 'two'
 
         { // Value 'one'
             double value = NODATA_VALUE;
-            sin >> value;CPPUNIT_ASSERT_MESSAGE("Could not read value 'one' in output.", sin.good());
+            sin >> value;CHECK(sin.good());
 
             const double valueE = points.computeValueOne(x, y, z);
 
-            std::ostringstream msg;
-            msg << "Mismatch for value 'one' for point ("
-                << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ", " << pointsLLE[iPt*spaceDim+2] << ").";
+            INFO("Mismatch for value 'one' for point ("
+                 << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ", " << pointsLLE[iPt*spaceDim+2] << ").");
             const double valueTolerance = std::max(tolerance, tolerance*fabs(valueE));
-            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, value, valueTolerance);
+            CHECK_THAT(value, Catch::Matchers::WithinAbs(valueE, valueTolerance));
         } // Value 'one'
     } // for
 } // checkBorehole

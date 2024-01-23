@@ -417,7 +417,7 @@ class App(object):
                 "cc",
                 "c++",
                 "lto-dump",
-                )
+            )
             filepath = tarinfo.name
             if os.path.splitext(filepath)[1] == ".a":
                 return None
@@ -427,9 +427,9 @@ class App(object):
             if filename.startswith("x86_64-pc-linux-gnu"):
                 return None
             if filename.startswith("libasan") or \
-              filename.startswith("libtsan") or \
-              filename.startswith("libubsan") or \
-              filename.startswith("liblsan"):
+                    filename.startswith("libtsan") or \
+                    filename.startswith("libubsan") or \
+                    filename.startswith("liblsan"):
                 return None
             if os.path.split(filepath)[0].endswith("libexec"):
                 return None

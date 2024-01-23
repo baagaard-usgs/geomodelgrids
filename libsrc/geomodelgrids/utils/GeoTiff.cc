@@ -11,9 +11,9 @@
 
 // ------------------------------------------------------------------------------------------------
 geomodelgrids::utils::GeoTiff::GeoTiff(void) :
-    _driver(NULL),
-    _dataset(NULL),
-    _buffer(NULL),
+    _driver(nullptr),
+    _dataset(nullptr),
+    _buffer(nullptr),
     _noDataValue(-1.0e+20),
     _numCols(0),
     _numRows(0),
@@ -177,10 +177,10 @@ geomodelgrids::utils::GeoTiff::create(const char* filename) {
         throw std::runtime_error("Could not get GDAL GeoTiff driver.");
     } // if
 
-    char** options = NULL;
+    char** options = nullptr;
     options = CSLSetNameValue(options, "COMPRESS", "DEFLATE");
     _dataset = _driver->Create(filename, _numCols, _numRows, _numBands, GDT_Float32, options);
-    CSLDestroy(options);options = NULL;
+    CSLDestroy(options);options = nullptr;
     if (!_dataset) {
         std::ostringstream msg;
         msg << "Could not open GeoTiff file '" << filename << "'.";
@@ -188,10 +188,10 @@ geomodelgrids::utils::GeoTiff::create(const char* filename) {
     } // if
 
     // Set projection
-    PJ_CONTEXT* context = NULL;
+    PJ_CONTEXT* context = nullptr;
     PJ* proj = proj_create(context, _crs.c_str());
     _dataset->SetProjection(proj_as_wkt(context, proj, PJ_WKT1_GDAL, options));
-    proj_destroy(proj);proj = NULL;
+    proj_destroy(proj);proj = nullptr;
 
     // Set geographic transformation.
     _dataset->SetGeoTransform(_transform);
@@ -211,7 +211,7 @@ geomodelgrids::utils::GeoTiff::create(const char* filename) {
 void
 geomodelgrids::utils::GeoTiff::write(void) {
     CPLErr err = _dataset->RasterIO(GF_Write, 0, 0, _numCols, _numRows, _buffer,
-                                    _numCols, _numRows, GDT_Float32, _numBands, NULL, 0, 0, 0, NULL);
+                                    _numCols, _numRows, GDT_Float32, _numBands, nullptr, 0, 0, 0, nullptr);
     if (err != CE_None) { throw std::runtime_error("Error while writing row of raster bands."); }
 }
 
@@ -248,10 +248,10 @@ geomodelgrids::utils::GeoTiff::read(const char* filename) {
         } // for
 
         const size_t bufferSize = _numCols * _numRows * _numBands;
-        _buffer = (bufferSize > 0) ? new float[bufferSize] : NULL;assert(_buffer);
+        _buffer = (bufferSize > 0) ? new float[bufferSize] : nullptr;assert(_buffer);
 
         err = _dataset->RasterIO(GF_Read, 0, 0, _numCols, _numRows, _buffer, _numCols, _numRows,
-                                 GDT_Float32, _numBands, NULL, 0, 0, 0, NULL);
+                                 GDT_Float32, _numBands, nullptr, 0, 0, 0, nullptr);
         if (err != CE_None) { throw std::runtime_error("Error while reading row of raster bands."); }
     } catch (const std::exception& err) {
         this->close();
@@ -271,14 +271,14 @@ geomodelgrids::utils::GeoTiff::read(const char* filename) {
 // ------------------------------------------------------------------------------------------------
 void
 geomodelgrids::utils::GeoTiff::close(void) {
-    delete[] _buffer;_buffer = NULL;
+    delete[] _buffer;_buffer = nullptr;
     if (_dataset) {
         GDALClose(_dataset);
-        _dataset = NULL;
+        _dataset = nullptr;
     } // if
     if (_driver) {
         GDALDestroyDriverManager();
-        _driver = NULL;
+        _driver = nullptr;
     } // if
 }
 

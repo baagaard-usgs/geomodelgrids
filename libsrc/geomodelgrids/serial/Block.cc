@@ -16,18 +16,18 @@
 // Default constructor.
 geomodelgrids::serial::Block::Block(const char* name) :
     _name(name),
-    _hyperslab(NULL),
+    _hyperslab(nullptr),
     _resolutionX(0.0),
     _resolutionY(0.0),
     _resolutionZ(0.0),
     _zTop(0.0),
-    _coordinatesX(NULL),
-    _coordinatesY(NULL),
-    _coordinatesZ(NULL),
-    _indexingX(NULL),
-    _indexingY(NULL),
-    _indexingZ(NULL),
-    _values(NULL),
+    _coordinatesX(nullptr),
+    _coordinatesY(nullptr),
+    _coordinatesZ(nullptr),
+    _indexingX(nullptr),
+    _indexingY(nullptr),
+    _indexingZ(nullptr),
+    _values(nullptr),
     _numValues(0) {
     _dims[0] = 0;
     _dims[1] = 0;
@@ -44,16 +44,16 @@ geomodelgrids::serial::Block::Block(const char* name) :
 // ------------------------------------------------------------------------------------------------
 // Destructor
 geomodelgrids::serial::Block::~Block(void) {
-    delete[] _coordinatesX;_coordinatesX = NULL;
-    delete[] _coordinatesY;_coordinatesY = NULL;
-    delete[] _coordinatesZ;_coordinatesZ = NULL;
+    delete[] _coordinatesX;_coordinatesX = nullptr;
+    delete[] _coordinatesY;_coordinatesY = nullptr;
+    delete[] _coordinatesZ;_coordinatesZ = nullptr;
 
-    delete _indexingX;_indexingX = NULL;
-    delete _indexingY;_indexingY = NULL;
-    delete _indexingZ;_indexingZ = NULL;
+    delete _indexingX;_indexingX = nullptr;
+    delete _indexingY;_indexingY = nullptr;
+    delete _indexingZ;_indexingZ = nullptr;
 
-    delete _hyperslab;_hyperslab = NULL;
-    delete[] _values;_values = NULL;
+    delete _hyperslab;_hyperslab = nullptr;
+    delete[] _values;_values = nullptr;
 } // destructor
 
 
@@ -62,7 +62,7 @@ geomodelgrids::serial::Block::~Block(void) {
 void
 geomodelgrids::serial::Block::loadMetadata(geomodelgrids::serial::HDF5* const h5) {
     assert(h5);
-    delete[] _values;_values = NULL;
+    delete[] _values;_values = nullptr;
 
     const std::string& blockPath = std::string("blocks/") + _name;
 
@@ -119,7 +119,7 @@ geomodelgrids::serial::Block::loadMetadata(geomodelgrids::serial::HDF5* const h5
         _zTop = _coordinatesZ[0];
     } // if/else
 
-    hsize_t* hdims = NULL;
+    hsize_t* hdims = nullptr;
     int ndims = 0;
     h5->getDatasetDims(&hdims, &ndims, blockPath.c_str());
     assert(4 == ndims);
@@ -135,7 +135,7 @@ geomodelgrids::serial::Block::loadMetadata(geomodelgrids::serial::HDF5* const h5
     } // if
 
     _numValues = hdims[3];
-    delete[] hdims;hdims = NULL;
+    delete[] hdims;hdims = nullptr;
 
     // Check to make sure dimensions of block match coordinates (if provided).
     if (_coordinatesX && (dims[0] != _dims[0])) {
@@ -156,9 +156,9 @@ geomodelgrids::serial::Block::loadMetadata(geomodelgrids::serial::HDF5* const h5
 
     if (attributeErrors) { throw std::runtime_error(msg.str().c_str()); }
 
-    delete _indexingX;_indexingX = NULL;
-    delete _indexingY;_indexingY = NULL;
-    delete _indexingZ;_indexingZ = NULL;
+    delete _indexingX;_indexingX = nullptr;
+    delete _indexingY;_indexingY = nullptr;
+    delete _indexingZ;_indexingZ = nullptr;
     if (!_coordinatesX) {
         _indexingX = new geomodelgrids::utils::IndexingUniform(_resolutionX);
     } else {
@@ -308,7 +308,7 @@ geomodelgrids::serial::Block::openQuery(geomodelgrids::serial::HDF5* const h5) {
     const std::string blockPath(std::string("/blocks/") + _name);
     delete _hyperslab;_hyperslab = new geomodelgrids::serial::Hyperslab(h5, blockPath.c_str(), dims, ndims);
 
-    delete[] _values;_values = (_numValues > 0) ? new double[_numValues] : NULL;
+    delete[] _values;_values = (_numValues > 0) ? new double[_numValues] : nullptr;
 } // openQuery
 
 
@@ -344,8 +344,8 @@ geomodelgrids::serial::Block::query(const double x,
 // Cleanup after querying.
 void
 geomodelgrids::serial::Block::closeQuery(void) {
-    delete _hyperslab;_hyperslab = NULL;
-    delete[] _values;_values = NULL;
+    delete _hyperslab;_hyperslab = nullptr;
+    delete[] _values;_values = nullptr;
 } // closeQuery
 
 

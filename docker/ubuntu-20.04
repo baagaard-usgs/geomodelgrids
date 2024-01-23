@@ -22,7 +22,6 @@ RUN apt-get update \
   unzip \
   git \
   ca-certificates \
-  libcppunit-dev \
   hdf5-tools \
   libhdf5-dev \
   sqlite3 \
@@ -76,6 +75,21 @@ ENV TOP_SRCDIR=$HOME/src \
   TOP_BUILDDIR=$HOME/build
 
 USER ${GMG_USER}
+
+# --------------------------------------
+# Catch2
+# --------------------------------------
+ENV CATCH2_VER=3.3.2  src_dir=${TOP_SRCDIR}/catch2  build_dir=${TOP_BUILDDIR}/catch2
+RUN mkdir -p ${src_dir} && mkdir -p ${build_dir}
+WORKDIR ${src_dir}
+RUN curl -L -O https://github.com/catchorg/Catch2/archive/refs/tags/v${CATCH2_VER}.tar.gz \
+  && tar -xf v${CATCH2_VER}.tar.gz
+
+WORKDIR ${build_dir}
+RUN cmake -DCMAKE_INSTALL_PREFIX=${INSTALL_DIR} ${src_dir}/Catch2-${CATCH2_VER} \
+  && make -j$(nproc) \
+  && make install \
+  && rm -r ${build_dir}
 
 # --------------------------------------
 # Python packages

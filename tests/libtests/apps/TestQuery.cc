@@ -7,11 +7,14 @@
 #include "geomodelgrids/apps/Query.hh" // USES Query
 #include "geomodelgrids/utils/constants.hh" // USES NODATA_VALUE
 
-#include "ModelPoints.hh"
+#include "tests/data/ModelPoints.hh"
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "catch2/catch_test_macros.hpp"
+#include "catch2/matchers/catch_matchers_floating_point.hpp"
 
 #include <fstream> // USES std::ifstream, std::ofstream
+#include <iostream> // USES std::cout
+#include <sstream> // USES std::ostringstream
 #include <iomanip> // USES ios::setf(), ios::setprecision()
 #include <getopt.h> // USES optind
 #include <cmath> // USES fabs()
@@ -22,38 +25,12 @@ namespace geomodelgrids {
     } // apps
 } // geomodelgrids
 
-class geomodelgrids::apps::TestQuery : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE -------------------------------------------------------------------------
-    CPPUNIT_TEST_SUITE(TestQuery);
-
-    CPPUNIT_TEST(testConstructor);
-    CPPUNIT_TEST(testParseNoArgs);
-    CPPUNIT_TEST(testParseArgsHelp);
-    CPPUNIT_TEST(testParseArgsNoValues);
-    CPPUNIT_TEST(testParseArgsNoPoints);
-    CPPUNIT_TEST(testParseArgsNoModels);
-    CPPUNIT_TEST(testParseArgsNoOutput);
-    CPPUNIT_TEST(testParseArgsWrong);
-    CPPUNIT_TEST(testParseArgsMinimal);
-    CPPUNIT_TEST(testParseArgsAll);
-    CPPUNIT_TEST(testPrintHelp);
-    CPPUNIT_TEST(testRunHelp);
-    CPPUNIT_TEST(testRunOneBlockFlat);
-    CPPUNIT_TEST(testRunThreeBlocksTopo);
-    CPPUNIT_TEST(testRunThreeBlocksSquashTop);
-    CPPUNIT_TEST(testRunThreeBlocksSquashTopoBathy);
-    CPPUNIT_TEST(testRunTwoModels);
-    CPPUNIT_TEST(testRunBadInput);
-    CPPUNIT_TEST(testRunBadOutput);
-    CPPUNIT_TEST(testRunInconsistentUnits);
-
-    CPPUNIT_TEST_SUITE_END();
-
+class geomodelgrids::apps::TestQuery {
     // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
-    /// Setup test.
-    void setUp(void);
+    /// Constructor.
+    TestQuery(void);
 
     /// Test constructor.
     void testConstructor(void);
@@ -116,7 +93,68 @@ public:
     void testRunInconsistentUnits(void);
 
 }; // class TestQuery
-CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::apps::TestQuery);
+
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestQuery::testConstructor", "[TestQuery]") {
+    geomodelgrids::apps::TestQuery().testConstructor();
+}
+TEST_CASE("TestQuery::testParseNoArgs", "[TestQuery]") {
+    geomodelgrids::apps::TestQuery().testParseNoArgs();
+}
+TEST_CASE("TestQuery::testParseArgsHelp", "[TestQuery]") {
+    geomodelgrids::apps::TestQuery().testParseArgsHelp();
+}
+TEST_CASE("TestQuery::testParseArgsNoValues", "[TestQuery]") {
+    geomodelgrids::apps::TestQuery().testParseArgsNoValues();
+}
+TEST_CASE("TestQuery::testParseArgsNoPoints", "[TestQuery]") {
+    geomodelgrids::apps::TestQuery().testParseArgsNoPoints();
+}
+TEST_CASE("TestQuery::testParseArgsNoModels", "[TestQuery]") {
+    geomodelgrids::apps::TestQuery().testParseArgsNoModels();
+}
+TEST_CASE("TestQuery::testParseArgsNoOutput", "[TestQuery]") {
+    geomodelgrids::apps::TestQuery().testParseArgsNoOutput();
+}
+TEST_CASE("TestQuery::testParseArgsWrong", "[TestQuery]") {
+    geomodelgrids::apps::TestQuery().testParseArgsWrong();
+}
+TEST_CASE("TestQuery::testParseArgsMinimal", "[TestQuery]") {
+    geomodelgrids::apps::TestQuery().testParseArgsMinimal();
+}
+TEST_CASE("TestQuery::testParseArgsAll", "[TestQuery]") {
+    geomodelgrids::apps::TestQuery().testParseArgsAll();
+}
+TEST_CASE("TestQuery::testPrintHelp", "[TestQuery]") {
+    geomodelgrids::apps::TestQuery().testPrintHelp();
+}
+TEST_CASE("TestQuery::testRunHelp", "[TestQuery]") {
+    geomodelgrids::apps::TestQuery().testRunHelp();
+}
+TEST_CASE("TestQuery::testRunOneBlockFlat", "[TestQuery]") {
+    geomodelgrids::apps::TestQuery().testRunOneBlockFlat();
+}
+TEST_CASE("TestQuery::testRunThreeBlocksTopo", "[TestQuery]") {
+    geomodelgrids::apps::TestQuery().testRunThreeBlocksTopo();
+}
+TEST_CASE("TestQuery::testRunThreeBlocksSquashTop", "[TestQuery]") {
+    geomodelgrids::apps::TestQuery().testRunThreeBlocksSquashTop();
+}
+TEST_CASE("TestQuery::testRunThreeBlocksSquashTopoBathy", "[TestQuery]") {
+    geomodelgrids::apps::TestQuery().testRunThreeBlocksSquashTopoBathy();
+}
+TEST_CASE("TestQuery::testRunTwoModels", "[TestQuery]") {
+    geomodelgrids::apps::TestQuery().testRunTwoModels();
+}
+TEST_CASE("TestQuery::testRunBadInput", "[TestQuery]") {
+    geomodelgrids::apps::TestQuery().testRunBadInput();
+}
+TEST_CASE("TestQuery::testRunBadOutput", "[TestQuery]") {
+    geomodelgrids::apps::TestQuery().testRunBadOutput();
+}
+TEST_CASE("TestQuery::testRunInconsistentUnits", "[TestQuery]") {
+    geomodelgrids::apps::TestQuery().testRunInconsistentUnits();
+}
 
 // ------------------------------------------------------------------------------------------------
 namespace geomodelgrids {
@@ -142,8 +180,7 @@ public:
 }; // _TestQuery
 
 // ------------------------------------------------------------------------------------------------
-void
-geomodelgrids::apps::TestQuery::setUp(void) {
+geomodelgrids::apps::TestQuery::TestQuery(void) {
     optind = 1; // reset parsing of argc and argv
 } // setUp
 
@@ -154,10 +191,10 @@ void
 geomodelgrids::apps::TestQuery::testConstructor(void) {
     Query query;
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in points CRS.", std::string("EPSG:4326"), query._pointsCRS);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in squash minimum elevation.", -10.0e+3, query._squashMinElev);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Squash flag.", geomodelgrids::serial::Query::SQUASH_NONE, query._squash);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in help flag.", false, query._showHelp);
+    CHECK(std::string("EPSG:4326") == query._pointsCRS);
+    CHECK(-10.0e+3 == query._squashMinElev);
+    CHECK(geomodelgrids::serial::Query::SQUASH_NONE == query._squash);
+    CHECK(false == query._showHelp);
 } // testConstructor
 
 
@@ -170,7 +207,7 @@ geomodelgrids::apps::TestQuery::testParseNoArgs(void) {
 
     Query query;
     query._parseArgs(nargs, const_cast<char**>(args));
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in help.", query._showHelp);
+    CHECK(query._showHelp);
 } // testParseNoArgs
 
 
@@ -183,7 +220,7 @@ geomodelgrids::apps::TestQuery::testParseArgsHelp(void) {
 
     Query query;
     query._parseArgs(nargs, const_cast<char**>(args));
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in help.", query._showHelp);
+    CHECK(query._showHelp);
 } // testParseArgsHelp
 
 
@@ -195,7 +232,7 @@ geomodelgrids::apps::TestQuery::testParseArgsNoValues(void) {
     const char* const args[nargs] = { "test", "--models=A", "--points=B", "--output=C", };
 
     Query query;
-    CPPUNIT_ASSERT_THROW(query._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
+    CHECK_THROWS_AS(query._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
 } // testParseArgsNoValues
 
 
@@ -207,7 +244,7 @@ geomodelgrids::apps::TestQuery::testParseArgsNoPoints(void) {
     const char* const args[nargs] = { "test", "--values=A", "--models=B", "--output=C", };
 
     Query query;
-    CPPUNIT_ASSERT_THROW(query._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
+    CHECK_THROWS_AS(query._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
 } // testParseArgsNoPoints
 
 
@@ -219,7 +256,7 @@ geomodelgrids::apps::TestQuery::testParseArgsNoModels(void) {
     const char* const args[nargs] = { "test", "--values=A", "--points=B", "--output=C", };
 
     Query query;
-    CPPUNIT_ASSERT_THROW(query._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
+    CHECK_THROWS_AS(query._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
 } // testParseArgsNoModels
 
 
@@ -231,7 +268,7 @@ geomodelgrids::apps::TestQuery::testParseArgsNoOutput(void) {
     const char* const args[nargs] = { "test", "--values=A", "--points=B", "--models=C" };
 
     Query query;
-    CPPUNIT_ASSERT_THROW(query._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
+    CHECK_THROWS_AS(query._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
 } // testParseArgsNoOutput
 
 
@@ -243,7 +280,7 @@ geomodelgrids::apps::TestQuery::testParseArgsWrong(void) {
     const char* const args[nargs] = { "test", "--blah" };
 
     Query query;
-    CPPUNIT_ASSERT_THROW(query._parseArgs(nargs, const_cast<char**>(args)), std::logic_error);
+    CHECK_THROWS_AS(query._parseArgs(nargs, const_cast<char**>(args)), std::logic_error);
 } // testParseArgsWrong
 
 
@@ -262,14 +299,14 @@ geomodelgrids::apps::TestQuery::testParseArgsMinimal(void) {
 
     Query query;
     query._parseArgs(nargs, const_cast<char**>(args));
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of values.", size_t(2), query._valueNames.size());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in values.", std::string("one"), query._valueNames[0]);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in values.", std::string("two"), query._valueNames[1]);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of models.", size_t(1), query._modelFilenames.size());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in models.", std::string("B"), query._modelFilenames[0]);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in points.", std::string("points.in"), query._pointsFilename);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in output.", std::string("points.out"), query._outputFilename);
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in help for minimal args.", !query._showHelp);
+    CHECK(size_t(2) == query._valueNames.size());
+    CHECK(std::string("one") == query._valueNames[0]);
+    CHECK(std::string("two") == query._valueNames[1]);
+    CHECK(size_t(1) == query._modelFilenames.size());
+    CHECK(std::string("B") == query._modelFilenames[0]);
+    CHECK(std::string("points.in") == query._pointsFilename);
+    CHECK(std::string("points.out") == query._outputFilename);
+    CHECK(!query._showHelp);
 } // testParseArgsMinimal
 
 
@@ -294,19 +331,19 @@ geomodelgrids::apps::TestQuery::testParseArgsAll(void) {
 
     Query query;
     query._parseArgs(nargs, const_cast<char**>(args));
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of values.", numValues, query._valueNames.size());
+    REQUIRE(numValues == query._valueNames.size());
     for (size_t i = 0; i < numValues; ++i) {
-        CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in value name.", std::string(valueNamesE[i]), query._valueNames[i]);
+        CHECK(std::string(valueNamesE[i]) == query._valueNames[i]);
     } // for
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of models.", size_t(1), query._modelFilenames.size());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in models.", std::string("A"), query._modelFilenames[0]);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in points.", std::string("points.in"), query._pointsFilename);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in output.", std::string("points.out"), query._outputFilename);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in points coordsys.", std::string("EPSG:26910"), query._pointsCRS);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in squash min elevation.", -2.0e+3, query._squashMinElev);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in squash surfaace.", geomodelgrids::serial::Query::SQUASH_TOP_SURFACE, query._squash);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in log.", std::string("error.log"), query._logFilename);
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in help.", !query._showHelp);
+    CHECK(size_t(1) == query._modelFilenames.size());
+    CHECK(std::string("A") == query._modelFilenames[0]);
+    CHECK(std::string("points.in") == query._pointsFilename);
+    CHECK(std::string("points.out") == query._outputFilename);
+    CHECK(std::string("EPSG:26910") == query._pointsCRS);
+    CHECK(-2.0e+3 == query._squashMinElev);
+    CHECK(geomodelgrids::serial::Query::SQUASH_TOP_SURFACE == query._squash);
+    CHECK(std::string("error.log") == query._logFilename);
+    CHECK(!query._showHelp);
 } // testParseArgsAll
 
 
@@ -321,7 +358,7 @@ geomodelgrids::apps::TestQuery::testPrintHelp(void) {
     Query query;
     query._printHelp();
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(1062), coutHelp.str().length());
+    CHECK(size_t(1062) == coutHelp.str().length());
 } // testPrintHelp
 
 
@@ -342,7 +379,7 @@ geomodelgrids::apps::TestQuery::testRunHelp(void) {
     query.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(1062), coutHelp.str().length());
+    CHECK(size_t(1062) == coutHelp.str().length());
 } // testRunHelp
 
 
@@ -362,19 +399,19 @@ geomodelgrids::apps::TestQuery::testRunOneBlockFlat(void) {
         "--log=error.log",
     };
     geomodelgrids::testdata::OneBlockFlatPoints pointsOne;
-    std::ofstream sout("one-block-flat.in");CPPUNIT_ASSERT(sout.is_open() && sout.good());
+    std::ofstream sout("one-block-flat.in");assert(sout.is_open() && sout.good());
     _TestQuery::createPointsFile(sout, pointsOne);
     sout.close();
 
     Query query;
     query.run(nargs, const_cast<char**>(args));
 
-    std::ifstream sin("one-block-flat.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
+    std::ifstream sin("one-block-flat.out");assert(sin.is_open() && sin.good());
     _TestQuery::readHeader(sin);
     _TestQuery::checkQuery(sin, pointsOne);
     sin.close();
 
-    std::ifstream slog("error.log");CPPUNIT_ASSERT(slog.is_open() && slog.good());
+    std::ifstream slog("error.log");assert(slog.is_open() && slog.good());
 } // testRunOneBlockFlat
 
 
@@ -392,14 +429,14 @@ geomodelgrids::apps::TestQuery::testRunThreeBlocksTopo(void) {
         "--points-coordsys=EPSG:4326",
     };
     geomodelgrids::testdata::ThreeBlocksTopoPoints pointsThree;
-    std::ofstream sout("three-blocks-topo.in");CPPUNIT_ASSERT(sout.is_open() && sout.good());
+    std::ofstream sout("three-blocks-topo.in");assert(sout.is_open() && sout.good());
     _TestQuery::createPointsFile(sout, pointsThree);
     sout.close();
 
     Query query;
     query.run(nargs, const_cast<char**>(args));
 
-    std::ifstream sin("three-blocks-topo.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
+    std::ifstream sin("three-blocks-topo.out");assert(sin.is_open() && sin.good());
     _TestQuery::readHeader(sin);
     _TestQuery::checkQuery(sin, pointsThree);
     sin.close();
@@ -421,14 +458,14 @@ geomodelgrids::apps::TestQuery::testRunThreeBlocksSquashTop(void) {
         "--squash-min-elev=-4.999e+3" // Must match value in ModelPoints.cc
     };
     geomodelgrids::testdata::ThreeBlocksSquashTopPoints pointsThree;
-    std::ofstream sout("three-blocks-squash-top.in");CPPUNIT_ASSERT(sout.is_open() && sout.good());
+    std::ofstream sout("three-blocks-squash-top.in");assert(sout.is_open() && sout.good());
     _TestQuery::createPointsFile(sout, pointsThree);
     sout.close();
 
     Query query;
     query.run(nargs, const_cast<char**>(args));
 
-    std::ifstream sin("three-blocks-squash-top.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
+    std::ifstream sin("three-blocks-squash-top.out");assert(sin.is_open() && sin.good());
     _TestQuery::readHeader(sin);
     _TestQuery::checkQuery(sin, pointsThree);
     sin.close();
@@ -451,14 +488,14 @@ geomodelgrids::apps::TestQuery::testRunThreeBlocksSquashTopoBathy(void) {
         "--squash-surface=topography_bathymetry",
     };
     geomodelgrids::testdata::ThreeBlocksSquashTopoBathyPoints pointsThree;
-    std::ofstream sout("three-blocks-squash-topo-bathy.in");CPPUNIT_ASSERT(sout.is_open() && sout.good());
+    std::ofstream sout("three-blocks-squash-topo-bathy.in");assert(sout.is_open() && sout.good());
     _TestQuery::createPointsFile(sout, pointsThree);
     sout.close();
 
     Query query;
     query.run(nargs, const_cast<char**>(args));
 
-    std::ifstream sin("three-blocks-squash-topo-bathy.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
+    std::ifstream sin("three-blocks-squash-topo-bathy.out");assert(sin.is_open() && sin.good());
     _TestQuery::readHeader(sin);
     _TestQuery::checkQuery(sin, pointsThree);
     sin.close();
@@ -480,7 +517,7 @@ geomodelgrids::apps::TestQuery::testRunTwoModels(void) {
     };
     geomodelgrids::testdata::OneBlockFlatPoints pointsOne;
     geomodelgrids::testdata::ThreeBlocksTopoPoints pointsThree;
-    std::ofstream sout("two-models.in");CPPUNIT_ASSERT(sout.is_open() && sout.good());
+    std::ofstream sout("two-models.in");assert(sout.is_open() && sout.good());
     _TestQuery::createPointsFile(sout, pointsOne);
     _TestQuery::createPointsFile(sout, pointsThree);
     sout.close();
@@ -488,7 +525,7 @@ geomodelgrids::apps::TestQuery::testRunTwoModels(void) {
     Query query;
     query.run(nargs, const_cast<char**>(args));
 
-    std::ifstream sin("two-models.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
+    std::ifstream sin("two-models.out");assert(sin.is_open() && sin.good());
     _TestQuery::readHeader(sin);
     _TestQuery::checkQuery(sin, pointsOne);
     _TestQuery::checkQuery(sin, pointsThree);
@@ -510,7 +547,7 @@ geomodelgrids::apps::TestQuery::testRunBadInput(void) {
         "--values=two,one",
     };
     Query query;
-    CPPUNIT_ASSERT_THROW(query.run(nargs, const_cast<char**>(args)), std::runtime_error);
+    CHECK_THROWS_AS(query.run(nargs, const_cast<char**>(args)), std::runtime_error);
 
 } // testRunBadInput
 
@@ -529,7 +566,7 @@ geomodelgrids::apps::TestQuery::testRunBadOutput(void) {
         "--values=two,one",
     };
     Query query;
-    CPPUNIT_ASSERT_THROW(query.run(nargs, const_cast<char**>(args)), std::runtime_error);
+    CHECK_THROWS_AS(query.run(nargs, const_cast<char**>(args)), std::runtime_error);
 
 } // testRunBadOutput
 
@@ -548,7 +585,7 @@ geomodelgrids::apps::TestQuery::testRunInconsistentUnits(void) {
         "--values=two,one",
     };
     Query query;
-    CPPUNIT_ASSERT_THROW(query.run(nargs, const_cast<char**>(args)), std::runtime_error);
+    CHECK_THROWS_AS(query.run(nargs, const_cast<char**>(args)), std::runtime_error);
 
 } // testRunInconsistentUnits
 
@@ -599,32 +636,30 @@ geomodelgrids::apps::_TestQuery::checkQuery(std::istream& sin,
         for (size_t iDim = 0; iDim < spaceDim; ++iDim) {
             sin >> xyz[iDim];
         } // for
-        CPPUNIT_ASSERT_MESSAGE("Could not read coordinates of point in output.", sin.good());
+        CHECK(sin.good());
 
         { // Value 'two'
             double value = NODATA_VALUE;
-            sin >> value;CPPUNIT_ASSERT_MESSAGE("Could not read value 'two' in output.", sin.good());
+            sin >> value;CHECK(sin.good());
 
             const double valueE = points.computeValueTwo(x, y, z);
 
-            std::ostringstream msg;
-            msg << "Mismatch for value 'two' for point ("
-                << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ", " << pointsLLE[iPt*spaceDim+2] << ").";
+            INFO("Mismatch for value 'two' for point ("
+                 << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ", " << pointsLLE[iPt*spaceDim+2] << ").");
             const double valueTolerance = std::max(tolerance, tolerance*fabs(valueE));
-            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, value, valueTolerance);
+            CHECK_THAT(value, Catch::Matchers::WithinAbs(valueE, valueTolerance));
         } // Value 'two'
 
         { // Value 'one'
             double value = NODATA_VALUE;
-            sin >> value;CPPUNIT_ASSERT_MESSAGE("Could not read value 'one' in output.", sin.good());
+            sin >> value;CHECK(sin.good());
 
             const double valueE = points.computeValueOne(x, y, z);
 
-            std::ostringstream msg;
-            msg << "Mismatch for value 'one' for point ("
-                << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ", " << pointsLLE[iPt*spaceDim+2] << ").";
+            INFO("Mismatch for value 'one' for point ("
+                 << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ", " << pointsLLE[iPt*spaceDim+2] << ").");
             const double valueTolerance = std::max(tolerance, tolerance*fabs(valueE));
-            CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, value, valueTolerance);
+            CHECK_THAT(value, Catch::Matchers::WithinAbs(valueE, valueTolerance));
         } // Value 'one'
     } // for
 } // checkQuery

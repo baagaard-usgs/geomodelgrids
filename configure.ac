@@ -6,7 +6,7 @@
 # ----------------------------------------------------------------------
 
 AC_PREREQ(2.59)
-AC_INIT([geomodelgrids], [1.0.0rc2], [baagaard@usgs.gov])
+AC_INIT([geomodelgrids], [1.0.0rc3], [baagaard@usgs.gov])
 AC_CONFIG_HEADER([portinfo])
 AC_CONFIG_AUX_DIR([./aux-config])
 AC_CONFIG_MACRO_DIR([m4])
@@ -29,7 +29,7 @@ AM_CONDITIONAL([ENABLE_GDAL], [test "$enable_gdal" = yes])
 
 # TESTING
 AC_ARG_ENABLE([testing],
-	[  --enable-testing        Enable Python and C++ (requires cppunit) unit testing [[default=no]]],
+	[  --enable-testing        Enable Python and C++ (requires catch2) unit testing [[default=no]]],
 	[if test "$enableval" = yes ; then enable_testing=yes; else enable_testing=no; fi],
 	[enable_testing=no])
 AM_CONDITIONAL([ENABLE_TESTING], [test "$enable_testing" = yes])
@@ -63,19 +63,19 @@ AC_ARG_ENABLE([spatialdata],
 # ----------------------------------------------------------------------
 # Dependency locations
 # ----------------------------------------------------------------------
-# CPPUNIT
-AC_ARG_WITH([cppunit-incdir],
-    [AC_HELP_STRING([--with-cppunit-incdir],
-        [Specify location of cppunit header files @<:@default=no@:>@])],
-	[with_cppunit_incdir=$withval],
-	[with_cppunit_incdir=no])
-AC_SUBST(with_cppunit_incdir)
-AC_ARG_WITH([cppunit-libdir],
-    [AC_HELP_STRING([--with-cppunit-libdir],
-        [Specify location of cppunit library @<:@default=no@:>@])],
-	[with_cppunit_libdir=$withval],
-	[with_cppunit_libdir=no])
-AC_SUBST(with_cppunit_libdir)
+# CATCH2
+AC_ARG_WITH([catch2-incdir],
+    [AC_HELP_STRING([--with-catch2-incdir],
+        [Specify location of catch2 header files @<:@default=no@:>@])],
+	[with_catch2_incdir=$withval],
+	[with_catch2_incdir=no])
+AC_SUBST(with_catch2_incdir)
+AC_ARG_WITH([catch2-libdir],
+    [AC_HELP_STRING([--with-catch2-libdir],
+        [Specify location of catch2 library @<:@default=no@:>@])],
+	[with_catch2_libdir=$withval],
+	[with_catch2_libdir=no])
+AC_SUBST(with_catch2_libdir)
 
 # PROJ
 AC_ARG_WITH([proj-incdir],
@@ -127,8 +127,8 @@ AC_PROG_CC
 AC_PROG_LIBTOOL
 AC_PROG_INSTALL
 
-# Require C++-11
-AX_CXX_COMPILE_STDCXX(11)
+# Require C++-14
+AX_CXX_COMPILE_STDCXX(14)
 
 
 AC_PROG_LIBTOOL
@@ -169,9 +169,6 @@ AC_SUBST(HDF5_LDFLAGS)
 
 # GDAL
 if test "$enable_gdal" = "yes" ; then
-  # Require C++-11
-  AX_CXX_COMPILE_STDCXX(11)
-
   if test "$with_gdal_incdir" != no; then
     GDAL_INCLUDES="-I$with_gdal_incdir"
   fi
@@ -196,22 +193,22 @@ if test "$enable_python" = "yes" ; then
   CIT_NUMPY_INCDIR
 
   # H5PY
-  CIT_PYTHON_MODULE([h5py],[2.8.0])
+  CIT_PYTHON_MODULE([h5py],[3.0.0])
 fi
 
-# CPPUNIT
+# CATCH2
 if test "$enable_testing" = "yes" ; then
-  if test "$with_cppunit_incdir" != no; then
-    CPPUNIT_INCLUDES="-I$with_cppunit_incdir"
+  if test "$with_catch2_incdir" != no; then
+    CATCH2_INCLUDES="-I$with_catch2_incdir"
   fi
-  if test "$with_cppunit_libdir" != no; then
-    CPPUNIT_LDFLAGS="-L$with_cppunit_libdir"
+  if test "$with_catch2_libdir" != no; then
+    CATCH2_LDFLAGS="-L$with_catch2_libdir"
   fi
-  CIT_CPPUNIT_HEADER
-  CIT_CPPUNIT_LIB
+  CIT_CATCH2_HEADER
+  CIT_CATCH2_LIB
 fi
-AC_SUBST(CPPUNIT_INCLUDES)
-AC_SUBST(CPPUNIT_LDFLAGS)
+AC_SUBST(CATCH2_INCLUDES)
+AC_SUBST(CATCH2_LDFLAGS)
 
 # SPATIALDATA
 AM_CONDITIONAL([ENABLE_SPATIAL], [test "$enable_spatial" = yes])
@@ -239,14 +236,8 @@ if test "$enable_spatial" = "yes" ; then
       AC_MSG_ERROR([Spatialdata SpatialDBObj.i SWIG interface file not found; Try setting SPATIALDATA_SWIG_DIR=<directory containing spatialdb/SpatialDBObj.i>])])
   fi
 
-  # PYTHON
-  AM_PATH_PYTHON([3.6])
-  CIT_PYTHON_SYSCONFIG
-  CIT_NUMPY_PYTHON_MODULE
-  CIT_NUMPY_INCDIR
-
   # SWIG
-  AC_PROG_SWIG([2.0.4], [3.0.2])
+  AC_PROG_SWIG([4.1.0])
 
 fi
 
@@ -291,11 +282,12 @@ AC_CONFIG_FILES([Makefile
 	geomodelgrids/Makefile
 	tests/Makefile
 	tests/data/Makefile
+  tests/src/Makefile
 	tests/libtests/Makefile
 	tests/libtests/utils/Makefile
 	tests/libtests/serial/Makefile
 	tests/libtests/apps/Makefile
-  	tests/pytests/Makefile
+ 	tests/pytests/Makefile
 	docs/Makefile
 	models/Makefile
 	])

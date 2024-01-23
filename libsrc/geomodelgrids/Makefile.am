@@ -43,16 +43,4 @@ libgeomodelgrids_la_LIBADD += -lgdal
 endif
 
 
-if ENABLE_TESTING
-libgeomodelgrids_la_SOURCES += \
-	utils/TestDriver.cc
-
-libgeomodelgrids_la_CPPFLAGS += $(CPPUNIT_INCLUDES)
-libgeomodelgrids_la_LDFLAGS += $(CPPUNIT_LDFLAGS)
-libgeomodelgrids_la_LIBADD += -lcppunit
-endif
-
-
-
-
 # End of file

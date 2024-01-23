@@ -6,8 +6,10 @@
 
 #include "geomodelgrids/utils/ErrorHandler.hh" // USES ErrorHandler
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "catch2/catch_test_macros.hpp"
 
+#include <cassert>
+#include <fstream> // USES std::ifstream
 #include <cmath> // USES fabs()
 
 namespace geomodelgrids {
@@ -16,46 +18,62 @@ namespace geomodelgrids {
     } // utils
 } // geomodelgrids
 
-class geomodelgrids::utils::TestErrorHandler : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestErrorHandler);
-
-    CPPUNIT_TEST(testConstructor);
-    CPPUNIT_TEST(testLogFilename);
-    CPPUNIT_TEST(testStatus);
-    CPPUNIT_TEST(testGetMessage);
-    CPPUNIT_TEST(testSetError);
-    CPPUNIT_TEST(testSetWarning);
-    CPPUNIT_TEST(testLogMessage);
-
-    CPPUNIT_TEST_SUITE_END();
-
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+class geomodelgrids::utils::TestErrorHandler {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Test constructor.
+    static
     void testConstructor(void);
 
     /// Test get/setLogFilename().
+    static
     void testLogFilename(void);
 
     /// Test resetStatus(), and getStatus().
+    static
     void testStatus(void);
 
     /// Test getMessage().
+    static
     void testGetMessage(void);
 
     /// Test setError().
+    static
     void testSetError(void);
 
     /// Test setWarning().
+    static
     void testSetWarning(void);
 
     /// Test logMessage().
+    static
     void testLogMessage(void);
 
 }; // class TestErrorHandler
-CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::utils::TestErrorHandler);
+
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestErrorHandler::testConstructor", "[TestErrorHandler]") {
+    geomodelgrids::utils::TestErrorHandler::testConstructor();
+}
+TEST_CASE("TestErrorHandler::testLogFilename", "[TestErrorHandler]") {
+    geomodelgrids::utils::TestErrorHandler::testLogFilename();
+}
+TEST_CASE("TestErrorHandler::testStatus", "[TestErrorHandler]") {
+    geomodelgrids::utils::TestErrorHandler::testStatus();
+}
+TEST_CASE("TestErrorHandler::testGetMessage", "[TestErrorHandler]") {
+    geomodelgrids::utils::TestErrorHandler::testGetMessage();
+}
+TEST_CASE("TestErrorHandler::testSetError", "[TestErrorHandler]") {
+    geomodelgrids::utils::TestErrorHandler::testSetError();
+}
+TEST_CASE("TestErrorHandler::testSetWarning", "[TestErrorHandler]") {
+    geomodelgrids::utils::TestErrorHandler::testSetWarning();
+}
+TEST_CASE("TestErrorHandler::testLogMessage", "[TestErrorHandler]") {
+    geomodelgrids::utils::TestErrorHandler::testLogMessage();
+}
 
 // ------------------------------------------------------------------------------------------------
 // Test constructor.
@@ -63,9 +81,9 @@ void
 geomodelgrids::utils::TestErrorHandler::testConstructor(void) {
     ErrorHandler handler;
 
-    CPPUNIT_ASSERT_MESSAGE("Expected empty message.", handler._message.empty());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in log filename.", std::string("/dev/null"), handler._logFilename);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in status.", ErrorHandler::OK, handler._status);
+    CHECK(handler._message.empty());
+    CHECK(std::string("/dev/null") == handler._logFilename);
+    CHECK(ErrorHandler::OK == handler._status);
 } // testConstructor
 
 
@@ -75,12 +93,11 @@ void
 geomodelgrids::utils::TestErrorHandler::testLogFilename(void) {
     ErrorHandler handler;
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in default.",
-                                 std::string(ErrorHandler::_NULLFILE), std::string(handler.getLogFilename()));
+    CHECK(std::string(ErrorHandler::_NULLFILE) == std::string(handler.getLogFilename()));
 
     const std::string filename = "error.log";
     handler.setLogFilename(filename.c_str());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in user value.", filename, std::string(handler.getLogFilename()));
+    CHECK(filename == std::string(handler.getLogFilename()));
 } // testLogFilename
 
 
@@ -91,11 +108,11 @@ geomodelgrids::utils::TestErrorHandler::testStatus(void) {
     ErrorHandler handler;
 
     ErrorHandler::StatusEnum status = ErrorHandler::OK;
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in default status.", status, handler._status);
+    CHECK(status == handler._status);
 
     status = ErrorHandler::WARNING;
     handler._status = status;
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in user status.", status, handler._status);
+    CHECK(status == handler._status);
 } // testStatus
 
 
@@ -106,11 +123,11 @@ geomodelgrids::utils::TestErrorHandler::testGetMessage(void) {
     ErrorHandler handler;
 
     std::string message = "";
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in default message.", message, std::string(handler.getMessage()));
+    CHECK(message == std::string(handler.getMessage()));
 
     message = "Hello";
     handler._message = message;
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in user message.", message, std::string(handler.getMessage()));
+    CHECK(message == std::string(handler.getMessage()));
 } // testGetMessage
 
 
@@ -123,8 +140,8 @@ geomodelgrids::utils::TestErrorHandler::testSetError(void) {
     const std::string message = "Error message";
     handler.setError(message.c_str());
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in message.", message, std::string(handler.getMessage()));
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in status.", ErrorHandler::ERROR, handler.getStatus());
+    CHECK(message == std::string(handler.getMessage()));
+    CHECK(ErrorHandler::ERROR == handler.getStatus());
 } // testSetError
 
 
@@ -137,8 +154,8 @@ geomodelgrids::utils::TestErrorHandler::testSetWarning(void) {
     const std::string message = "Warning message";
     handler.setWarning(message.c_str());
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in message.", message, std::string(handler.getMessage()));
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in status.", ErrorHandler::WARNING, handler.getStatus());
+    CHECK(message == std::string(handler.getMessage()));
+    CHECK(ErrorHandler::WARNING == handler.getStatus());
 } // testSetWarning
 
 
@@ -167,7 +184,7 @@ geomodelgrids::utils::TestErrorHandler::testLogMessage(void) {
     char buffer[maxLength];
     std::ifstream sin(filename.c_str(), std::ios::in);
     sin.getline(buffer, maxLength);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in log.", message, std::string(buffer));
+    CHECK(message == std::string(buffer));
 } // testLogMessage
 
 

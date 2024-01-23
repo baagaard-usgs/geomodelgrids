@@ -6,7 +6,8 @@
     "uncrustify.configPath.linux": "developer/uncrustify.cfg",
     "files.associations": {
         "string": "cpp",
-        "*.icc": "cpp"
+        "*.icc": "cpp",
+        "cassert": "cpp"
     },
     "python.formatting.autopep8Args": [
         "--max-line-length",
@@ -19,5 +20,12 @@
         "editor.wordWrapColumn": 100
     },
     "markdown.extension.toc.unorderedList.marker": "+",
-    "markdown.extension.toc.updateOnSave": false
+    "markdown.extension.toc.updateOnSave": false,
+    "testMate.cpp.test.advancedExecutables": [
+        {
+            "name": "${filename}",
+            "pattern": "${os_env:GEOMODELGRIDS_BUILDDIR}/tests/libtests/**/.libs/libtest_*",
+            "cwd": "${absDirpath}/.."
+        }
+    ],
 }

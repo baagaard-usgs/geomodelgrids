@@ -4,13 +4,15 @@
             "name": "macos-clang",
             "includePath": [
                 "${workspaceFolder}/libsrc",
+                "${workspaceFolder}",
                 "${workspaceFolder}/tests/data",
-                "${GEOMODELGRIDS_BUILDDIR}",
-                "${PYTHON_INCDIR}",
-                "${MPI_INCDIR}",
-                "${HDF5_INCDIR}",
-                "${PROJ_INCDIR}",
-                "${CPPUNIT_INCDIR}"
+                "${env:GEOMODELGRIDS_BUILDDIR}",
+                "${env:PYTHON_INCDIR}",
+                "${env:MPI_INCDIR}",
+                "${env:HDF5_INCDIR}",
+                "${env:PROJ_INCDIR}",
+                "${env:GDAL_INCDIR}",
+                "${env:CATCH2_INCDIR}"
             ],
             "defines": [
                 "WITH_GDAL"
@@ -20,8 +22,29 @@
             ],
             "compilerPath": "/usr/bin/clang",
             "cStandard": "c11",
-            "cppStandard": "c++11",
+            "cppStandard": "c++14",
             "intelliSenseMode": "macos-clang-x64"
+        },
+        {
+            "name": "linux-gcc",
+            "includePath": [
+                "${workspaceFolder}/libsrc",
+                "${workspaceFolder}",
+                "${workspaceFolder}/tests/data",
+                "${env:GEOMODELGRIDS_BUILDDIR}",
+                "${env:PYTHON_INCDIR}",
+                "${env:MPI_INCDIR}",
+                "${env:HDF5_INCDIR}",
+                "${env:PROJ_INCDIR}",
+                "${env:GDAL_INCDIR}",
+                "${env:CATCH2_INCDIR}"
+            ],
+            "defines": [
+                "WITH_GDAL"
+            ],
+            "cStandard": "c11",
+            "cppStandard": "c++14",
+            "intelliSenseMode": "gcc-x64"
         }
     ],
     "version": 4

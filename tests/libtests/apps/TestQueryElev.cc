@@ -7,11 +7,14 @@
 #include "geomodelgrids/apps/QueryElev.hh" // USES QueryElev
 #include "geomodelgrids/utils/constants.hh" // USES NODATA_VALUE
 
-#include "ModelPoints.hh"
+#include "tests/data/ModelPoints.hh"
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "catch2/catch_test_macros.hpp"
+#include "catch2/matchers/catch_matchers_floating_point.hpp"
 
 #include <fstream> // USES std::ifstream, std::ofstream
+#include <iostream> // USES std::cout
+#include <sstream> // USES std::ostringstream
 #include <iomanip> // USES ios::setf(), ios::setprecision()
 #include <getopt.h> // USES optind
 #include <cmath> // USES fabs()
@@ -22,34 +25,12 @@ namespace geomodelgrids {
     } // apps
 } // geomodelgrids
 
-class geomodelgrids::apps::TestQueryElev : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE -------------------------------------------------------------------------
-    CPPUNIT_TEST_SUITE(TestQueryElev);
-
-    CPPUNIT_TEST(testConstructor);
-    CPPUNIT_TEST(testParseNoArgs);
-    CPPUNIT_TEST(testParseArgsHelp);
-    CPPUNIT_TEST(testParseArgsNoPoints);
-    CPPUNIT_TEST(testParseArgsNoModels);
-    CPPUNIT_TEST(testParseArgsNoOutput);
-    CPPUNIT_TEST(testParseArgsWrong);
-    CPPUNIT_TEST(testParseArgsMinimal);
-    CPPUNIT_TEST(testParseArgsAll);
-    CPPUNIT_TEST(testPrintHelp);
-    CPPUNIT_TEST(testRunHelp);
-    CPPUNIT_TEST(testRunOneBlockFlat);
-    CPPUNIT_TEST(testRunThreeBlocksTop);
-    CPPUNIT_TEST(testRunTwoModels);
-    CPPUNIT_TEST(testRunBadInput);
-    CPPUNIT_TEST(testRunBadOutput);
-
-    CPPUNIT_TEST_SUITE_END();
-
+class geomodelgrids::apps::TestQueryElev {
     // PUBLIC METHODS -----------------------------------------------------------------------------
 public:
 
-    /// Setup test.
-    void setUp(void);
+    /// Constructor.
+    TestQueryElev(void);
 
     /// Test constructor.
     void testConstructor(void);
@@ -100,7 +81,56 @@ public:
     void testRunBadOutput(void);
 
 }; // class TestQueryElev
-CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::apps::TestQueryElev);
+
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestQueryElev::testConstructor", "[TestQueryElev]") {
+    geomodelgrids::apps::TestQueryElev().testConstructor();
+}
+TEST_CASE("TestQueryElev::testParseNoArgs", "[TestQueryElev]") {
+    geomodelgrids::apps::TestQueryElev().testParseNoArgs();
+}
+TEST_CASE("TestQueryElev::testParseArgsHelp", "[TestQueryElev]") {
+    geomodelgrids::apps::TestQueryElev().testParseArgsHelp();
+}
+TEST_CASE("TestQueryElev::testParseArgsNoPoints", "[TestQueryElev]") {
+    geomodelgrids::apps::TestQueryElev().testParseArgsNoPoints();
+}
+TEST_CASE("TestQueryElev::testParseArgsNoModels", "[TestQueryElev]") {
+    geomodelgrids::apps::TestQueryElev().testParseArgsNoModels();
+}
+TEST_CASE("TestQueryElev::testParseArgsNoOutput", "[TestQueryElev]") {
+    geomodelgrids::apps::TestQueryElev().testParseArgsNoOutput();
+}
+TEST_CASE("TestQueryElev::testParseArgsWrong", "[TestQueryElev]") {
+    geomodelgrids::apps::TestQueryElev().testParseArgsWrong();
+}
+TEST_CASE("TestQueryElev::testParseArgsMinimal", "[TestQueryElev]") {
+    geomodelgrids::apps::TestQueryElev().testParseArgsMinimal();
+}
+TEST_CASE("TestQueryElev::testParseArgsAll", "[TestQueryElev]") {
+    geomodelgrids::apps::TestQueryElev().testParseArgsAll();
+}
+TEST_CASE("TestQueryElev::testPrintHelp", "[TestQueryElev]") {
+    geomodelgrids::apps::TestQueryElev().testPrintHelp();
+}
+TEST_CASE("TestQueryElev::testRunHelp", "[TestQueryElev]") {
+    geomodelgrids::apps::TestQueryElev().testRunHelp();
+}
+TEST_CASE("TestQueryElev::testRunOneBlockFlat", "[TestQueryElev]") {
+    geomodelgrids::apps::TestQueryElev().testRunOneBlockFlat();
+}
+TEST_CASE("TestQueryElev::testRunThreeBlocksTop", "[TestQueryElev]") {
+    geomodelgrids::apps::TestQueryElev().testRunThreeBlocksTop();
+}
+TEST_CASE("TestQueryElev::testRunTwoModels", "[TestQueryElev]") {
+    geomodelgrids::apps::TestQueryElev().testRunTwoModels();
+}
+TEST_CASE("TestQueryElev::testRunBadInput", "[TestQueryElev]") {
+    geomodelgrids::apps::TestQueryElev().testRunBadInput();
+}
+TEST_CASE("TestQueryElev::testRunBadOutput", "[TestQueryElev]") {
+    geomodelgrids::apps::TestQueryElev().testRunBadOutput();
+}
 
 // ------------------------------------------------------------------------------------------------
 namespace geomodelgrids {
@@ -127,8 +157,7 @@ public:
 }; // _TestQueryElev
 
 // ------------------------------------------------------------------------------------------------
-void
-geomodelgrids::apps::TestQueryElev::setUp(void) {
+geomodelgrids::apps::TestQueryElev::TestQueryElev(void) {
     optind = 1; // reset parsing of argc and argv
 } // setUp
 
@@ -139,8 +168,8 @@ void
 geomodelgrids::apps::TestQueryElev::testConstructor(void) {
     QueryElev query;
 
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in points CRS.", std::string("EPSG:4326"), query._pointsCRS);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in help flag.", false, query._showHelp);
+    CHECK(std::string("EPSG:4326") == query._pointsCRS);
+    CHECK(false == query._showHelp);
 } // testConstructor
 
 
@@ -153,7 +182,7 @@ geomodelgrids::apps::TestQueryElev::testParseNoArgs(void) {
 
     QueryElev query;
     query._parseArgs(nargs, const_cast<char**>(args));
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in help.", query._showHelp);
+    CHECK(query._showHelp);
 } // testParseNoArgs
 
 
@@ -166,7 +195,7 @@ geomodelgrids::apps::TestQueryElev::testParseArgsHelp(void) {
 
     QueryElev query;
     query._parseArgs(nargs, const_cast<char**>(args));
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in help.", query._showHelp);
+    CHECK(query._showHelp);
 } // testParseArgsHelp
 
 
@@ -178,7 +207,7 @@ geomodelgrids::apps::TestQueryElev::testParseArgsNoPoints(void) {
     const char* const args[nargs] = { "test", "--models=A", "--output=C" };
 
     QueryElev query;
-    CPPUNIT_ASSERT_THROW(query._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
+    CHECK_THROWS_AS(query._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
 } // testParseArgsNoPoints
 
 
@@ -190,7 +219,7 @@ geomodelgrids::apps::TestQueryElev::testParseArgsNoModels(void) {
     const char* const args[nargs] = { "test", "--points=A", "--output=C" };
 
     QueryElev query;
-    CPPUNIT_ASSERT_THROW(query._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
+    CHECK_THROWS_AS(query._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
 } // testParseArgsNoModels
 
 
@@ -202,7 +231,7 @@ geomodelgrids::apps::TestQueryElev::testParseArgsNoOutput(void) {
     const char* const args[nargs] = { "test", "--points=A", "--models=B" };
 
     QueryElev query;
-    CPPUNIT_ASSERT_THROW(query._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
+    CHECK_THROWS_AS(query._parseArgs(nargs, const_cast<char**>(args)), std::runtime_error);
 } // testParseArgsNoOutput
 
 
@@ -214,7 +243,7 @@ geomodelgrids::apps::TestQueryElev::testParseArgsWrong(void) {
     const char* const args[nargs] = { "test", "--blah" };
 
     QueryElev query;
-    CPPUNIT_ASSERT_THROW(query._parseArgs(nargs, const_cast<char**>(args)), std::logic_error);
+    CHECK_THROWS_AS(query._parseArgs(nargs, const_cast<char**>(args)), std::logic_error);
 } // testParseArgsWrong
 
 
@@ -232,11 +261,11 @@ geomodelgrids::apps::TestQueryElev::testParseArgsMinimal(void) {
 
     QueryElev query;
     query._parseArgs(nargs, const_cast<char**>(args));
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of models.", size_t(1), query._modelFilenames.size());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in models.", std::string("A"), query._modelFilenames[0]);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in points.", std::string("points.in"), query._pointsFilename);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in output.", std::string("points.out"), query._outputFilename);
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in help for minimal args.", !query._showHelp);
+    CHECK(size_t(1) == query._modelFilenames.size());
+    CHECK(std::string("A") == query._modelFilenames[0]);
+    CHECK(std::string("points.in") == query._pointsFilename);
+    CHECK(std::string("points.out") == query._outputFilename);
+    CHECK(!query._showHelp);
 } // testParseArgsMinimal
 
 
@@ -257,14 +286,14 @@ geomodelgrids::apps::TestQueryElev::testParseArgsAll(void) {
 
     QueryElev query;
     query._parseArgs(nargs, const_cast<char**>(args));
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in number of models.", size_t(1), query._modelFilenames.size());
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in models.", std::string("A"), query._modelFilenames[0]);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in points.", std::string("points.in"), query._pointsFilename);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in output.", std::string("points.out"), query._outputFilename);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in points coordsys.", std::string("EPSG:26910"), query._pointsCRS);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in surface.", true, query._useTopoBathy);
-    CPPUNIT_ASSERT_EQUAL_MESSAGE("Mismatch in log.", std::string("error.log"), query._logFilename);
-    CPPUNIT_ASSERT_MESSAGE("Mismatch in help.", !query._showHelp);
+    CHECK(size_t(1) == query._modelFilenames.size());
+    CHECK(std::string("A") == query._modelFilenames[0]);
+    CHECK(std::string("points.in") == query._pointsFilename);
+    CHECK(std::string("points.out") == query._outputFilename);
+    CHECK(std::string("EPSG:26910") == query._pointsCRS);
+    CHECK(true == query._useTopoBathy);
+    CHECK(std::string("error.log") == query._logFilename);
+    CHECK(!query._showHelp);
 } // testParseArgsAll
 
 
@@ -279,7 +308,7 @@ geomodelgrids::apps::TestQueryElev::testPrintHelp(void) {
     QueryElev query;
     query._printHelp();
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(758), coutHelp.str().length());
+    CHECK(size_t(758) == coutHelp.str().length());
 } // testPrintHelp
 
 
@@ -300,7 +329,7 @@ geomodelgrids::apps::TestQueryElev::testRunHelp(void) {
     query.run(nargs, const_cast<char**>(args));
 
     std::cout.rdbuf(coutOrig);
-    CPPUNIT_ASSERT_EQUAL(size_t(758), coutHelp.str().length());
+    CHECK(size_t(758) == coutHelp.str().length());
 } // testRunHelp
 
 
@@ -318,19 +347,19 @@ geomodelgrids::apps::TestQueryElev::testRunOneBlockFlat(void) {
         "--log=error.log",
     };
     geomodelgrids::testdata::OneBlockFlatPoints pointsOne;
-    std::ofstream sout("one-block-flat.in");CPPUNIT_ASSERT(sout.is_open() && sout.good());
+    std::ofstream sout("one-block-flat.in");assert(sout.is_open() && sout.good());
     _TestQueryElev::createPointsFile(sout, pointsOne);
     sout.close();
 
     QueryElev query;
     query.run(nargs, const_cast<char**>(args));
 
-    std::ifstream sin("one-block-flat.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
+    std::ifstream sin("one-block-flat.out");assert(sin.is_open() && sin.good());
     _TestQueryElev::readHeader(sin);
     _TestQueryElev::checkQuery(sin, pointsOne);
     sin.close();
 
-    std::ifstream slog("error.log");CPPUNIT_ASSERT(slog.is_open() && slog.good());
+    std::ifstream slog("error.log");assert(slog.is_open() && slog.good());
 } // testRunOneBlockFlat
 
 
@@ -347,7 +376,7 @@ geomodelgrids::apps::TestQueryElev::testRunThreeBlocksTop(void) {
         "--points-coordsys=+proj=lonlat +axis=neu +datum=WGS84 +vunits=km",
     };
     geomodelgrids::testdata::ThreeBlocksTopoPoints pointsThree;
-    std::ofstream sout("three-blocks-top.in");CPPUNIT_ASSERT(sout.is_open() && sout.good());
+    std::ofstream sout("three-blocks-top.in");assert(sout.is_open() && sout.good());
     _TestQueryElev::createPointsFile(sout, pointsThree);
     sout.close();
 
@@ -355,7 +384,7 @@ geomodelgrids::apps::TestQueryElev::testRunThreeBlocksTop(void) {
     query.run(nargs, const_cast<char**>(args));
 
     const double elevScale = 1.0e-3;
-    std::ifstream sin("three-blocks-top.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
+    std::ifstream sin("three-blocks-top.out");assert(sin.is_open() && sin.good());
     _TestQueryElev::readHeader(sin);
     _TestQueryElev::checkQuery(sin, pointsThree, elevScale);
     sin.close();
@@ -376,7 +405,7 @@ geomodelgrids::apps::TestQueryElev::testRunTwoModels(void) {
     };
     geomodelgrids::testdata::OneBlockFlatPoints pointsOne;
     geomodelgrids::testdata::ThreeBlocksTopoPoints pointsThree;
-    std::ofstream sout("two-models.in");CPPUNIT_ASSERT(sout.is_open() && sout.good());
+    std::ofstream sout("two-models.in");assert(sout.is_open() && sout.good());
     _TestQueryElev::createPointsFile(sout, pointsOne);
     _TestQueryElev::createPointsFile(sout, pointsThree);
     sout.close();
@@ -384,7 +413,7 @@ geomodelgrids::apps::TestQueryElev::testRunTwoModels(void) {
     QueryElev query;
     query.run(nargs, const_cast<char**>(args));
 
-    std::ifstream sin("two-models.out");CPPUNIT_ASSERT(sin.is_open() && sin.good());
+    std::ifstream sin("two-models.out");assert(sin.is_open() && sin.good());
     _TestQueryElev::readHeader(sin);
     _TestQueryElev::checkQuery(sin, pointsOne);
     _TestQueryElev::checkQuery(sin, pointsThree);
@@ -406,7 +435,7 @@ geomodelgrids::apps::TestQueryElev::testRunBadInput(void) {
         "--points-coordsys=EPSG:4326",
     };
     QueryElev query;
-    CPPUNIT_ASSERT_THROW(query.run(nargs, const_cast<char**>(args)), std::runtime_error);
+    CHECK_THROWS_AS(query.run(nargs, const_cast<char**>(args)), std::runtime_error);
 } // testRunBadInput
 
 
@@ -423,7 +452,7 @@ geomodelgrids::apps::TestQueryElev::testRunBadOutput(void) {
         "--points-coordsys=EPSG:4326",
     };
     QueryElev query;
-    CPPUNIT_ASSERT_THROW(query.run(nargs, const_cast<char**>(args)), std::runtime_error);
+    CHECK_THROWS_AS(query.run(nargs, const_cast<char**>(args)), std::runtime_error);
 } // testRunBadOutput
 
 
@@ -474,19 +503,18 @@ geomodelgrids::apps::_TestQueryElev::checkQuery(std::istream& sin,
         for (size_t iDim = 0; iDim < 2; ++iDim) {
             sin >> xy[iDim];
         } // for
-        CPPUNIT_ASSERT_MESSAGE("Could not read coordinates of point in output.", sin.good());
+        CHECK(sin.good());
 
         double value = NODATA_VALUE;
-        sin >> value;CPPUNIT_ASSERT_MESSAGE("Could not read elevation in output.", sin.good());
+        sin >> value;CHECK(sin.good());
 
         const double valueE = hasTopSurface ? points.computeTopElevation(x, y) * elevScale : 0.0;
 
-        std::ostringstream msg;
-        msg << "Mismatch for 'elevation' for point ("
-            << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").";
+        INFO("Mismatch for 'elevation' for point ("
+             << pointsLLE[iPt*spaceDim+0] << ", " << pointsLLE[iPt*spaceDim+1] << ").");
         const double tolerance = 1.0e-6;
         const double valueTolerance = std::max(tolerance, tolerance*fabs(valueE));
-        CPPUNIT_ASSERT_DOUBLES_EQUAL_MESSAGE(msg.str().c_str(), valueE, value, valueTolerance);
+        CHECK_THAT(value, Catch::Matchers::WithinAbs(valueE, valueTolerance));
     } // for
 } // checkQuery
 

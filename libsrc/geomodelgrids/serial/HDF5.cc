@@ -333,7 +333,7 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
         if (h5access.dataspace < 0) { throw std::runtime_error("Could not get dataspace of"); }
         const hsize_t ndims = H5Sget_simple_extent_ndims(h5access.dataspace);assert(1 == ndims);
         hsize_t dims[1];
-        H5Sget_simple_extent_dims(h5access.dataspace, dims, NULL);
+        H5Sget_simple_extent_dims(h5access.dataspace, dims, nullptr);
         const hsize_t numValues = dims[0];assert(numValues > 0);
 
         hsize_t typeNumBytes = H5Tget_size(datatype);
@@ -375,7 +375,7 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
         h5access.dataspace = H5Aget_space(h5access.attribute);
         if (h5access.dataspace < 0) { throw std::runtime_error("Could not get dataspace of"); }
 
-        char* buffer = NULL;
+        char* buffer = nullptr;
         if (0 == H5Tis_variable_str(h5access.datatype)) { // Fixed length strings
             const hsize_t stringLength = H5Tget_size(h5access.datatype);
             buffer = new char[stringLength+1];assert(buffer);
@@ -385,7 +385,7 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
             if (err < 0) { throw std::runtime_error("Could not read"); }
             value = buffer;
 
-            delete[] buffer;buffer = NULL;
+            delete[] buffer;buffer = nullptr;
         } else {
             herr_t err = H5Aread(h5access.attribute, h5access.datatype, &buffer);
             if (err < 0) { throw std::runtime_error("Could not read"); }
@@ -428,7 +428,7 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
         if (h5access.dataspace < 0) { throw std::runtime_error("Could not get dataspace of"); }
         const hsize_t ndims = H5Sget_simple_extent_ndims(h5access.dataspace);assert(1 == ndims);
         hsize_t dims[1];
-        H5Sget_simple_extent_dims(h5access.dataspace, dims, NULL);
+        H5Sget_simple_extent_dims(h5access.dataspace, dims, nullptr);
         const hsize_t numStrings = dims[0];assert(numStrings > 0);
 
         char** buffer = new char*[numStrings];
@@ -450,10 +450,10 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
                 } // for
                 tmp[stringLength] = '\0';
                 (*values)[i] = tmp;
-                delete[] tmp;tmp = NULL;
+                delete[] tmp;tmp = nullptr;
             } // for
 
-            delete[] buffer[0];buffer[0] = NULL;
+            delete[] buffer[0];buffer[0] = nullptr;
         } else {
             herr_t err = H5Aread(h5access.attribute, h5access.datatype, buffer);
             if (err < 0) { throw std::runtime_error("Could not read"); }
@@ -467,7 +467,7 @@ geomodelgrids::serial::HDF5::readAttribute(const char* path,
             if (err < 0) { throw std::runtime_error("Could not reclaim variable length string for"); }
         } // if/else
 
-        delete[] buffer;buffer = NULL;
+        delete[] buffer;buffer = nullptr;
 
     } catch (std::exception& err) {
         std::ostringstream msg;
@@ -503,15 +503,15 @@ geomodelgrids::serial::HDF5::readDatasetHyperslab(void* values,
         if (h5access.dataspace < 0) { throw std::runtime_error("Could not get dataspace."); }
 
         const int ndimsAll = H5Sget_simple_extent_ndims(h5access.dataspace);
-        hsize_t* dimsAll = (ndimsAll > 0) ? new hsize_t[ndimsAll] : NULL;
-        H5Sget_simple_extent_dims(h5access.dataspace, dimsAll, NULL);
+        hsize_t* dimsAll = (ndimsAll > 0) ? new hsize_t[ndimsAll] : nullptr;
+        H5Sget_simple_extent_dims(h5access.dataspace, dimsAll, nullptr);
 
         // Validate arguments.
         if (ndims != ndimsAll) {
             std::ostringstream msg;
             msg << "Rank of hyperslab origin and dimension (" << ndims
                 << ") does not match rank of dataset (" << ndimsAll << ").";
-            delete[] dimsAll;dimsAll = NULL;
+            delete[] dimsAll;dimsAll = nullptr;
             throw std::length_error(msg.str());
         } // if
         for (int i = 0; i < ndimsAll; ++i) {
@@ -520,15 +520,15 @@ geomodelgrids::serial::HDF5::readDatasetHyperslab(void* values,
                 msg << "Hyperslab extent in dimension " << i
                     << " (origin:" << origin[i] << ", dim: " << dims[i] << ") "
                     << "exceeds dataset dimension " << dimsAll[i] << ".";
-                delete[] dimsAll;dimsAll = NULL;
+                delete[] dimsAll;dimsAll = nullptr;
                 throw std::length_error(msg.str());
             } // if
         } // for
-        delete[] dimsAll;dimsAll = NULL;
+        delete[] dimsAll;dimsAll = nullptr;
 
         // Stride and count are 1 for contiguous slab.
-        hsize_t* stride = (ndimsAll > 0) ? new hsize_t[ndimsAll] : NULL;
-        hsize_t* count = (ndimsAll > 0) ? new hsize_t[ndimsAll] : NULL;
+        hsize_t* stride = (ndimsAll > 0) ? new hsize_t[ndimsAll] : nullptr;
+        hsize_t* count = (ndimsAll > 0) ? new hsize_t[ndimsAll] : nullptr;
         for (int i = 0; i < ndimsAll; ++i) {
             stride[i] = 1;
             count[i] = 1;
@@ -538,8 +538,8 @@ geomodelgrids::serial::HDF5::readDatasetHyperslab(void* values,
         if (memspace < 0) { throw std::runtime_error("Could not create memory space."); }
 
         herr_t err = H5Sselect_hyperslab(h5access.dataspace, H5S_SELECT_SET, origin, stride, count, dims);
-        delete[] stride;stride = NULL;
-        delete[] count;count = NULL;
+        delete[] stride;stride = nullptr;
+        delete[] count;count = nullptr;
         if (err < 0) { throw std::runtime_error("Could not select hyperslab."); }
         err = H5Dread(h5access.dataset, datatype, memspace, h5access.dataspace, H5P_DEFAULT, values);
         if (err < 0) { throw std::runtime_error("Could not read hyperslab."); }

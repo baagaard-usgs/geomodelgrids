@@ -1,4 +1,12 @@
-AM_CPPFLAGS = -I$(top_srcdir)/libsrc $(HDF5_INCLUDES) $(PROJ_INCLUDES) $(CPPUNIT_INCLUDES)
+AM_CPPFLAGS = -I$(top_srcdir)/libsrc -I$(top_srcdir) $(HDF5_INCLUDES) $(PROJ_INCLUDES) $(CATCH2_INCLUDES)
+
+LDFLAGS += $(AM_LDFLAGS) $(HDF5_LDFLAGS) $(PROJ_LDFLAGS) $(CATCH2_LDFLAGS)
+
+LDADD = \
+	$(top_builddir)/libsrc/geomodelgrids/libgeomodelgrids.la \
+	-lCatch2 -ldl \
+	-lhdf5 \
+	-lproj
 
 
 check-local: check-TESTS

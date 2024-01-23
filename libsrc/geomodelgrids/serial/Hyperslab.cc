@@ -104,11 +104,11 @@ geomodelgrids::serial::Hyperslab::Hyperslab(geomodelgrids::serial::HDF5* const h
     _h5(h5),
     _datasetPath(path),
     _ndims(ndims),
-    _origin(NULL),
-    _dims(_ndims > 0 ? new hsize_t[_ndims] : NULL),
-    _dimsAll(NULL),
-    _values(NULL),
-    _hyperslab(NULL) {
+    _origin(nullptr),
+    _dims(_ndims > 0 ? new hsize_t[_ndims] : nullptr),
+    _dimsAll(nullptr),
+    _values(nullptr),
+    _hyperslab(nullptr) {
     assert(_h5);
     int ndimsAll = 0;
     h5->getDatasetDims(&_dimsAll, &ndimsAll, path);
@@ -118,8 +118,8 @@ geomodelgrids::serial::Hyperslab::Hyperslab(geomodelgrids::serial::HDF5* const h
         std::ostringstream msg;
         msg << "Dimensions of hyperslab for dataset '" << path << "' have different rank than the dataset. "
             << "Hyperslab has rank " << _ndims << ", but dataset has rank " << ndimsAll << ".";
-        delete[] _dims;_dims = NULL;
-        delete[] _dimsAll;_dimsAll = NULL;
+        delete[] _dims;_dims = nullptr;
+        delete[] _dimsAll;_dimsAll = nullptr;
         throw std::length_error(msg.str());
     } // if
 
@@ -128,7 +128,7 @@ geomodelgrids::serial::Hyperslab::Hyperslab(geomodelgrids::serial::HDF5* const h
         _dims[i] = std::min(dims[i], _dimsAll[i]);
         totalSize *= _dims[i];
     } // for
-    _values = (totalSize > 0) ? new double[totalSize] : NULL;
+    _values = (totalSize > 0) ? new double[totalSize] : nullptr;
 
     delete _hyperslab;_hyperslab = new geomodelgrids::serial::_Hyperslab(*this);
 } // constructor
@@ -137,12 +137,12 @@ geomodelgrids::serial::Hyperslab::Hyperslab(geomodelgrids::serial::HDF5* const h
 // ------------------------------------------------------------------------------------------------
 // Destructor
 geomodelgrids::serial::Hyperslab::~Hyperslab(void) {
-    delete[] _origin;_origin = NULL;
-    delete[] _dims;_dims = NULL;
-    delete[] _dimsAll;_dimsAll = NULL;
-    delete[] _values;_values = NULL;
+    delete[] _origin;_origin = nullptr;
+    delete[] _dims;_dims = nullptr;
+    delete[] _dimsAll;_dimsAll = nullptr;
+    delete[] _values;_values = nullptr;
 
-    delete _hyperslab;_hyperslab = NULL;
+    delete _hyperslab;_hyperslab = nullptr;
 } // destructor
 
 
@@ -210,7 +210,7 @@ geomodelgrids::serial::_Hyperslab::getSlab(const double indexFloat[]) {
             } // if
         } // for
     } else {
-        origin = _hyperslab._origin = (ndims > 0) ? new hsize_t[ndims] : NULL;
+        origin = _hyperslab._origin = (ndims > 0) ? new hsize_t[ndims] : nullptr;
         std::fill(&origin[0], &origin[ndims], 0);
         needsNewSlab = true;
     } // if/else

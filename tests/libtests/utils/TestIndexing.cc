@@ -6,7 +6,8 @@
 
 #include "geomodelgrids/utils/Indexing.hh" // USES Indexing
 
-#include <cppunit/extensions/HelperMacros.h>
+#include "catch2/catch_test_macros.hpp"
+#include "catch2/matchers/catch_matchers_floating_point.hpp"
 
 #include <cmath> // USES fabs()
 
@@ -16,30 +17,34 @@ namespace geomodelgrids {
     } // utils
 } // geomodelgrids
 
-class geomodelgrids::utils::TestIndexing : public CppUnit::TestFixture {
-    // CPPUNIT TEST SUITE /////////////////////////////////////////////////
-    CPPUNIT_TEST_SUITE(TestIndexing);
-
-    CPPUNIT_TEST(testUniform);
-    CPPUNIT_TEST(testVariableAscending);
-    CPPUNIT_TEST(testVariableDescending);
-
-    CPPUNIT_TEST_SUITE_END();
-
-    // PUBLIC METHODS ///////////////////////////////////////////////////////
+class geomodelgrids::utils::TestIndexing {
+    // PUBLIC METHODS /////////////////////////////////////////////////////////////////////////////
 public:
 
     /// Test indexing for uniform resolution.
+    static
     void testUniform(void);
 
     /// Test indexing for variable resolution with coordinates increasing.
+    static
     void testVariableAscending(void);
 
     /// Test indexing for variable resolution with coordinates decreasing.
+    static
     void testVariableDescending(void);
 
 }; // class TestIndexing
-CPPUNIT_TEST_SUITE_REGISTRATION(geomodelgrids::utils::TestIndexing);
+
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestIndexing::testUniform", "[TestIndexing]") {
+    geomodelgrids::utils::TestIndexing::testUniform();
+}
+TEST_CASE("TestIndexing::testVariableAscending", "[TestIndexing]") {
+    geomodelgrids::utils::TestIndexing::testVariableAscending();
+}
+TEST_CASE("TestIndexing::testVariableDescending", "[TestIndexing]") {
+    geomodelgrids::utils::TestIndexing::testVariableDescending();
+}
 
 // ------------------------------------------------------------------------------------------------
 void
@@ -49,13 +54,13 @@ geomodelgrids::utils::TestIndexing::testUniform(void) {
 
     IndexingUniform indexing(dx);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, indexing.getIndex(0.0), tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, indexing.getIndex(dx), tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.4, indexing.getIndex(0.4*dx), tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(7.3, indexing.getIndex(7.3*dx), tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(103.2, indexing.getIndex(103.2*dx), tolerance);
+    CHECK_THAT(indexing.getIndex(0.0), Catch::Matchers::WithinAbs(0.0, tolerance));
+    CHECK_THAT(indexing.getIndex(dx), Catch::Matchers::WithinAbs(1.0, tolerance));
+    CHECK_THAT(indexing.getIndex(0.4*dx), Catch::Matchers::WithinAbs(0.4, tolerance));
+    CHECK_THAT(indexing.getIndex(7.3*dx), Catch::Matchers::WithinAbs(7.3, tolerance));
+    CHECK_THAT(indexing.getIndex(103.2*dx), Catch::Matchers::WithinAbs(103.2, tolerance));
 
-    CPPUNIT_ASSERT_THROW_MESSAGE("Bad resolution", IndexingUniform bad(-dx), std::invalid_argument);
+    CHECK_THROWS_AS(IndexingUniform(-dx), std::invalid_argument);
 } // testUniform
 
 
@@ -68,16 +73,16 @@ geomodelgrids::utils::TestIndexing::testVariableAscending(void) {
 
     IndexingVariable indexing(x, numX);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, indexing.getIndex(+4.0-4.0), tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.0, indexing.getIndex(+4.0-2.0), tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(5.0, indexing.getIndex(+4.0+10.0), tolerance);
+    CHECK_THAT(indexing.getIndex(+4.0-4.0), Catch::Matchers::WithinAbs(0.0, tolerance));
+    CHECK_THAT(indexing.getIndex(+4.0-2.0), Catch::Matchers::WithinAbs(1.0, tolerance));
+    CHECK_THAT(indexing.getIndex(+4.0+10.0), Catch::Matchers::WithinAbs(5.0, tolerance));
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.75, indexing.getIndex(+4.0-2.5), tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.8, indexing.getIndex(+4.0+9.0), tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(3.5, indexing.getIndex(+4.0+4.0), tolerance);
+    CHECK_THAT(indexing.getIndex(+4.0-2.5), Catch::Matchers::WithinAbs(0.75, tolerance));
+    CHECK_THAT(indexing.getIndex(+4.0+9.0), Catch::Matchers::WithinAbs(4.8, tolerance));
+    CHECK_THAT(indexing.getIndex(+4.0+4.0), Catch::Matchers::WithinAbs(3.5, tolerance));
 
-    CPPUNIT_ASSERT_THROW_MESSAGE("Bad coordinates", IndexingVariable bad(NULL, 1), std::invalid_argument);
-    CPPUNIT_ASSERT_THROW_MESSAGE("Bad coordinates size", IndexingVariable bad(x, 0), std::invalid_argument);
+    CHECK_THROWS_AS(IndexingVariable(nullptr, 1), std::invalid_argument);
+    CHECK_THROWS_AS(IndexingVariable(x, 0), std::invalid_argument);
 } // testVariableAscending
 
 
@@ -90,13 +95,13 @@ geomodelgrids::utils::TestIndexing::testVariableDescending(void) {
 
     IndexingVariable indexing(x, numX, IndexingVariable::DESCENDING);
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(5.0, indexing.getIndex(10.0+4.0), tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.0, indexing.getIndex(10.0+2.0), tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.0, indexing.getIndex(10.0-10.0), tolerance);
+    CHECK_THAT(indexing.getIndex(10.0+4.0), Catch::Matchers::WithinAbs(5.0, tolerance));
+    CHECK_THAT(indexing.getIndex(10.0+2.0), Catch::Matchers::WithinAbs(4.0, tolerance));
+    CHECK_THAT(indexing.getIndex(10.0-10.0), Catch::Matchers::WithinAbs(0.0, tolerance));
 
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(4.25, indexing.getIndex(10.0+2.5), tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(0.2, indexing.getIndex(10.0-9.0), tolerance);
-    CPPUNIT_ASSERT_DOUBLES_EQUAL(1.5, indexing.getIndex(10.0-4.0), tolerance);
+    CHECK_THAT(indexing.getIndex(10.0+2.5), Catch::Matchers::WithinAbs(4.25, tolerance));
+    CHECK_THAT(indexing.getIndex(10.0-9.0), Catch::Matchers::WithinAbs(0.2, tolerance));
+    CHECK_THAT(indexing.getIndex(10.0-4.0), Catch::Matchers::WithinAbs(1.5, tolerance));
 } // testVariableDescending
 
 
