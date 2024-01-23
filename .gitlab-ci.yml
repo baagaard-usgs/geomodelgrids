@@ -44,6 +44,10 @@ ubuntu-23.04:
   extends: .builder
   image: $IMAGE_REGISTRY/testenv-ubuntu-23.04
 
+ubuntu-23.10:
+  extends: .builder
+  image: $IMAGE_REGISTRY/testenv-ubuntu-23.10
+
 deb-stable-coverage:
   extends: .builder
   image: $IMAGE_REGISTRY/testenv-debian-stable
@@ -57,14 +61,13 @@ deb-testing-valgrind:
   variables:
     ENABLE_VALGRIND: "yes"
 
-fedora-37:
-  extends: .builder
-  image: $IMAGE_REGISTRY/testenv-fedora-37
-
 fedora-38:
   extends: .builder
   image: $IMAGE_REGISTRY/testenv-fedora-38
 
+fedora-39:
+  extends: .builder
+  image: $IMAGE_REGISTRY/testenv-fedora-39
 rockylinux-8:
   extends: .builder
   image: $IMAGE_REGISTRY/testenv-rockylinux-8
