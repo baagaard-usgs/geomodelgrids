@@ -9,110 +9,23 @@
 
 Constructor.
 
-### get_title()
+## Read-only Attributes
 
-Get title.
-
-- **returns** Title of model.
-
-### get_id()
-
-Get identifier.
-
-- **returns** Model identifier.
-
-### get_description()
-
-Get description.
-
-- **returns** Model description.
-
-### get_keywords()
-
-Get keywords describing model.
-
-- **returns** List of keywords.
-
-### get_history()
-
-Get model history.
-
-- **returns** Model history.
-
-### get_comment()
-
-Get comment.
-
-- **returns** Comment about model.
-
-### get_creator_name()
-
-Get name of creator.
-
-- **returns** Name of creator.
-
-### get_creator_institution()
-
-Get institution of creator.
-
-- **returns** Institution of creator.
-
-### get_creator_email()
-
-Get email of creator.
-
-- **returns** Email of creator.
-
-### get_acknowledgement()
-
-Get acknowledgements for model.
-
-- **returns** acknowledgements for model.
-
-### get_authors()
-
-Get authors of model.
-
-- **returns** Array of author names.
-
-### get_references()
-
-Get references associated with model.
-
-- **returns** Array of references.
-
-### get_repository_name()
-
-Get name of repository holding model.
-
-- **returns** Name of repository.
-
-### get_repository_url()
-
-Get URL of repository holding model.
-
-- **returns** URL for repository.
-
-### get_repository_doi()
-
-Get DOI for model.
-
-- **returns** Digital Object Identifier.
-
-### get_version()
-
-Get model version.
-
-- **returns** Model version.
-
-### get_license()
-
-Get model license.
-
-- **returns** Name of license for model.
-
-### get_auxiliary()
-
-Get auxiliary information.
-
-- **returns** Auxiliary information as string.
+- **title** Title of model `str`
+- **id** Model identifier `str`
+- **description** Model description `str`
+- **keywords** Keywords describing model `list(str)`
+- **history** Model history `str`
+- **comment** Comment about model `str`
+- **creator_name** Name of creator `str`
+- **creator_institution** Institution of creator `str`
+- **creator_email** Email of creator `str`
+- **acknowledgement** Acknowledgements for model `str`
+- **authors** Author names `list(str)`
+- **references** List of references `list(str)`
+- **repository_name** Name of respository `str`
+- **repository_url** URL of repository holding model `str`
+- **repository_doi** DOI for model in repository `str`
+- **version** Model version `str`
+- **license** Name of license for model `str`
+- **auxiliary** Auxiliary information stored as json `str`

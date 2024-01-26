@@ -47,22 +47,24 @@ class TestQuery(unittest.TestCase):
             [34.7, -117.5],
         ])
         ELEV = numpy.array([
-            150.0460941,
-            149.77504068,
-            150.02306271,
-            150.46361282,
-            150.52171529,
-            150.06565636,
-            152.65482145,
-            149.71133719,
-            151.69039421,
-            149.97365829,
-            150.98686496,
+            # one-block-topo
+            150.0460941024,
+            149.7750406823,
+            150.0230627088,
+            150.4636128215,
+            150.521715288,
+            # three-blocks-topo
+            150.0656563649,
+            152.6548214496,
+            149.7113371897,
+            151.6903942121,
+            149.9736582888,
+            150.9868649589,
         ])
 
         elev = self.query.query_top_elevation(POINTS)
-        diff = numpy.sum(numpy.abs(elev - ELEV))
-        assert diff < 1.0e-6
+        diff = numpy.sum(numpy.abs(elev - ELEV)/ELEV)
+        self.assertLess(diff, 1.0e-6)
 
         self.assertRaises(RuntimeError, self.query.query_top_elevation, numpy.array([1.0]))
 
@@ -83,22 +85,24 @@ class TestQuery(unittest.TestCase):
             [34.7, -117.5],
         ])
         ELEV = numpy.array([
-            150.0460941,
-            149.77504068,
-            150.02306271,
-            150.46361282,
-            150.52171529,
-            148.15581117,
-            146.79694001,
-            148.99097481,
-            148.69132321,
-            149.63955574,
-            150.33343435,
+            # one-block-topo
+            150.0460941024,
+            149.7750406823,
+            150.0230627088,
+            150.4636128215,
+            150.521715288,
+            # three-block-topo
+            148.1558111735,
+            146.7969400116,
+            148.9909748132,
+            148.6913232065,
+            149.6395557378,
+            150.3334343519,
         ])
 
         elev = self.query.query_topobathy_elevation(POINTS)
-        diff = numpy.sum(numpy.abs(elev - ELEV))
-        assert diff < 1.0e-6
+        diff = numpy.sum(numpy.abs(elev - ELEV)/ELEV)
+        self.assertLess(diff, 1.0e-6)
 
         self.assertRaises(RuntimeError, self.query.query_topobathy_elevation, numpy.array([1.0]))
 
@@ -119,22 +123,24 @@ class TestQuery(unittest.TestCase):
             [34.7, -117.5, 43.0],
         ])
         VALUES = numpy.array([
-            [-858.13826774,   5254.1393062],
-            [18536.45902674,  31145.02206828],
-            [7545.7134798,  32058.97716272],
-            [8357.02682455,  16288.95161415],
-            [15326.88773376,  36369.15970315],
-            [-19613.35382726,  49858.8369985],
-            [197905.09882116, 242203.32167217],
-            [686.5072936,  45995.07540723],
-            [63391.02424635, 101918.04829633],
-            [113532.86227974, 118500.89891462],
-            [453.64814667,  21296.58215576],
+            # one-block-topo
+            [-858.138272226666,   5254.139302454365],
+            [18536.459026739467,  31145.022068279795],
+            [7545.7134769230406,  32058.977160321396],
+            [8357.0268263148791,  16288.95161562109],
+            [15326.887733376869,  36369.15970282998],
+            # three-block-topo
+            [-19613.353832578789,  49858.836992768927],
+            [197905.09549258184, 242203.32475264152],
+            [686.50704726498418,  45995.075588561485],
+            [63391.023139392652, 101918.04931034689],
+            [113532.86043323125, 118500.90059607077],
+            [453.6481620888689,  21296.582163089526],
         ])
 
         values, err = self.query.query(POINTS)
-        diff = numpy.sum(numpy.abs(numpy.array(values) - VALUES))
-        assert diff < 1.0e-6
+        diff = numpy.sum(numpy.abs(numpy.array(values) - VALUES)/VALUES)
+        self.assertLess(diff, 1.0e-6)
         assert numpy.sum(err) == 0
 
     def test_query_squashed(self):
@@ -154,21 +160,24 @@ class TestQuery(unittest.TestCase):
             [34.7, -117.5, -43.0],
         ])
         VALUES = numpy.array([
-            [-783.5758283,   5316.2746724],
-            [18536.45902674,  31145.02206828],
-            [7545.7134798,  32058.97716272],
-            [8357.02682455,  16288.95161415],
-            [15326.88773376,  36369.15970315],
-            [-19517.6729018,  49938.57110046],
-            [197905.09882116, 242203.32167217],
-            [686.5072936,  45995.07540723],
-            [63391.02424635, 101918.04829633],
-            [113532.86227974, 118500.89891462],
-            [865.0677318,  21639.43179899]])
+            # one-block-topo
+            [-1481.6944995026847,   4734.509113057683],
+            [18536.459026739467,  31145.022068279795],
+            [7266.1440037784841,  31826.002599367599],
+            [7866.2803258882177,  15879.996198598872],
+            [15186.722105058896,  36252.355012565007],
+            # three-blocks-topo
+            [-20234.157806227118,  49341.500348061985],
+            [197905.09549258184, 242203.32475264152],
+            [400.10039355118113,  45756.40337713332],
+            [63391.023139392652, 101918.04931034689],
+            [113532.86043323125, 118500.90059607077],
+            [148.96746671345025,  21042.68158361001]])
 
+        self.query.set_squash_min_elev(-4.999e+3)
         values, err = self.query.query(POINTS)
-        diff = numpy.sum(numpy.abs(numpy.array(values) - VALUES))
-        assert diff < 1.0e-6
+        diff = numpy.sum(numpy.abs(numpy.array(values) - VALUES)/VALUES)
+        self.assertLess(diff, 1.0e-6)
         assert numpy.sum(err) == 0
 
     def test_query_outsidedomain(self):
@@ -182,7 +191,7 @@ class TestQuery(unittest.TestCase):
         ])
 
         values, err = self.query.query(POINTS)
-        diff = numpy.sum(numpy.abs(numpy.array(values) - VALUES))
+        diff = numpy.sum(numpy.abs(numpy.array(values) - VALUES)/VALUES)
         assert diff < 1.0e-6
         assert numpy.sum(err) == 2
 

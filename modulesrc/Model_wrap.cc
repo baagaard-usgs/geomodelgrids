@@ -168,26 +168,26 @@ init_model(py::module_& m) {
     .def("initialize", &geomodelgrids::PyModel::initialize,
          "Initialize.")
 
-    .def("get_value_names", &geomodelgrids::PyModel::getValueNames,
-         "Get names of values in model.")
+    .def_property_readonly("value_names", &geomodelgrids::PyModel::getValueNames,
+                           "Get names of values in model.")
 
-    .def("get_value_units", &geomodelgrids::PyModel::getValueUnits,
-         "Get names of units for values in model.")
+    .def_property_readonly("value_units", &geomodelgrids::PyModel::getValueUnits,
+                           "Get names of units for values in model.")
 
-    .def("get_data_layout", &geomodelgrids::PyModel::getDataLayout,
-         "Get data layout.")
+    .def_property_readonly("data_layout", &geomodelgrids::PyModel::getDataLayout,
+                           "Get data layout.")
 
-    .def("get_dims", &geomodelgrids::PyModel::get_dims,
-         "Get model dimensions in meters.")
+    .def_property_readonly("dims", &geomodelgrids::PyModel::get_dims,
+                           "Get model dimensions in meters.")
 
-    .def("get_origin", &geomodelgrids::PyModel::get_origin,
-         "Get coordinates of model origin in the model CRS.")
+    .def_property_readonly("origin", &geomodelgrids::PyModel::get_origin,
+                           "Get coordinates of model origin in the model CRS.")
 
-    .def("get_y_azimuth", &geomodelgrids::PyModel::getYAzimuth,
-         "Get azimuth (degrees) of y coordinate axis.")
+    .def_property_readonly("y_azimuth", &geomodelgrids::PyModel::getYAzimuth,
+                           "Get azimuth (degrees) of y coordinate axis.")
 
-    .def("get_crs", &geomodelgrids::PyModel::getCRSString,
-         "Get coordinate system of model as string.")
+    .def_property_readonly("crs", &geomodelgrids::PyModel::getCRSString,
+                           "Get coordinate system of model as string.")
 
     .def("get_info", &geomodelgrids::PyModel::getInfo,
          "Get information describing model.")

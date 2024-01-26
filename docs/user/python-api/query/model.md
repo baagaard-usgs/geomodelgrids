@@ -16,6 +16,16 @@
 - **VERTEX** Vertex-based data (values are specified at coordinates of vertices).
 - **CELL** Cell-based data (values are specified at centers of grid cells).
 
+## Read-only Attributes
+
+- **value_names** List of names of values in the model `list(str)`
+- **value_units** List of units of values in the model `list(str)`
+- **data_layout** Data layout for values (`VERTEX` or `CELL`)
+- **dims** Model dimensions in meters [x, y, z] `list(float)`
+- **origin** Coordinates of model origin [x, y] `list(float)` in model coordinate system
+- **y_azimuth** Azimuth (degrees) of y coordinate axis `float`
+- **crs** Coordinate reference system for model as Proj, EPSG, or WKT `str`
+
 ## Methods
 
 ### Model()
@@ -47,48 +57,6 @@ Load model metadata.
 ### initialize()
 
 Initialize the model.
-
-### get_value_names()
-
-Get names of values in the model.
-
-- **returns** List of names of values in the model.
-
-### get_value_units()
-
-Get units of values in the model.
-
-- **returns** List of units of values in the model.
-
-### get_data_layout()
-
-Get data layout for the model.
-
-- **returns** Data layout for values.
-
-### get_dims()
-
-Get model dimension.
-
-- **returns** Model dimensions in meters [x, y, z].
-
-### get_origin()
-
-Get coordinates of model origin in geographic projection.
-
-- **returns** Coordinates of model origin [x, y].
-
-### get_y_azimuth()
-
-Get azimuth of y coordinate axis.
-
-- **returns** Azimuth (degrees) of y coordinate axis.
-
-### get_crs()
-
-Get coordinate reference system for model.
-
-- **returns** Coordinate reference system for model as Proj, EPSG, or WKT.
 
 ### get_info()
 

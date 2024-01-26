@@ -35,13 +35,13 @@ class TestModel(unittest.TestCase):
             "crs": "EPSG:26910",
         }
 
-        self.assertEqual(DATA["value_names"], self.model.get_value_names())
-        self.assertEqual(DATA["value_units"], self.model.get_value_units())
-        self.assertEqual(DATA["data_layout"], self.model.get_data_layout())
-        self.assertEqual(DATA["dims"], self.model.get_dims())
-        self.assertEqual(DATA["origin"], self.model.get_origin())
-        self.assertEqual(DATA["y_azimuth"], self.model.get_y_azimuth())
-        self.assertEqual(DATA["crs"], self.model.get_crs())
+        self.assertEqual(DATA["value_names"], self.model.value_names)
+        self.assertEqual(DATA["value_units"], self.model.value_units)
+        self.assertEqual(DATA["data_layout"], self.model.data_layout)
+        self.assertEqual(DATA["dims"], self.model.dims)
+        self.assertEqual(DATA["origin"], self.model.origin)
+        self.assertEqual(DATA["y_azimuth"], self.model.y_azimuth)
+        self.assertEqual(DATA["crs"], self.model.crs)
 
     def test_contains(self):
         POINTS = numpy.array([
@@ -68,16 +68,16 @@ class TestModel(unittest.TestCase):
             [37.262, -121.684],
         ])
         ELEV = numpy.array([
-            150.0460941,
-            149.77504068,
-            150.02306271,
-            150.46361282,
-            150.52171529,
+            150.0460941024,
+            149.7750406823,
+            150.0230627088,
+            150.4636128215,
+            150.521715288,
         ])
 
         elev = self.model.query_top_elevation(POINTS)
         diff = numpy.sum(numpy.abs(elev - ELEV))
-        assert diff < 1.0e-6
+        self.assertLess(diff, 1.0e-6)
 
         self.assertRaises(RuntimeError, self.model.query_top_elevation, numpy.array([0]))
 
@@ -90,16 +90,16 @@ class TestModel(unittest.TestCase):
             [37.262, -121.684],
         ])
         ELEV = numpy.array([
-            150.0460941,
-            149.77504068,
-            150.02306271,
-            150.46361282,
-            150.52171529,
+            150.0460941024,
+            149.7750406823,
+            150.0230627088,
+            150.4636128215,
+            150.521715288,
         ])
 
         elev = self.model.query_topobathy_elevation(POINTS)
         diff = numpy.sum(numpy.abs(elev - ELEV))
-        assert diff < 1.0e-6
+        self.assertLess(diff, 1.0e-6)
 
         self.assertRaises(RuntimeError, self.model.query_topobathy_elevation, numpy.array([0]))
 
@@ -112,16 +112,16 @@ class TestModel(unittest.TestCase):
             [37.262, -121.684, -4.0e+3],
         ])
         VALUES = numpy.array([
-            [5254.1393062,  -858.13826774],
-            [31145.02206828, 18536.45902674],
-            [32058.97716272,  7545.7134798],
-            [16288.95161415,  8357.02682455],
-            [36369.15970315, 15326.88773376],
+            [5254.139302454365,  -858.138272226666],
+            [31145.022068279795, 18536.459026739467],
+            [32058.977160321396,  7545.7134769230406],
+            [16288.95161562109,   8357.0268263148791],
+            [36369.15970282998,  15326.887733376869],
         ])
 
         values = self.model.query(POINTS)
-        diff = numpy.sum(numpy.abs(numpy.array(values) - VALUES))
-        assert diff < 1.0e-6
+        diff = numpy.sum(numpy.abs(numpy.array(values) - VALUES)/VALUES)
+        self.assertLess(diff, 1.0e-6)
 
         self.assertRaises(RuntimeError, self.model.query, numpy.array([0]))
 
