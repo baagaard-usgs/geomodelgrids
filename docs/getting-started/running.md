@@ -9,4 +9,4 @@ The `geomodelgrids` suite of command line programs targets end users who simply 
 For additional details on how this program works, see the "Command line programs" section.
 
 We also provide an API for calling the query routines from external code.
-See the [C++ API](../user/cxx-api/index.md) and [C API](../user/c-api/index.md) sections for more information.
+See the [Python API](../user/python-api/index.md), [C++ API](../user/cxx-api/index.md), and [C API](../user/c-api/index.md) sections for more information.
