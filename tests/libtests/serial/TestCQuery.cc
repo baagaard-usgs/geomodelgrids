@@ -29,33 +29,71 @@ class geomodelgrids::serial::TestCQuery {
 public:
 
     /// Test constructor.
+    static
     void testCreateDestroy(void);
 
     /// Test getters.
+    static
     void testAccessors(void);
 
     /// Test initialize() and finalize().
+    static
     void testInitialize(void);
 
     /// Test queryTopElevation().
+    static
     void testQueryTopElevation(void);
 
     /// Test queryTopoBathyElevation().
+    static
     void testQueryTopoBathyElevation(void);
 
     /// Test query() for model with flat ground surface.
+    static
     void testQueryFlat(void);
 
     /// Test query() for model with topography.
+    static
     void testQueryTopo(void);
 
     /// Test query() for model with squashing using top surface.
+    static
     void testQuerySquashTop(void);
 
     /// Test query() for model with squashing using topography/bathymetry.
+    static
     void testQuerySquashTopoBathy(void);
 
 }; // class TestCQuery
+
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestCQuery::testCreateDestroy", "[TestCQuery]") {
+    geomodelgrids::serial::TestCQuery::testCreateDestroy();
+}
+TEST_CASE("TestCQuery::testAccessors", "[TestCQuery]") {
+    geomodelgrids::serial::TestCQuery().testAccessors();
+}
+TEST_CASE("TestCQuery::testInitialize", "[TestCQuery]") {
+    geomodelgrids::serial::TestCQuery().testInitialize();
+}
+TEST_CASE("TestCQuery::testQueryTopElevation", "[TestCQuery]") {
+    geomodelgrids::serial::TestCQuery().testQueryTopElevation();
+}
+TEST_CASE("TestCQuery::testQueryTopoBathyElevation", "[TestCQuery]") {
+    geomodelgrids::serial::TestCQuery().testQueryTopoBathyElevation();
+}
+TEST_CASE("TestCQuery::testQueryFlat", "[TestCQuery]") {
+    geomodelgrids::serial::TestCQuery().testQueryFlat();
+}
+TEST_CASE("TestCQuery::testQueryTopo", "[TestCQuery]") {
+    geomodelgrids::serial::TestCQuery().testQueryTopo();
+}
+TEST_CASE("TestCQuery::testQuerySquashTop", "[TestCQuery]") {
+    geomodelgrids::serial::TestCQuery().testQuerySquashTop();
+}
+TEST_CASE("TestCQuery::testQuerySquashTopoBathy", "[TestCQuery]") {
+    geomodelgrids::serial::TestCQuery().testQuerySquashTopoBathy();
+}
 
 // ------------------------------------------------------------------------------------------------
 // Test constructor.

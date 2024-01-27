@@ -18,8 +18,6 @@ libtest_serial_SOURCES = \
 	$(top_srcdir)/tests/data/ModelPoints.cc \
 	$(top_srcdir)/tests/src/driver_catch2.cc
 
-#
-
 noinst_HEADERS = \
 	TestSurface.hh \
 	TestBlock.hh
