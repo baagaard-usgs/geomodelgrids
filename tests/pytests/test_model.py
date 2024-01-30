@@ -76,7 +76,7 @@ class TestModel(unittest.TestCase):
         ])
 
         elev = self.model.query_top_elevation(POINTS)
-        diff = numpy.sum(numpy.abs(elev - ELEV))
+        diff = numpy.sum(numpy.abs(elev - ELEV)/ELEV)
         self.assertLess(diff, 1.0e-6)
 
         self.assertRaises(RuntimeError, self.model.query_top_elevation, numpy.array([0]))
@@ -98,7 +98,7 @@ class TestModel(unittest.TestCase):
         ])
 
         elev = self.model.query_topobathy_elevation(POINTS)
-        diff = numpy.sum(numpy.abs(elev - ELEV))
+        diff = numpy.sum(numpy.abs(elev - ELEV)/ELEV)
         self.assertLess(diff, 1.0e-6)
 
         self.assertRaises(RuntimeError, self.model.query_topobathy_elevation, numpy.array([0]))

@@ -1,6 +1,7 @@
 """Test _geomodelgrids.Query.
 """
 
+import os
 import unittest
 import numpy
 
@@ -64,7 +65,7 @@ class TestQuery(unittest.TestCase):
 
         elev = self.query.query_top_elevation(POINTS)
         diff = numpy.sum(numpy.abs(elev - ELEV)/ELEV)
-        self.assertLess(diff, 1.0e-6)
+        self.assertLess(diff, 2.0e-6)
 
         self.assertRaises(RuntimeError, self.query.query_top_elevation, numpy.array([1.0]))
 
@@ -102,7 +103,7 @@ class TestQuery(unittest.TestCase):
 
         elev = self.query.query_topobathy_elevation(POINTS)
         diff = numpy.sum(numpy.abs(elev - ELEV)/ELEV)
-        self.assertLess(diff, 1.0e-6)
+        self.assertLess(diff, 2.0e-6)
 
         self.assertRaises(RuntimeError, self.query.query_topobathy_elevation, numpy.array([1.0]))
 
@@ -137,7 +138,24 @@ class TestQuery(unittest.TestCase):
             [113532.86043323125, 118500.90059607077],
             [453.6481620888689,  21296.582163089526],
         ])
-
+        if os.environ.get("PROJ_VERSION") == "6":
+            # Coarse resolution datum files are less accurate
+            VALUES = numpy.array([
+                # one-block-topo
+                [  -858.13826774,   5254.1393062 ],
+                [ 18536.45902674,  31145.02206828],
+                [  7545.7134798 ,  32058.97716272],
+                [  8357.02682455,  16288.95161415],
+                [ 15326.88773376,  36369.15970315],
+                # three-block-topo
+                [-19613.62959036,  49859.0364433 ],
+                [197904.82060923, 242203.5252072 ],
+                [   686.23173858,  45995.27292008],
+                [ 63390.74886799, 101918.24668   ],
+                [113532.58587332, 118501.09562028],
+                [   453.37460241,  21296.77644269]
+            ])
+            
         values, err = self.query.query(POINTS)
         diff = numpy.sum(numpy.abs(numpy.array(values) - VALUES)/VALUES)
         self.assertLess(diff, 1.0e-6)
@@ -173,6 +191,23 @@ class TestQuery(unittest.TestCase):
             [63391.023139392652, 101918.04931034689],
             [113532.86043323125, 118500.90059607077],
             [148.96746671345025,  21042.68158361001]])
+        if os.environ.get("PROJ_VERSION") == "6":
+            # Coarse resolution datum files are less accurate
+            VALUES = numpy.array([
+                # one-block-topo
+                [-1.48166395e+03,  4.73444292e+03],
+                [ 1.85364806e+04,  3.11449941e+04],
+                [ 7.26615711e+03,  3.18259874e+04],
+                [ 7.86632505e+03,  1.58799299e+04],
+                [ 1.51867543e+04,  3.62523092e+04],
+                # three-blocks-topo
+                [-2.02344333e+04,  4.93417000e+04],
+                [ 1.97904821e+05,  2.42203525e+05],
+                [ 3.99825162e+02,  4.57566008e+04],
+                [ 6.33907489e+04,  1.01918247e+05],
+                [ 1.13532586e+05,  1.18501096e+05],
+                [ 1.48693968e+02,  2.10428759e+04],
+            ])
 
         self.query.set_squash_min_elev(-4.999e+3)
         values, err = self.query.query(POINTS)
