@@ -5,12 +5,20 @@ Some applications ignore topography and assume a flat Earth model.
 In such cases, you will likely want to query the model at elevations relative to the topographic surface.
 You can query for elevation and adjust your input values accordingly, or you can use squashing to have the top surface automatically squashed and stretched so that it is at z=0.
 The model is squashed and stretched over the elevation range from the minimum squashing elevation up to the top surface.
-Either the top surface or the topography/bathymetry surface can be used as the reference top surface for squashing.
+Either the top surface or the topography/bathymetry surface can be used as the reference surface for squashing.
 
 :::{important}
 Squashing distorts the geometry of the Earth structure above the minimum squashing elevation.
 The amount of distortion depends on the elevation of the top surface and the minimum squashing elevation.
+The distortion in the vertical direction is uniform over the entire depth range of a single vertical profile.
+The distortion in the horizontal direction depends on the gradient in the elevation of the reference surface with a larger gradient leading to larger distortion in the horizontal direction.
 :::
+
+:::{tip}
+To minimize distortion in the horizontal and vertical directions, you will want to use a minimum squashing elevation that is equal to the bottom elevation of the model.
+:::
+
+
 
 :::{figure-md} fig-squashing
 <img src="figs/squashing.*" alt="Diagram of physical model and squashed model." width="100%"/>

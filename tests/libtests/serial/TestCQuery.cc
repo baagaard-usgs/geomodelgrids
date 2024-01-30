@@ -29,33 +29,71 @@ class geomodelgrids::serial::TestCQuery {
 public:
 
     /// Test constructor.
+    static
     void testCreateDestroy(void);
 
     /// Test getters.
+    static
     void testAccessors(void);
 
     /// Test initialize() and finalize().
+    static
     void testInitialize(void);
 
     /// Test queryTopElevation().
+    static
     void testQueryTopElevation(void);
 
     /// Test queryTopoBathyElevation().
+    static
     void testQueryTopoBathyElevation(void);
 
     /// Test query() for model with flat ground surface.
+    static
     void testQueryFlat(void);
 
     /// Test query() for model with topography.
+    static
     void testQueryTopo(void);
 
     /// Test query() for model with squashing using top surface.
+    static
     void testQuerySquashTop(void);
 
     /// Test query() for model with squashing using topography/bathymetry.
+    static
     void testQuerySquashTopoBathy(void);
 
 }; // class TestCQuery
+
+// ------------------------------------------------------------------------------------------------
+TEST_CASE("TestCQuery::testCreateDestroy", "[TestCQuery]") {
+    geomodelgrids::serial::TestCQuery::testCreateDestroy();
+}
+TEST_CASE("TestCQuery::testAccessors", "[TestCQuery]") {
+    geomodelgrids::serial::TestCQuery().testAccessors();
+}
+TEST_CASE("TestCQuery::testInitialize", "[TestCQuery]") {
+    geomodelgrids::serial::TestCQuery().testInitialize();
+}
+TEST_CASE("TestCQuery::testQueryTopElevation", "[TestCQuery]") {
+    geomodelgrids::serial::TestCQuery().testQueryTopElevation();
+}
+TEST_CASE("TestCQuery::testQueryTopoBathyElevation", "[TestCQuery]") {
+    geomodelgrids::serial::TestCQuery().testQueryTopoBathyElevation();
+}
+TEST_CASE("TestCQuery::testQueryFlat", "[TestCQuery]") {
+    geomodelgrids::serial::TestCQuery().testQueryFlat();
+}
+TEST_CASE("TestCQuery::testQueryTopo", "[TestCQuery]") {
+    geomodelgrids::serial::TestCQuery().testQueryTopo();
+}
+TEST_CASE("TestCQuery::testQuerySquashTop", "[TestCQuery]") {
+    geomodelgrids::serial::TestCQuery().testQuerySquashTop();
+}
+TEST_CASE("TestCQuery::testQuerySquashTopoBathy", "[TestCQuery]") {
+    geomodelgrids::serial::TestCQuery().testQuerySquashTopoBathy();
+}
 
 // ------------------------------------------------------------------------------------------------
 // Test constructor.
@@ -77,7 +115,7 @@ geomodelgrids::serial::TestCQuery::testAccessors(void) {
     geomodelgrids::serial::Query* query = (geomodelgrids::serial::Query*) handle;REQUIRE(query);
 
     void* errorHandler = geomodelgrids_squery_getErrorHandler(handle);
-    CHECK((geomodelgrids::utils::ErrorHandler*)errorHandler == query->_errorHandler);
+    CHECK((geomodelgrids::utils::ErrorHandler*)errorHandler == query->_errorHandler.get());
 
     const double minElev(-2.0e+3);
     int err = geomodelgrids_squery_setSquashMinElev(handle, minElev);REQUIRE(!err);
@@ -229,13 +267,13 @@ geomodelgrids::serial::TestCQuery::testQueryTopElevation(void) {
     } // Outside domains
 
     geomodelgrids::serial::Query* query = (geomodelgrids::serial::Query*) handle;REQUIRE(query);
-    geomodelgrids::utils::ErrorHandler& errorHandler = query->getErrorHandler();
-    errorHandler.resetStatus();
+    std::shared_ptr<geomodelgrids::utils::ErrorHandler>& errorHandler = query->getErrorHandler();
+    errorHandler->resetStatus();
 
     // Bad handle
     double elevation = geomodelgrids_squery_queryTopElevation(nullptr, 0.0, 0.0);
     CHECK(geomodelgrids::NODATA_VALUE == elevation);
-    errorHandler.resetStatus();
+    errorHandler->resetStatus();
 
     geomodelgrids_squery_destroy(&handle);REQUIRE(!handle);
 } // testQueryTopElevation
@@ -316,13 +354,13 @@ geomodelgrids::serial::TestCQuery::testQueryTopoBathyElevation(void) {
     } // Outside domains
 
     geomodelgrids::serial::Query* query = (geomodelgrids::serial::Query*) handle;REQUIRE(query);
-    geomodelgrids::utils::ErrorHandler& errorHandler = query->getErrorHandler();
-    errorHandler.resetStatus();
+    std::shared_ptr<geomodelgrids::utils::ErrorHandler>& errorHandler = query->getErrorHandler();
+    errorHandler->resetStatus();
 
     // Bad handle
     double elevation = geomodelgrids_squery_queryTopoBathyElevation(nullptr, 0.0, 0.0);
     CHECK(geomodelgrids::NODATA_VALUE == elevation);
-    errorHandler.resetStatus();
+    errorHandler->resetStatus();
 
     geomodelgrids_squery_destroy(&handle);REQUIRE(!handle);
 } // testQueryTopElevation

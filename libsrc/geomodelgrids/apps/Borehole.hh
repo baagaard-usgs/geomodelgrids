@@ -1,6 +1,5 @@
 /// C++ application to query model via virtual borehole.
-#if !defined(geomodelgrids_apps_borehole_hh)
-#define geomodelgrids_apps_borehole_hh
+#pragma once
 
 #include "appsfwd.hh" // forward declarations
 
@@ -83,7 +82,5 @@ private:
     const Borehole& operator=(const Borehole&); ///< Not implemented
 
 }; // Borehole
-
-#endif // geomodelgrids_apps_borehole_hh
 
 // End of file

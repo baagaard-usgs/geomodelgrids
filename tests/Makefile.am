@@ -1,7 +1,10 @@
 SUBDIRS = \
 	data \
 	src \
-	libtests \
-	pytests
+	libtests
+
+if ENABLE_PYTHON
+SUBDIRS += pytests
+endif
 
 # End of file

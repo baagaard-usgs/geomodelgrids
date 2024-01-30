@@ -181,15 +181,17 @@ class TestBatchGenerator3D(unittest.TestCase):
         self.assertEqual(len(batchesE), count)
 
 
-def test_classes():
-    return [TestBatchGenerator2D, TestBatchGenerator3D]
+def load_tests(loader, tests, pattern):
+    TEST_CLASSES = [TestBatchGenerator2D, TestBatchGenerator3D]
+
+    suite = unittest.TestSuite()
+    for cls in TEST_CLASSES:
+        suite.addTests(loader.loadTestsFromTestCase(cls))
+    return suite
 
 
 if __name__ == "__main__":
-    suite = unittest.TestSuite()
-    for cls in test_classes():
-        suite.addTest(unittest.makeSuite(cls))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    unittest.main(verbosity=2)
 
 
 # End of file

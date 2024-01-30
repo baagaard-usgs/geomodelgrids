@@ -1,6 +1,5 @@
 /// C++ application to print model metadata to stdout.
-#if !defined(geomodelgrids_apps_info_hh)
-#define geomodelgrids_apps_info_hh
+#pragma once
 
 #include "appsfwd.hh" // forward declarations
 
@@ -104,7 +103,5 @@ private:
     const Info& operator=(const Info&); ///< Not implemented
 
 }; // Info
-
-#endif // geomodelgrids_apps_info_hh
 
 // End of file

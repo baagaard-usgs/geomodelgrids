@@ -2,9 +2,7 @@
  *
  * The hyperslab always contains all of the values at a point and that dimension is not given in the constructor.
  */
-
-#if !defined(geomodelgrids_serial_hyperslab_hh)
-#define geomodelgrids_serial_hyperslab_hh
+#pragma once
 
 #include "serialfwd.hh" // forward declarations
 
@@ -78,7 +76,5 @@ private:
     const Hyperslab& operator=(const Hyperslab&); ///< Not implemented
 
 }; // Hyperslab
-
-#endif // geomodelgrids_serial_hyperslab_hh
 
 // End of file

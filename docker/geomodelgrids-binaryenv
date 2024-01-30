@@ -2,27 +2,29 @@ FROM centos:7 as os-update
 LABEL maintainer="Brad Aagaard <baagaard@usgs.gov>"
 
 RUN yum install -y \
-    gcc \
-    gcc-c++ \
-    make \
-    file \
-    which \
-    diffutils \
-    gettext \
-    git \
-    uncrustify \
-    gnupg2 \
-    automake \
-    autoconf \
-    libtool \
-    openssh \
-    openssl \
-    zlib-devel \
-    libffi-devel \
-    ca-certificates \
-    vim-common \
-    vim-runtime \
-    centos-release-scl
+  gcc \
+  gcc-c++ \
+  make \
+  file \
+  which \
+  diffutils \
+  gettext \
+  git \
+  uncrustify \
+  gnupg2 \
+  automake \
+  autoconf \
+  libtool \
+  cmake \
+  openssh \
+  perl-IPC-Cmd \
+  openssl \
+  zlib-devel \
+  libffi-devel \
+  ca-certificates \
+  vim-common \
+  vim-runtime \
+  centos-release-scl
 RUN yum install -y rh-python38
 
 COPY docker/certs/ /usr/share/pki/ca-trust-source/anchors
@@ -67,9 +69,9 @@ COPY --chown=gmg-user:gmg-user docker/build_binary.py ${BUILD_DIR}
 WORKDIR $BUILD_DIR
 
 RUN mv ${SRC_DIR}/geomodelgrids-*.tar.gz ${BUILD_DIR}
-RUN scl enable rh-python38 -- ${SRC_DIR}/docker/build_binary.py --install-dir=${INSTALL_DIR} --version=1.0.0rc1 --gcc
-RUN scl enable rh-python38 -- ${SRC_DIR}/docker/build_binary.py --install-dir=${INSTALL_DIR} --version=1.0.0rc1 --tiff --sqlite --openssl --curl --proj --hdf5
-RUN scl enable rh-python38 -- ${SRC_DIR}/docker/build_binary.py --install-dir=${INSTALL_DIR} --version=1.0.0rc1 --geomodelgrids --create-setup --create-tarball
+RUN scl enable rh-python38 -- ${SRC_DIR}/docker/build_binary.py --install-dir=${INSTALL_DIR} --version=1.0.0rc3 --gcc
+RUN scl enable rh-python38 -- ${SRC_DIR}/docker/build_binary.py --install-dir=${INSTALL_DIR} --version=1.0.0rc3 --tiff --sqlite --openssl --curl --proj --hdf5
+RUN scl enable rh-python38 -- ${SRC_DIR}/docker/build_binary.py --install-dir=${INSTALL_DIR} --version=1.0.0rc3 --geomodelgrids --create-setup --create-tarball
 
 
 CMD /bin/bash

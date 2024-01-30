@@ -1,6 +1,7 @@
 # C API
 
 ```{toctree}
-serial.md
-parallel.md
+serial/index.md
+parallel/index.md
+utils/index.md
 ```

@@ -1,4 +1,4 @@
-# Model creation
+# Classes
 
 ```{toctree}
 apps/index.md

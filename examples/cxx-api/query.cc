@@ -41,8 +41,8 @@ main(int argc,
     query.initialize(filenames, valueNames, crs);
 
     // Log warnings and errors to "error.log".
-    geomodelgrids::utils::ErrorHandler& errorHandler = query.getErrorHandler();
-    errorHandler.setLogFilename("error.log");
+    std::shared_ptr<geomodelgrids::utils::ErrorHandler>& errorHandler = query.getErrorHandler();
+    errorHandler->setLogFilename("error.log");
 
     // Coordinates of points for query (latitude, longitude, elevation).
     static const size_t numPoints = 16;

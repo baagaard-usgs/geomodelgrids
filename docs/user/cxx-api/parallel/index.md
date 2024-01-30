@@ -1,4 +1,4 @@
-# C++ Parallel API
+# Parallel C++ API
 
 All classes in the parallel C++ API are in the `geomodelgrids::parallel` namespace.
 

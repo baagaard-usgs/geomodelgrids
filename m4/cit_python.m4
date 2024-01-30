@@ -187,8 +187,10 @@ else:
         # See also Issue39.
         framework = "%(PYTHONFRAMEWORKDIR)s/Versions/%(VERSION)s/%(PYTHONFRAMEWORK)s" % vars
         PYTHONFRAMEWORK = vars.get('PYTHONFRAMEWORK', 'Python')
-        vars['LINKFORSHARED'] = vars['LINKFORSHARED'].replace(framework, "-framework " + PYTHONFRAMEWORK)
-        vars['LA_LDFLAGS'] = "-Wl,-framework,%s" % PYTHONFRAMEWORK
+        # Setting LINKFORSHARED and LA_LDFLAGS causes problems with linking on macOS with a Python
+        # virtual environment. This may also be true in general.
+        #vars['LINKFORSHARED'] = vars['LINKFORSHARED'].replace(framework, "-framework " + PYTHONFRAMEWORK)
+        #vars['LA_LDFLAGS'] = "-Wl,-framework,%s" % PYTHONFRAMEWORK
 vars['LDFLAGS'] = '' # only causes trouble (e.g., "-arch i386 -arch ppc" on Mac) -- see issue97
 print('PYTHON_INCDIR="%s"' % incdir)
 for key in keys:

@@ -92,18 +92,10 @@ class TestApp(unittest.TestCase):
 
     def test_domain(self):
         ARGS = {
-            "config": self.CONFIG_FILENAME,
-            "show_parameters": False,
+            "config_filenames": self.CONFIG_FILENAME,
             "import_domain": True,
-            "import_surfaces": False,
-            "import_blocks": False,
-            "update_metadata": False,
-            "all": False,
-            "show_progress": False,
-            "log_filename": "test_createapp.log",
-            "debug": True,
         }
-        app = App()
+        app = App(show_progress=False, debug=True)
         app.main(**ARGS)
 
         h5 = h5py.File(self.metadata["filename"], "r")
@@ -112,18 +104,11 @@ class TestApp(unittest.TestCase):
 
     def test_surfaces(self):
         ARGS = {
-            "config": self.CONFIG_FILENAME,
-            "show_parameters": False,
+            "config_filenames": self.CONFIG_FILENAME,
             "import_domain": True,
             "import_surfaces": True,
-            "import_blocks": False,
-            "update_metadata": False,
-            "all": False,
-            "show_progress": False,
-            "log_filename": "test_createapp.log",
-            "debug": True,
         }
-        app = App()
+        app = App(show_progress=False, debug=True)
         app.main(**ARGS)
 
         points = self._get_surface_xyz()
@@ -160,18 +145,12 @@ class TestApp(unittest.TestCase):
 
     def test_blocks(self):
         ARGS = {
-            "config": self.CONFIG_FILENAME,
-            "show_parameters": False,
+            "config_filenames": self.CONFIG_FILENAME,
             "import_domain": True,
             "import_surfaces": True,
             "import_blocks": True,
-            "update_metadata": False,
-            "all": False,
-            "show_progress": False,
-            "log_filename": "test_createapp.log",
-            "debug": True,
         }
-        app = App()
+        app = App(show_progress=False, debug=True)
         app.main(**ARGS)
 
         h5 = h5py.File(self.metadata["filename"], "r")
@@ -279,25 +258,16 @@ class TestAppVarXYZ(TestApp):
 
     def test_metadata(self):
         ARGS = {
-            "config": self.CONFIG_FILENAME,
-            "show_parameters": False,
-            "import_domain": False,
-            "import_surfaces": False,
-            "import_blocks": False,
-            "update_metadata": False,
-            "all": True,
-            "show_progress": False,
-            "log_filename": "test_createapp.log",
-            "debug": True,
+            "config_filenames": self.CONFIG_FILENAME,
+            "all_steps": True,
         }
-        app = App()
+        app = App(show_progress=False, debug=True)
         app.main(**ARGS)
-        ARGS.update({
-            "config": "test_updatemetadata_varxyz.cfg",
-            "all": False,
+        ARGS_UPDATE = {
+            "config_filenames": "test_updatemetadata_varxyz.cfg",
             "update_metadata": True,
-        })
-        app.main(**ARGS)
+        }
+        app.main(**ARGS_UPDATE)
 
         model_metadata = {
             "references": ["lots"],
@@ -309,15 +279,17 @@ class TestAppVarXYZ(TestApp):
         self._check_attributes(model_metadata.keys(), model_metadata, h5.attrs)
 
 
-def test_classes():
-    return [TestApp, TestAppBatch, TestAppVarZ, TestAppVarXYZ]
+def load_tests(loader, tests, pattern):
+    TEST_CLASSES = [TestApp, TestAppBatch, TestAppVarZ, TestAppVarXYZ]
+
+    suite = unittest.TestSuite()
+    for cls in TEST_CLASSES:
+        suite.addTests(loader.loadTestsFromTestCase(cls))
+    return suite
 
 
 if __name__ == "__main__":
-    suite = unittest.TestSuite()
-    for cls in test_classes():
-        suite.addTest(unittest.makeSuite(cls))
-    unittest.TextTestRunner(verbosity=2).run(suite)
+    unittest.main(verbosity=2)
 
 
 # End of file

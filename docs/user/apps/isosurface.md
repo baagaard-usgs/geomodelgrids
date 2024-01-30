@@ -19,7 +19,7 @@ After the line search at the finest resolution, the depth of the isosurface is f
 
 Optional command line arguments are in square brackets.
 
-```
+```{code-block} bash
 geomodelgrids_isosurface [--help] [--log=FILE_LOG]
   --bbox=XMIN,XMAX,YMIN,YMAX
   --hresolution=RESOLUTION
@@ -82,6 +82,7 @@ geomodelgrids_isosurface \
 ```
 
 We can see the metadata by running gdalinfo on the resulting GeoTiff file.
+
 ```{code-block} bash
 gdalinfo tests/data/three-blocks-topo-isosurface.tiff
 
@@ -117,11 +118,11 @@ Image Structure Metadata:
   COMPRESSION=DEFLATE
   INTERLEAVE=PIXEL
 Corner Coordinates:
-Upper Left  (-117.7000000,  34.8000000) (117d42' 0.00"W, 34d48' 0.00"N)
-Lower Left  (-117.7000000,  34.6000000) (117d42' 0.00"W, 34d36' 0.00"N)
-Upper Right (-117.3000000,  34.8000000) (117d18' 0.00"W, 34d48' 0.00"N)
-Lower Right (-117.3000000,  34.6000000) (117d18' 0.00"W, 34d36' 0.00"N)
-Center      (-117.5000000,  34.7000000) (117d30' 0.00"W, 34d42' 0.00"N)
+Upper Left  (-117.7000000,  34.8000000) (117d42\' 0.00\"W, 34d48\' 0.00\"N)
+Lower Left  (-117.7000000,  34.6000000) (117d42\' 0.00\"W, 34d36\' 0.00\"N)
+Upper Right (-117.3000000,  34.8000000) (117d18\' 0.00\"W, 34d48\' 0.00\"N)
+Lower Right (-117.3000000,  34.6000000) (117d18\' 0.00\"W, 34d36\' 0.00\"N)
+Center      (-117.5000000,  34.7000000) (117d30\' 0.00\"W, 34d42\' 0.00\"N)
 Band 1 Block=4x2 Type=Float32, ColorInterp=Gray
   Description = one=120000
   NoData Value=-1.00000002004087734e+20

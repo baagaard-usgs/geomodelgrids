@@ -168,9 +168,9 @@ geomodelgrids::apps::Isosurface::run(int argc,
         isosurfacer.initialize();
         if (!_logFilename.empty()) {
             geomodelgrids::serial::Query* query = isosurfacer.getQuery();assert(query);
-            geomodelgrids::utils::ErrorHandler& errorHandler = query->getErrorHandler();
-            errorHandler.setLogFilename(_logFilename.c_str());
-            errorHandler.setLoggingOn(true);
+            std::shared_ptr<geomodelgrids::utils::ErrorHandler>& errorHandler = query->getErrorHandler();
+            errorHandler->setLogFilename(_logFilename.c_str());
+            errorHandler->setLoggingOn(true);
         } // if
 
         const size_t numX = size_t((_maxX + 0.5*_horizRes - _minX) / _horizRes);

@@ -1,6 +1,5 @@
 /// C++ application to query for model elevation.
-#if !defined(geomodelgrids_apps_queryelev_hh)
-#define geomodelgrids_apps_queryelev_hh
+#pragma once
 
 #include "appsfwd.hh" // forward declarations
 
@@ -79,7 +78,5 @@ private:
     const QueryElev& operator=(const QueryElev&); ///< Not implemented
 
 }; // QueryElev
-
-#endif // geomodelgrids_apps_queryelev_hh
 
 // End of file

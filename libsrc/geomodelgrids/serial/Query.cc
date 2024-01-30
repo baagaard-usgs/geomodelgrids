@@ -64,7 +64,7 @@ public:
 // Constructor
 geomodelgrids::serial::Query::Query() :
     _squashMinElev(0.0),
-    _errorHandler(new geomodelgrids::utils::ErrorHandler),
+    _errorHandler(std::make_shared<geomodelgrids::utils::ErrorHandler>()),
     _squash(SQUASH_NONE) {}
 
 
@@ -72,18 +72,16 @@ geomodelgrids::serial::Query::Query() :
 // Destructor
 geomodelgrids::serial::Query::~Query(void) {
     for (size_t i = 0; i < _models.size(); ++i) {
-        delete _models[i];_models[i] = nullptr;
+        _models[i].reset();
     } // for
-    delete _errorHandler;_errorHandler = nullptr;
 } // destructor
 
 
 // ------------------------------------------------------------------------------------------------
 // Get error handler.
-geomodelgrids::utils::ErrorHandler&
+std::shared_ptr<geomodelgrids::utils::ErrorHandler>&
 geomodelgrids::serial::Query::getErrorHandler(void) {
-    assert(_errorHandler);
-    return *_errorHandler;
+    return _errorHandler;
 } // getErrorHandler
 
 
@@ -96,7 +94,7 @@ geomodelgrids::serial::Query::initialize(const std::vector<std::string>& modelFi
     _valuesLowercase = _Query::toLower(valueNames);
 
     for (size_t i = 0; i < _models.size(); ++i) {
-        delete _models[i];_models[i] = nullptr;
+        _models[i].reset();
     } // for
 
     const size_t numModels = modelFilenames.size();
@@ -104,7 +102,7 @@ geomodelgrids::serial::Query::initialize(const std::vector<std::string>& modelFi
     _valuesIndex.resize(numModels);
     std::map<size_t, std::string> valueUnits;
     for (size_t iModel = 0; iModel < numModels; ++iModel) {
-        _models[iModel] = new geomodelgrids::serial::Model();assert(_models[iModel]);
+        _models[iModel] = std::make_unique<geomodelgrids::serial::Model>();assert(_models[iModel]);
         _models[iModel]->setInputCRS(inputCRSString);
         _models[iModel]->open(modelFilenames[iModel].c_str(), geomodelgrids::serial::Model::READ);
         _models[iModel]->loadMetadata();
@@ -136,6 +134,14 @@ void
 geomodelgrids::serial::Query::setSquashing(const SquashingEnum value) {
     _squash = value;
 } // setSquashing
+
+
+// ------------------------------------------------------------------------------------------------
+// Get names of values in model.
+const std::vector<std::string>&
+geomodelgrids::serial::Query::getValueNames(void) const {
+    return _valuesLowercase;
+} // getValueNames
 
 
 // ------------------------------------------------------------------------------------------------
@@ -190,6 +196,11 @@ geomodelgrids::serial::Query::query(double* const values,
         _errorHandler->setError("geomodelgrids::serial::Query::query() passed nullptr for values argument.");
         return geomodelgrids::utils::ErrorHandler::ERROR;
     } // if
+    if (!_valuesLowercase.size()) {
+        assert(_errorHandler);
+        _errorHandler->setError("geomodelgrids::serial::Query::query() not initialized.");
+        return geomodelgrids::utils::ErrorHandler::ERROR;
+    } // if
 
     const size_t numQueryValues = _valuesLowercase.size();
     std::fill(values, values+numQueryValues, NODATA_VALUE);
@@ -236,8 +247,9 @@ geomodelgrids::serial::Query::query(double* const values,
 void
 geomodelgrids::serial::Query::finalize(void) {
     for (size_t i = 0; i < _models.size(); ++i) {
-        assert(_models[i]);
-        _models[i]->close();
+        if (_models[i]) {
+            _models[i]->close();
+        } // if
     } // for
 } // finalize
 
@@ -279,7 +291,7 @@ geomodelgrids::serial::_Query::createModelValuesIndex(const geomodelgrids::seria
             valuesIndex[i] = iter - modelNamesLower.begin();
         } else {
             std::ostringstream msg;
-            const geomodelgrids::serial::ModelInfo* info = model.getInfo();assert(info);
+            const std::shared_ptr<geomodelgrids::serial::ModelInfo>& info = model.getInfo();assert(info);
             msg << "Model '" << info->getTitle() << "' does not contain requested value '"
                 << queryNamesLower[i] << "'. Available values:\n";
             for (size_t j = 0; j < modelNames.size(); ++j) {

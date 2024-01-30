@@ -5,10 +5,13 @@ TESTS = test_geomodelgrids.py
 dist_check_SCRIPTS = test_geomodelgrids.py
 
 dist_noinst_PYTHON = \
-	test_driver.py \
 	test_units.py \
 	test_batch.py \
-	test_createapp.py
+	test_createapp.py \
+	test_query.py \
+	test_model.py \
+	test_modelinfo.py \
+	test_errorhandler.py
 
 
 dist_noinst_DATA = \

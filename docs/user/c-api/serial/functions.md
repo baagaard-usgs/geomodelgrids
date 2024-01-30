@@ -1,0 +1,5 @@
+# Functions
+
+```{toctree}
+query.md
+```

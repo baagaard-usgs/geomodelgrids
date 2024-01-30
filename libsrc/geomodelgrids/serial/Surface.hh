@@ -1,8 +1,6 @@
 /** Surface stored as HDF5 file.
  */
-
-#if !defined(geomodelgrids_serial_surface_hh)
-#define geomodelgrids_serial_surface_hh
+#pragma once
 
 #include "serialfwd.hh" // forward declarations
 #include "geomodelgrids/utils/utilsfwd.hh" // forward declarations
@@ -111,7 +109,5 @@ private:
     const Surface& operator=(const Surface&); ///< Not implemented
 
 }; // Surface
-
-#endif // geomodelgrids_serial_surface_hh
 
 // End of file

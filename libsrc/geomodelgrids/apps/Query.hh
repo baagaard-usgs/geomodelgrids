@@ -1,6 +1,5 @@
 /// C++ application to query model.
-#if !defined(geomodelgrids_apps_query_hh)
-#define geomodelgrids_apps_query_hh
+#pragma once
 
 #include "appsfwd.hh" // forward declarations
 
@@ -85,7 +84,5 @@ private:
     const Query& operator=(const Query&); ///< Not implemented
 
 }; // Query
-
-#endif // geomodelgrids_apps_query_hh
 
 // End of file

@@ -1,12 +1,11 @@
 /** Model stored as HDF5 file.
  */
-
-#if !defined(geomodelgrids_serial_model_hh)
-#define geomodelgrids_serial_model_hh
+#pragma once
 
 #include "serialfwd.hh" // forward declarations
 #include "geomodelgrids/utils/utilsfwd.hh" // HOLDSA CRSTransformer
 
+#include <memory> // HASA std::std::shared_ptr
 #include <vector> // HASA std::std::vector
 #include <string> // HASA std::string
 
@@ -74,7 +73,7 @@ public:
     const std::vector<std::string>& getValueUnits(void) const;
 
     /** Get data layout.
-     * 
+     *
      * @returns Data layout scheme.
      */
     DataLayout getDataLayout(void) const;
@@ -107,25 +106,25 @@ public:
      *
      * @returns Model description information.
      */
-    const geomodelgrids::serial::ModelInfo* getInfo(void) const;
+    const std::shared_ptr<geomodelgrids::serial::ModelInfo>& getInfo(void) const;
 
     /** Get top surface of model.
      *
      * @returns Top surface.
      */
-    const geomodelgrids::serial::Surface* getTopSurface(void) const;
+    const std::shared_ptr<geomodelgrids::serial::Surface>& getTopSurface(void) const;
 
     /** Get model topography/bathymetry.
      *
      * @returns Model topography/bathymetry.
      */
-    const geomodelgrids::serial::Surface* getTopoBathy(void) const;
+    const std::shared_ptr<geomodelgrids::serial::Surface>& getTopoBathy(void) const;
 
     /** Get model blocks.
      *
      * @returns Array of blocks in model.
      */
-    const std::vector<geomodelgrids::serial::Block*>& getBlocks(void) const;
+    const std::vector<std::shared_ptr<geomodelgrids::serial::Block> >& getBlocks(void) const;
 
     /** Does model contain given point?
      *
@@ -193,9 +192,9 @@ private:
      * @param[in] z Model z coordinate of point.
      * @returns Block containing point.
      */
-    geomodelgrids::serial::Block* _findBlock(const double x,
-                                             const double y,
-                                             const double z) const;
+    std::shared_ptr<geomodelgrids::serial::Block> _findBlock(const double x,
+                                                             const double y,
+                                                             const double z) const;
 
     // PRIVATE METHODS ----------------------------------------------------------------------------
 private:
@@ -209,12 +208,12 @@ private:
     double _yazimuth; ///< Azimuth of y coordinate axis.
     double _dims[3]; ///< Dimensions of model along coordinate axes.
 
-    geomodelgrids::serial::HDF5* _h5; ///< Model file.
-    geomodelgrids::serial::ModelInfo* _info; ///< Model description information.
-    geomodelgrids::serial::Surface* _surfaceTop; ///< Top surface of model.
-    geomodelgrids::serial::Surface* _surfaceTopoBathy; ///< Model topography/bathymetry.
-    geomodelgrids::utils::CRSTransformer* _crsTransformer; ///< Coordinate system transformer.
-    std::vector<geomodelgrids::serial::Block*> _blocks; ///< Model blocks.
+    std::unique_ptr<geomodelgrids::serial::HDF5> _h5; ///< Model file.
+    std::shared_ptr<geomodelgrids::serial::ModelInfo> _info; ///< Model description information.
+    std::shared_ptr<geomodelgrids::serial::Surface> _surfaceTop; ///< Top surface of model.
+    std::shared_ptr<geomodelgrids::serial::Surface> _surfaceTopoBathy; ///< Model topography/bathymetry.
+    std::shared_ptr<geomodelgrids::utils::CRSTransformer> _crsTransformer; ///< Coordinate system transformer.
+    std::vector<std::shared_ptr<geomodelgrids::serial::Block> > _blocks; ///< Model blocks.
 
     // NOT IMPLEMENTED ----------------------------------------------------------------------------
 private:
@@ -223,7 +222,5 @@ private:
     const Model& operator=(const Model&); ///< Not implemented
 
 }; // Model
-
-#endif // geomodelgrids_serial_model_hh
 
 // End of file

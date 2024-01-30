@@ -1,4 +1,4 @@
-# Utilities ErrorHandler Object 
+# ErrorHandler
 
 **Full name**: geomodelgrids::utils::ErrorHandler
 

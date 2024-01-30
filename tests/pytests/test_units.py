@@ -2,9 +2,7 @@
 """
 
 import unittest
-import os
 
-import numpy
 
 from geomodelgrids.create.utils import units
 

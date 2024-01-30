@@ -1,5 +1,4 @@
-#if !defined(geomodelgrids_serial_serialfwd_hh)
-#define geomodelgrids_serial_serialfwd_hh
+#pragma once
 
 namespace geomodelgrids {
     namespace serial {
@@ -14,7 +13,5 @@ namespace geomodelgrids {
         class Hyperslab;
     } // serial
 } // geomodelgrids
-
-#endif // geomodelgrids_serial_serialfwd_hh
 
 // End of file
