@@ -1,19 +1,22 @@
 stages:
   - basic-platform
   - other-platforms
+  - docs
 
-.runner:
-  only:
-    - merge_requests
+.base:
   tags:
     - development
   variables:
     GIT_SUBMODULE_STRATEGY: "normal"
     IMAGE_REGISTRY: "code.usgs.gov:5001/ghsc/gmp/earth-structure/cvms/geomodelgrids"
 
+.runner:
+  extends: .base
+  only:
+    - merge_requests
+
 .builder:
-  extends:
-    - .runner
+  extends: .runner
   stage: other-platforms
   variables:
     ENABLE_GDAL: "yes"
@@ -30,7 +33,10 @@ stages:
   extends: .runner
   image: $IMAGE_REGISTRY/testenv-debian-stable
   script:
-    - echo "-TODO- Generate documentation."
+    - python3 -m pip install --no-cache-dir -r docs/requirements.txt
+    - cd docs
+    - sphinx-build -b html . _build/html
+
 
 ubuntu-20.04:
   extends: .builder-first
@@ -83,3 +89,20 @@ rockylinux-9:
 documentation:
   stage: basic-platform
   extends: .doc
+
+
+pages:
+  extends: .base
+  image: $IMAGE_REGISTRY/testenv-debian-stable
+  script:
+    - python3 -m pip install --no-cache-dir -r docs/requirements.txt
+    - cd docs
+    - sphinx-build -b html . ../public
+  artifacts:
+    # GitLab Pages requires the artifacts be in 'public'
+    paths:
+    - public
+  rules:
+    - if: $CI_COMMIT_REF_NAME == $CI_DEFAULT_BRANCH && $CI_PROJECT_PATH == 'ghsc/gmp/earth-structure/cvms/geomodelgrids'
+  stage:
+    docs
