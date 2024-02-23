@@ -70,6 +70,9 @@ class App:
             name = f"{row['Network']}.{row['StationCode']}"
             logger.info("Working on %s...", name)
             names, data = self._query(row["StationLatitude"], row["StationLongitude"])
+            if data is None:
+                logger.info("No data for %s. Skipping profile.", name)
+                continue
             output_filepath = output_dir / f"{name}.{output_format}"
             write(output_filepath, names, data)
 
@@ -98,6 +101,8 @@ class App:
         """
         point = numpy.array([[latitude, longitude]])
         ground_surf = self.query.query_top_elevation(point)[0]
+        if ground_surf == geomodelgrids.Query.NODATA_VALUE:
+            return (None, None)
         if ground_surf != 0.0:
             # Account for roundoff errors and drop point a negligible amount.
             ground_surf -= 1.0e-6
