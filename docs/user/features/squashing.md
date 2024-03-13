@@ -34,9 +34,9 @@ The mappings between the physical space and squashed model are given by:
 
 ```{math}
 \begin{align}
-z_\mathit{physical} &= z_\mathit{top} + z_\mathit{squashed} \frac{z_\mathit{minsquash}-z_\mathit{top}}{z_\mathit{minsquash}} \text{, and}\\
+z_\mathit{physical} &= z_\mathit{surf} + z_\mathit{squashed} \frac{z_\mathit{minsquash}-z_\mathit{surf}}{z_\mathit{minsquash}} \text{, and}\\
 %
-z_\mathit{squashed} &= \frac{z_\mathit{minsquash}}{z_\mathit{minsquash}-z_\mathit{top}} (z_\mathit{physical} - z_\mathit{top}).
+z_\mathit{squashed} &= \frac{z_\mathit{minsquash}}{z_\mathit{minsquash}-z_\mathit{surf}} (z_\mathit{physical} - z_\mathit{surf}).
 \end{align}
 ```
 
@@ -76,3 +76,60 @@ geomodelgrids_query \
 37.455  -121.941    -10.0e+3
 37.455  -121.941    -20.0e+3
 ```
+
+## Algorithm for using squashing with topography/bathymetry
+
+When using squashing with the topography/bathymetry surface, queries just below the surface may return `NODATA_VALUES` for Vs values.
+This happens when the query point lies in a grid cell that has some values above the topography/bathymetry surface and some below; the interpolation algorithm will return `NODATA_VALUES` if any values at the vertices of a grid cell are `NODATA_VALUES`.
+You can use the following algorithm to efficiently find the highest point that will return a valid value.
+
+### Nomenclature
+
+- `dimZ`: total height of the model
+- `zPhysical`: elevation (m) in physical space
+- `zSquashed`: elevation (m) in squashed space
+- `zMinSquashed`: minimum elevation (m) of squashing (recommended value is `zMinSquashed=-dimZ`) 
+- `zLogical`: elevation (m) in logical space (grid space)
+- `zTop`: elevation (m) of the top of the model (topography and top of ocean)
+- `zSurf`: elevation (m) of surface used in squashing (topography / bathymetry in this case)
+- `dZ`: discretization size (m) in the vertical direction in the region being queried
+
+### Relationship between `zSquashed` and `zLogical`
+
+Using the relationship between zSquashed and zPhysical, 
+
+```
+zSquashed = zMinSquashed / (zMinSquashed – zSurf) * (zPhysical – zSurf)
+```
+
+and the relationship between zPhysical and zLogical,
+
+```
+zLogical = -dimZ * (zTop – zPhysical) / (zTop + dimZ)
+```
+
+we can derive relationships between zSquashed and zLogical:
+
+```
+zSquashed = zMinSquashed / (zMinSquashed – zSurf) * (zTop – zSurf + zLogical / dimZ * (zTop + dimZ))
+zLogical = (zSquashed * (zMinSquashed - zSurf) / zMinSquashed + zSurf - zTop) * (dimZ / (zTop + dimZ))
+```
+
+:::{note}
+If `zSurf == zTop` (top of the model) and `zMinSquashed == -dimZ`, then `zLogical == zSquashed`.
+That is, the logical grid lines up with a squashed model.
+However, if `zSurf` is the elevation of the topography/bathymetry surface, then `zLogical != zSquashed` even if `zMinSquashed == -dimZ`.
+:::
+
+### Pseudocode
+
+1. Query for values using squashing and the desired elevation, for example, to get a value at the “surface”, you could use an elevation of -1.0 m (1 m below the topography/bathymetry surface). This is zSquashed.
+2. If the Vs value returned is `NODATA_VALUE`, then adjust the elevation and query the model again.
+    1. Compute `zLogical` from `zSquashed` using `zLogical= (dimZ / zMinSquashed) * (zMinSquashed – zSurf) / (zTop + dimZ) * zSquashed`
+    2. Update `zLogical` to be 1 grid point lower using `zLogical = floor(zLogical/dZ)*dZ`
+    3. Compute an updated `zSquashed` from `zLogical` using `zSquashed = (zMinSquashed  / dimZ) * (zTop + dimZ)  / (zMinSquashed – zSurf) * zLogical`
+    4. Query the model using this updated `zSquashed`.
+    5. While Vs is `NODATA_VALUE`, do
+        1. Reduce `zLogical` by `dZ`, `zLogical -= dZ`
+        2. Update `zSquashed` using `zSquashed = (zMinSquashed  / dimZ) * (zTop + dimZ)  / (zMinSquashed – zSurf) * zLogical`
+        3. Query the mode using this update `zSquashed`
