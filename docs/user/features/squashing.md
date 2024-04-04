@@ -118,18 +118,18 @@ zLogical = (zSquashed * (zMinSquashed - zSurf) / zMinSquashed + zSurf - zTop) * 
 :::{note}
 If `zSurf == zTop` (top of the model) and `zMinSquashed == -dimZ`, then `zLogical == zSquashed`.
 That is, the logical grid lines up with a squashed model.
-However, if `zSurf` is the elevation of the topography/bathymetry surface, then `zLogical != zSquashed` even if `zMinSquashed == -dimZ`.
+However, if `zSurf` is the elevation of the topography/bathymetry surface, then `zSurf != zTop`, so `zLogical != zSquashed` even if `zMinSquashed == -dimZ`.
 :::
 
 ### Pseudocode
 
 1. Query for values using squashing and the desired elevation, for example, to get a value at the “surface”, you could use an elevation of -1.0 m (1 m below the topography/bathymetry surface). This is zSquashed.
 2. If the Vs value returned is `NODATA_VALUE`, then adjust the elevation and query the model again.
-    1. Compute `zLogical` from `zSquashed` using `zLogical= (dimZ / zMinSquashed) * (zMinSquashed – zSurf) / (zTop + dimZ) * zSquashed`
+    1. Compute `zLogical` from `zSquashed` using `zLogical = (zSquashed * (zMinSquashed - zSurf) / zMinSquashed + zSurf - zTop) * (dimZ / (zTop + dimZ))`
     2. Update `zLogical` to be 1 grid point lower using `zLogical = floor(zLogical/dZ)*dZ`
-    3. Compute an updated `zSquashed` from `zLogical` using `zSquashed = (zMinSquashed  / dimZ) * (zTop + dimZ)  / (zMinSquashed – zSurf) * zLogical`
+    3. Compute an updated `zSquashed` from `zLogical` using `zSquashed = zMinSquashed / (zMinSquashed – zSurf) * (zTop – zSurf + zLogical / dimZ * (zTop + dimZ))`
     4. Query the model using this updated `zSquashed`.
     5. While Vs is `NODATA_VALUE`, do
         1. Reduce `zLogical` by `dZ`, `zLogical -= dZ`
-        2. Update `zSquashed` using `zSquashed = (zMinSquashed  / dimZ) * (zTop + dimZ)  / (zMinSquashed – zSurf) * zLogical`
+        2. Update `zSquashed` using `zSquashed = zMinSquashed / (zMinSquashed – zSurf) * (zTop – zSurf + zLogical / dimZ * (zTop + dimZ))`
         3. Query the mode using this update `zSquashed`
